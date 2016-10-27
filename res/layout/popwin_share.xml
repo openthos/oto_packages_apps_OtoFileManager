@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/pop_bg_shape">
+    <LinearLayout
+        android:id="@+id/ll_menu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:visibility="gone">
+        <TextView
+            android:id="@+id/pop_menu_refresh"
+            style="@style/wrap"
+            android:text="@string/operation_refresh" />
+        <TextView
+            android:id="@+id/pop_menu_cancel_all"
+            style="@style/wrap"
+            android:text="@string/operation_selectall_or_cancel" />
+        <TextView
+            android:id="@+id/pop_menu_copy"
+            style="@style/wrap"
+            android:text="@string/operation_copy" />
+        <TextView
+            android:id="@+id/pop_menu_delete"
+            style="@style/wrap"
+            android:text="@string/operation_delete" />
+        <TextView
+            android:id="@+id/pop_menu_send"
+            style="@style/wrap"
+            android:text="@string/operation_send" />
+        <TextView
+            android:id="@+id/pop_menu_create"
+            style="@style/wrap"
+            android:text="@string/new_folder_name" />
+        <TextView
+            android:id="@+id/pop_menu_exit"
+            style="@style/wrap"
+            android:text="@string/menu_exit" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/ll_setting"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:gravity="center_horizontal">
+        <TextView
+            android:id="@+id/pop_setting_relative"
+            style="@style/wrap"
+            android:text="@string/text_about" />
+        <TextView
+            android:id="@+id/pop_setting_exit"
+            style="@style/wrap"
+            android:text="@string/menu_exit" />
+        <TextView
+            android:id="@+id/pop_setting_help"
+            style="@style/wrap"
+            android:text="@string/text_help"
+            />
+        <TextView
+            android:id="@+id/pop_setting_view"
+            style="@style/wrap"
+            android:text="@string/operation_show_sys" />
+    </LinearLayout>
+</FrameLayout>

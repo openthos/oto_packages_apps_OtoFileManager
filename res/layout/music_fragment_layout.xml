@@ -1,0 +1,29 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <GridView
+        android:id="@+id/gv_audio_pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:numColumns="auto_fit"
+        android:layout_marginLeft="25dp"
+        android:layout_marginTop="25dp"
+        android:verticalSpacing="25dp"
+        android:horizontalSpacing="25dp"
+        android:columnWidth="150dp"
+        android:padding="10dp"
+        android:stretchMode="columnWidth"
+        android:scrollbars="none"/>
+
+    <TextView
+        android:id="@+id/tv_no_audio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/text_no_audio_found"
+        android:textSize="30sp"
+        android:visibility="gone"
+        android:layout_centerInParent="true"/>
+
+</RelativeLayout>

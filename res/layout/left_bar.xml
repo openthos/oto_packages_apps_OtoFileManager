@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_storage_page"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            android:text="@string/tv_storage_page"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/tv_desk"
+                style="@style/textSet"
+                android:drawableLeft="@drawable/left_desk_selector"
+                android:text="@string/desk" />
+
+            <TextView
+                android:id="@+id/tv_music"
+                style="@style/textSet"
+                android:drawableLeft="@drawable/left_music_selector"
+                android:text="@string/music" />
+
+            <TextView
+                android:id="@+id/tv_video"
+                style="@style/textSet"
+                android:drawableLeft="@drawable/left_video_selector"
+                android:text="@string/video" />
+
+            <TextView
+                android:id="@+id/tv_picture"
+                style="@style/textSet"
+                android:drawableLeft="@drawable/left_picture_selector"
+                android:text="@string/picture" />
+
+        <TextView
+            android:id="@+id/left_local_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:gravity="center"
+            android:text="@string/left_local_up"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tv_computer"
+            style="@style/textSet"
+            android:drawableLeft="@drawable/left_computer_selector"
+            android:text="@string/computer" />
+
+        <TextView
+            android:id="@+id/tv_storage"
+            android:visibility="gone"
+            style="@style/textSet"
+            android:drawableLeft="@drawable/left_usb_selector"
+            android:text="@string/usb" />
+
+        <TextView
+            android:id="@+id/left_net_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:gravity="center"
+            android:text="@string/left_net_up"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tv_net_service"
+            style="@style/textSet"
+            android:drawableLeft="@drawable/left_internet_selector"
+            android:text="@string/internet" />
+    </LinearLayout>
+</RelativeLayout>

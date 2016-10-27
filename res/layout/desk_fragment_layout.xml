@@ -1,0 +1,27 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <GridView
+        android:id="@+id/gv_desk_icon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:verticalSpacing="40dp"
+        android:columnWidth="150dp"
+        android:padding="10dp"
+        android:numColumns="auto_fit"
+        android:stretchMode="columnWidth"
+        android:scrollbars="none" />
+
+    <TextView
+        android:id="@+id/tv_demo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/text_no_icon_found"
+        android:textSize="25sp"
+        android:gravity="center"
+        android:visibility="gone"/>
+
+</LinearLayout>
