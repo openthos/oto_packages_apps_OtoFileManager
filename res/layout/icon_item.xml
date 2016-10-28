@@ -8,7 +8,6 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:src="@mipmap/category_icon_music"/>
-    　　
 
     <TextView
         android:id="@+id/tv_icon"

@@ -13,7 +13,6 @@
         android:layout_weight="1"
         android:background="@drawable/menu_btn_backgroud"
         android:text="@string/new_folder_name"/>
-    <!--分割线-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -28,7 +27,6 @@
         android:layout_weight="1"
         android:background="@drawable/menu_btn_backgroud"
         android:text="@string/new_file_name"/>
-    <!--分割线-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -43,7 +41,6 @@
         android:layout_weight="1"
         android:background="@drawable/menu_btn_backgroud"
         android:text="@string/operation_refresh"/>
-    <!--分割线-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -58,7 +55,6 @@
         android:layout_weight="1"
         android:background="@drawable/menu_btn_backgroud"
         android:text="@string/operation_paste"/>
-    <!--分割线-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"

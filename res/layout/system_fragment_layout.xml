@@ -73,7 +73,6 @@
         </LinearLayout>
     </FrameLayout>
 
-    <!--当进行剪切,复制操作时的粘贴和取消按钮-->
     <!--<LinearLayout-->
         <!--android:id="@+id/moving_operation_bar"-->
         <!--android:visibility="gone"-->
@@ -108,7 +107,6 @@
     <!--</LinearLayout>-->
 
 
-    <!--底部contextmenu，当checkbox选中时弹出：-->
     <!--<LinearLayout-->
         <!--android:id="@+id/operation_bar"-->
         <!--android:layout_width="match_parent"-->
