@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.graphics.Color;
 
 import com.openthos.filemanager.utils.L;
 
@@ -333,12 +334,13 @@ public class Util {
         return true;
     }
 
-    public static boolean setText(View view, int id, String text) {
+    public static boolean setText(View view, int id, String text, int color) {
         TextView textView = (TextView) view.findViewById(id);
         if (textView == null)
             return false;
 
         textView.setText(text);
+        textView.setTextColor(color);
         return true;
     }
 

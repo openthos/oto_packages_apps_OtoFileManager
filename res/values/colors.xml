@@ -9,6 +9,8 @@
     <color name="top_select_color">#939AA3</color>
     <color name="top_search_bg_color">#E9EDF0</color>
     <color name="progress_second_color">#3EB400</color>
+    <color name="file_title_color">#888888</color>
+    <color name="file_name_color">#000000</color>
 
     <color name="gray">#b19898</color>
     <color name="white">#ffffff</color>

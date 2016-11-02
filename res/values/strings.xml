@@ -177,4 +177,10 @@
     <string name="found_no_file">No file, please check and re-enter!</string>
     <string name="operation_failed_permission_refuse">The system directory has read permissions only! Current operation failed!</string>
     <string name="external_storage_not_exist">No external storage temporarily</string>
+    <string name="file_title_name">Name</string>
+    <string name="file_title_modified">Modified</string>
+    <string name="file_title_type">Type</string>
+    <string name="file_title_size">Size</string>
+    <string name="file_type_folder">Folder</string>
+    <string name="file_type_file">File</string>
 </resources>

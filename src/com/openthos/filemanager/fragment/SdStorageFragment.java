@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.view.MotionEvent;
 
 import com.openthos.filemanager.BaseFragment;
 import com.openthos.filemanager.MainActivity;
@@ -27,7 +28,7 @@ import com.openthos.filemanager.fragment.SystemSpaceFragment;
 import java.io.File;
 import java.util.ArrayList;
 
-public class SdStorageFragment extends BaseFragment implements View.OnClickListener {
+public class SdStorageFragment extends BaseFragment {
     private static final String TAG = SdStorageFragment.class.getSimpleName();
 //    private String usbDeviceIsAttached;
 
@@ -161,7 +162,8 @@ public class SdStorageFragment extends BaseFragment implements View.OnClickListe
             if (usbs != null && usbs.length > 0) {
                 showMountDevices(usbs);
                 rl_mount_space_one.setVisibility(View.VISIBLE);
-                rl_mount_space_one.setOnClickListener(this);
+                rl_mount_space_one.setOnGenericMotionListener
+                                   (new MouseRelativeOnGenericMotionListener());
             }
         } else if (usbDeviceIsAttached != null
                    && usbDeviceIsAttached.equals("usb_device_detached")) {
@@ -171,9 +173,29 @@ public class SdStorageFragment extends BaseFragment implements View.OnClickListe
 
     @Override
     protected void initListener() {
-        rl_android_system.setOnClickListener(this);
-        rl_sd_space.setOnClickListener(this);
-        rl_android_service.setOnClickListener(this);
+        rl_android_system.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
+        rl_sd_space.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
+        rl_android_service.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
+    }
+
+    private class MouseRelativeOnGenericMotionListener implements View.OnGenericMotionListener {
+        @Override
+        public boolean onGenericMotion(View v, MotionEvent event) {
+            switch (event.getButtonState()) {
+                case MotionEvent.BUTTON_PRIMARY:
+                    primaryClick(v);
+                    break;
+                case MotionEvent.BUTTON_SECONDARY:
+                    break;
+                case MotionEvent.BUTTON_TERTIARY:
+                    break;
+                case MotionEvent.ACTION_SCROLL:
+                    break;
+                case MotionEvent.ACTION_HOVER_ENTER:
+                    break;
+            }
+            return false;
+        }
     }
 
     private void showMountDevices(String[] usbs) {
@@ -186,8 +208,7 @@ public class SdStorageFragment extends BaseFragment implements View.OnClickListe
         pb_usb.setProgress(max - avail);
     }
 
-    @Override
-    public void onClick(View view) {
+    public void primaryClick(View view) {
         currentBackTime = System.currentTimeMillis();
         switch (view.getId()) {
             case R.id.rl_android_system:

@@ -602,7 +602,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                     mFileViewInteractionHub.addDialogSelectedItem(fileInfo);
                 }
             } else {
-                if (mouseRightTag.equals("mouse") && mLastClickId == position
+                if ("button_primary".equals(mouseRightTag) && mLastClickId == position
                     && (Math.abs(System.currentTimeMillis() - mLastClickTime) < 1000)) {
                     T.showShort(mainActivity, "double ! ");
                     String doubleTag = "double";
@@ -627,6 +627,7 @@ public class SystemSpaceFragment extends BaseFragment implements
         public boolean onGenericMotion(View v, MotionEvent event) {
             switch (event.getButtonState()) {
                 case MotionEvent.BUTTON_PRIMARY:
+                    mouseRightTag = "button_primary";
                     file_path_grid.setOnItemClickListener(new OnitemClickListener(event));
                     break;
                 case MotionEvent.BUTTON_SECONDARY:
@@ -652,6 +653,7 @@ public class SystemSpaceFragment extends BaseFragment implements
         public boolean onGenericMotion(View v, MotionEvent event) {
             switch (event.getButtonState()) {
                 case MotionEvent.BUTTON_PRIMARY:
+                    mouseRightTag = "button_primary";
                     file_path_list.setOnItemClickListener(new OnitemClickListener(event));
                     break;
                 case MotionEvent.BUTTON_SECONDARY:

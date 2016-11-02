@@ -9,25 +9,25 @@ public class T {
         throw new UnsupportedOperationException("cannot be instantiated");
     }
 
-    public static boolean isShow = true;
+    public static boolean mIsShow = false;
 
     public static void showShort(Context context, CharSequence message) {
-        if (isShow)
+        if (mIsShow)
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
     public static void showShort(Context context, String message) {
-        if (isShow)
+        if (mIsShow)
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
     public static void showLong(Context context, CharSequence message) {
-        if (isShow)
+        if (mIsShow)
             Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
     public static void showLong(Context context, int message) {
-        if (isShow)
+        if (mIsShow)
             Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 }

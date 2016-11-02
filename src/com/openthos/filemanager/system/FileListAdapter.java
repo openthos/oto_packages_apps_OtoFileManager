@@ -66,7 +66,7 @@ public class FileListAdapter extends BaseAdapter {
         }
 
         final FileInfo lFileInfo = fileInfoList.get(position);
-        FileListItem.setupFileListItemInfo(mContext, convertView, lFileInfo,
+        FileListItem.setupFileListItemInfo(mContext, convertView, position, lFileInfo,
                 mFileIcon, mFileViewInteractionHub);
         LinearLayout background = (LinearLayout)convertView;
         background.setBackgroundResource(selectFileInfoListIndex.contains(position) ?

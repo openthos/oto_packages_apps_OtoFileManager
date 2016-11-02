@@ -179,4 +179,10 @@
     <string name="found_no_file">没有发现文件，请检查后重新输入！</string>
     <string name="operation_failed_permission_refuse">系统目录只有读取权限！当前操作失败～</string>
     <string name="external_storage_not_exist">暂无外部存储</string>
+    <string name="file_title_name">名称</string>
+    <string name="file_title_modified">修改日期</string>
+    <string name="file_title_type">类型</string>
+    <string name="file_title_size">大小</string>
+    <string name="file_type_folder">文件夹</string>
+    <string name="file_type_file">文档</string>
 </resources>
