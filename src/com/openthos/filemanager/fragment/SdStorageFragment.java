@@ -22,14 +22,14 @@ import com.openthos.filemanager.system.Util;
 import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.utils.T;
-import com.openthos.filemanager.view.SystemSpaceFragment;
+import com.openthos.filemanager.fragment.SystemSpaceFragment;
 
 import java.io.File;
 import java.util.ArrayList;
 
 public class SdStorageFragment extends BaseFragment implements View.OnClickListener {
     private static final String TAG = SdStorageFragment.class.getSimpleName();
-    private String usbDeviceIsAttached;
+//    private String usbDeviceIsAttached;
 
     private static final String SYSTEM_SPACE_FRAGMENT = "system_space_fragment";
     private static final String SD_SPACE_FRAGMENT = "sd_space_fragment";
@@ -57,59 +57,49 @@ public class SdStorageFragment extends BaseFragment implements View.OnClickListe
     private ProgressBar pb_service;
 
     private BaseFragment curFragment;
-    FragmentManager manager = getFragmentManager();
+//    FragmentManager manager = getFragmentManager();
     private long lastBackTime = 0;
     private ArrayList<File> mountUsb = null;
     private String mountPath;
     private long currentBackTime;
     private String mountDiskPath = null;
-    private Context context;
+//    private Context context;
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public SdStorageFragment(FragmentManager manager,
                              String usbDeviceIsAttached, MainActivity context) {
-        this.manager = manager;
-        this.usbDeviceIsAttached = usbDeviceIsAttached;
-        this.context = context;
+        super();
     }
+
     @SuppressLint({"NewApi", "ValidFragment"})
     public SdStorageFragment() {
         super();
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public int getLayoutId() {
+        return R.layout.android_fragment_layout;
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.android_fragment_layout, container, false);
-        initView(view);
-        initData();
-        return view;
-    }
+    protected void initView() {
+        rl_android_system = (RelativeLayout) rootView.findViewById(R.id.rl_android_system);
+        rl_sd_space = (RelativeLayout) rootView.findViewById(R.id.rl_sd_space);
+        rl_android_service = (RelativeLayout) rootView.findViewById(R.id.rl_android_service);
+        rl_mount_space_one = (RelativeLayout) rootView.findViewById(R.id.rl_mount_space_one);
+        rl_mount_space_two = (RelativeLayout) rootView.findViewById(R.id.rl_mount_space_two);
 
-    private void initView(View view) {
-        rl_android_system = (RelativeLayout) view.findViewById(R.id.rl_android_system);
-        rl_sd_space = (RelativeLayout) view.findViewById(R.id.rl_sd_space);
-        rl_android_service = (RelativeLayout) view.findViewById(R.id.rl_android_service);
-        rl_mount_space_one = (RelativeLayout) view.findViewById(R.id.rl_mount_space_one);
-        rl_mount_space_two = (RelativeLayout) view.findViewById(R.id.rl_mount_space_two);
+        tv_system_total = (TextView) rootView.findViewById(R.id.tv_system_total);
+        tv_system_avail = (TextView) rootView.findViewById(R.id.tv_system_avail);
+        tv_sd_total = (TextView) rootView.findViewById(R.id.tv_sd_total);
+        tv_sd_avail = (TextView) rootView.findViewById(R.id.tv_sd_avail);
+        tv_usb_total = (TextView) rootView.findViewById(R.id.tv_usb_total);
+        tv_usb_avail = (TextView) rootView.findViewById(R.id.tv_usb_avail);
 
-        tv_system_total = (TextView) view.findViewById(R.id.tv_system_total);
-        tv_system_avail = (TextView) view.findViewById(R.id.tv_system_avail);
-        tv_sd_total = (TextView) view.findViewById(R.id.tv_sd_total);
-        tv_sd_avail = (TextView) view.findViewById(R.id.tv_sd_avail);
-        tv_usb_total = (TextView) view.findViewById(R.id.tv_usb_total);
-        tv_usb_avail = (TextView) view.findViewById(R.id.tv_usb_avail);
-
-        pb_system = (ProgressBar) view.findViewById(R.id.pb_system);
-        pb_sd = (ProgressBar) view.findViewById(R.id.pb_sd);
-        pb_usb = (ProgressBar) view.findViewById(R.id.pb_usb);
-        pb_service = (ProgressBar) view.findViewById(R.id.pb_service);
+        pb_system = (ProgressBar) rootView.findViewById(R.id.pb_system);
+        pb_sd = (ProgressBar) rootView.findViewById(R.id.pb_sd);
+        pb_usb = (ProgressBar) rootView.findViewById(R.id.pb_usb);
+        pb_service = (ProgressBar) rootView.findViewById(R.id.pb_service);
     }
 
     private void setVolumSize() {
@@ -163,12 +153,8 @@ public class SdStorageFragment extends BaseFragment implements View.OnClickListe
         }
     }
 
-    private void initData() {
+    protected void initData() {
         setVolumSize();
-        rl_android_system.setOnClickListener(this);
-        rl_sd_space.setOnClickListener(this);
-        rl_android_service.setOnClickListener(this);
-
         if (usbDeviceIsAttached != null && usbDeviceIsAttached.equals("usb_device_attached")) {
             String[] cmd = {"df"};
             String[] usbs = Util.execUsb(cmd);
@@ -181,6 +167,13 @@ public class SdStorageFragment extends BaseFragment implements View.OnClickListe
                    && usbDeviceIsAttached.equals("usb_device_detached")) {
             rl_mount_space_one.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    protected void initListener() {
+        rl_android_system.setOnClickListener(this);
+        rl_sd_space.setOnClickListener(this);
+        rl_android_service.setOnClickListener(this);
     }
 
     private void showMountDevices(String[] usbs) {
@@ -227,9 +220,13 @@ public class SdStorageFragment extends BaseFragment implements View.OnClickListe
                 T.showShort(context,
                             context.getString(R.string.operation_failed_permission_refuse));
             }
-            curFragment = new SystemSpaceFragment(tag, path, fileInfoArrayList, copyOrMove);
-            manager.beginTransaction().replace(R.id.fl_mian, curFragment, SYSTEM_SPACE_FRAGMENT_TAG)
+            SystemSpaceFragment  systemSpaceFragment = new SystemSpaceFragment(tag,
+                                                       path, fileInfoArrayList, copyOrMove);
+            manager.beginTransaction().hide(mainActivity.curFragment).commit();
+            manager.beginTransaction().add(R.id.fl_mian, systemSpaceFragment,
+                                                         SYSTEM_SPACE_FRAGMENT_TAG)
                     .addToBackStack(null).commit();
+            mainActivity.curFragment  = systemSpaceFragment;
         }
     }
 

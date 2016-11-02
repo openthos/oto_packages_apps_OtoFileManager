@@ -32,32 +32,27 @@ public class DeskFragment extends BaseFragment {
     private PackageManager pm;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void initView() {
+        gv_desk_icon = (GridView) rootView.findViewById(R.id.gv_desk_icon);
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.desk_fragment_layout, container, false);
-        initView(view);
-        initData();
-        return view;
-    }
-
-    private void initView(View view) {
-        gv_desk_icon = (GridView) view.findViewById(R.id.gv_desk_icon);
-    }
-
-    private void initData() {
+    protected void initData() {
         if (appInfos != null){
             appInfos.clear();
         }
         getInstallPackageInfo();
         deskAdapter = new DeskAdapter(appInfos, getActivity());
         gv_desk_icon.setAdapter(deskAdapter);
+    }
+
+    @Override
+    protected void initListener() {
         gv_desk_icon.setOnGenericMotionListener(new DeskOnGenericMotionListener());
+    }
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.desk_fragment_layout;
     }
 
     private void getInstallPackageInfo() {

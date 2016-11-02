@@ -1,4 +1,4 @@
-package com.openthos.filemanager.view;
+package com.openthos.filemanager.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -64,13 +64,13 @@ public class SystemSpaceFragment extends BaseFragment implements
 //    FileViewInteractionHub.CopyOrMove copyOrMove = null;
     private boolean isCtrlPress;
     private String mouseRightTag = "mouse";
-    private boolean sdCardReady;
-    private View emptyView;
-    private View noSdView;
 
     // memorize the scroll positions of previous paths
     private ArrayList<PathScrollPositionItem> mScrollPositionList = new ArrayList<>();
     private String mPreviousPath;
+    private boolean mSdCardReady;
+    private View mEmptyView;
+    private View mNoSdView;
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -106,6 +106,7 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     private void selectorMenuId(String tag) {
         if (mFileViewInteractionHub.getSelectedFileList() != null) {
+
         }
         switch (tag) {
             case "pop_refresh":
@@ -160,6 +161,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                                FileViewInteractionHub.CopyOrMove copyOrMove) {
         super();
     }
+
     @SuppressLint({"NewApi", "ValidFragment"})
     public SystemSpaceFragment() {
         super();
@@ -176,16 +178,15 @@ public class SystemSpaceFragment extends BaseFragment implements
     }
 
     protected void initView() {
-        emptyView = rootView.findViewById(R.id.empty_view);
-        sdCardReady = Util.isSDCardReady();
-        noSdView = rootView.findViewById(R.id.sd_not_available_page);
+        mEmptyView = rootView.findViewById(R.id.empty_view);
+        mSdCardReady = Util.isSDCardReady();
+        mNoSdView = rootView.findViewById(R.id.sd_not_available_page);
         file_path_list = (DragListView) rootView.findViewById(R.id.file_path_list);
         file_path_grid = (DragGridView) rootView.findViewById(R.id.file_path_grid);
         //TODO  delete
     }
 
-    public void initData() {
-//        mainActivity = getActivity();
+    protected void initData() {
         mFileCagetoryHelper = new FileCategoryHelper(mainActivity);
         mFileViewInteractionHub = new FileViewInteractionHub(this);
         Intent intent = getActivity().getIntent();
@@ -193,10 +194,12 @@ public class SystemSpaceFragment extends BaseFragment implements
         mFileIconHelper = new FileIconHelper(mainActivity);
         if ("list".equals(LocalCache.getViewTag())) {
             mAdapter = new FileListAdapter(mainActivity, R.layout.file_browser_item_list,
-                                           mFileNameList, mFileViewInteractionHub, mFileIconHelper);
+                                           mFileNameList, mFileViewInteractionHub,
+                                           mFileIconHelper);
         } else if ("grid".equals(LocalCache.getViewTag())) {
             mAdapter = new FileListAdapter(mainActivity, R.layout.file_browser_item_grid,
-                                           mFileNameList, mFileViewInteractionHub, mFileIconHelper);
+                                           mFileNameList, mFileViewInteractionHub,
+                                           mFileIconHelper);
         }
 
         boolean baseSd = intent.getBooleanExtra(Constants.KEY_BASE_SD,
@@ -214,7 +217,7 @@ public class SystemSpaceFragment extends BaseFragment implements
         mFileViewInteractionHub.setRootPath(rootDir);
 
         String currentDir = FileManagerPreferenceActivity.getPrimaryFolder
-                                                          (mainActivity, sdOrSystem, directorPath);
+                            (mainActivity, sdOrSystem, directorPath);
         Uri uri = intent.getData();
         if (uri != null) {
             if (baseSd && sdDir.startsWith(uri.getPath())) {
@@ -238,6 +241,7 @@ public class SystemSpaceFragment extends BaseFragment implements
         setHasOptionsMenu(true);
     }
 
+    @Override
     protected void initListener() {
         file_path_list.setOnDragChangeListener(new DragListView.OnChanageListener() {
             @Override
@@ -273,36 +277,10 @@ public class SystemSpaceFragment extends BaseFragment implements
             file_path_grid.setVisibility(View.GONE);
             file_path_list.setVisibility(View.VISIBLE);
             file_path_list.setAdapter(mAdapter);
-            file_path_list.setOnDragChangeListener(new DragListView.OnChanageListener() {
-                @Override
-                public void onChange(int from, int to) {
-                    FileInfo fileInfo = mFileViewInteractionHub.getItem(to);
-                    if (to != -1 && fileInfo.IsDir) {
-                        mFileViewInteractionHub.addDragSelectedItem(from);
-                        mFileViewInteractionHub.onOperationMove();
-                        mFileViewInteractionHub.onOperationDragConfirm(fileInfo.filePath);
-                        L.e("from____________to", from + "______________" + to);
-                    }
-                }
-            });
-            file_path_list.setOnGenericMotionListener(new MouseListOnGenericMotionListener());
         } else if ("grid".equals(LocalCache.getViewTag())) {
             file_path_list.setVisibility(View.GONE);
             file_path_grid.setVisibility(View.VISIBLE);
             file_path_grid.setAdapter(mAdapter);
-            file_path_grid.setOnDragChangeListener(new DragGridView.OnChanageListener() {
-                @Override
-                public void onChange(int from, int to) {
-                    FileInfo fileInfo = mFileViewInteractionHub.getItem(to);
-                    if (to != -1 && fileInfo.IsDir) {
-                        mFileViewInteractionHub.addDragSelectedItem(from);
-                        mFileViewInteractionHub.onOperationMove();
-                        mFileViewInteractionHub.onOperationDragConfirm(fileInfo.filePath);
-                        L.e("from____________to", from + "______________" + to);
-                    }
-                }
-            });
-            file_path_grid.setOnGenericMotionListener(new MouseGridOnGenericMotionListener());
         }
     }
 
@@ -355,7 +333,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                     && mPreviousPath.equals(mScrollPositionList
                                     .get(mScrollPositionList.size() - 1).path)) {
                     mScrollPositionList.get(mScrollPositionList.size() - 1).pos
-                                                                            = firstVisiblePosition;
+                    = firstVisiblePosition;
                     Log.i(TAG, "computeScrollPosition: update item: " + mPreviousPath + " "
                           + firstVisiblePosition + " stack count:" + mScrollPositionList.size());
                     pos = firstVisiblePosition;
@@ -439,24 +417,22 @@ public class SystemSpaceFragment extends BaseFragment implements
     }
 
     private void updateUI() {
-//        boolean sdCardReady = Util.isSDCardReady();
-//        View noSdView = view.findViewById(R.id.sd_not_available_page);
-        noSdView.setVisibility(sdCardReady ? View.GONE : View.VISIBLE);
+        mNoSdView.setVisibility(mSdCardReady ? View.GONE : View.VISIBLE);
         if ("list".equals(LocalCache.getViewTag())) {
-            file_path_list.setVisibility(sdCardReady ? View.VISIBLE : View.GONE);
+            file_path_list.setVisibility(mSdCardReady ? View.VISIBLE : View.GONE);
         } else if ("grid".equals(LocalCache.getViewTag())) {
-            file_path_grid.setVisibility(sdCardReady ? View.VISIBLE : View.GONE);
+            file_path_grid.setVisibility(mSdCardReady ? View.VISIBLE : View.GONE);
         }
 
-        if (sdCardReady) {
+        if (mSdCardReady) {
             mFileViewInteractionHub.refreshFileList();
         }
     }
 
     private void showEmptyView(boolean show) {
-//        View emptyView = view.findViewById(R.id.empty_view);
-        if (emptyView != null)
-            emptyView.setVisibility(show ? View.VISIBLE : View.GONE);
+        View mEmptyView = rootView.findViewById(R.id.empty_view);
+        if (mEmptyView != null)
+            mEmptyView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -503,7 +479,8 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     @Override
     public String getDisplayPath(String path) {
-        if (path.startsWith(this.sdDir) && !FileManagerPreferenceActivity.showRealPath(mainActivity)) {
+        if (path.startsWith(this.sdDir)
+            && !FileManagerPreferenceActivity.showRealPath(mainActivity)) {
             return getString(R.string.sd_folder) + path.substring(this.sdDir.length());
         } else {
             return path;

@@ -54,31 +54,23 @@ public class MusicFragment  extends BaseFragment implements AdapterView.OnItemCl
         }
     };
 
-    public MusicFragment() {
+    @Override
+    public int getLayoutId() {
+        return R.layout.music_fragment_layout;
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void initView() {
+        gv_audio_pager = (GridView) rootView.findViewById(R.id.gv_audio_pager);
+        tv_no_audio = (TextView) rootView.findViewById(R.id.tv_no_audio);
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.music_fragment_layout, container, false);
-        initView(view);
-        initData();
-        return view;
-    }
-
-    private void initView(View view) {
-        gv_audio_pager = (GridView) view.findViewById(R.id.gv_audio_pager);
-        tv_no_audio = (TextView) view.findViewById(R.id.tv_no_audio);
-    }
-
-    private void initData() {
+    protected void initData() {
         getAudioList();
+    }
+
+    @Override
+    protected void initListener() {
         gv_audio_pager.setOnItemClickListener(this);
     }
 

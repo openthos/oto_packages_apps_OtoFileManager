@@ -8,31 +8,31 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.openthos.filemanager.BaseActivity;
 import com.openthos.filemanager.R;
 
-public class HelpActivity extends Activity implements View.OnClickListener {
+public class HelpActivity extends BaseActivity implements View.OnClickListener {
     LinearLayout ll_help_back;
     TextView tv_public_official;
     TextView tv_official_help;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_help);
-        initView();
-        initData();
-    }
-
-    private void initView() {
+    protected void initView() {
         ll_help_back = (LinearLayout) findViewById(R.id.ll_help_back);
         tv_public_official = (TextView) findViewById(R.id.tv_public_official);
         tv_official_help = (TextView) findViewById(R.id.tv_official_help);
     }
 
-    private void initData() {
+    protected void initListener() {
         ll_help_back.setOnClickListener(this);
         tv_public_official.setOnClickListener(this);
         tv_official_help.setOnClickListener(this);
+    }
+
+    protected int getLayoutId() {
+        return R.layout.activity_help;
+    }
+
+    protected void initData() {
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.openthos.filemanager.view;
+package com.openthos.filemanager.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -23,13 +23,13 @@ import java.util.List;
 
 public class DetailFragment extends BaseFragment {
     private GridView gv_detail_pictrue;
-//    private int i;
     private List<String> childPathList;
 //    private List<ImageBean> list;
 //    HashMap<String, List<String>> mGruopMap;
 
     @SuppressLint("ValidFragment")
-    public DetailFragment(HashMap<String, List<String>> mGruopMap, List<ImageBean> list, int i) {
+    public DetailFragment(HashMap<String, List<String>> mGruopMap,
+                                          List<ImageBean> list, int index) {
         super();
     }
 
@@ -45,14 +45,15 @@ public class DetailFragment extends BaseFragment {
         gv_detail_pictrue = (GridView) rootView.findViewById(R.id.gv_detail_pictrue);
     }
 
-    protected void initListener() {
-        gv_detail_pictrue.setOnItemClickListener(new DetailOnItemClickListener());
-    }
-
     protected void initData() {
         childPathList = mGruopMap.get(list.get(index).getFolderName());
         ChildAdapter adapter = new ChildAdapter(getActivity(), childPathList, gv_detail_pictrue);
         gv_detail_pictrue.setAdapter(adapter);
+    }
+
+    @Override
+    protected void initListener() {
+        gv_detail_pictrue.setOnItemClickListener(new DetailOnItemClickListener());
     }
 
     private class DetailOnItemClickListener implements

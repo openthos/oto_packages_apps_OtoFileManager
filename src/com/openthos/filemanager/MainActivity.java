@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.support.v4.app.FragmentTransaction;
 
 import com.openthos.filemanager.component.PopOnClickLintener;
 import com.openthos.filemanager.component.PopWinShare;
@@ -31,7 +32,7 @@ import com.openthos.filemanager.utils.DisplayUtil;
 import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.utils.T;
-import com.openthos.filemanager.view.SystemSpaceFragment;
+import com.openthos.filemanager.fragment.SystemSpaceFragment;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
     private TextView tv_desk;
@@ -54,7 +55,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private static final String USB_DEVICE_DETACHED = "usb_device_detached";
     private FragmentManager manager = getSupportFragmentManager();
     private PopWinShare popWinShare;
-    private Fragment curFragment = null;
+    public Fragment curFragment = null;
     private SdStorageFragment sdStorageFragment = null;
     private DeskFragment deskFragment;
     private MusicFragment musicFragment;
@@ -86,19 +87,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     };
     private boolean isFirst = true;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        LocalCache.getInstance(MainActivity.this).setViewTag("grid");
-        initView();
-        initFragemnt();
-        initData();
-        initUsb(-1);
-        curFragment = sdStorageFragment;
+    protected int getLayoutId() {
+        return R.layout.activity_main;
     }
 
-    private void initView() {
+    protected void initView() {
+        LocalCache.getInstance(MainActivity.this).setViewTag("grid");
         tv_desk = (TextView) findViewById(R.id.tv_desk);
         tv_music = (TextView) findViewById(R.id.tv_music);
         tv_video = (TextView) findViewById(R.id.tv_video);
@@ -112,6 +106,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         iv_setting = (ImageView) findViewById(R.id.iv_setting);
         et_nivagation = (EditText) findViewById(R.id.et_nivagation);
         iv_search_view = (ImageView) findViewById(R.id.iv_search);
+        et_search_view = (EditText) findViewById(R.id.search_view);
         iv_grid_view.setSelected(true);
     }
 
@@ -125,44 +120,60 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             T.showShort(MainActivity.this, getResources().getString(R.string.USB_device_connected));
             tv_storage.setVisibility(View.VISIBLE);
             tv_storage.setOnClickListener(MainActivity.this);
+            manager.beginTransaction().remove(sdStorageFragment).commit();
             sdStorageFragment = new SdStorageFragment(manager, USB_DEVICE_ATTACHED,
                                                       MainActivity.this);
             setSelectedBackground(R.id.tv_computer);
-            manager.beginTransaction().replace(R.id.fl_mian, sdStorageFragment).commit();
+            manager.beginTransaction().add(R.id.fl_mian, sdStorageFragment)
+                                      .hide(sdStorageFragment).commit();
         } else if (flags == UsbConnectReceiver.USB_STATE_OFF) {
             tv_storage.setVisibility(View.GONE);
             tv_storage.setVisibility(View.GONE);
             sdStorageFragment = new SdStorageFragment(manager, USB_DEVICE_DETACHED,
                                                       MainActivity.this);
             setSelectedBackground(R.id.tv_computer);
-            manager.beginTransaction().replace(R.id.fl_mian, sdStorageFragment).commit();
+            manager.beginTransaction().remove(sdStorageFragment).commit();
+            manager.beginTransaction().add(R.id.fl_mian, sdStorageFragment)
+                                      .hide(sdStorageFragment).commit();
         }
     }
 
-    private void initFragemnt() {
+    private void initFragment() {
         receiver = new UsbConnectReceiver(this);
+        FragmentTransaction transaction = manager.beginTransaction();
         if (sdStorageFragment == null) {
             sdStorageFragment = new SdStorageFragment(manager, null, MainActivity.this);
+            transaction.add(R.id.fl_mian, sdStorageFragment);
         }
         if (deskFragment == null) {
             deskFragment = new DeskFragment();
+            transaction.add(R.id.fl_mian, deskFragment).hide(deskFragment);
         }
         if (musicFragment == null) {
             musicFragment = new MusicFragment();
+            transaction.add(R.id.fl_mian, musicFragment).hide(musicFragment);
         }
         if (videoFragment == null) {
             videoFragment = new VideoFragment();
+            transaction.add(R.id.fl_mian, videoFragment).hide(videoFragment);
         }
         if (pictrueFragment == null) {
             pictrueFragment = new PictrueFragment(manager);
+            transaction.add(R.id.fl_mian, pictrueFragment).hide(pictrueFragment);
         }
         if (onlineNeighborFragment == null) {
             onlineNeighborFragment = new OnlineNeighborFragment();
+            transaction.add(R.id.fl_mian, onlineNeighborFragment).hide(onlineNeighborFragment);
         }
+        transaction.commit();
     }
 
-    private void initData() {
-        et_search_view = (EditText) findViewById(R.id.search_view);
+    protected void initData() {
+        initFragment();
+    }
+
+    @Override
+    protected void initListener() {
         tv_desk.setOnClickListener(this);
         tv_music.setOnClickListener(this);
         tv_video.setOnClickListener(this);
@@ -173,13 +184,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         iv_grid_view.setOnClickListener(this);
         iv_back.setOnClickListener(this);
         iv_setting.setOnClickListener(this);
-
         tv_computer.performClick();
 //        search_view.addTextChangedListener(new EditTextChangeListener(manager,MainActivity.this));
         et_search_view.setOnEditorActionListener(new SearchOnEditorActionListener(manager,
                                                  et_search_view.getText(), MainActivity.this));
         iv_search_view.setOnClickListener(new SearchOnClickListener(manager,
                                           et_search_view.getText(), MainActivity.this));
+        initUsb(-1);
+        curFragment = sdStorageFragment;
     }
 
     @Override
@@ -299,7 +311,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 setSelectedBackground(R.id.tv_storage);
                 SystemSpaceFragment usbStorageFragment = new SystemSpaceFragment
                                                          (USB_SPACE_FRAGMENT, usbs[0], null, null);
-                manager.beginTransaction().replace(R.id.fl_mian, usbStorageFragment).commit();
+                manager.beginTransaction().add(R.id.fl_mian, usbStorageFragment)
+                                          .hide(usbStorageFragment).commit();
                 break;
             case R.id.tv_net_service:
                 startAndSettingFragment(R.id.tv_net_service, manager, onlineNeighborFragment);
@@ -342,8 +355,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void startAndSettingFragment(int id, FragmentManager manager, Fragment fragment) {
+        FragmentTransaction transaction = manager.beginTransaction();
+        if (curFragment != null) {
+            transaction.hide(curFragment);
+        }
         setSelectedBackground(id);
-        manager.beginTransaction().replace(R.id.fl_mian, fragment).commit();
+        transaction.show(fragment);
+        transaction.commit();
+
+        curFragment = fragment;
     }
 
     private void setSelectedBackground(int id) {

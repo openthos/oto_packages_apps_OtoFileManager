@@ -17,48 +17,44 @@ import com.openthos.filemanager.R;
 import com.openthos.filemanager.bean.SearchInfo;
 import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
-import com.openthos.filemanager.view.SystemSpaceFragment;
+import com.openthos.filemanager.fragment.SystemSpaceFragment;
 
 import java.util.ArrayList;
 
 public class SearchFragment extends BaseFragment{
     private String LOG_TAG = "SearchFragment";
-    private ArrayList<SearchInfo> mSearchList = new ArrayList<>();
-    FragmentManager manager = getFragmentManager();
+//    private ArrayList<SearchInfo> mSearchList = new ArrayList<>();
+//    FragmentManager manager = getFragmentManager();
 
     private ListView lv_mian_search;
     @SuppressLint({"NewApi", "ValidFragment"})
     public SearchFragment(FragmentManager manager, ArrayList<SearchInfo> mFileList) {
-        this.mSearchList = mFileList;
-        this.manager = manager;
+        super();
     }
+
     @SuppressLint({"NewApi", "ValidFragment"})
     public SearchFragment() {
         super();
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public int getLayoutId() {
+        return R.layout.search_fragment_layout;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.search_fragment_layout, container, false);
-        initView(view);
-        initData();
-        return view;
+    protected void initView() {
+        lv_mian_search = (ListView) rootView.findViewById(R.id.lv_mian_search);
     }
 
-    private void initView(View view) {
-        lv_mian_search = (ListView) view.findViewById(R.id.lv_mian_search);
-    }
-
-    private void initData() {
+    protected void initData() {
         L.e("initData"+LOG_TAG,mSearchList.size()+"");
         SearchAdapter searchAdapter = new SearchAdapter();
         lv_mian_search.setAdapter(searchAdapter);
+    }
+
+    @Override
+    protected void initListener() {
         lv_mian_search.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

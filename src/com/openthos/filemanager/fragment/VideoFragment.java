@@ -45,27 +45,22 @@ public class VideoFragment extends BaseFragment implements AdapterView.OnItemCli
     };
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public int getLayoutId() {
+        return R.layout.video_fragment_layout;
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.video_fragment_layout, container, false);
-        initView(view);
-        initData();
-        return view;
+    protected void initView() {
+        tv_no_video = (TextView) rootView.findViewById(R.id.tv_no_video);
+        gv_video_pager = (GridView) rootView.findViewById(R.id.gv_video_pager);
     }
 
-    private void initView(View view) {
-        tv_no_video = (TextView) view.findViewById(R.id.tv_no_video);
-        gv_video_pager = (GridView) view.findViewById(R.id.gv_video_pager);
-    }
-
-    private void initData() {
+    protected void initData() {
         getVideoList();
+    }
+
+    @Override
+    protected void initListener() {
         gv_video_pager.setOnItemClickListener(this);
     }
 

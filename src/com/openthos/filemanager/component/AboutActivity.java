@@ -8,31 +8,31 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.openthos.filemanager.BaseActivity;
 import com.openthos.filemanager.R;
 
-public class AboutActivity extends Activity implements View.OnClickListener {
+public class AboutActivity extends BaseActivity implements View.OnClickListener {
     private ImageView iv_about_back;
     private TextView tv_public;
     private TextView tv_discuss;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_about);
-        initView();
-        initData();
-    }
-
-    private void initView() {
+    protected void initView() {
         iv_about_back = (ImageView) findViewById(R.id.iv_about_back);
         tv_public = (TextView) findViewById(R.id.tv_public);
         tv_discuss = (TextView) findViewById(R.id.tv_discuss);
     }
 
-    private void initData() {
+    protected void initListener() {
         iv_about_back.setOnClickListener(this);
         tv_public.setOnClickListener(this);
         tv_discuss.setOnClickListener(this);
+    }
+
+    protected int getLayoutId() {
+        return R.layout.activity_about;
+    }
+
+    protected void initData() {
     }
 
     @Override

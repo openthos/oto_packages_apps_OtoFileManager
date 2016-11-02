@@ -26,7 +26,7 @@ import com.openthos.filemanager.component.MenuDialog;
 import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.utils.T;
-import com.openthos.filemanager.view.SystemSpaceFragment;
+import com.openthos.filemanager.fragment.SystemSpaceFragment;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -24,7 +24,7 @@ import com.openthos.filemanager.R;
 import com.openthos.filemanager.adapter.GroupAdapter;
 import com.openthos.filemanager.bean.ImageBean;
 import com.openthos.filemanager.system.Util;
-import com.openthos.filemanager.view.DetailFragment;
+import com.openthos.filemanager.fragment.DetailFragment;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -42,6 +42,7 @@ public class PictrueFragment extends BaseFragment {
     private ProgressDialog mProgressDialog;
     private ArrayList<ImageBean> list = new ArrayList<>();
     private HashMap<String, List<String>> mGruopMap = new HashMap<>();
+    private ContentResolver mContentResolver;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -63,42 +64,37 @@ public class PictrueFragment extends BaseFragment {
             }
         }
     };
-    private FragmentManager manager = getFragmentManager();
-    private ContentResolver mContentResolver;
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public PictrueFragment(FragmentManager manager) {
-        this.manager = manager;
+        super();
     }
+
     @SuppressLint({"NewApi", "ValidFragment"})
     public PictrueFragment() {
         super();
     }
+
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public int getLayoutId() {
+        return R.layout.pictrue_fragment_layout;
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.pictrue_fragment_layout, container, false);
-        initView(view);
-        initData();
-        return view;
+    protected void initView() {
+        gv_pictrue = (GridView) rootView.findViewById(R.id.gv_pictrue);
+        tv_no_pictrue = (TextView) rootView.findViewById(R.id.tv_no_pictrue);
     }
 
-    private void initView(View view) {
-        gv_pictrue = (GridView) view.findViewById(R.id.gv_pictrue);
-        tv_no_pictrue = (TextView) view.findViewById(R.id.tv_no_pictrue);
-    }
-
-    private void initData() {
+    protected void initData() {
         if (null != list) {
             list.clear();
         }
         getImages();
+    }
+
+    @Override
+    protected void initListener() {
         gv_pictrue.setOnItemClickListener(new FolderOnItemClickListener());
     }
 
