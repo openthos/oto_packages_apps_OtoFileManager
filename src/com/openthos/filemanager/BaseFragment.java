@@ -22,7 +22,7 @@ import java.util.List;
 public abstract class BaseFragment extends Fragment implements UiInterface{
 
     public View rootView;
-    public FragmentManager manager;
+    public FragmentManager mManager;
     public String usbDeviceIsAttached;
     public Context context;
     public MainActivity mainActivity;
@@ -40,7 +40,7 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                                                       @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(getLayoutId(),container,false);
-        manager = getFragmentManager();
+        mManager = getFragmentManager();
         mainActivity = (MainActivity) getActivity();
 
         initView();
@@ -51,7 +51,7 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public BaseFragment(FragmentManager manager, String usbDeviceIsAttached, MainActivity context) {
-        this.manager = manager;
+        mManager = manager;
         this.usbDeviceIsAttached = usbDeviceIsAttached;
         this.context = context;
     }
@@ -70,13 +70,13 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public BaseFragment(FragmentManager manager) {
-        this.manager = manager;
+        mManager = manager;
     }
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public BaseFragment(FragmentManager manager, ArrayList<SearchInfo> mFileList) {
         this.mSearchList = mFileList;
-        this.manager = manager;
+        mManager = manager;
     }
 
     @SuppressLint({"NewApi", "ValidFragment"})

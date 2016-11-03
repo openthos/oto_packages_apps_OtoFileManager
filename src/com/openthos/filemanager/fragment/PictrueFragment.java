@@ -66,7 +66,7 @@ public class PictrueFragment extends BaseFragment {
     };
 
     @SuppressLint({"NewApi", "ValidFragment"})
-    public PictrueFragment(FragmentManager manager) {
+    public PictrueFragment(FragmentManager mManager) {
         super();
     }
 
@@ -102,7 +102,7 @@ public class PictrueFragment extends BaseFragment {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             DetailFragment fragment = new DetailFragment(mGruopMap, list, i);
-            manager.beginTransaction().replace(R.id.fl_mian, fragment)
+            mManager.beginTransaction().replace(R.id.fl_mian, fragment)
                     .addToBackStack(null).commit();
         }
     }

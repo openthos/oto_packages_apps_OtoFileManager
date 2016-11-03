@@ -53,9 +53,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private static final String USB_SPACE_FRAGMENT = "usb_space_fragment";
     private static final String USB_DEVICE_ATTACHED = "usb_device_attached";
     private static final String USB_DEVICE_DETACHED = "usb_device_detached";
-    private FragmentManager manager = getSupportFragmentManager();
+    private FragmentManager mManager = getSupportFragmentManager();
     private PopWinShare popWinShare;
-    public Fragment curFragment = null;
+    public Fragment mCurFragment = null;
     private SdStorageFragment sdStorageFragment = null;
     private DeskFragment deskFragment;
     private MusicFragment musicFragment;
@@ -65,6 +65,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private UsbConnectReceiver receiver;
     private String[] usbs;
     private boolean mIsMutiSelect;
+    private static final int ACTIVITY_MIN_COUNT_FOR_BACK = 3;
 
     private Handler handler = new Handler() {
         @Override
@@ -120,30 +121,30 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             T.showShort(MainActivity.this, getResources().getString(R.string.USB_device_connected));
             tv_storage.setVisibility(View.VISIBLE);
             tv_storage.setOnClickListener(MainActivity.this);
-            manager.beginTransaction().remove(sdStorageFragment).commit();
-            sdStorageFragment = new SdStorageFragment(manager, USB_DEVICE_ATTACHED,
+            mManager.beginTransaction().remove(sdStorageFragment).commit();
+            sdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_ATTACHED,
                                                       MainActivity.this);
             setSelectedBackground(R.id.tv_computer);
-            manager.beginTransaction().add(R.id.fl_mian, sdStorageFragment)
+            mManager.beginTransaction().add(R.id.fl_mian, sdStorageFragment)
                                       .hide(sdStorageFragment).commit();
         } else if (flags == UsbConnectReceiver.USB_STATE_OFF) {
             tv_storage.setVisibility(View.GONE);
             tv_storage.setVisibility(View.GONE);
-            sdStorageFragment = new SdStorageFragment(manager, USB_DEVICE_DETACHED,
+            sdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_DETACHED,
                                                       MainActivity.this);
             setSelectedBackground(R.id.tv_computer);
-            manager.beginTransaction().remove(sdStorageFragment).commit();
-            manager.beginTransaction().add(R.id.fl_mian, sdStorageFragment)
+            mManager.beginTransaction().remove(sdStorageFragment).commit();
+            mManager.beginTransaction().add(R.id.fl_mian, sdStorageFragment)
                                       .hide(sdStorageFragment).commit();
         }
     }
 
     private void initFragment() {
         receiver = new UsbConnectReceiver(this);
-        FragmentTransaction transaction = manager.beginTransaction();
+        FragmentTransaction transaction = mManager.beginTransaction();
         if (sdStorageFragment == null) {
-            sdStorageFragment = new SdStorageFragment(manager, null, MainActivity.this);
-            transaction.add(R.id.fl_mian, sdStorageFragment);
+            sdStorageFragment = new SdStorageFragment(mManager, null, MainActivity.this);
+            transaction.add(R.id.fl_mian, sdStorageFragment).addToBackStack(null);
         }
         if (deskFragment == null) {
             deskFragment = new DeskFragment();
@@ -158,7 +159,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             transaction.add(R.id.fl_mian, videoFragment).hide(videoFragment);
         }
         if (pictrueFragment == null) {
-            pictrueFragment = new PictrueFragment(manager);
+            pictrueFragment = new PictrueFragment(mManager);
             transaction.add(R.id.fl_mian, pictrueFragment).hide(pictrueFragment);
         }
         if (onlineNeighborFragment == null) {
@@ -185,13 +186,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         iv_back.setOnClickListener(this);
         iv_setting.setOnClickListener(this);
         tv_computer.performClick();
-//        search_view.addTextChangedListener(new EditTextChangeListener(manager,MainActivity.this));
-        et_search_view.setOnEditorActionListener(new SearchOnEditorActionListener(manager,
+//        search_view.addTextChangedListener(new EditTextChangeListener(mManager,
+//                                                                        MainActivity.this));
+        et_search_view.setOnEditorActionListener(new SearchOnEditorActionListener(mManager,
                                                  et_search_view.getText(), MainActivity.this));
-        iv_search_view.setOnClickListener(new SearchOnClickListener(manager,
+        iv_search_view.setOnClickListener(new SearchOnClickListener(mManager,
                                           et_search_view.getText(), MainActivity.this));
         initUsb(-1);
-        curFragment = sdStorageFragment;
+        mCurFragment = sdStorageFragment;
     }
 
     @Override
@@ -293,32 +295,32 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_desk:
-                startAndSettingFragment(R.id.tv_desk, manager, deskFragment);
+                startAndSettingFragment(R.id.tv_desk, mManager, deskFragment);
                 break;
             case R.id.tv_music:
-                startAndSettingFragment(R.id.tv_music, manager, musicFragment);
+                startAndSettingFragment(R.id.tv_music, mManager, musicFragment);
                 break;
             case R.id.tv_video:
-                startAndSettingFragment(R.id.tv_video, manager, videoFragment);
+                startAndSettingFragment(R.id.tv_video, mManager, videoFragment);
                 break;
             case R.id.tv_picture:
-                startAndSettingFragment(R.id.tv_picture, manager, pictrueFragment);
+                startAndSettingFragment(R.id.tv_picture, mManager, pictrueFragment);
                 break;
             case R.id.tv_computer:
-                startAndSettingFragment(R.id.tv_computer, manager, sdStorageFragment);
+                startAndSettingFragment(R.id.tv_computer, mManager, sdStorageFragment);
                 break;
             case R.id.tv_storage:
                 setSelectedBackground(R.id.tv_storage);
                 SystemSpaceFragment usbStorageFragment = new SystemSpaceFragment
                                                          (USB_SPACE_FRAGMENT, usbs[0], null, null);
-                manager.beginTransaction().add(R.id.fl_mian, usbStorageFragment)
+                mManager.beginTransaction().add(R.id.fl_mian, usbStorageFragment)
                                           .hide(usbStorageFragment).commit();
                 break;
             case R.id.tv_net_service:
-                startAndSettingFragment(R.id.tv_net_service, manager, onlineNeighborFragment);
+                startAndSettingFragment(R.id.tv_net_service, mManager, onlineNeighborFragment);
                 break;
 //            case R.id.iv_menu:
-//                if (manager.getBackStackEntryCount() < 1) {
+//                if (mManager.getBackStackEntryCount() < 1) {
 //                    T.showShort(MainActivity.this,
 //                                getResources().getString(R.string.operation_not_support));
 //                } else {
@@ -354,16 +356,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    private void startAndSettingFragment(int id, FragmentManager manager, Fragment fragment) {
-        FragmentTransaction transaction = manager.beginTransaction();
-        if (curFragment != null) {
-            transaction.hide(curFragment);
+    private void startAndSettingFragment(int id, FragmentManager mManager, Fragment fragment) {
+        FragmentTransaction transaction = mManager.beginTransaction();
+        if (mCurFragment != null) {
+            transaction.hide(mCurFragment);
         }
         setSelectedBackground(id);
-        transaction.show(fragment);
+        transaction.show(fragment).addToBackStack(null);
         transaction.commit();
 
-        curFragment = fragment;
+        mCurFragment = fragment;
     }
 
     private void setSelectedBackground(int id) {
@@ -461,7 +463,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void shownPopWidndow(String menu_tag) {
         popWinShare = null;
         PopOnClickLintener paramOnClickListener = new PopOnClickLintener(menu_tag,
-                                                      MainActivity.this, manager);
+                                                      MainActivity.this, mManager);
 //        if (menu_tag.equals("iv_menu")) {
 //            popWinShare = new PopWinShare(MainActivity.this, paramOnClickListener,
 //                    DisplayUtil.dip2px(MainActivity.this, 125),
@@ -493,25 +495,33 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public void onBackPressed() {
-        manager.findFragmentById(R.id.fl_mian);
-        if ((curFragment != null) && (curFragment == sdStorageFragment)) {
+        mManager.findFragmentById(R.id.fl_mian);
+        if ((mCurFragment != null) && (mCurFragment == sdStorageFragment)) {
             if (sdStorageFragment.canGoBack()) {
                 sdStorageFragment.goBack();
             } else {
-                if (manager.getBackStackEntryCount() >= 1) {
-                    manager.popBackStack();
+                if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
+                    mManager.popBackStack();
                 } else {
-                    finish();
+//                    finish();
+                    returnToRootDir();
                 }
             }
             et_nivagation.setText("");
         } else {
-            if (manager.getBackStackEntryCount() >= 1) {
-                manager.popBackStack();
+            if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
+                mManager.popBackStack();
             } else {
-                finish();
+//                finish();
+                returnToRootDir();
             }
         }
+    }
+
+    public void returnToRootDir() {
+        mManager.beginTransaction().hide(mCurFragment).commit();
+        mManager.beginTransaction().show(sdStorageFragment).commit();
+        mCurFragment = sdStorageFragment;
     }
 
     public interface IBackPressedListener {

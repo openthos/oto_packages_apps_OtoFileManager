@@ -57,8 +57,8 @@ public class SdStorageFragment extends BaseFragment {
     private ProgressBar pb_usb;
     private ProgressBar pb_service;
 
-    private BaseFragment curFragment;
-//    FragmentManager manager = getFragmentManager();
+    private BaseFragment mCurFragment;
+//    FragmentmManager mManager = getFragmentmManager();
     private long lastBackTime = 0;
     private ArrayList<File> mountUsb = null;
     private String mountPath;
@@ -67,7 +67,7 @@ public class SdStorageFragment extends BaseFragment {
 //    private Context context;
 
     @SuppressLint({"NewApi", "ValidFragment"})
-    public SdStorageFragment(FragmentManager manager,
+    public SdStorageFragment(FragmentManager mManager,
                              String usbDeviceIsAttached, MainActivity context) {
         super();
     }
@@ -233,9 +233,9 @@ public class SdStorageFragment extends BaseFragment {
             setSelectedCardBg(id);
             lastBackTime = currentBackTime;
         } else {
-            if (curFragment != null) {
-                fileInfoArrayList = ((SystemSpaceFragment) curFragment).getFileInfoList();
-                copyOrMove = ((SystemSpaceFragment) curFragment).getCurCopyOrMoveMode();
+            if (mCurFragment != null) {
+                fileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
+                copyOrMove = ((SystemSpaceFragment) mCurFragment).getCurCopyOrMoveMode();
             }
             if (fileInfoArrayList != null && copyOrMove != null) {
                 T.showShort(context,
@@ -243,11 +243,11 @@ public class SdStorageFragment extends BaseFragment {
             }
             SystemSpaceFragment  systemSpaceFragment = new SystemSpaceFragment(tag,
                                                        path, fileInfoArrayList, copyOrMove);
-            manager.beginTransaction().hide(mainActivity.curFragment).commit();
-            manager.beginTransaction().add(R.id.fl_mian, systemSpaceFragment,
+            mManager.beginTransaction().hide(mainActivity.mCurFragment).commit();
+            mManager.beginTransaction().add(R.id.fl_mian, systemSpaceFragment,
                                                          SYSTEM_SPACE_FRAGMENT_TAG)
                     .addToBackStack(null).commit();
-            mainActivity.curFragment  = systemSpaceFragment;
+            mainActivity.mCurFragment  = systemSpaceFragment;
         }
     }
 
@@ -288,7 +288,7 @@ public class SdStorageFragment extends BaseFragment {
 
     public boolean canGoBack() {
         boolean canGoBack = false;
-        Fragment baseFragment = curFragment;
+        Fragment baseFragment = mCurFragment;
         if (baseFragment instanceof SystemSpaceFragment) {
             SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) baseFragment;
             canGoBack = systemSpaceFragment.canGoBack();
@@ -297,7 +297,7 @@ public class SdStorageFragment extends BaseFragment {
     }
 
     public void goBack() {
-        Fragment baseFragment = curFragment;
+        Fragment baseFragment = mCurFragment;
         if (baseFragment instanceof SystemSpaceFragment) {
             SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) baseFragment;
             systemSpaceFragment.goBack();

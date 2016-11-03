@@ -24,11 +24,11 @@ import java.util.ArrayList;
 public class SearchFragment extends BaseFragment{
     private String LOG_TAG = "SearchFragment";
 //    private ArrayList<SearchInfo> mSearchList = new ArrayList<>();
-//    FragmentManager manager = getFragmentManager();
+//    FragmentmManager mManager = getFragmentmManager();
 
     private ListView lv_mian_search;
     @SuppressLint({"NewApi", "ValidFragment"})
-    public SearchFragment(FragmentManager manager, ArrayList<SearchInfo> mFileList) {
+    public SearchFragment(FragmentManager mManager, ArrayList<SearchInfo> mFileList) {
         super();
     }
 
@@ -60,8 +60,8 @@ public class SearchFragment extends BaseFragment{
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String filePath = mSearchList.get(i).getFilePath();
                 String fileRealPath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
-                manager.popBackStack();
-                manager.beginTransaction().replace(R.id.fl_mian,
+                mManager.popBackStack();
+                mManager.beginTransaction().replace(R.id.fl_mian,
                         new SystemSpaceFragment("search_fragment",fileRealPath,null,null)).commit();
             }
         });
