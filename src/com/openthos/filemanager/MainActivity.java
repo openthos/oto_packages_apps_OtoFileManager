@@ -35,6 +35,9 @@ import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.utils.T;
 import com.openthos.filemanager.fragment.SystemSpaceFragment;
+import com.openthos.filemanager.system.Constants;
+import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
     private TextView mTv_desk;
@@ -95,6 +98,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     };
     private boolean mIsFirst = true;
+    private HashMap<String, Integer> mHashMap;
 
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -120,6 +124,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mIv_search_view = (ImageView) findViewById(R.id.iv_search);
         mEt_search_view = (EditText) findViewById(R.id.search_view);
         mIv_grid_view.setSelected(true);
+
+        mHashMap = new HashMap<>();
+        mHashMap.put(Constants.DESKFRAGMENT_TAG,R.id.tv_desk);
+        mHashMap.put(Constants.MUSICFRAGMENT_TAG,R.id.tv_music);
+        mHashMap.put(Constants.VIDEOFRAGMENT_TAG,R.id.tv_video);
+        mHashMap.put(Constants.PICTRUEFRAGMENT_TAG,R.id.tv_picture);
+        mHashMap.put(Constants.SDSTORAGEFRAGMENT_TAG,R.id.tv_computer);
+        mHashMap.put(Constants.ONLINENEIGHBORFRAGMENT_TAG,R.id.tv_net_service);
+        mHashMap.put(Constants.DETAILFRAGMENT_TAG,R.id.tv_picture);
+        mHashMap.put(Constants.SYSTEMSPACEFRAGMENT_TAG,R.id.tv_storage);
     }
 
     private void initUsb(int flags) {
@@ -155,27 +169,32 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         FragmentTransaction transaction = mManager.beginTransaction();
         if (mSdStorageFragment == null) {
             mSdStorageFragment = new SdStorageFragment(mManager, null, MainActivity.this);
-            transaction.add(R.id.fl_mian, mSdStorageFragment).addToBackStack(null);
+            transaction.add(R.id.fl_mian, mSdStorageFragment,Constants.SDSTORAGEFRAGMENT_TAG);
         }
         if (mDeskFragment == null) {
             mDeskFragment = new DeskFragment();
-            transaction.add(R.id.fl_mian, mDeskFragment).hide(mDeskFragment);
+            transaction.add(R.id.fl_mian, mDeskFragment,Constants.DESKFRAGMENT_TAG)
+                       .hide(mDeskFragment);
         }
         if (mMusicFragment == null) {
             mMusicFragment = new MusicFragment();
-            transaction.add(R.id.fl_mian, mMusicFragment).hide(mMusicFragment);
+            transaction.add(R.id.fl_mian, mMusicFragment,Constants.MUSICFRAGMENT_TAG)
+                       .hide(mMusicFragment);
         }
         if (mVideoFragment == null) {
             mVideoFragment = new VideoFragment();
-            transaction.add(R.id.fl_mian, mVideoFragment).hide(mVideoFragment);
+            transaction.add(R.id.fl_mian, mVideoFragment,Constants.VIDEOFRAGMENT_TAG)
+                       .hide(mVideoFragment);
         }
         if (mPictrueFragment == null) {
             mPictrueFragment = new PictrueFragment(mManager);
-            transaction.add(R.id.fl_mian, mPictrueFragment).hide(mPictrueFragment);
+            transaction.add(R.id.fl_mian, mPictrueFragment,Constants.PICTRUEFRAGMENT_TAG)
+                       .hide(mPictrueFragment);
         }
         if (mOnlineNeighborFragment == null) {
             mOnlineNeighborFragment = new OnlineNeighborFragment();
-            transaction.add(R.id.fl_mian, mOnlineNeighborFragment).hide(mOnlineNeighborFragment);
+            transaction.add(R.id.fl_mian, mOnlineNeighborFragment,
+                            Constants.ONLINENEIGHBORFRAGMENT_TAG).hide(mOnlineNeighborFragment);
         }
         transaction.commit();
     }
@@ -511,12 +530,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public void onBackPressed() {
         mManager.findFragmentById(R.id.fl_mian);
+        if (mCurFragment != null) {
+            Integer id = mHashMap.get(mCurFragment.getTag());
+            if (id != null) {
+                setSelectedBackground(id);
+            }
+        }
         if ((mCurFragment != null) && (mCurFragment == mSdStorageFragment)) {
             if (mSdStorageFragment.canGoBack()) {
                 mSdStorageFragment.goBack();
             } else {
                 if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
-                    mManager.popBackStack();
+                    mManager.popBackStackImmediate();
+                    mCurFragment = getVisibleFragment();
+                    if (mCurFragment != null) {
+                        setSelectedBackground(mHashMap.get(mCurFragment.getTag()));
+                    }
                 } else {
 //                    finish();
                     returnToRootDir();
@@ -525,12 +554,26 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             mEt_nivagation.setText("");
         } else {
             if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
-                mManager.popBackStack();
+                mManager.popBackStackImmediate();
+                mCurFragment = getVisibleFragment();
+                if (mCurFragment != null) {
+                    setSelectedBackground(mHashMap.get(mCurFragment.getTag()));
+                }
             } else {
 //                finish();
                 returnToRootDir();
             }
         }
+    }
+
+    public Fragment getVisibleFragment(){
+        List<Fragment> fragments = mManager.getFragments();
+        for (Fragment fragment : fragments) {
+            if (fragment != null && fragment.isVisible()) {
+                return fragment;
+            }
+        }
+        return null;
     }
 
     public void returnToRootDir() {

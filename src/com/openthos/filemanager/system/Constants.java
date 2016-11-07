@@ -5,6 +5,17 @@ import com.openthos.filemanager.utils.L;
 import java.io.File;
 
 public abstract class Constants {
+    public static final String DESKFRAGMENT_TAG = "deskfragment";
+    public static final String MUSICFRAGMENT_TAG = "musicfragment";
+    public static final String VIDEOFRAGMENT_TAG = "videofragment";
+    public static final String PICTRUEFRAGMENT_TAG = "pictruefragment";
+    public static final String SDSTORAGEFRAGMENT_TAG = "sdstoragefragment";
+    public static final String USBSTORAGEFRAGMENT_TAG = "usbstoragefragment";
+    public static final String ONLINENEIGHBORFRAGMENT_TAG = "onlineneighborfragment";
+    public static final String DETAILFRAGMENT_TAG = "detailfragment";
+    public static final String SYSTEMSPACEFRAGMENT_TAG = "systemspacefragment";
+    public static final String SEARCHFRAGMENT_TAG = "searchfragment";
+
     private static String TAG = "Constants";
     public static final String KEY_BASE_SD = "key_base_sd";
     public static final String KEY_SHOW_CATEGORY = "key_show_category";
