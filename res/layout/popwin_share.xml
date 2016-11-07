@@ -46,19 +46,7 @@
         android:orientation="vertical"
         android:visibility="gone"
         android:gravity="center_horizontal">
-        <TextView
-            android:id="@+id/pop_setting_relative"
-            style="@style/wrap"
-            android:text="@string/text_about" />
-        <TextView
-            android:id="@+id/pop_setting_exit"
-            style="@style/wrap"
-            android:text="@string/menu_exit" />
-        <TextView
-            android:id="@+id/pop_setting_help"
-            style="@style/wrap"
-            android:text="@string/text_help"
-            />
+
         <TextView
             android:id="@+id/pop_setting_view"
             style="@style/wrap"

@@ -67,6 +67,7 @@ public class FileListItem {
                              fileInfo.IsDir ? String.valueOf(fileInfo.Count) :
                              Util.convertStorage(fileInfo.fileSize),
                              context.getResources().getColor(R.color.file_name_color));
+                lFileImage.setVisibility(View.VISIBLE);
                 if (fileInfo.IsDir) {
                     lFileImageFrame.setVisibility(View.GONE);
                     lFileImage.setImageResource(R.mipmap.folder);

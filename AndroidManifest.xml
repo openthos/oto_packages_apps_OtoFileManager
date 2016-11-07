@@ -30,24 +30,6 @@
             android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
         </activity>
 
-        <!--<meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />-->
-
-        <activity
-            android:label="@string/menu_about"
-            android:launchMode="singleTop"
-            android:name="com.openthos.filemanager.component.AboutActivity"
-            android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
-        </activity>
-
-        <activity
-            android:label="@string/menu_help"
-            android:launchMode="singleTop"
-            android:name="com.openthos.filemanager.component.HelpActivity"
-            android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
-        </activity>
-
     </application>
 
 </manifest>

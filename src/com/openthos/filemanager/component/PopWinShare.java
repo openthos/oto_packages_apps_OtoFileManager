@@ -11,52 +11,48 @@ import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
 
 public class PopWinShare extends PopupWindow {
-    private View mainView;
-    private TextView pop_menu_refresh, pop_menu_cancel_all, pop_menu_copy,
-                     pop_menu_delete, pop_menu_send, pop_menu_create, pop_menu_exit,
-                     pop_setting_view, pop_setting_relative, pop_setting_help, pop_setting_exit;
-    private LinearLayout ll_menu, ll_setting;
+    private static final String IV_SETTING_TAG = "iv_setting";
+    private static final String IV_MENU_TAG = "iv_menu";
+    private View mMainView;
+    private TextView mPop_menu_refresh, mPop_menu_cancel_all, mPop_menu_copy,
+                     mPop_menu_delete, mPop_menu_send, mPop_menu_create, mPop_menu_exit,
+                     mPop_setting_view;
+    private LinearLayout mLl_menu, mLl_setting;
 
     public PopWinShare(MainActivity mainActivity, View.OnClickListener paramOnClickListener,
                        int paramInt1, int paramInt2, String menu_tag) {
         super(mainActivity);
-        mainView = LayoutInflater.from(mainActivity).inflate(R.layout.popwin_share, null);
-        ll_menu = (LinearLayout) mainView.findViewById(R.id.ll_menu);
-        ll_setting = (LinearLayout) mainView.findViewById(R.id.ll_setting);
-        if (menu_tag.equals("iv_menu")) {
-            ll_setting.setVisibility(View.GONE);
-            ll_menu.setVisibility(View.VISIBLE);
-            pop_menu_refresh = (TextView) mainView.findViewById(R.id.pop_menu_refresh);
-            pop_menu_cancel_all = (TextView) mainView.findViewById(R.id.pop_menu_cancel_all);
-            pop_menu_copy = (TextView) mainView.findViewById(R.id.pop_menu_copy);
-            pop_menu_delete = (TextView) mainView.findViewById(R.id.pop_menu_delete);
-            pop_menu_send = (TextView) mainView.findViewById(R.id.pop_menu_send);
-            pop_menu_create = (TextView) mainView.findViewById(R.id.pop_menu_create);
-            pop_menu_exit = (TextView) mainView.findViewById(R.id.pop_menu_exit);
+        mMainView = LayoutInflater.from(mainActivity).inflate(R.layout.popwin_share, null);
+        mLl_menu = (LinearLayout) mMainView.findViewById(R.id.ll_menu);
+        mLl_setting = (LinearLayout) mMainView.findViewById(R.id.ll_setting);
+        if (IV_MENU_TAG.equals(menu_tag)) {
+            mLl_setting.setVisibility(View.GONE);
+            mLl_menu.setVisibility(View.VISIBLE);
+            mPop_menu_refresh = (TextView) mMainView.findViewById(R.id.pop_menu_refresh);
+            mPop_menu_cancel_all = (TextView) mMainView.findViewById(R.id.pop_menu_cancel_all);
+            mPop_menu_copy = (TextView) mMainView.findViewById(R.id.pop_menu_copy);
+            mPop_menu_delete = (TextView) mMainView.findViewById(R.id.pop_menu_delete);
+            mPop_menu_send = (TextView) mMainView.findViewById(R.id.pop_menu_send);
+            mPop_menu_create = (TextView) mMainView.findViewById(R.id.pop_menu_create);
+            mPop_menu_exit = (TextView) mMainView.findViewById(R.id.pop_menu_exit);
             if (paramOnClickListener != null) {
-                pop_menu_refresh.setOnClickListener(paramOnClickListener);
-                pop_menu_cancel_all.setOnClickListener(paramOnClickListener);
-                pop_menu_copy.setOnClickListener(paramOnClickListener);
-                pop_menu_delete.setOnClickListener(paramOnClickListener);
-                pop_menu_send.setOnClickListener(paramOnClickListener);
-                pop_menu_create.setOnClickListener(paramOnClickListener);
-                pop_menu_exit.setOnClickListener(paramOnClickListener);
+                mPop_menu_refresh.setOnClickListener(paramOnClickListener);
+                mPop_menu_cancel_all.setOnClickListener(paramOnClickListener);
+                mPop_menu_copy.setOnClickListener(paramOnClickListener);
+                mPop_menu_delete.setOnClickListener(paramOnClickListener);
+                mPop_menu_send.setOnClickListener(paramOnClickListener);
+                mPop_menu_create.setOnClickListener(paramOnClickListener);
+                mPop_menu_exit.setOnClickListener(paramOnClickListener);
             }
-        }else if (menu_tag.equals("iv_setting")) {
-            ll_menu.setVisibility(View.GONE);
-            ll_setting.setVisibility(View.VISIBLE);
-            pop_setting_view = (TextView) mainView.findViewById(R.id.pop_setting_view);
-            pop_setting_relative = (TextView) mainView.findViewById(R.id.pop_setting_relative);
-            pop_setting_help = (TextView) mainView.findViewById(R.id.pop_setting_help);
-            pop_setting_exit = (TextView) mainView.findViewById(R.id.pop_setting_exit);
+        } else if (IV_SETTING_TAG.equals(menu_tag)) {
+            mLl_menu.setVisibility(View.GONE);
+            mLl_setting.setVisibility(View.VISIBLE);
+            mPop_setting_view = (TextView) mMainView.findViewById(R.id.pop_setting_view);
             if (paramOnClickListener != null) {
-                pop_setting_view.setOnClickListener(paramOnClickListener);
-                pop_setting_relative.setOnClickListener(paramOnClickListener);
-                pop_setting_help.setOnClickListener(paramOnClickListener);
-                pop_setting_exit.setOnClickListener(paramOnClickListener);
+                mPop_setting_view.setOnClickListener(paramOnClickListener);
             }
         }
-        setContentView(mainView);
+        setContentView(mMainView);
         setWidth(paramInt1);
         setHeight(paramInt2);
         setAnimationStyle(R.style.AnimTools);

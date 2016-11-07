@@ -40,6 +40,19 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
+    private static final int POPWINDOW_WINTH = 120;
+    private static final int POPWINDOW_HEIGHT = 40;
+    private static final int POPWINDOW_X = -15;
+    private static final int POPWINDOW_Y = 10;
+    private static final int ACTIVITY_MIN_COUNT_FOR_BACK = 3;
+    private static final String USB_SPACE_FRAGMENT = "usb_space_fragment";
+    private static final String USB_DEVICE_ATTACHED = "usb_device_attached";
+    private static final String USB_DEVICE_DETACHED = "usb_device_detached";
+    private static final String VIEW_TAG = "viewtag";
+    private static final String VIEW_TAG_GRID = "grid";
+    private static final String VIEW_TAG_LIST = "list";
+    private static final String IV_SWITCH_VIEW = "iv_switch_view";
+    private static final String SETTING_POPWINDOW_TAG = "iv_setting";
     private TextView mTv_desk;
     private TextView mTv_music;
     private TextView mTv_video;
@@ -55,14 +68,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private EditText mEt_search_view;
     private ImageView mIv_search_view;
 
-    private static final String USB_SPACE_FRAGMENT = "usb_space_fragment";
-    private static final String USB_DEVICE_ATTACHED = "usb_device_attached";
-    private static final String USB_DEVICE_DETACHED = "usb_device_detached";
-    private static final String VIEW_TAG = "viewtag";
-    private static final String VIEW_TAG_GRID = "grid";
-    private static final String VIEW_TAG_LIST = "list";
-    private static final String IV_SWITCH_VIEW = "iv_switch_view";
-    private static final int ACTIVITY_MIN_COUNT_FOR_BACK = 3;
     private FragmentManager mManager = getSupportFragmentManager();
     private PopWinShare mPopWinShare;
     public Fragment mCurFragment = null;
@@ -349,19 +354,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.tv_net_service:
                 startAndSettingFragment(R.id.tv_net_service, mManager, mOnlineNeighborFragment);
                 break;
-//            case R.id.iv_menu:
-//                if (mManager.getBackStackEntryCount() < 1) {
-//                    T.showShort(MainActivity.this,
-//                                getResources().getString(R.string.operation_not_support));
-//                } else {
-//                    shownPopWidndow("iv_menu");
-//                }
-//                break;
             case R.id.iv_back:
                 onBackPressed();
                 break;
             case R.id.iv_setting:
-                shownPopWidndow("iv_setting");
+                shownPopWidndow(SETTING_POPWINDOW_TAG);
                 break;
             case R.id.iv_grid_view:
                 mIv_grid_view.setSelected(true);
@@ -498,19 +495,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mPopWinShare = null;
         PopOnClickLintener paramOnClickListener = new PopOnClickLintener(menu_tag,
                                                       MainActivity.this, mManager);
-//        if (menu_tag.equals("iv_menu")) {
-//            mPopWinShare = new PopWinShare(MainActivity.this, paramOnClickListener,
-//                    DisplayUtil.dip2px(MainActivity.this, 125),
-//                                       DisplayUtil.dip2px(MainActivity.this, 260), menu_tag);
-//            mPopWinShare.setFocusable(true);
-//            mPopWinShare.showAsDropDown(this.iv_menu, -60, 10);
-//        } else
-        if (menu_tag.equals("iv_setting")) {
+        if (SETTING_POPWINDOW_TAG.equals(menu_tag)) {
             mPopWinShare = new PopWinShare(MainActivity.this, paramOnClickListener,
-                    DisplayUtil.dip2px(MainActivity.this, 120),
-                                       DisplayUtil.dip2px(MainActivity.this, 160), menu_tag);
+                               DisplayUtil.dip2px(MainActivity.this, POPWINDOW_WINTH),
+                               DisplayUtil.dip2px(MainActivity.this, POPWINDOW_HEIGHT), menu_tag);
             mPopWinShare.setFocusable(true);
-            mPopWinShare.showAsDropDown(mIv_setting, -15, 10);
+            mPopWinShare.showAsDropDown(mIv_setting, POPWINDOW_X, POPWINDOW_Y);
         }
         mPopWinShare.update();
         mPopWinShare.getContentView().setOnFocusChangeListener(new View.OnFocusChangeListener() {
