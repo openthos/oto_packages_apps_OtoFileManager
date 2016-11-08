@@ -25,6 +25,7 @@ import com.openthos.filemanager.adapter.GroupAdapter;
 import com.openthos.filemanager.bean.ImageBean;
 import com.openthos.filemanager.system.Util;
 import com.openthos.filemanager.fragment.DetailFragment;
+import com.openthos.filemanager.system.Constants;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -67,7 +68,7 @@ public class PictrueFragment extends BaseFragment {
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public PictrueFragment(FragmentManager mManager) {
-        super();
+        super(mManager);
     }
 
     @SuppressLint({"NewApi", "ValidFragment"})
@@ -102,8 +103,9 @@ public class PictrueFragment extends BaseFragment {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             DetailFragment fragment = new DetailFragment(mGruopMap, list, i);
-            mManager.beginTransaction().replace(R.id.fl_mian, fragment)
-                    .addToBackStack(null).commit();
+            mManager.beginTransaction().hide(mMainActivity.mCurFragment).commit();
+            mManager.beginTransaction().add(R.id.fl_mian, fragment, Constants.DETAILFRAGMENT_TAG)
+                                           .addToBackStack(null).commit();
         }
     }
 

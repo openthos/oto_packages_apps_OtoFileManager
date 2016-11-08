@@ -70,8 +70,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private FragmentManager mManager = getSupportFragmentManager();
     private PopWinShare mPopWinShare;
-    public Fragment mCurFragment = null;
-    private SdStorageFragment mSdStorageFragment = null;
+    public Fragment mCurFragment;
+    private SdStorageFragment mSdStorageFragment;
+    public boolean mIsSdStorageFragmentHided;
     private DeskFragment mDeskFragment;
     private MusicFragment mMusicFragment;
     private VideoFragment mVideoFragment;
@@ -174,7 +175,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         FragmentTransaction transaction = mManager.beginTransaction();
         if (mSdStorageFragment == null) {
             mSdStorageFragment = new SdStorageFragment(mManager, null, MainActivity.this);
-            transaction.add(R.id.fl_mian, mSdStorageFragment,Constants.SDSTORAGEFRAGMENT_TAG);
+            transaction.add(R.id.fl_mian, mSdStorageFragment,Constants.SDSTORAGEFRAGMENT_TAG)
+                           .hide(mSdStorageFragment);
         }
         if (mDeskFragment == null) {
             mDeskFragment = new DeskFragment();
@@ -390,12 +392,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void startAndSettingFragment(int id, FragmentManager mManager, Fragment fragment) {
         FragmentTransaction transaction = mManager.beginTransaction();
         if (mCurFragment != null) {
+            if (mIsSdStorageFragmentHided) {
+                mManager.beginTransaction().hide(mSdStorageFragment.mCurFragment).commit();
+                mIsSdStorageFragmentHided = false;
+            }
             transaction.hide(mCurFragment);
         }
         setSelectedBackground(id);
-        transaction.show(fragment).addToBackStack(null);
+        if (fragment != null) {
+            transaction.show(fragment).addToBackStack(null);
+        }
         transaction.commit();
-
         mCurFragment = fragment;
     }
 
@@ -520,12 +527,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public void onBackPressed() {
         mManager.findFragmentById(R.id.fl_mian);
-        if (mCurFragment != null) {
-            Integer id = mHashMap.get(mCurFragment.getTag());
-            if (id != null) {
-                setSelectedBackground(id);
-            }
-        }
         if ((mCurFragment != null) && (mCurFragment == mSdStorageFragment)) {
             if (mSdStorageFragment.canGoBack()) {
                 mSdStorageFragment.goBack();
@@ -535,6 +536,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     mCurFragment = getVisibleFragment();
                     if (mCurFragment != null) {
                         setSelectedBackground(mHashMap.get(mCurFragment.getTag()));
+                    } else {
+                        mManager.beginTransaction().show(mSdStorageFragment).commit();
+                        mCurFragment = mSdStorageFragment;
                     }
                 } else {
 //                    finish();
@@ -548,6 +552,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mCurFragment = getVisibleFragment();
                 if (mCurFragment != null) {
                     setSelectedBackground(mHashMap.get(mCurFragment.getTag()));
+                } else {
+                    mManager.beginTransaction().show(mSdStorageFragment).commit();
+                    mCurFragment = mSdStorageFragment;
                 }
             } else {
 //                finish();
@@ -567,9 +574,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     public void returnToRootDir() {
-        mManager.beginTransaction().hide(mCurFragment).commit();
+        if (mCurFragment != null) {
+            mManager.beginTransaction().hide(mCurFragment).commit();
+        }
         mManager.beginTransaction().show(mSdStorageFragment).commit();
         mCurFragment = mSdStorageFragment;
+        setSelectedBackground(mHashMap.get(mSdStorageFragment.getTag()));
     }
 
     public interface IBackPressedListener {

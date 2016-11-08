@@ -38,7 +38,7 @@ public class SdStorageFragment extends BaseFragment {
     private static final String YUN_SPACE_FRAGMENT = "yun_space_fragment";
 
     private static final String SYSTEM_SPACE_FRAGMENT_TAG = "System_Space_Fragment_tag";
-    ArrayList<FileInfo> fileInfoArrayList = null;
+    ArrayList<FileInfo> mFileInfoArrayList = null;
     FileViewInteractionHub.CopyOrMove copyOrMove = null;
 
     private RelativeLayout rl_android_system;
@@ -57,7 +57,7 @@ public class SdStorageFragment extends BaseFragment {
     private ProgressBar pb_usb;
     private ProgressBar pb_service;
 
-    private BaseFragment mCurFragment;
+    public BaseFragment mCurFragment;
 //    FragmentmManager mManager = getFragmentmManager();
     private long lastBackTime = 0;
     private ArrayList<File> mountUsb = null;
@@ -69,7 +69,7 @@ public class SdStorageFragment extends BaseFragment {
     @SuppressLint({"NewApi", "ValidFragment"})
     public SdStorageFragment(FragmentManager mManager,
                              String usbDeviceIsAttached, MainActivity context) {
-        super();
+        super(mManager,usbDeviceIsAttached,context);
     }
 
     @SuppressLint({"NewApi", "ValidFragment"})
@@ -234,20 +234,21 @@ public class SdStorageFragment extends BaseFragment {
             lastBackTime = currentBackTime;
         } else {
             if (mCurFragment != null) {
-                fileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
+                mFileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
                 copyOrMove = ((SystemSpaceFragment) mCurFragment).getCurCopyOrMoveMode();
             }
-            if (fileInfoArrayList != null && copyOrMove != null) {
+            if (mFileInfoArrayList != null && copyOrMove != null) {
                 T.showShort(context,
                             context.getString(R.string.operation_failed_permission_refuse));
             }
-            SystemSpaceFragment  systemSpaceFragment = new SystemSpaceFragment(tag,
-                                                       path, fileInfoArrayList, copyOrMove);
-            mManager.beginTransaction().hide(mainActivity.mCurFragment).commit();
-            mManager.beginTransaction().add(R.id.fl_mian, systemSpaceFragment,
-                                                         SYSTEM_SPACE_FRAGMENT_TAG)
-                    .addToBackStack(null).commit();
-            mainActivity.mCurFragment  = systemSpaceFragment;
+//            SystemSpaceFragment  systemSpaceFragment = new SystemSpaceFragment(tag,
+//                                                       path, fileInfoArrayList, copyOrMove);
+            mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, mCopyOrMove);
+            mManager.beginTransaction().hide(mMainActivity.mCurFragment).commit();
+            mManager.beginTransaction().add(R.id.fl_mian, mCurFragment, SYSTEM_SPACE_FRAGMENT_TAG)
+                                           .addToBackStack(null).commit();
+//            mainActivity.mCurFragment  = systemSpaceFragment;
+            mMainActivity.mIsSdStorageFragmentHided = true;
         }
     }
 

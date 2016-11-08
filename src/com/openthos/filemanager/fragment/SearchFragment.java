@@ -28,8 +28,8 @@ public class SearchFragment extends BaseFragment{
 
     private ListView lv_mian_search;
     @SuppressLint({"NewApi", "ValidFragment"})
-    public SearchFragment(FragmentManager mManager, ArrayList<SearchInfo> mFileList) {
-        super();
+    public SearchFragment(FragmentManager manager, ArrayList<SearchInfo> mFileList) {
+        super(manager,mFileList);
     }
 
     @SuppressLint({"NewApi", "ValidFragment"})
@@ -61,7 +61,8 @@ public class SearchFragment extends BaseFragment{
                 String filePath = mSearchList.get(i).getFilePath();
                 String fileRealPath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
                 mManager.popBackStack();
-                mManager.beginTransaction().replace(R.id.fl_mian,
+                mManager.beginTransaction().hide(mMainActivity.mCurFragment).commit();
+                mManager.beginTransaction().add(R.id.fl_mian,
                         new SystemSpaceFragment("search_fragment",fileRealPath,null,null)).commit();
             }
         });

@@ -30,7 +30,7 @@ public class DetailFragment extends BaseFragment {
     @SuppressLint("ValidFragment")
     public DetailFragment(HashMap<String, List<String>> mGruopMap,
                                           List<ImageBean> list, int index) {
-        super();
+        super(mGruopMap, list, index);
     }
 
     public DetailFragment() {

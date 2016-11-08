@@ -25,7 +25,7 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
     public FragmentManager mManager;
     public String usbDeviceIsAttached;
     public Context context;
-    public MainActivity mainActivity;
+    public MainActivity mMainActivity;
     public HashMap<String, List<String>> mGruopMap;
     public List<ImageBean> list;
     public int index;
@@ -33,15 +33,15 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
     public ArrayList<SearchInfo> mSearchList = new ArrayList<>();
     public String sdOrSystem;
     public String directorPath;
-    public ArrayList<FileInfo> fileInfoList;
-    public FileViewInteractionHub.CopyOrMove copyOrMove;
+    public ArrayList<FileInfo> mFileInfoList;
+    public FileViewInteractionHub.CopyOrMove mCopyOrMove;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                                                       @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(getLayoutId(),container,false);
         mManager = getFragmentManager();
-        mainActivity = (MainActivity) getActivity();
+        mMainActivity = (MainActivity) getActivity();
 
         initView();
         initData();
@@ -83,8 +83,8 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
     public BaseFragment(String sdSpaceFragment, String directPath, ArrayList<FileInfo> fileInfoList,
                                                 FileViewInteractionHub.CopyOrMove copyOrMove) {
         this.sdOrSystem = sdSpaceFragment;
-        this.fileInfoList = fileInfoList;
-        this.copyOrMove = copyOrMove;
+        mFileInfoList = fileInfoList;
+        mCopyOrMove = copyOrMove;
         this.directorPath = directPath;
     }
 

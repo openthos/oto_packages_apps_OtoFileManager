@@ -52,7 +52,7 @@ public class SystemSpaceFragment extends BaseFragment implements
     private FileCategoryHelper mFileCagetoryHelper;
     private FileIconHelper mFileIconHelper;
     private ArrayList<FileInfo> mFileNameList = new ArrayList<>();
-//    private Activity mainActivity;
+    private Activity mActivity;
 //    private View view;
     private DragListView file_path_list;
     private DragGridView file_path_grid;
@@ -119,7 +119,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                 if (mFileViewInteractionHub.getSelectedFileList() != null) {
                     mFileViewInteractionHub.doOnOperationCopy();
                 }
-                T.showShort(mainActivity, getString(R.string.select_file_to_copy));
+                T.showShort(mActivity, getString(R.string.select_file_to_copy));
                 break;
             case "pop_delete":
                 if (mFileViewInteractionHub.getSelectedFileList() != null) {
@@ -130,7 +130,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                 if (mFileViewInteractionHub.getSelectedFileList() != null) {
                     mFileViewInteractionHub.onOperationSend();
                 }
-                T.showShort(mainActivity, getString(R.string.select_file_to_send));
+                T.showShort(mActivity, getString(R.string.select_file_to_send));
                 break;
             case "pop_create":
                 mFileViewInteractionHub.onOperationCreateFolder();
@@ -158,8 +158,8 @@ public class SystemSpaceFragment extends BaseFragment implements
     @SuppressLint({"NewApi", "ValidFragment"})
     public SystemSpaceFragment(String sdSpaceFragment, String directPath,
                                ArrayList<FileInfo> fileInfoList,
-                               FileViewInteractionHub.CopyOrMove copyOrMove) {
-        super();
+                               FileViewInteractionHub.CopyOrMove mCopyOrMove) {
+        super(sdSpaceFragment,directPath,fileInfoList,mCopyOrMove);
     }
 
     @SuppressLint({"NewApi", "ValidFragment"})
@@ -187,23 +187,24 @@ public class SystemSpaceFragment extends BaseFragment implements
     }
 
     protected void initData() {
-        mFileCagetoryHelper = new FileCategoryHelper(mainActivity);
+        mActivity = getActivity();
+        mFileCagetoryHelper = new FileCategoryHelper(mActivity);
         mFileViewInteractionHub = new FileViewInteractionHub(this);
         Intent intent = getActivity().getIntent();
         //TODO  delete
-        mFileIconHelper = new FileIconHelper(mainActivity);
+        mFileIconHelper = new FileIconHelper(mActivity);
         if ("list".equals(LocalCache.getViewTag())) {
-            mAdapter = new FileListAdapter(mainActivity, R.layout.file_browser_item_list,
+            mAdapter = new FileListAdapter(mActivity, R.layout.file_browser_item_list,
                                            mFileNameList, mFileViewInteractionHub,
                                            mFileIconHelper);
         } else if ("grid".equals(LocalCache.getViewTag())) {
-            mAdapter = new FileListAdapter(mainActivity, R.layout.file_browser_item_grid,
+            mAdapter = new FileListAdapter(mActivity, R.layout.file_browser_item_grid,
                                            mFileNameList, mFileViewInteractionHub,
                                            mFileIconHelper);
         }
 
         boolean baseSd = intent.getBooleanExtra(Constants.KEY_BASE_SD,
-                         !FileManagerPreferenceActivity.isReadRoot(mainActivity));
+                         !FileManagerPreferenceActivity.isReadRoot(mActivity));
         Log.i(TAG, "baseSd = " + baseSd);
 
         String rootDir = intent.getStringExtra(ROOT_DIRECTORY);
@@ -217,7 +218,7 @@ public class SystemSpaceFragment extends BaseFragment implements
         mFileViewInteractionHub.setRootPath(rootDir);
 
         String currentDir = FileManagerPreferenceActivity.getPrimaryFolder
-                            (mainActivity, sdOrSystem, directorPath);
+                                                              (mActivity, sdOrSystem, directorPath);
         Uri uri = intent.getData();
         if (uri != null) {
             if (baseSd && sdDir.startsWith(uri.getPath())) {
@@ -232,8 +233,8 @@ public class SystemSpaceFragment extends BaseFragment implements
 
         operatorData();
 
-        if (fileInfoList != null && fileInfoList.size() > 0) {
-            mFileViewInteractionHub.setCheckedFileList(fileInfoList, copyOrMove);
+        if (mFileInfoList != null && mFileInfoList.size() > 0) {
+            mFileViewInteractionHub.setCheckedFileList(mFileInfoList, mCopyOrMove);
         }
 
         initReciever();
@@ -292,13 +293,13 @@ public class SystemSpaceFragment extends BaseFragment implements
         intentFilter.addAction("com.isCtrlPress");
         intentFilter.addAction(Intent.ACTION_MEDIA_MOUNTED);
         intentFilter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
-        mainActivity.registerReceiver(mReceiver, intentFilter);
+        mActivity.registerReceiver(mReceiver, intentFilter);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mainActivity.unregisterReceiver(mReceiver);
+        mActivity.unregisterReceiver(mReceiver);
     }
 
     public boolean onBack() {
@@ -442,7 +443,7 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     @Override
     public Context getContext() {
-        return mainActivity;
+        return mActivity;
     }
 
     @Override
@@ -460,8 +461,8 @@ public class SystemSpaceFragment extends BaseFragment implements
     public void onPick(FileInfo f) {
         try {
             Intent intent = Intent.parseUri(Uri.fromFile(new File(f.filePath)).toString(), 0);
-            mainActivity.setResult(Activity.RESULT_OK, intent);
-            mainActivity.finish();
+            mActivity.setResult(Activity.RESULT_OK, intent);
+            mActivity.finish();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -480,7 +481,7 @@ public class SystemSpaceFragment extends BaseFragment implements
     @Override
     public String getDisplayPath(String path) {
         if (path.startsWith(this.sdDir)
-            && !FileManagerPreferenceActivity.showRealPath(mainActivity)) {
+            && !FileManagerPreferenceActivity.showRealPath(mActivity)) {
             return getString(R.string.sd_folder) + path.substring(this.sdDir.length());
         } else {
             return path;
@@ -559,7 +560,7 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     @Override
     public void runOnUiThread(Runnable r) {
-        mainActivity.runOnUiThread(r);
+        mActivity.runOnUiThread(r);
     }
 
     public boolean canGoBack() {
@@ -604,7 +605,6 @@ public class SystemSpaceFragment extends BaseFragment implements
             } else {
                 if ("button_primary".equals(mouseRightTag) && mLastClickId == position
                     && (Math.abs(System.currentTimeMillis() - mLastClickTime) < 1000)) {
-                    T.showShort(mainActivity, "double ! ");
                     String doubleTag = "double";
                     mFileViewInteractionHub.onListItemClick(position,
                                                             doubleTag, motionEvent, fileInfo);
