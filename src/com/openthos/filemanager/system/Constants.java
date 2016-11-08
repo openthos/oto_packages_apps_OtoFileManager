@@ -15,6 +15,7 @@ public abstract class Constants {
     public static final String DETAILFRAGMENT_TAG = "detailfragment";
     public static final String SYSTEMSPACEFRAGMENT_TAG = "systemspacefragment";
     public static final String SEARCHFRAGMENT_TAG = "searchfragment";
+    public static final long DOUBLE_CLICK_INTERVAL_TIME = 300; // 0.3 second
 
     private static String TAG = "Constants";
     public static final String KEY_BASE_SD = "key_base_sd";

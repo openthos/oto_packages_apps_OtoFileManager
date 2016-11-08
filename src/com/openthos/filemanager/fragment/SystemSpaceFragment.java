@@ -36,6 +36,7 @@ import com.openthos.filemanager.system.Util;
 import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.utils.T;
+import com.openthos.filemanager.system.Constants;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -604,7 +605,8 @@ public class SystemSpaceFragment extends BaseFragment implements
                 }
             } else {
                 if ("button_primary".equals(mouseRightTag) && mLastClickId == position
-                    && (Math.abs(System.currentTimeMillis() - mLastClickTime) < 1000)) {
+                        && (Math.abs(System.currentTimeMillis() - mLastClickTime)
+                            < Constants.DOUBLE_CLICK_INTERVAL_TIME)) {
                     String doubleTag = "double";
                     mFileViewInteractionHub.onListItemClick(position,
                                                             doubleTag, motionEvent, fileInfo);

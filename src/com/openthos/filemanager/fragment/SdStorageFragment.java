@@ -24,6 +24,7 @@ import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.utils.T;
 import com.openthos.filemanager.fragment.SystemSpaceFragment;
+import com.openthos.filemanager.system.Constants;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -229,7 +230,7 @@ public class SdStorageFragment extends BaseFragment {
     }
 
     private void setDiskClickInfo(int id, String tag, String path) {
-        if (currentBackTime - lastBackTime > 800) {
+        if (currentBackTime - lastBackTime > Constants.DOUBLE_CLICK_INTERVAL_TIME) {
             setSelectedCardBg(id);
             lastBackTime = currentBackTime;
         } else {
