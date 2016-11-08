@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.view.MotionEvent;
+import android.widget.LinearLayout;
 
 import com.openthos.filemanager.BaseFragment;
 import com.openthos.filemanager.MainActivity;
@@ -42,11 +43,11 @@ public class SdStorageFragment extends BaseFragment {
     ArrayList<FileInfo> mFileInfoArrayList = null;
     FileViewInteractionHub.CopyOrMove copyOrMove = null;
 
-    private RelativeLayout rl_android_system;
-    private RelativeLayout rl_sd_space;
-    private RelativeLayout rl_android_service;
-    private RelativeLayout rl_mount_space_one;
-    private RelativeLayout rl_mount_space_two;
+    private RelativeLayout mRl_android_system;
+    private RelativeLayout mRl_sd_space;
+    private RelativeLayout mRl_android_service;
+    private RelativeLayout mRl_mount_space_one;
+    private RelativeLayout mRl_mount_space_two;
     private TextView tv_system_total;
     private TextView tv_system_avail;
     private ProgressBar pb_system;
@@ -66,6 +67,7 @@ public class SdStorageFragment extends BaseFragment {
     private long currentBackTime;
     private String mountDiskPath = null;
 //    private Context context;
+    private LinearLayout mFragment_sds_ll;
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public SdStorageFragment(FragmentManager mManager,
@@ -85,11 +87,12 @@ public class SdStorageFragment extends BaseFragment {
 
     @Override
     protected void initView() {
-        rl_android_system = (RelativeLayout) rootView.findViewById(R.id.rl_android_system);
-        rl_sd_space = (RelativeLayout) rootView.findViewById(R.id.rl_sd_space);
-        rl_android_service = (RelativeLayout) rootView.findViewById(R.id.rl_android_service);
-        rl_mount_space_one = (RelativeLayout) rootView.findViewById(R.id.rl_mount_space_one);
-        rl_mount_space_two = (RelativeLayout) rootView.findViewById(R.id.rl_mount_space_two);
+        mFragment_sds_ll = (LinearLayout) rootView.findViewById(R.id.fragment_sds_ll);
+        mRl_android_system = (RelativeLayout) rootView.findViewById(R.id.rl_android_system);
+        mRl_sd_space = (RelativeLayout) rootView.findViewById(R.id.rl_sd_space);
+        mRl_android_service = (RelativeLayout) rootView.findViewById(R.id.rl_android_service);
+        mRl_mount_space_one = (RelativeLayout) rootView.findViewById(R.id.rl_mount_space_one);
+        mRl_mount_space_two = (RelativeLayout) rootView.findViewById(R.id.rl_mount_space_two);
 
         tv_system_total = (TextView) rootView.findViewById(R.id.tv_system_total);
         tv_system_avail = (TextView) rootView.findViewById(R.id.tv_system_avail);
@@ -162,21 +165,22 @@ public class SdStorageFragment extends BaseFragment {
             String[] usbs = Util.execUsb(cmd);
             if (usbs != null && usbs.length > 0) {
                 showMountDevices(usbs);
-                rl_mount_space_one.setVisibility(View.VISIBLE);
-                rl_mount_space_one.setOnGenericMotionListener
+                mRl_mount_space_one.setVisibility(View.VISIBLE);
+                mRl_mount_space_one.setOnGenericMotionListener
                                    (new MouseRelativeOnGenericMotionListener());
             }
         } else if (usbDeviceIsAttached != null
                    && usbDeviceIsAttached.equals("usb_device_detached")) {
-            rl_mount_space_one.setVisibility(View.GONE);
+            mRl_mount_space_one.setVisibility(View.GONE);
         }
     }
 
     @Override
     protected void initListener() {
-        rl_android_system.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
-        rl_sd_space.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
-        rl_android_service.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
+        mFragment_sds_ll.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
+        mRl_android_system.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
+        mRl_sd_space.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
+        mRl_android_service.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
     }
 
     private class MouseRelativeOnGenericMotionListener implements View.OnGenericMotionListener {
@@ -195,7 +199,8 @@ public class SdStorageFragment extends BaseFragment {
                 case MotionEvent.ACTION_HOVER_ENTER:
                     break;
             }
-            return false;
+//            return false;
+            return true;
         }
     }
 
@@ -225,6 +230,7 @@ public class SdStorageFragment extends BaseFragment {
                 setDiskClickInfo(R.id.rl_android_service, YUN_SPACE_FRAGMENT, null);
                 break;
             default:
+                setSelectedCardBg(-1);
                 break;
         }
     }
@@ -256,28 +262,34 @@ public class SdStorageFragment extends BaseFragment {
     private void setSelectedCardBg(int id) {
         switch (id) {
             case R.id.rl_android_system:
-                rl_android_system.setSelected(true);
-                rl_sd_space.setSelected(false);
-                rl_mount_space_one.setSelected(false);
-                rl_android_service.setSelected(false);
+                mRl_android_system.setSelected(true);
+                mRl_sd_space.setSelected(false);
+                mRl_mount_space_one.setSelected(false);
+                mRl_android_service.setSelected(false);
                 break;
             case R.id.rl_sd_space:
-                rl_android_system.setSelected(false);
-                rl_sd_space.setSelected(true);
-                rl_mount_space_one.setSelected(false);
-                rl_android_service.setSelected(false);
+                mRl_android_system.setSelected(false);
+                mRl_sd_space.setSelected(true);
+                mRl_mount_space_one.setSelected(false);
+                mRl_android_service.setSelected(false);
                 break;
             case R.id.rl_mount_space_one:
-                rl_android_system.setSelected(false);
-                rl_sd_space.setSelected(false);
-                rl_mount_space_one.setSelected(true);
-                rl_android_service.setSelected(false);
+                mRl_android_system.setSelected(false);
+                mRl_sd_space.setSelected(false);
+                mRl_mount_space_one.setSelected(true);
+                mRl_android_service.setSelected(false);
                 break;
             case R.id.rl_android_service:
-                rl_android_system.setSelected(false);
-                rl_sd_space.setSelected(false);
-                rl_mount_space_one.setSelected(false);
-                rl_android_service.setSelected(true);
+                mRl_android_system.setSelected(false);
+                mRl_sd_space.setSelected(false);
+                mRl_mount_space_one.setSelected(false);
+                mRl_android_service.setSelected(true);
+                break;
+            case -1:
+                mRl_android_system.setSelected(false);
+                mRl_sd_space.setSelected(false);
+                mRl_mount_space_one.setSelected(false);
+                mRl_android_service.setSelected(false);
                 break;
         }
     }
