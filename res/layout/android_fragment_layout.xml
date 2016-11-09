@@ -446,8 +446,6 @@
             android:background="@drawable/sd_page_bg_selector"
             android:gravity="center"
             android:paddingBottom="20dp"
-            android:paddingLeft="80dp"
-            android:paddingRight="80dp"
             android:paddingTop="10dp">
 
             <ImageView
