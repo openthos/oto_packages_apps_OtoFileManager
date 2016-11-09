@@ -610,15 +610,17 @@ public class SystemSpaceFragment extends BaseFragment implements
                     String doubleTag = "double";
                     mFileViewInteractionHub.onListItemClick(position,
                                                             doubleTag, motionEvent, fileInfo);
+                    integerList.clear();
                     mFileViewInteractionHub.clearSelection();
+                } else {
+                    mLastClickTime = System.currentTimeMillis();
+                    mLastClickId = position;
+                    integerList.clear();
+                    mFileViewInteractionHub.clearSelection();
+                    integerList.add(position);
+                    mFileViewInteractionHub.addDialogSelectedItem(fileInfo);
+                    mouseRightTag = "mouse";
                 }
-                mLastClickTime = System.currentTimeMillis();
-                mLastClickId = position;
-                integerList.clear();
-                mFileViewInteractionHub.clearSelection();
-                integerList.add(position);
-                mFileViewInteractionHub.addDialogSelectedItem(fileInfo);
-                mouseRightTag = "mouse";
             }
             mAdapter.notifyDataSetChanged();
         }

@@ -580,6 +580,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mManager.beginTransaction().show(mSdStorageFragment).commit();
         mCurFragment = mSdStorageFragment;
         setSelectedBackground(mHashMap.get(mSdStorageFragment.getTag()));
+        mSdStorageFragment.setSelectedCardBg(-1);
     }
 
     public interface IBackPressedListener {

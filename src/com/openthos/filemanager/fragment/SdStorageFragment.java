@@ -259,7 +259,7 @@ public class SdStorageFragment extends BaseFragment {
         }
     }
 
-    private void setSelectedCardBg(int id) {
+    public void setSelectedCardBg(int id) {
         switch (id) {
             case R.id.rl_android_system:
                 mRl_android_system.setSelected(true);
