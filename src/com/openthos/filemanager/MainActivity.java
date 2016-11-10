@@ -73,10 +73,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public Fragment mCurFragment;
     private SdStorageFragment mSdStorageFragment;
     public boolean mIsSdStorageFragmentHided;
-    private DeskFragment mDeskFragment;
-    private MusicFragment mMusicFragment;
-    private VideoFragment mVideoFragment;
-    private PictrueFragment mPictrueFragment;
+    private SystemSpaceFragment mDeskFragment, mMusicFragment, mVideoFragment, mPictrueFragment;
     private OnlineNeighborFragment mOnlineNeighborFragment;
     private UsbConnectReceiver mReceiver;
     private String[] mUsbs;
@@ -179,22 +176,26 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                            .hide(mSdStorageFragment);
         }
         if (mDeskFragment == null) {
-            mDeskFragment = new DeskFragment();
+            mDeskFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
+                                                    Constants.DESKTOP_PATH, null, null);
             transaction.add(R.id.fl_mian, mDeskFragment,Constants.DESKFRAGMENT_TAG)
                        .hide(mDeskFragment);
         }
         if (mMusicFragment == null) {
-            mMusicFragment = new MusicFragment();
+            mMusicFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
+                                                     Constants.MUSIC_PATH, null, null);
             transaction.add(R.id.fl_mian, mMusicFragment,Constants.MUSICFRAGMENT_TAG)
                        .hide(mMusicFragment);
         }
         if (mVideoFragment == null) {
-            mVideoFragment = new VideoFragment();
+            mVideoFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
+                                                     Constants.VIDEOS_PATH, null, null);
             transaction.add(R.id.fl_mian, mVideoFragment,Constants.VIDEOFRAGMENT_TAG)
                        .hide(mVideoFragment);
         }
         if (mPictrueFragment == null) {
-            mPictrueFragment = new PictrueFragment(mManager);
+            mPictrueFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
+                                                       Constants.PICTURES_PATH, null, null);
             transaction.add(R.id.fl_mian, mPictrueFragment,Constants.PICTRUEFRAGMENT_TAG)
                        .hide(mPictrueFragment);
         }
@@ -332,19 +333,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_desk:
-                setFileInfo(R.id.tv_desk, Constants.LEFT_FAVORITES, Constants.DESKTOP_PATH);
+                setFileInfo(R.id.tv_desk, mDeskFragment);
                 break;
             case R.id.tv_music:
-                setFileInfo(R.id.tv_music, Constants.LEFT_FAVORITES, Constants.MUSIC_PATH);
+                setFileInfo(R.id.tv_music, mMusicFragment);
                 break;
             case R.id.tv_video:
-                setFileInfo(R.id.tv_video, Constants.LEFT_FAVORITES, Constants.VIDEOS_PATH);
+                setFileInfo(R.id.tv_video, mVideoFragment);
                 break;
             case R.id.tv_picture:
-                setFileInfo(R.id.tv_picture, Constants.LEFT_FAVORITES, Constants.PICTURES_PATH);
+                setFileInfo(R.id.tv_picture, mPictrueFragment);
                 break;
             case R.id.tv_computer:
-                startAndSettingFragment(R.id.tv_computer, mManager, mSdStorageFragment);
+                setFileInfo(R.id.tv_computer, mSdStorageFragment);
                 break;
             case R.id.tv_storage:
                 setSelectedBackground(R.id.tv_storage);
@@ -354,7 +355,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                           .hide(usbStorageFragment).commit();
                 break;
             case R.id.tv_net_service:
-                startAndSettingFragment(R.id.tv_net_service, mManager, mOnlineNeighborFragment);
+                setFileInfo(R.id.tv_net_service, mOnlineNeighborFragment);
                 break;
             case R.id.iv_back:
                 onBackPressed();
@@ -389,30 +390,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    private void setFileInfo(int id, String tag, String path) {
+    private void setFileInfo(int id, Fragment fragment) {
         setSelectedBackground(id);
-        if (mCurFragment != null) {
-            mManager.beginTransaction().hide(mCurFragment).commit();
-        }
-        if (mSdStorageFragment.mCurFragment != null) {
-            mManager.beginTransaction().
-                          hide(mSdStorageFragment.mCurFragment).commit();
-        }
-        mCurFragment = new SystemSpaceFragment(tag, path, null, null);
-        mManager.beginTransaction().add(R.id.fl_mian, mCurFragment, tag).
-                                           addToBackStack(null).commit();
-    }
-
-    private void startAndSettingFragment(int id, FragmentManager mManager, Fragment fragment) {
         FragmentTransaction transaction = mManager.beginTransaction();
         if (mCurFragment != null) {
+            transaction.hide(mCurFragment);
             if (mIsSdStorageFragmentHided) {
-                mManager.beginTransaction().hide(mSdStorageFragment.mCurFragment).commit();
+                transaction.hide(mSdStorageFragment.mCurFragment);
                 mIsSdStorageFragmentHided = false;
             }
-            transaction.hide(mCurFragment);
         }
-        setSelectedBackground(id);
         if (fragment != null) {
             transaction.show(fragment).addToBackStack(null);
         }
