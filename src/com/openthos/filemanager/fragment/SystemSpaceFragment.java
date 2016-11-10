@@ -616,6 +616,10 @@ public class SystemSpaceFragment extends BaseFragment implements
                                                             doubleTag, motionEvent, fileInfo);
                     integerList.clear();
                     mFileViewInteractionHub.clearSelection();
+                } else if (mouseRightTag.equals("button_secondary")) {
+                    mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub,
+                                                               motionEvent);
+                    mouseRightTag = "mouse";
                 } else {
                     mLastClickTime = System.currentTimeMillis();
                     mLastClickId = position;
@@ -646,7 +650,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                 case MotionEvent.BUTTON_SECONDARY:
                     mouseRightTag = "button_secondary";
                     file_path_grid.setOnItemClickListener(new OnitemClickListener(event));
-                    mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub, event);
+//                    mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub, event);
                     break;
                 case MotionEvent.BUTTON_TERTIARY:
                     file_path_grid.setOnItemClickListener(new OnitemClickListener(event));
