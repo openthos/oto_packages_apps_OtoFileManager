@@ -17,12 +17,24 @@ public abstract class Constants {
     public static final String SEARCHFRAGMENT_TAG = "searchfragment";
     public static final long DOUBLE_CLICK_INTERVAL_TIME = 300; // 0.3 second
 
+    public static final String LEFT_FAVORITES = "left_favorites";
+    public static final String SYSTEM_SPACE_FRAGMENT = "system_space_fragment";
+    public static final String SD_SPACE_FRAGMENT = "sd_space_fragment";
+    public static final String USB_SPACE_FRAGMENT = "usb_space_fragment";
+    public static final String YUN_SPACE_FRAGMENT = "yun_space_fragment";
+    public static final String SEARCH_FRAGMENT = "search_fragment";
+
+
     private static String TAG = "Constants";
     public static final String KEY_BASE_SD = "key_base_sd";
     public static final String KEY_SHOW_CATEGORY = "key_show_category";
     public static final String INTENT_EXTRA_TAB = "TAB";
-    public static final String ROOT_PATH = "/";
+    public static final String ROOT_PATH = "/storage/emulated/0/";
     public static final String SDCARD_PATH = ROOT_PATH + "sdcard";
+    public static final String DESKTOP_PATH = "storage/emulated/0/Desktop/";
+    public static final String MUSIC_PATH = "storage/emulated/0/Music";
+    public static final String VIDEOS_PATH = "storage/emulated/0/Movies";
+    public static final String PICTURES_PATH = "storage/emulated/0/Pictures";
     // Menu id
     public static final int MENU_NEW_FOLDER = 100;
     public static final int MENU_NEW_FILE = 119;

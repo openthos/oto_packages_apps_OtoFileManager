@@ -34,11 +34,6 @@ public class SdStorageFragment extends BaseFragment {
     private static final String TAG = SdStorageFragment.class.getSimpleName();
 //    private String usbDeviceIsAttached;
 
-    private static final String SYSTEM_SPACE_FRAGMENT = "system_space_fragment";
-    private static final String SD_SPACE_FRAGMENT = "sd_space_fragment";
-    private static final String USB_SPACE_FRAGMENT = "usb_space_fragment";
-    private static final String YUN_SPACE_FRAGMENT = "yun_space_fragment";
-
     private static final String SYSTEM_SPACE_FRAGMENT_TAG = "System_Space_Fragment_tag";
     ArrayList<FileInfo> mFileInfoArrayList = null;
     FileViewInteractionHub.CopyOrMove copyOrMove = null;
@@ -218,16 +213,16 @@ public class SdStorageFragment extends BaseFragment {
         currentBackTime = System.currentTimeMillis();
         switch (view.getId()) {
             case R.id.rl_android_system:
-                setDiskClickInfo(R.id.rl_android_system, SYSTEM_SPACE_FRAGMENT, null);
+                setDiskClickInfo(R.id.rl_android_system, Constants.SYSTEM_SPACE_FRAGMENT, null);
                 break;
             case R.id.rl_sd_space:
-                setDiskClickInfo(R.id.rl_sd_space, SD_SPACE_FRAGMENT,mountDiskPath);
+                setDiskClickInfo(R.id.rl_sd_space, Constants.SD_SPACE_FRAGMENT,mountDiskPath);
                 break;
             case R.id.rl_mount_space_one:
-                setDiskClickInfo(R.id.rl_mount_space_one, USB_SPACE_FRAGMENT, mountPath);
+                setDiskClickInfo(R.id.rl_mount_space_one, Constants.USB_SPACE_FRAGMENT, mountPath);
                 break;
             case R.id.rl_android_service:
-                setDiskClickInfo(R.id.rl_android_service, YUN_SPACE_FRAGMENT, null);
+                setDiskClickInfo(R.id.rl_android_service, Constants.YUN_SPACE_FRAGMENT, null);
                 break;
             default:
                 setSelectedCardBg(-1);

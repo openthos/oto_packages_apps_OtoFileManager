@@ -66,17 +66,19 @@ public class FileManagerPreferenceActivity extends PreferenceActivity
 
     public static String getPrimaryFolder(Context context, String sdOrSystem, String directorPath) {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-        if ("system_space_fragment".equals(sdOrSystem)){
+        if ((Constants.SYSTEM_SPACE_FRAGMENT).equals(sdOrSystem)) {
             primaryFolder = settings.getString(PRIMARY_FOLDER, context.getString
                             (R.string.default_system_primary_folder, Constants.ROOT_PATH));
-        }else if ("sd_space_fragment".equals(sdOrSystem)){
+        } else if ((Constants.SD_SPACE_FRAGMENT).equals(sdOrSystem)) {
             primaryFolder = settings.getString(PRIMARY_FOLDER, directorPath);
-        }else if ("usb_space_fragment".equals(sdOrSystem)){
+        } else if ((Constants.USB_SPACE_FRAGMENT).equals(sdOrSystem)) {
             primaryFolder = settings.getString(PRIMARY_FOLDER, directorPath);
-        }else if ("yun_space_fragment".equals(sdOrSystem)){
+        } else if ((Constants.YUN_SPACE_FRAGMENT).equals(sdOrSystem)) {
             primaryFolder = settings.getString(PRIMARY_FOLDER, directorPath);
-        }else if ("search_fragment".equals(sdOrSystem)){
+        } else if ((Constants.SEARCH_FRAGMENT).equals(sdOrSystem)) {
             primaryFolder = settings.getString(PRIMARY_FOLDER, directorPath);
+        } else if (Constants.LEFT_FAVORITES.equals(sdOrSystem)) {
+            primaryFolder = directorPath;
         }
 
         if (TextUtils.isEmpty(primaryFolder)) { // setting primary folder = empty("")

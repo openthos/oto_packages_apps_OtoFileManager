@@ -332,16 +332,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_desk:
-                startAndSettingFragment(R.id.tv_desk, mManager, mDeskFragment);
+                setFileInfo(R.id.tv_desk, Constants.LEFT_FAVORITES, Constants.DESKTOP_PATH);
                 break;
             case R.id.tv_music:
-                startAndSettingFragment(R.id.tv_music, mManager, mMusicFragment);
+                setFileInfo(R.id.tv_music, Constants.LEFT_FAVORITES, Constants.MUSIC_PATH);
                 break;
             case R.id.tv_video:
-                startAndSettingFragment(R.id.tv_video, mManager, mVideoFragment);
+                setFileInfo(R.id.tv_video, Constants.LEFT_FAVORITES, Constants.VIDEOS_PATH);
                 break;
             case R.id.tv_picture:
-                startAndSettingFragment(R.id.tv_picture, mManager, mPictrueFragment);
+                setFileInfo(R.id.tv_picture, Constants.LEFT_FAVORITES, Constants.PICTURES_PATH);
                 break;
             case R.id.tv_computer:
                 startAndSettingFragment(R.id.tv_computer, mManager, mSdStorageFragment);
@@ -349,7 +349,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.tv_storage:
                 setSelectedBackground(R.id.tv_storage);
                 SystemSpaceFragment usbStorageFragment = new SystemSpaceFragment
-                                                         (USB_SPACE_FRAGMENT, mUsbs[0], null, null);
+                                          (Constants.USB_SPACE_FRAGMENT, mUsbs[0], null, null);
                 mManager.beginTransaction().add(R.id.fl_mian, usbStorageFragment)
                                           .hide(usbStorageFragment).commit();
                 break;
@@ -387,6 +387,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mEditor.commit();
                 break;
         }
+    }
+
+    private void setFileInfo(int id, String tag, String path) {
+        setSelectedBackground(id);
+        if (mCurFragment != null) {
+            mManager.beginTransaction().hide(mCurFragment).commit();
+        }
+        if (mSdStorageFragment.mCurFragment != null) {
+            mManager.beginTransaction().
+                          hide(mSdStorageFragment.mCurFragment).commit();
+        }
+        mCurFragment = new SystemSpaceFragment(tag, path, null, null);
+        mManager.beginTransaction().add(R.id.fl_mian, mCurFragment, tag).
+                                           addToBackStack(null).commit();
     }
 
     private void startAndSettingFragment(int id, FragmentManager mManager, Fragment fragment) {
