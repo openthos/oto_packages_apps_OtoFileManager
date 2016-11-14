@@ -38,8 +38,11 @@ import com.openthos.filemanager.fragment.SystemSpaceFragment;
 import com.openthos.filemanager.system.Constants;
 import java.util.HashMap;
 import java.util.List;
+import java.io.File;
+import android.widget.Toast;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener,
+                                               TextView.OnEditorActionListener {
     private static final int POPWINDOW_WINTH = 120;
     private static final int POPWINDOW_HEIGHT = 40;
     private static final int POPWINDOW_X = -15;
@@ -73,7 +76,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public Fragment mCurFragment;
     private SdStorageFragment mSdStorageFragment;
     public boolean mIsSdStorageFragmentHided;
-    private SystemSpaceFragment mDeskFragment, mMusicFragment, mVideoFragment, mPictrueFragment;
+    private SystemSpaceFragment mDeskFragment, mMusicFragment, mVideoFragment,
+                                mPictrueFragment, mAddressFragment;
     private OnlineNeighborFragment mOnlineNeighborFragment;
     private UsbConnectReceiver mReceiver;
     private String[] mUsbs;
@@ -209,6 +213,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     protected void initData() {
         initFragment();
+        mEt_nivagation.setText(null);
     }
 
     @Override
@@ -230,8 +235,26 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                                  mEt_search_view.getText(), MainActivity.this));
         mIv_search_view.setOnClickListener(new SearchOnClickListener(mManager,
                                           mEt_search_view.getText(), MainActivity.this));
+        mEt_nivagation.setOnEditorActionListener(this);
         initUsb(-1);
         mCurFragment = mSdStorageFragment;
+    }
+
+    @Override
+    public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+        FragmentTransaction transaction = mManager.beginTransaction();
+        String path = textView.getText().toString().trim();
+        File file = new File(path);
+        if (file.exists()) {
+            mAddressFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES, path, null, null);
+            transaction.add(R.id.fl_mian, mAddressFragment);
+            transaction.commit();
+            setFileInfo(R.id.et_nivagation, path, mAddressFragment);
+        } else {
+            Toast.makeText(this, "" + getResources().getString(R.string.address_search_false),
+                                                                   Toast.LENGTH_SHORT).show();
+        }
+        return false;
     }
 
     @Override
@@ -333,19 +356,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_desk:
-                setFileInfo(R.id.tv_desk, mDeskFragment);
+                setFileInfo(R.id.tv_desk, Constants.DESKTOP_PATH, mDeskFragment);
                 break;
             case R.id.tv_music:
-                setFileInfo(R.id.tv_music, mMusicFragment);
+                setFileInfo(R.id.tv_music, Constants.MUSIC_PATH, mMusicFragment);
                 break;
             case R.id.tv_video:
-                setFileInfo(R.id.tv_video, mVideoFragment);
+                setFileInfo(R.id.tv_video, Constants.VIDEOS_PATH, mVideoFragment);
                 break;
             case R.id.tv_picture:
-                setFileInfo(R.id.tv_picture, mPictrueFragment);
+                setFileInfo(R.id.tv_picture, Constants.PICTURES_PATH, mPictrueFragment);
                 break;
             case R.id.tv_computer:
-                setFileInfo(R.id.tv_computer, mSdStorageFragment);
+                setFileInfo(R.id.tv_computer, "", mSdStorageFragment);
                 break;
             case R.id.tv_storage:
                 setSelectedBackground(R.id.tv_storage);
@@ -355,7 +378,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                           .hide(usbStorageFragment).commit();
                 break;
             case R.id.tv_net_service:
-                setFileInfo(R.id.tv_net_service, mOnlineNeighborFragment);
+                setFileInfo(R.id.tv_net_service, "", mOnlineNeighborFragment);
                 break;
             case R.id.iv_back:
                 onBackPressed();
@@ -390,8 +413,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    private void setFileInfo(int id, Fragment fragment) {
+    private void setFileInfo(int id, String path, Fragment fragment) {
         setSelectedBackground(id);
+        mEt_nivagation.setText(path);
         FragmentTransaction transaction = mManager.beginTransaction();
         if (mCurFragment != null) {
             transaction.hide(mCurFragment);

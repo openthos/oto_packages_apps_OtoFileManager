@@ -183,4 +183,5 @@
     <string name="file_title_size">大小</string>
     <string name="file_type_folder">文件夹</string>
     <string name="file_type_file">文档</string>
+    <string name="address_search_false">地址错误</string>
 </resources>

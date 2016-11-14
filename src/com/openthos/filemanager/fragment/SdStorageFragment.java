@@ -216,7 +216,7 @@ public class SdStorageFragment extends BaseFragment {
                 setDiskClickInfo(R.id.rl_android_system, Constants.SYSTEM_SPACE_FRAGMENT, null);
                 break;
             case R.id.rl_sd_space:
-                setDiskClickInfo(R.id.rl_sd_space, Constants.SD_SPACE_FRAGMENT,mountDiskPath);
+                setDiskClickInfo(R.id.rl_sd_space, Constants.SD_SPACE_FRAGMENT, Constants.SD_PATH);
                 break;
             case R.id.rl_mount_space_one:
                 setDiskClickInfo(R.id.rl_mount_space_one, Constants.USB_SPACE_FRAGMENT, mountPath);
