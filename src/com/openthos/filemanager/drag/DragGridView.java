@@ -115,14 +115,16 @@ public class DragGridView extends GridView {
     }
 
     private boolean isTouchInItem(View dragView, int x, int y){
-        int leftOffset = dragView.getLeft();
-        int topOffset = dragView.getTop();
-        if(x < leftOffset || x > leftOffset + dragView.getWidth()){
-            return false;
-        }
+        if (dragView != null) {
+            int leftOffset = dragView.getLeft();
+            int topOffset = dragView.getTop();
+            if(x < leftOffset || x > leftOffset + dragView.getWidth()) {
+                return false;
+            }
 
-        if(y < topOffset || y > topOffset + dragView.getHeight()){
-            return false;
+            if (y < topOffset || y > topOffset + dragView.getHeight()) {
+                return false;
+            }
         }
 
         return true;
@@ -195,7 +197,9 @@ public class DragGridView extends GridView {
                 mHandler.removeCallbacks(mScrollRunnable);
             }
             View view = getChildAt(mDragPosition - getFirstVisiblePosition());
-            smoothScrollToPositionFromTop(mDragPosition, view.getTop() + scrollY);
+            if (view != null) {
+                smoothScrollToPositionFromTop(mDragPosition, view.getTop() + scrollY);
+            }
         }
     };
 
