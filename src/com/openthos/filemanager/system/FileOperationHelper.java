@@ -5,6 +5,7 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -237,52 +238,81 @@ public class FileOperationHelper {
         file.delete();
         Log.v(LOG_TAG, "DeleteFile >>> " + f.filePath);
     }
-    //执行1个文件的拷贝，如果文件是目录，拷贝整个目录，可能有递归Copy
-    private void CopyFile(FileInfo f, String dest) {
-        if (f == null || dest == null) {
-            Log.e(LOG_TAG, "CopyFile: null parameter");
-            return;
-        }
 
-        File file = new File(f.filePath);
-        if (file.isDirectory()) {
-
-            // directory exists in destination, rename it
-            String destPath = Util.makePath(dest, f.fileName);
-            File destFile = new File(destPath);
-            int i = 1;
-            while (destFile.exists()) {
-                destPath = Util.makePath(dest, f.fileName + " " + i++);
-                destFile = new File(destPath);
-            }
-
-            for (File child : file.listFiles(mFilter)) {
-                if (!child.isHidden() && Util.isNormalFile(child.getAbsolutePath())) {
-                    CopyFile(Util.GetFileInfo(child, mFilter,
-                                  Settings.instance().getShowDotAndHiddenFiles()), destPath);
+    private static void copyOrMoveFile(String command, String arg, String srcFile, String destDir) {
+        try {
+            File f = new File(destDir, new File(srcFile).getName());
+            File destFile = f;
+            if (f.exists()) {
+                for (int i = 2; ; i++) {
+                    File current = new File(f.getAbsolutePath() + "." + i);
+                    if (!current.exists()) {
+                        destFile= new File(destDir, current.getName());
+                        break;
+                    }
                 }
             }
-        } else {
-            String destFile = Util.copyFile(f.filePath, dest);
+            Runtime.getRuntime().exec(new String[] {command, arg, srcFile,
+                                                    destFile.getAbsolutePath()});
+        } catch (IOException e) {
         }
-        Log.v(LOG_TAG, "CopyFile >>> " + f.filePath + "," + dest);
+    }
+
+    private void CopyFile(FileInfo f, String dest) {
+        String command = "/system/xbin/cp";
+        String arg = "-v";
+        File file = new File(f.filePath);
+        if (file.isDirectory()){
+            arg = "-rv";
+        }
+        copyOrMoveFile(command, arg, f.filePath, dest);
+//        if (f == null || dest == null) {
+//            Log.e(LOG_TAG, "CopyFile: null parameter");
+//            return;
+//        }
+
+//        File file = new File(f.filePath);
+//        if (file.isDirectory()) {
+
+            // directory exists in destination, rename it
+//            String destPath = Util.makePath(dest, f.fileName);
+//            File destFile = new File(destPath);
+//            int i = 1;
+//            while (destFile.exists()) {
+//                destPath = Util.makePath(dest, f.fileName + " " + i++);
+//                destFile = new File(destPath);
+//            }
+
+//            for (File child : file.listFiles(mFilter)) {
+//                if (!child.isHidden() && Util.isNormalFile(child.getAbsolutePath())) {
+//                    CopyFile(Util.GetFileInfo(child, mFilter,
+//                                  Settings.instance().getShowDotAndHiddenFiles()), destPath);
+//                }
+//            }
+//        } else {
+//            String destFile = Util.copyFile(f.filePath, dest);
+//        }
+//        Log.v(LOG_TAG, "CopyFile >>> " + f.filePath + "," + dest);
     }
 
     private boolean MoveFile(FileInfo f, String dest) {
-        Log.v(LOG_TAG, "MoveFile >>> " + f.filePath + "," + dest);
+        String command = "/system/xbin/mv";
+        String arg = "-v";
+        copyOrMoveFile(command, arg, f.filePath, dest);
+//        Log.v(LOG_TAG, "MoveFile >>> " + f.filePath + "," + dest);
 
-        if (dest == null) {
-            Log.e(LOG_TAG, "CopyFile: null parameter");
-            return false;
-        }
+//        if (dest == null) {
+//            Log.e(LOG_TAG, "CopyFile: null parameter");
+//            return false;
+//        }
 
-        File file = new File(f.filePath);
-        String newPath = Util.makePath(dest, f.fileName);
-        try {
-            return file.renameTo(new File(newPath));
-        } catch (SecurityException e) {
-            Log.e(LOG_TAG, "Fail to move file," + e.toString());
-        }
+//        File file = new File(f.filePath);
+//        String newPath = Util.makePath(dest, f.fileName);
+//        try {
+//            return file.renameTo(new File(newPath));
+//        } catch (SecurityException e) {
+//            Log.e(LOG_TAG, "Fail to move file," + e.toString());
+//        }
         return false;
     }
 
