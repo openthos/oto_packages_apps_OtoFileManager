@@ -60,6 +60,8 @@ public class TextInputDialog extends AlertDialog {
                 });
         setButton(BUTTON_NEGATIVE, mContext.getString(R.string.cancel),
                 (OnClickListener) null);
+        setCancelable(false);
+        setCanceledOnTouchOutside(false);
 
         super.onCreate(savedInstanceState);
     }
