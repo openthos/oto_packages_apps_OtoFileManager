@@ -246,7 +246,7 @@ public class SdStorageFragment extends BaseFragment {
             }
 //            SystemSpaceFragment  systemSpaceFragment = new SystemSpaceFragment(tag,
 //                                                       path, fileInfoArrayList, copyOrMove);
-            mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, mCopyOrMove);
+            mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, copyOrMove);
             FragmentTransaction transaction = mManager.beginTransaction();
             transaction.hide(mMainActivity.mCurFragment);
             transaction.add(R.id.fl_mian, mCurFragment, SYSTEM_SPACE_FRAGMENT_TAG)

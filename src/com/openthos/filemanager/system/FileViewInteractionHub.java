@@ -67,7 +67,8 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         progressDialog = new ProgressDialog(mContext);
         progressDialog.setMessage(msg);
         progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
+        progressDialog.setCancelable(true);
+        progressDialog.setCanceledOnTouchOutside(true);
         progressDialog.show();
     }
 
@@ -572,6 +573,8 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
                         clearSelection();
                     }
                 }).create();
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
         dialog.show();
     }
 
