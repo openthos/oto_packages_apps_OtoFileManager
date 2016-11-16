@@ -9,7 +9,7 @@ public class T {
         throw new UnsupportedOperationException("cannot be instantiated");
     }
 
-    public static boolean mIsShow = false;
+    public static boolean mIsShow = true;
 
     public static void showShort(Context context, CharSequence message) {
         if (mIsShow)

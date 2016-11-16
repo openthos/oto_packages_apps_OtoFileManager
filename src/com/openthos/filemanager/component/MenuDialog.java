@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.system.FileViewInteractionHub;
-import com.openthos.filemanager.utils.T;
 
 public class MenuDialog extends Dialog implements View.OnClickListener {
     private TextView dialog_copy;
@@ -140,7 +139,6 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
             case R.id.dialog_copy_path:
                 mFileViewInteractionHub.onOperationCopyPath();
                 mFileViewInteractionHub.dismissContextDialog();
-                T.showShort(context, "dialog_copy_path");
                 break;
             case R.id.dialog_new_folder:
                 mFileViewInteractionHub.onOperationCreateFolder();

@@ -67,7 +67,6 @@ public class GridOnGenericMotionListener implements View.OnGenericMotionListener
                 mFileViewInteractionHub.onListItemClick(position, doubleTag, event, null);
                 mFileViewInteractionHub.clearSelection();
             } else {
-                T.showShort(context, context.getString(R.string.single_choice));
                 parent.getChildAt(position).setSelected(true);
 //                mFileViewInteractionHub.addDialogSelectedItem(position);
                 mLastClickTime = System.currentTimeMillis();

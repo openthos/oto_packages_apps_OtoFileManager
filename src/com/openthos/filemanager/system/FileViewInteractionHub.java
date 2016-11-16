@@ -130,7 +130,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     public void onOperationDragPaste(String filePath) {
         if (mFileOperationHelper.Paste(filePath)) {
             showProgress(mContext.getString(R.string.operation_pasting));
-            T.showShort(mContext, mContext.getResources().getString(R.string.success_paste));
         }
     }
 
@@ -237,7 +236,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 
     public void onOperationReferesh() {
         refreshFileList();
-        T.showShort(mContext, mContext.getResources().getString(R.string.success_refresh));
     }
 
     private void onOperationSetting() {
@@ -330,8 +328,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             } else if ("grid".equals(LocalCache.getViewTag())) {
                 mFileGridView.setSelection(mFileGridView.getCount() - 1);
             }
-            T.showShort(mContext,
-                        mContext.getResources().getString(R.string.success_create_folder));
             clearSelection();
         } else {
             new AlertDialog.Builder(mContext)
@@ -357,7 +353,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             } else if ("grid".equals(LocalCache.getViewTag())) {
                 mFileGridView.setSelection(mFileGridView.getCount() - 1);
             }
-            T.showShort(mContext, mContext.getResources().getString(R.string.success_create_file));
             clearSelection();
         } else {
             new AlertDialog.Builder(mContext)
@@ -408,7 +403,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     public void onOperationPaste() {
         if (mFileOperationHelper.Paste(mCurrentPath)) {
             showProgress(mContext.getString(R.string.operation_pasting));
-            T.showShort(mContext, mContext.getResources().getString(R.string.success_paste));
         }
     }
 
@@ -421,7 +415,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         // refresh to hide selected files
         refreshFileList();
         copyOrMoveMode = CopyOrMove.Move;
-        T.showShort(mContext, mContext.getResources().getString(R.string.success_cut));
     }
 
     public void refreshFileList() {
@@ -510,7 +503,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         if (mFileOperationHelper.Rename(f, text)) {
             f.fileName = text;
             mFileViewListener.onDataChanged();
-            T.showShort(mContext, mContext.getResources().getString(R.string.success_rename));
         } else {
             new AlertDialog.Builder(mContext)
                            .setMessage(mContext.getString(R.string.fail_to_rename))
@@ -817,11 +809,9 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     public void MouseScrollAction(MotionEvent event) {
         if (event.getAxisValue(MotionEvent.AXIS_VSCROLL) < 0.0f) {
             L.i("fortest::onGenericMotionEvent", "down");
-            T.showShort(mContext, mContext.getResources().getString(R.string.scroll_down));
         }
         else {
             L.i("fortest::onGenericMotionEvent", "up");
-            T.showShort(mContext, mContext.getResources().getString(R.string.scroll_up));
         }
     }
 

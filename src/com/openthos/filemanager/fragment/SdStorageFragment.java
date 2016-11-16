@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -246,8 +247,9 @@ public class SdStorageFragment extends BaseFragment {
 //            SystemSpaceFragment  systemSpaceFragment = new SystemSpaceFragment(tag,
 //                                                       path, fileInfoArrayList, copyOrMove);
             mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, mCopyOrMove);
-            mManager.beginTransaction().hide(mMainActivity.mCurFragment).commit();
-            mManager.beginTransaction().add(R.id.fl_mian, mCurFragment, SYSTEM_SPACE_FRAGMENT_TAG)
+            FragmentTransaction transaction = mManager.beginTransaction();
+            transaction.hide(mMainActivity.mCurFragment);
+            transaction.add(R.id.fl_mian, mCurFragment, SYSTEM_SPACE_FRAGMENT_TAG)
                                            .addToBackStack(null).commit();
 //            mainActivity.mCurFragment  = systemSpaceFragment;
             mMainActivity.mIsSdStorageFragmentHided = true;

@@ -158,7 +158,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                                                       MainActivity.this);
             setSelectedBackground(R.id.tv_computer);
             mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment)
-                                      .hide(mSdStorageFragment).commit();
+                                      .hide(mSdStorageFragment)
+                                      .addToBackStack(null).commit();
         } else if (flags == UsbConnectReceiver.USB_STATE_OFF) {
             mTv_storage.setVisibility(View.GONE);
             mTv_storage.setVisibility(View.GONE);
@@ -167,7 +168,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
             setSelectedBackground(R.id.tv_computer);
             mManager.beginTransaction().remove(mSdStorageFragment).commit();
             mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment)
-                                      .hide(mSdStorageFragment).commit();
+                                      .hide(mSdStorageFragment)
+                                      .addToBackStack(null).commit();
         }
     }
 
@@ -177,7 +179,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         if (mSdStorageFragment == null) {
             mSdStorageFragment = new SdStorageFragment(mManager, null, MainActivity.this);
             transaction.add(R.id.fl_mian, mSdStorageFragment,Constants.SDSTORAGEFRAGMENT_TAG)
-                           .hide(mSdStorageFragment);
+                           .hide(mSdStorageFragment)
+                           .addToBackStack(null);
         }
         if (mDeskFragment == null) {
             mDeskFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
@@ -213,7 +216,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
 
     protected void initData() {
         initFragment();
-        mEt_nivagation.setText(null);
     }
 
     @Override
@@ -392,7 +394,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                 if (!VIEW_TAG_GRID.equals(LocalCache.getViewTag())
                     || VIEW_TAG_GRID.equals(LocalCache.getViewTag())) {
                     LocalCache.setViewTag(VIEW_TAG_GRID);
-                    T.showShort(MainActivity.this, getResources().getString(R.string.grid_view));
                 }
                 sendBroadcastMessage(IV_SWITCH_VIEW, VIEW_TAG_GRID, false);
                 mEditor.putString(VIEW_TAG, VIEW_TAG_GRID);
@@ -404,7 +405,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                 if (!VIEW_TAG_LIST.equals(LocalCache.getViewTag())
                     || VIEW_TAG_LIST.equals(LocalCache.getViewTag())) {
                     LocalCache.setViewTag(VIEW_TAG_LIST);
-                    T.showShort(MainActivity.this, getResources().getString(R.string.list_view));
                 }
                 sendBroadcastMessage(IV_SWITCH_VIEW, VIEW_TAG_LIST, false);
                 mEditor.putString(VIEW_TAG, VIEW_TAG_LIST);
@@ -620,7 +620,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     @Override
     public void setNavigationBar(String displayPath) {
         if (displayPath != null) {
-            mEt_nivagation.setText(displayPath);
+            if (mCurFragment == mSdStorageFragment) {
+                mEt_nivagation.setText(null);
+            } else {
+                mEt_nivagation.setText(displayPath);
+            }
         }
     }
 }

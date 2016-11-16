@@ -46,7 +46,6 @@ public class SearchOnClickListener implements View.OnClickListener {
                 if (progressDialog != null){
                     progressDialog.dismiss();
                 }
-                T.showShort(context, context.getString(R.string.found_no_file));
             }
         }
         assert mFileList != null;
