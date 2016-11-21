@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.support.v4.app.FragmentTransaction;
+import android.view.inputmethod.EditorInfo;
 
 import com.openthos.filemanager.component.PopOnClickLintener;
 import com.openthos.filemanager.component.PopWinShare;
@@ -240,6 +241,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         mEt_nivagation.setOnEditorActionListener(this);
         initUsb(-1);
         mCurFragment = mSdStorageFragment;
+        Intent intent = getIntent();
+        String path = intent.getStringExtra(Intent.EXTRA_DESKTOP_PATH_TAG);
+        mEt_nivagation.setText(path);
+        mEt_nivagation.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN,
+                                                     KeyEvent.KEYCODE_ENTER));
+        mEt_nivagation.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP,
+                                                     KeyEvent.KEYCODE_ENTER));
     }
 
     @Override
@@ -570,7 +578,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                     returnToRootDir();
                 }
             }
-            mEt_nivagation.setText("");
         } else {
             if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
                 mManager.popBackStackImmediate();
@@ -620,10 +627,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     @Override
     public void setNavigationBar(String displayPath) {
         if (displayPath != null) {
-            if (mCurFragment == mSdStorageFragment) {
-                mEt_nivagation.setText(null);
-            } else {
+            if (mCurFragment == mSdStorageFragment && mSdStorageFragment.mCurFragment != null) {
                 mEt_nivagation.setText(displayPath);
+            } else {
+                mEt_nivagation.setText(null);
             }
         }
     }
