@@ -142,6 +142,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         mHashMap.put(Constants.ONLINENEIGHBORFRAGMENT_TAG,R.id.tv_net_service);
         mHashMap.put(Constants.DETAILFRAGMENT_TAG,R.id.tv_picture);
         mHashMap.put(Constants.SYSTEMSPACEFRAGMENT_TAG,R.id.tv_storage);
+        mHashMap.put(Constants.ADDRESSFRAGMENT_TAG,R.id.tv_storage);
     }
 
     private void initUsb(int flags) {
@@ -151,16 +152,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
             sendMsg(2);
         }
         if (flags == UsbConnectReceiver.USB_STATE_ON || flags == 2) {
-            T.showShort(MainActivity.this, getResources().getString(R.string.USB_device_connected));
+         // T.showShort(MainActivity.this, getResources().getString(R.string.USB_device_connected));
             mTv_storage.setVisibility(View.VISIBLE);
             mTv_storage.setOnClickListener(MainActivity.this);
             mManager.beginTransaction().remove(mSdStorageFragment).commit();
+            mManager.beginTransaction().hide(mCurFragment).commit();
+
             mSdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_ATTACHED,
                                                       MainActivity.this);
             setSelectedBackground(R.id.tv_computer);
-            mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment)
-                                      .hide(mSdStorageFragment)
+            mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment,
+                        Constants.SDSTORAGEFRAGMENT_TAG).show(mSdStorageFragment)
                                       .addToBackStack(null).commit();
+            T.showShort(MainActivity.this, getResources().getString(R.string.USB_device_connected));
+            mTv_computer.performClick();
         } else if (flags == UsbConnectReceiver.USB_STATE_OFF) {
             mTv_storage.setVisibility(View.GONE);
             mTv_storage.setVisibility(View.GONE);
@@ -256,9 +261,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         String path = textView.getText().toString().trim();
         File file = new File(path);
         if (file.exists()) {
+            transaction.hide(mCurFragment);
             mAddressFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES, path, null, null);
-            transaction.add(R.id.fl_mian, mAddressFragment);
-            transaction.commit();
+            transaction.add(R.id.fl_mian, mAddressFragment ,Constants.ADDRESSFRAGMENT_TAG);
+            transaction.show(mAddressFragment).addToBackStack(null).commit();
+            mCurFragment = mAddressFragment;
             setFileInfo(R.id.et_nivagation, path, mAddressFragment);
         } else {
             Toast.makeText(this, "" + getResources().getString(R.string.address_search_false),
