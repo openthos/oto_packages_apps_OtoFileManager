@@ -17,4 +17,5 @@
     <dimen name="left_margrin_text">10dp</dimen>
     <dimen name="left_margrin_icon">30dp</dimen>
     <dimen name="right_menu_left_margin">20dp</dimen>
+    <dimen name="image_thumbnail_size">65dp</dimen>
 </resources>

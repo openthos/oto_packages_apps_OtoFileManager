@@ -32,10 +32,10 @@ public abstract class Constants {
     public static final String INTENT_EXTRA_TAB = "TAB";
     public static final String ROOT_PATH = "/storage/emulated/0/";
     public static final String SD_PATH = "/";
-    public static final String DESKTOP_PATH = "storage/emulated/0/Desktop/";
-    public static final String MUSIC_PATH = "storage/emulated/0/Music";
-    public static final String VIDEOS_PATH = "storage/emulated/0/Movies";
-    public static final String PICTURES_PATH = "storage/emulated/0/Pictures";
+    public static final String DESKTOP_PATH = ROOT_PATH + "Desktop";
+    public static final String MUSIC_PATH = ROOT_PATH + "Music";
+    public static final String VIDEOS_PATH = ROOT_PATH + "Movies";
+    public static final String PICTURES_PATH = ROOT_PATH + "Pictures";
     // Menu id
     public static final int MENU_NEW_FOLDER = 100;
     public static final int MENU_NEW_FILE = 119;

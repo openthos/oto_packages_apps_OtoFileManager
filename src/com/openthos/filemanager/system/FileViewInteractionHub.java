@@ -728,7 +728,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     }
 
     private String getAbsoluteName(String path, String name) {
-        return path.equals(Constants.ROOT_PATH) ? path + name : path + File.separator + name;
+        return path.equals(Constants.SD_PATH) ? path + name : path + File.separator + name;
     }
 
     // check or uncheck

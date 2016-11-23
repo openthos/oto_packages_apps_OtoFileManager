@@ -3,6 +3,9 @@ package com.openthos.filemanager.system;
 import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 
 import com.openthos.filemanager.R;
 
@@ -11,6 +14,7 @@ public class FileIconHelper implements FileIconLoader.IconLoadFinishListener {
     private static HashMap<ImageView, ImageView> imageFrames = new HashMap<>();
     private static HashMap<String, Integer> fileExtToIcons = new HashMap<>();
     private FileIconLoader mIconLoader;
+    private Context mContext;
 
     static {
         addItem(new String[] {
@@ -53,6 +57,7 @@ public class FileIconHelper implements FileIconLoader.IconLoadFinishListener {
 
     public FileIconHelper(Context context) {
         mIconLoader = new FileIconLoader(context, this);
+        mContext = context;
     }
 
     private static void addItem(String[] exts, int resId) {
@@ -90,6 +95,15 @@ public class FileIconHelper implements FileIconLoader.IconLoadFinishListener {
                 set = mIconLoader.loadIcon(fileImage, filePath, fileId, fc);
                 break;
             case Picture:
+                set = mIconLoader.loadIcon(fileImage, filePath, fileId, fc);
+                if (!set) {
+                    Bitmap fileIcon = getImageThumbnail(filePath,
+                          (int)mContext.getResources().getDimension(R.dimen.image_thumbnail_size),
+                          (int)mContext.getResources().getDimension(R.dimen.image_thumbnail_size));
+                    fileImage.setImageBitmap(fileIcon);
+                    set = true;
+                }
+                break;
             case Video:
                 set = mIconLoader.loadIcon(fileImage, filePath, fileId, fc);
                 if (set)
@@ -108,6 +122,33 @@ public class FileIconHelper implements FileIconLoader.IconLoadFinishListener {
 
         if (!set)
             fileImage.setImageResource(R.mipmap.file_icon_default);
+    }
+
+    private Bitmap getImageThumbnail(String imagePath, int width, int height) {
+        Bitmap bitmap = null;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        bitmap = BitmapFactory.decodeFile(imagePath, options);
+        options.inJustDecodeBounds = false;
+        int h = options.outHeight;
+        int w = options.outWidth;
+        int beWidth = w / width;
+        int beHeight = h / height;
+        int be = 1;
+        if (beWidth < beHeight) {
+            be = beWidth;
+        } else {
+            be = beHeight;
+        }
+        if (be <= 0) {
+            be = 1;
+        }
+        options.inSampleSize = be;
+        options.inJustDecodeBounds = false;
+        bitmap = BitmapFactory.decodeFile(imagePath, options);
+        bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height,
+                                 ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+        return bitmap;
     }
 
     @Override

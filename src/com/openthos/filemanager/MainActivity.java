@@ -248,11 +248,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         mCurFragment = mSdStorageFragment;
         Intent intent = getIntent();
         String path = intent.getStringExtra(Intent.EXTRA_DESKTOP_PATH_TAG);
-        mEt_nivagation.setText(path);
-        mEt_nivagation.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN,
-                                                     KeyEvent.KEYCODE_ENTER));
-        mEt_nivagation.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP,
-                                                     KeyEvent.KEYCODE_ENTER));
+        if (path != null) {
+            mEt_nivagation.setText(path);
+            mEt_nivagation.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN,
+                                                         KeyEvent.KEYCODE_ENTER));
+            mEt_nivagation.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP,
+                                                         KeyEvent.KEYCODE_ENTER));
+        }
     }
 
     @Override
@@ -637,7 +639,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
             if (mCurFragment == mSdStorageFragment && mSdStorageFragment.mCurFragment != null) {
                 mEt_nivagation.setText(displayPath);
             } else {
-                mEt_nivagation.setText(null);
+                if (mCurFragment instanceof SystemSpaceFragment){
+                    mEt_nivagation.setText(displayPath);
+                }else {
+                    mEt_nivagation.setText(null);
+                }
             }
         }
     }
