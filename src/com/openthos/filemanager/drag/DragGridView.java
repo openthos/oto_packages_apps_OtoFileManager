@@ -20,7 +20,7 @@ import android.widget.ImageView;
 @SuppressLint("NewApi")
 public class DragGridView extends GridView {
     private long dragResponseMS = 300;
-
+    private boolean mIsBlankArea = true;
     private boolean isDrag = false;
 
     private int mDownX;
@@ -80,7 +80,9 @@ public class DragGridView extends GridView {
     public boolean dispatchTouchEvent(MotionEvent ev) {
         switch(ev.getAction()){
             case MotionEvent.ACTION_DOWN:
-                mHandler.postDelayed(mLongClickRunnable, dragResponseMS);
+                if (mIsBlankArea == false) {
+                    mHandler.postDelayed(mLongClickRunnable, dragResponseMS);
+                }
                 mDownX = (int) ev.getX();
                 mDownY = (int) ev.getY();
                 mDragPosition = pointToPosition(mDownX, mDownY);
@@ -109,6 +111,7 @@ public class DragGridView extends GridView {
             case MotionEvent.ACTION_UP:
                 mHandler.removeCallbacks(mLongClickRunnable);
                 mHandler.removeCallbacks(mScrollRunnable);
+                mIsBlankArea = true;
                 break;
         }
         return super.dispatchTouchEvent(ev);
@@ -232,5 +235,13 @@ public class DragGridView extends GridView {
 
     public interface OnChanageListener{
         void onChange(int from, int to);
+    }
+
+    public void setIsBlankArea(boolean isBlankArea) {
+        this.mIsBlankArea = isBlankArea;
+    }
+
+    public boolean isBlankArea() {
+        return mIsBlankArea;
     }
 }

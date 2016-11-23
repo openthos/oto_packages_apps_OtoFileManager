@@ -267,7 +267,7 @@ public class SystemSpaceFragment extends BaseFragment implements
             @Override
             public void onChange(int from, int to) {
                 FileInfo fileInfo = mFileViewInteractionHub.getItem(to);
-                if (to != -1 && fileInfo.IsDir) {
+                if (from != -1 && to != -1 && fileInfo.IsDir) {
                     mFileViewInteractionHub.addDragSelectedItem(from);
                     mFileViewInteractionHub.onOperationMove();
                     mFileViewInteractionHub.onOperationDragConfirm(fileInfo.filePath);
@@ -596,6 +596,7 @@ public class SystemSpaceFragment extends BaseFragment implements
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            file_path_grid.setIsBlankArea(false);
             FileInfo fileInfo = mAdapter.getFileInfoList().get(position);
             fileInfo.Selected = true;
             List<Integer> integerList = mAdapter.getSelectFileInfoList();
@@ -646,6 +647,10 @@ public class SystemSpaceFragment extends BaseFragment implements
                         mFileViewInteractionHub.clearSelection();
                         mAdapter.notifyDataSetChanged();
                     }
+                    if (file_path_grid.isBlankArea() == false) {
+                        return true;
+                    }
+                    file_path_grid.setIsBlankArea(true);
                     break;
                 case MotionEvent.BUTTON_SECONDARY:
                     mouseRightTag = "button_secondary";
