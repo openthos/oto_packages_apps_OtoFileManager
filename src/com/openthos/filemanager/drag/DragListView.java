@@ -1,6 +1,5 @@
 package com.openthos.filemanager.drag;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -20,6 +19,7 @@ import android.widget.ListView;
 public class DragListView extends ListView {
     private long dragResponseMS = 300;
     private boolean isDrag = false;
+    private boolean mIsBlankArea = true;
 
     private int mDownX;
     private int mDownY;
@@ -78,7 +78,9 @@ public class DragListView extends ListView {
     public boolean dispatchTouchEvent(MotionEvent ev) {
         switch(ev.getAction()){
             case MotionEvent.ACTION_DOWN:
-                mHandler.postDelayed(mLongClickRunnable, dragResponseMS);
+                if (mIsBlankArea == false) {
+                    mHandler.postDelayed(mLongClickRunnable, dragResponseMS);
+                }
                 mDownX = (int) ev.getX();
                 mDownY = (int) ev.getY();
                 mDragPosition = pointToPosition(mDownX, mDownY);
@@ -107,6 +109,7 @@ public class DragListView extends ListView {
             case MotionEvent.ACTION_UP:
                 mHandler.removeCallbacks(mLongClickRunnable);
                 mHandler.removeCallbacks(mScrollRunnable);
+                mIsBlankArea = true;
                 break;
         }
         return super.dispatchTouchEvent(ev);
@@ -226,5 +229,13 @@ public class DragListView extends ListView {
 
     public interface OnChanageListener{
         void onChange(int from, int to);
+    }
+
+    public void setIsBlankArea(Boolean isBlankArea) {
+        mIsBlankArea = isBlankArea;
+    }
+
+    public boolean isBlankArea() {
+        return mIsBlankArea;
     }
 }

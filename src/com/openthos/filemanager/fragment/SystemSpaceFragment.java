@@ -11,10 +11,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 
@@ -37,7 +35,6 @@ import com.openthos.filemanager.system.Util;
 import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.utils.T;
-import com.openthos.filemanager.system.Constants;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -253,7 +250,7 @@ public class SystemSpaceFragment extends BaseFragment implements
             @Override
             public void onChange(int from, int to) {
                 FileInfo fileInfo = mFileViewInteractionHub.getItem(to);
-                if (to != -1 && fileInfo.IsDir) {
+                if (from != -1 && to != -1 && fileInfo.IsDir) {
                     mFileViewInteractionHub.addDragSelectedItem(from);
                     mFileViewInteractionHub.onOperationMove();
                     mFileViewInteractionHub.onOperationDragConfirm(fileInfo.filePath);
@@ -677,6 +674,15 @@ public class SystemSpaceFragment extends BaseFragment implements
                 case MotionEvent.BUTTON_PRIMARY:
                     mouseRightTag = "button_primary";
                     file_path_list.setOnItemClickListener(new OnitemClickListener(event));
+                    if (!isCtrlPress) {
+                        mAdapter.getSelectFileInfoList().clear();
+                        mFileViewInteractionHub.clearSelection();
+                        mAdapter.notifyDataSetChanged();
+                    }
+                    if (file_path_list.isBlankArea() == false) {
+                        return true;
+                    }
+                    file_path_list.setIsBlankArea(true);
                     break;
                 case MotionEvent.BUTTON_SECONDARY:
                     mouseRightTag = "button_secondary";
