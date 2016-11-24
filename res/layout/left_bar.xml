@@ -61,12 +61,28 @@
             android:drawableLeft="@drawable/left_computer_selector"
             android:text="@string/computer" />
 
-        <TextView
-            android:id="@+id/tv_storage"
-            android:visibility="gone"
-            style="@style/textSet"
-            android:drawableLeft="@drawable/left_usb_selector"
-            android:text="@string/usb" />
+        <RelativeLayout
+            android:id="@+id/rl_usb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" >
+
+            <TextView
+                android:id="@+id/tv_storage"
+                style="@style/textSet"
+                android:drawableLeft="@drawable/left_usb_selector"
+                android:text="@string/usb" />
+
+            <TextView
+                android:id="@+id/tv_pop_up"
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_alignParentRight="true"
+                android:drawableTop="@drawable/usb_pop_up_selector"/>
+
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/left_net_up"

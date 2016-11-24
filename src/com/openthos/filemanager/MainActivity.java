@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.support.v4.app.FragmentTransaction;
 import android.view.inputmethod.EditorInfo;
+import android.widget.RelativeLayout;
 
 import com.openthos.filemanager.component.PopOnClickLintener;
 import com.openthos.filemanager.component.PopWinShare;
@@ -71,6 +72,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     private EditText mEt_nivagation;
     private EditText mEt_search_view;
     private ImageView mIv_search_view;
+    private TextView mTv_pop_up;
+    private RelativeLayout mRl_usb;
 
     private FragmentManager mManager = getSupportFragmentManager();
     private PopWinShare mPopWinShare;
@@ -131,6 +134,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         mEt_nivagation = (EditText) findViewById(R.id.et_nivagation);
         mIv_search_view = (ImageView) findViewById(R.id.iv_search);
         mEt_search_view = (EditText) findViewById(R.id.search_view);
+        mTv_pop_up = (TextView) findViewById(R.id.tv_pop_up);
+        mRl_usb = (RelativeLayout) findViewById(R.id.rl_usb);
         mIv_grid_view.setSelected(true);
 
         mHashMap = new HashMap<>();
@@ -153,8 +158,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         }
         if (flags == UsbConnectReceiver.USB_STATE_ON || flags == 2) {
          // T.showShort(MainActivity.this, getResources().getString(R.string.USB_device_connected));
-            mTv_storage.setVisibility(View.VISIBLE);
+            mRl_usb.setVisibility(View.VISIBLE);
             mTv_storage.setOnClickListener(MainActivity.this);
+            mTv_pop_up.setOnClickListener(this);
             mManager.beginTransaction().remove(mSdStorageFragment).commit();
             mManager.beginTransaction().hide(mCurFragment).commit();
 
@@ -167,8 +173,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
             T.showShort(MainActivity.this, getResources().getString(R.string.USB_device_connected));
             mTv_computer.performClick();
         } else if (flags == UsbConnectReceiver.USB_STATE_OFF) {
-            mTv_storage.setVisibility(View.GONE);
-            mTv_storage.setVisibility(View.GONE);
+            mRl_usb.setVisibility(View.GONE);
             mSdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_DETACHED,
                                                       MainActivity.this);
             setSelectedBackground(R.id.tv_computer);
@@ -396,6 +401,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                 mManager.beginTransaction().add(R.id.fl_mian, usbStorageFragment)
                                           .hide(usbStorageFragment).commit();
                 break;
+            case R.id.tv_pop_up:
+                mRl_usb.setVisibility(View.GONE);
+                break;
             case R.id.tv_net_service:
                 setFileInfo(R.id.tv_net_service, "", mOnlineNeighborFragment);
                 break;
@@ -601,6 +609,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
 //                finish();
                 returnToRootDir();
             }
+        }
+        if (mSdStorageFragment.mCurFragment instanceof SystemSpaceFragment) {
+            mManager.beginTransaction().hide(mSdStorageFragment).commit();
+            mIsSdStorageFragmentHided = false;
         }
     }
 
