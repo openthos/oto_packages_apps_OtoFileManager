@@ -64,6 +64,8 @@ public class SystemSpaceFragment extends BaseFragment implements
 //    FileViewInteractionHub.CopyOrMove copyOrMove = null;
     private boolean isCtrlPress;
     private String mouseRightTag = "mouse";
+    private boolean isDialogShow = false;
+    private boolean isShow = false;
 
     // memorize the scroll positions of previous paths
     private ArrayList<PathScrollPositionItem> mScrollPositionList = new ArrayList<>();
@@ -273,6 +275,21 @@ public class SystemSpaceFragment extends BaseFragment implements
             }
         });
         file_path_grid.setOnGenericMotionListener(new MouseGridOnGenericMotionListener());
+        file_path_grid.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_UP:
+                        if (isShow==true && isDialogShow == false) {
+                            isShow = false;
+                            isDialogShow = true;
+                            mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub,
+                                                                       event);
+                        }
+                }
+                return false;
+            }
+        });
     }
 
     private void operatorData() {
@@ -614,10 +631,11 @@ public class SystemSpaceFragment extends BaseFragment implements
                                                             doubleTag, motionEvent, fileInfo);
                     integerList.clear();
                     mFileViewInteractionHub.clearSelection();
-                } else if (mouseRightTag.equals("button_secondary")) {
+                } else if (mouseRightTag.equals("button_secondary") && isDialogShow == false) {
                     mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub,
                                                                motionEvent);
                     mouseRightTag = "mouse";
+                    isDialogShow = true;
                 } else {
                     mLastClickTime = System.currentTimeMillis();
                     mLastClickId = position;
@@ -650,8 +668,10 @@ public class SystemSpaceFragment extends BaseFragment implements
                     file_path_grid.setIsBlankArea(true);
                     break;
                 case MotionEvent.BUTTON_SECONDARY:
+                    isDialogShow = false;
                     mouseRightTag = "button_secondary";
                     file_path_grid.setOnItemClickListener(new OnitemClickListener(event));
+                    isShow =true;
 //                    mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub, event);
                     break;
                 case MotionEvent.BUTTON_TERTIARY:
