@@ -24,6 +24,7 @@ public abstract class Constants {
     public static final String USB_SPACE_FRAGMENT = "usb_space_fragment";
     public static final String YUN_SPACE_FRAGMENT = "yun_space_fragment";
     public static final String SEARCH_FRAGMENT = "search_fragment";
+    public static final String SYSTEM_SPACE_FRAGMENT_TAG = "System_Space_Fragment_tag";
 
 
     private static String TAG = "Constants";

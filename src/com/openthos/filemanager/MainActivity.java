@@ -88,6 +88,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     private boolean mIsMutiSelect;
     private SharedPreferences mSharedPreferences;
     private Editor mEditor;
+    public boolean mIsSdStorageFragment;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -380,18 +381,29 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_desk:
+                mIsSdStorageFragment = false;
                 setFileInfo(R.id.tv_desk, Constants.DESKTOP_PATH, mDeskFragment);
                 break;
             case R.id.tv_music:
+                mIsSdStorageFragment = false;
                 setFileInfo(R.id.tv_music, Constants.MUSIC_PATH, mMusicFragment);
                 break;
             case R.id.tv_video:
+                mIsSdStorageFragment = false;
                 setFileInfo(R.id.tv_video, Constants.VIDEOS_PATH, mVideoFragment);
                 break;
             case R.id.tv_picture:
+                mIsSdStorageFragment = false;
                 setFileInfo(R.id.tv_picture, Constants.PICTURES_PATH, mPictrueFragment);
                 break;
             case R.id.tv_computer:
+                mIsSdStorageFragment = true;
+                mEt_nivagation.setText(null);
+                Fragment fragment = mManager.findFragmentByTag(Constants.SYSTEM_SPACE_FRAGMENT_TAG);
+                if (fragment != null) {
+                    FragmentTransaction transaction = mManager.beginTransaction();
+                    transaction.remove(fragment).commit();
+                }
                 setFileInfo(R.id.tv_computer, "", mSdStorageFragment);
                 break;
             case R.id.tv_storage:
@@ -405,6 +417,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                 mRl_usb.setVisibility(View.GONE);
                 break;
             case R.id.tv_net_service:
+                mIsSdStorageFragment = false;
                 setFileInfo(R.id.tv_net_service, "", mOnlineNeighborFragment);
                 break;
             case R.id.iv_back:
@@ -581,6 +594,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
             if (mSdStorageFragment.canGoBack()) {
                 mSdStorageFragment.goBack();
             } else {
+                mIsSdStorageFragment = true;
                 if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
                     mManager.popBackStackImmediate();
                     mCurFragment = getVisibleFragment();
@@ -609,10 +623,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
 //                finish();
                 returnToRootDir();
             }
+            if (mCurFragment == mSdStorageFragment && mSdStorageFragment.canGoBack()
+                    && !mIsSdStorageFragment) {
+                if (mSdStorageFragment.mCurFragment instanceof SystemSpaceFragment) {
+                    mManager.beginTransaction().hide(mSdStorageFragment).commit();
+                    mIsSdStorageFragmentHided = true;
+                }
+            }
         }
-        if (mSdStorageFragment.mCurFragment instanceof SystemSpaceFragment) {
-            mManager.beginTransaction().hide(mSdStorageFragment).commit();
-            mIsSdStorageFragmentHided = false;
+        if (mCurFragment == mSdStorageFragment && !mIsSdStorageFragmentHided) {
+            mEt_nivagation.setText(null);
+        }
+        if (mCurFragment instanceof SystemSpaceFragment) {
+            SystemSpaceFragment sdCurFrament = (SystemSpaceFragment) mCurFragment;
+            String currentPath = sdCurFrament.mFileViewInteractionHub.getCurrentPath();
+            mEt_nivagation.setText(currentPath);
         }
     }
 

@@ -35,7 +35,6 @@ public class SdStorageFragment extends BaseFragment {
     private static final String TAG = SdStorageFragment.class.getSimpleName();
 //    private String usbDeviceIsAttached;
 
-    private static final String SYSTEM_SPACE_FRAGMENT_TAG = "System_Space_Fragment_tag";
     ArrayList<FileInfo> mFileInfoArrayList = null;
     FileViewInteractionHub.CopyOrMove copyOrMove = null;
 
@@ -249,10 +248,11 @@ public class SdStorageFragment extends BaseFragment {
             mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, copyOrMove);
             FragmentTransaction transaction = mManager.beginTransaction();
             transaction.hide(mMainActivity.mCurFragment);
-            transaction.add(R.id.fl_mian, mCurFragment, SYSTEM_SPACE_FRAGMENT_TAG)
+            transaction.add(R.id.fl_mian, mCurFragment, Constants.SYSTEM_SPACE_FRAGMENT_TAG)
                                            .addToBackStack(null).commit();
 //            mainActivity.mCurFragment  = systemSpaceFragment;
             mMainActivity.mIsSdStorageFragmentHided = true;
+            mMainActivity.mIsSdStorageFragment = false;
         }
     }
 
