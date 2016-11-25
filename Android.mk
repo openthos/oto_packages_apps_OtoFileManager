@@ -41,7 +41,7 @@ LOCAL_SDK_VERSION := current
 
 LOCAL_PACKAGE_NAME := OtoFileManager
 #LOCAL_CERTIFICATE := shared
-#LOCAL_CERTIFICATE := platform
+LOCAL_CERTIFICATE := platform
 
 LOCAL_PROGUARD_FLAG_FILES := proguard.flags
 
