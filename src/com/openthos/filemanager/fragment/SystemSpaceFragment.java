@@ -722,4 +722,9 @@ public class SystemSpaceFragment extends BaseFragment implements
             return false;
         }
     }
+
+    public String getCurrentPath() {
+        return mFileViewInteractionHub.getCurrentPath();
+    }
+
 }
