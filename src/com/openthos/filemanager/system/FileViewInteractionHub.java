@@ -822,7 +822,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
                                    MotionEvent event) {
         menuDialog = new MenuDialog(mContext, R.style.menu_dialog, mFileViewInteractionHub);
         menuDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        menuDialog.showDialog((int) event.getX(), (int) event.getY(), 450, 190);
+        menuDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
 //                menuDialog.setEnablePaste(canPaste);
     }
 

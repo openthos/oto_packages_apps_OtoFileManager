@@ -10,9 +10,13 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.app.Activity;
+import android.widget.LinearLayout;
+import android.view.Display;
 
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.system.FileViewInteractionHub;
+import com.openthos.filemanager.system.Constants;
 
 public class MenuDialog extends Dialog implements View.OnClickListener {
     private TextView dialog_copy;
@@ -27,6 +31,9 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
     private TextView dialog_new_folder;
     private TextView dialog_new_file;
     private TextView dialog_visibale_file;
+    private LinearLayout mLinearLayout;
+    private int mDialogWidth;
+    private int mDialogHeight;
     private Context context;
     private FileViewInteractionHub mFileViewInteractionHub;
     private static boolean isCopy = false;
@@ -45,14 +52,14 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.select_dialog);
         initView();
-        setOnDismissListener(new OnDismissListener() {
+        /*setOnDismissListener(new OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialogInterface) {
                 dialogInterface.dismiss();
                 mFileViewInteractionHub.clearSelection();
                 mFileViewInteractionHub.refreshFileList();
             }
-        });
+        });*/
         initData();
     }
 
@@ -90,6 +97,10 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
         dialog_new_folder = (TextView) findViewById(R.id.dialog_new_folder);
         dialog_new_file = (TextView) findViewById(R.id.dialog_new_file);
         dialog_visibale_file = (TextView) findViewById(R.id.dialog_visibale_file);
+        mLinearLayout = (LinearLayout) findViewById(R.id.dialog_ll);
+        mLinearLayout.measure(0, 0);
+        mDialogWidth = mLinearLayout.getMeasuredWidth();
+        mDialogHeight = mLinearLayout.getMeasuredHeight();
     }
 
     @Override
@@ -118,6 +129,7 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
                 mFileViewInteractionHub.dismissContextDialog();
                 break;
             case R.id.dialog_move:
+                isCopy = true;
                 mFileViewInteractionHub.onOperationMove();
                 mFileViewInteractionHub.dismissContextDialog();
                 break;
@@ -155,16 +167,26 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
         }
     }
 
-    public void showDialog(int x, int y, int height, int width) {
+    public void showDialog(int x, int y) {
         show();
         Window dialogWindow = getWindow();
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        lp.dimAmount = 0.0f;
         dialogWindow.setGravity(Gravity.LEFT | Gravity.TOP);
-        lp.width = width;
-        lp.height = height;
-        lp.x = x+220;
-        lp.y = y+50;
+        WindowManager m = ((Activity) context).getWindowManager();
+        Display d = m.getDefaultDisplay();
+        int dialogPadding = (int) context.getResources().getDimension(R.dimen.left_margrin_text);
+        if (x > (d.getWidth() - mDialogWidth)) {
+            lp.x = x - mDialogWidth + dialogPadding;
+        } else {
+            lp.x = x + dialogPadding;
+        }
+        if (y > (d.getHeight() - mDialogHeight - Constants.BAR_Y)) {
+            lp.y = d.getHeight() - mDialogHeight - Constants.BAR_Y + dialogPadding;
 
+        } else {
+            lp.y = y + dialogPadding;
+        }
         newX = x;
         newY = y;
         dialogWindow.setAttributes(lp);
