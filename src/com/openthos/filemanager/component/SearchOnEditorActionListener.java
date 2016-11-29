@@ -15,11 +15,15 @@ import com.openthos.filemanager.fragment.SearchFragment;
 import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.utils.T;
+import com.openthos.filemanager.fragment.SearchFragment;
+import android.support.v4.app.Fragment;
+import com.openthos.filemanager.system.Constants;
 
 import java.io.File;
 import java.util.ArrayList;
 
 public class SearchOnEditorActionListener implements TextView.OnEditorActionListener {
+    private String mInputData;
     private String LOG_TAG = "SearchOnQueryTextListener";
     private ProgressDialog progressDialog;
     private ArrayList<SearchInfo> mFileList = new ArrayList<>();
@@ -28,6 +32,7 @@ public class SearchOnEditorActionListener implements TextView.OnEditorActionList
                                 = Environment.getExternalStorageDirectory().getAbsolutePath();
     File root = new File(rootPath);
     private Context context;
+    private SearchFragment mSearchFragment;
 
     public SearchOnEditorActionListener(FragmentManager manager,
                                         Editable text, MainActivity context) {
@@ -35,9 +40,16 @@ public class SearchOnEditorActionListener implements TextView.OnEditorActionList
         this.context = context;
     }
 
+    public void setInputData(String inputData) {
+        mInputData = inputData;
+    }
+
     @Override
     public boolean onEditorAction(TextView input, int actionId, KeyEvent event) {
             L.d(LOG_TAG,input.getText().toString());
+            if (mInputData != null && mInputData .equals(input.getText().toString())) {
+                return true;
+            }
             if (mFileList.size() >0 && LocalCache.getSearchText() != null) {
                 mFileList.clear();
                 startSearch(input.toString().trim());
@@ -62,6 +74,7 @@ public class SearchOnEditorActionListener implements TextView.OnEditorActionList
                 T.showShort(context, context.getString(R.string.found_no_file));
             }
 
+        mInputData = input.getText().toString();
         return true;
     }
 
@@ -72,9 +85,17 @@ public class SearchOnEditorActionListener implements TextView.OnEditorActionList
     }
 
     private void startSearchFragment() {
-        SearchFragment searchFragment = new SearchFragment(manager, mFileList);
-        manager.popBackStack();
-        manager.beginTransaction().replace(R.id.fl_mian, searchFragment).commit();
+        if (mSearchFragment != null) {
+            mSearchFragment.mManager.beginTransaction().hide(mSearchFragment).commit();
+        }
+        mSearchFragment = new SearchFragment(manager, mFileList);
+        MainActivity mainActivity = (MainActivity) context;
+        Fragment mCurFragment = manager.findFragmentByTag(Constants.SYSTEM_SPACE_FRAGMENT_TAG);
+        //manager.popBackStack();
+        manager.beginTransaction().hide(mCurFragment).commit();
+        manager.beginTransaction().add(R.id.fl_mian, mSearchFragment, Constants.SEARCHFRAGMENT_TAG)
+               .show(mSearchFragment).addToBackStack(null).commit();
+        mainActivity.mCurFragment = mSearchFragment;
         progressDialog.dismiss();
     }
 

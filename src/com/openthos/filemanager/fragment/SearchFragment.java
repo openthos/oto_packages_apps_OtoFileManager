@@ -18,10 +18,17 @@ import com.openthos.filemanager.bean.SearchInfo;
 import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.fragment.SystemSpaceFragment;
+import com.openthos.filemanager.system.FileViewInteractionHub;
+import com.openthos.filemanager.system.FileInfo;
+import com.openthos.filemanager.system.Constants;
 
 import java.util.ArrayList;
 
 public class SearchFragment extends BaseFragment{
+    private static final String TAG = SearchFragment.class.getSimpleName();
+    private BaseFragment mCurFragment;
+    private ArrayList<FileInfo> mFileInfoArrayList;
+    private FileViewInteractionHub.CopyOrMove mCopyOrMove;
     private String LOG_TAG = "SearchFragment";
 //    private ArrayList<SearchInfo> mSearchList = new ArrayList<>();
 //    FragmentmManager mManager = getFragmentmManager();
@@ -60,10 +67,20 @@ public class SearchFragment extends BaseFragment{
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String filePath = mSearchList.get(i).getFilePath();
                 String fileRealPath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
-                mManager.popBackStack();
+                //mManager.popBackStack();
                 mManager.beginTransaction().hide(mMainActivity.mCurFragment).commit();
-                mManager.beginTransaction().add(R.id.fl_mian,
-                        new SystemSpaceFragment("search_fragment",fileRealPath,null,null)).commit();
+                if (mCurFragment != null) {
+                    mFileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
+                    mCopyOrMove = ((SystemSpaceFragment) mCurFragment).getCurCopyOrMoveMode();
+                    mCurFragment = new SystemSpaceFragment(TAG, fileRealPath, mFileInfoArrayList,
+                                                           mCopyOrMove);
+                } else {
+                    mCurFragment = new SystemSpaceFragment(TAG, fileRealPath, null, null);
+                }
+                mManager.beginTransaction().add(R.id.fl_mian, mCurFragment,
+                              Constants.SYSTEMSPACEFRAGMENT_TAG)
+                        .show(mCurFragment).addToBackStack(null).commit();
+                mMainActivity.mCurFragment = mCurFragment;
             }
         });
     }

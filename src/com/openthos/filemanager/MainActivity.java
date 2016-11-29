@@ -111,6 +111,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     };
     private boolean mIsFirst = true;
     private HashMap<String, Integer> mHashMap;
+    private SearchOnEditorActionListener mSearchOnEditorActionListener;
 
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -245,8 +246,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         mTv_computer.performClick();
 //        search_view.addTextChangedListener(new EditTextChangeListener(mManager,
 //                                                                        MainActivity.this));
-        mEt_search_view.setOnEditorActionListener(new SearchOnEditorActionListener(mManager,
-                                                 mEt_search_view.getText(), MainActivity.this));
+        mSearchOnEditorActionListener = new SearchOnEditorActionListener(mManager,
+                                        mEt_search_view.getText(), MainActivity.this);
+        mEt_search_view.setOnEditorActionListener(mSearchOnEditorActionListener);
         mIv_search_view.setOnClickListener(new SearchOnClickListener(mManager,
                                           mEt_search_view.getText(), MainActivity.this));
         mEt_nivagation.setOnEditorActionListener(this);
@@ -395,7 +397,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
             case R.id.tv_computer:
                 mIsSdStorageFragment = true;
                 mEt_nivagation.setText(null);
-                Fragment fragment = mManager.findFragmentByTag(Constants.SYSTEM_SPACE_FRAGMENT_TAG);
+                Fragment fragment = mManager.findFragmentByTag(Constants.SYSTEMSPACEFRAGMENT_TAG);
                 if (fragment != null) {
                     FragmentTransaction transaction = mManager.beginTransaction();
                     transaction.remove(fragment).commit();
@@ -585,6 +587,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
 
     @Override
     public void onBackPressed() {
+        mSearchOnEditorActionListener.setInputData(null);
         mManager.findFragmentById(R.id.fl_mian);
         if ((mCurFragment != null) && (mCurFragment == mSdStorageFragment)) {
             if (mSdStorageFragment.canGoBack()) {
