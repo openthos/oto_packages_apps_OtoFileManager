@@ -20,4 +20,16 @@
     <dimen name="image_thumbnail_size">65dp</dimen>
     <dimen name="grid_item_width">135dp</dimen>
     <dimen name="grid_item_height">130dp</dimen>
+
+    <dimen name="dialog_property_padding">10px</dimen>
+    <dimen name="dialog_property_width">380dp</dimen>
+    <dimen name="dialog_property_title_height">32dp</dimen>
+    <dimen name="dialog_property_title_icon_size">20dp</dimen>
+    <dimen name="dialog_property_title_close_size">36dp</dimen>
+    <dimen name="dialog_property_padding1x">8dp</dimen>
+    <dimen name="dialog_property_padding2x">16dp</dimen>
+    <dimen name="dialog_property_padding3x">24dp</dimen>
+    <dimen name="dialog_property_button_width">72sp</dimen>
+    <dimen name="dialog_property_button_height">32sp</dimen>
+    <dimen name="dialog_property_font_size">12sp</dimen>
 </resources>

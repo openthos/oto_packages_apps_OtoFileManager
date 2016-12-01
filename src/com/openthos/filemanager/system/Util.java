@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.graphics.Color;
 
 import com.openthos.filemanager.utils.L;
+import com.openthos.filemanager.system.Constants;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -490,6 +492,23 @@ public class Util {
             add("application/vnd.ms-excel");
         }
     };
+
+   public static String formatFileSize(long fileSize) {
+        DecimalFormat df = new DecimalFormat("#.00");
+        String fileSizeString = "";
+        if (fileSize < Constants.SIZE_KB) {
+            fileSizeString = df.format((double) fileSize) + "B";
+        } else if (fileSize < Constants.SIZE_MB) {
+            fileSizeString = df.format((double) fileSize / Constants.SIZE_KB) + "K";
+        } else if (fileSize < Constants.SIZE_GB) {
+            fileSizeString = df.format((double) fileSize / Constants.SIZE_MB) + "M";
+        } else if (fileSize < Constants.SIZE_TB){
+            fileSizeString = df.format((double) fileSize / Constants.SIZE_GB) + "G";
+        }else {
+            fileSizeString = df.format((double) fileSize / Constants.SIZE_TB) + "T";
+        }
+        return fileSizeString;
+    }
 
     public static String sZipFileMimeType = "application/zip";
 

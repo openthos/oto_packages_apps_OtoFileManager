@@ -23,6 +23,7 @@ import android.widget.ListView;
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.component.MenuDialog;
+import com.openthos.filemanager.component.PropertyDialog;
 import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.utils.T;
@@ -586,9 +587,11 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         if (file == null)
             return;
 
-        InformationDialog dialog = new InformationDialog(mContext, file, mFileViewListener
-                .getFileIconHelper());
-        dialog.show();
+        //InformationDialog dialog = new InformationDialog(mContext, file, mFileViewListener
+        //        .getFileIconHelper());
+        //dialog.show();
+        PropertyDialog propertyDialog = new PropertyDialog(mContext, file.filePath);
+        propertyDialog.showDialog();
         clearSelection();
     }
 

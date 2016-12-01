@@ -50,6 +50,28 @@ public abstract class Constants {
 
     public static final int BAR_Y = 25;
 
+    public static final int LIMIT_LENGTH = 10;
+    public static final int LIMIT_OWNER_READ = 1;
+    public static final int LIMIT_OWNER_WRITE = 2;
+    public static final int LIMIT_OWNER_EXECUTE = 3;
+    public static final int LIMIT_GROUP_READ = 4;
+    public static final int LIMIT_GROUP_WRITE = 5;
+    public static final int LIMIT_GROUP_EXECUTE = 6;
+    public static final int LIMIT_OTHER_READ = 7;
+    public static final int LIMIT_OTHER_WRITE = 8;
+    public static final int LIMIT_OTHER_EXECUTE = 9;
+
+    public static final long SIZE_KB = 1024L;
+    public static final long SIZE_MB = 1024L*1024L;
+    public static final long SIZE_GB = 1024L*1024L*1024L;
+    public static final long SIZE_TB = 1024L*1024L*1024L*1024L;
+
+    public static final int INDEX_LIMIT_BEGIN = 14;
+    public static final int INDEX_LIMIT_END = 24;
+    public static final int INDEX_TIME_BEGIN = 8;
+    public static final int INDEX_TIME_END = 27;
+    public static final int INDEX_7Z_FILENAME = 53;
+
     /**
      *
      * getMIMEType: Get the MIME Types from the file name.
