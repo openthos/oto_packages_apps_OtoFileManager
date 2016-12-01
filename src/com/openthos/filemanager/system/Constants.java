@@ -46,6 +46,7 @@ public abstract class Constants {
     public static final int MENU_SHOWHIDE = 117;
     public static final int MENU_COPY_PATH = 118;
     public static final int OPERATION_UP_LEVEL = 3;
+    public static final int USB_READY = 5;
 
     public static final int BAR_Y = 25;
 

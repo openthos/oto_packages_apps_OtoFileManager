@@ -90,7 +90,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     private Editor mEditor;
     public boolean mIsSdStorageFragment;
 
-    private Handler mHandler = new Handler() {
+    public Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if (!Thread.currentThread().isInterrupted()) {
@@ -103,6 +103,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                         break;
                     case 2:
                         initUsb(0);
+                        break;
+                    case Constants.USB_READY:
+                        mRl_usb.setVisibility(View.VISIBLE);
+                        mTv_computer.performClick();
                         break;
                 }
             }
@@ -160,7 +164,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         }
         if (flags == UsbConnectReceiver.USB_STATE_ON || flags == 2) {
          // T.showShort(MainActivity.this, getResources().getString(R.string.USB_device_connected));
-            mRl_usb.setVisibility(View.VISIBLE);
+         // mRl_usb.setVisibility(View.VISIBLE);
             mTv_storage.setOnClickListener(MainActivity.this);
             mTv_pop_up.setOnClickListener(this);
             mManager.beginTransaction().remove(mSdStorageFragment).commit();
@@ -169,20 +173,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
             mSdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_ATTACHED,
                                                       MainActivity.this);
             setSelectedBackground(R.id.tv_computer);
-            mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment,
-                        Constants.SDSTORAGEFRAGMENT_TAG).show(mSdStorageFragment)
-                                      .addToBackStack(null).commit();
-            T.showShort(MainActivity.this, getResources().getString(R.string.USB_device_connected));
-            mTv_computer.performClick();
+            mManager.beginTransaction().replace(R.id.fl_mian, mSdStorageFragment,
+                        Constants.SDSTORAGEFRAGMENT_TAG).commit();
+          //  T.showShort(MainActivity.this, getResources().getString(R.string.USB_device_connected));
+          //  mTv_computer.performClick();
+            mCurFragment = mSdStorageFragment;
         } else if (flags == UsbConnectReceiver.USB_STATE_OFF) {
             mRl_usb.setVisibility(View.GONE);
+            mManager.beginTransaction().hide(mCurFragment).commit();
             mSdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_DETACHED,
                                                       MainActivity.this);
             setSelectedBackground(R.id.tv_computer);
-            mManager.beginTransaction().remove(mSdStorageFragment).commit();
-            mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment)
-                                      .hide(mSdStorageFragment)
-                                      .addToBackStack(null).commit();
+           // mManager.beginTransaction().remove(mSdStorageFragment).commit();
+            mManager.beginTransaction().replace(R.id.fl_mian, mSdStorageFragment,
+                     Constants.SDSTORAGEFRAGMENT_TAG).commit();
         }
     }
 
@@ -414,6 +418,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                 break;
             case R.id.tv_pop_up:
                 mRl_usb.setVisibility(View.GONE);
+                mManager.beginTransaction().remove(getVisibleFragment()).commit();
+                mSdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_DETACHED,
+                        MainActivity.this);
+                setSelectedBackground(R.id.tv_computer);
+                mManager.beginTransaction().replace(R.id.fl_mian,
+                         mSdStorageFragment,Constants.SDSTORAGEFRAGMENT_TAG)
+                        .commit();
+                mCurFragment = null;
+                mIsSdStorageFragmentHided = false;
+                mTv_computer.performClick();
                 break;
             case R.id.tv_net_service:
                 setFileInfo(R.id.tv_net_service, "", mOnlineNeighborFragment);
@@ -655,8 +669,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         }
         mManager.beginTransaction().show(mSdStorageFragment).commit();
         mCurFragment = mSdStorageFragment;
-        setSelectedBackground(mHashMap.get(mSdStorageFragment.getTag()));
-        mSdStorageFragment.setSelectedCardBg(-1);
+        if (mCurFragment.getTag() != null) {
+            setSelectedBackground(mHashMap.get(mSdStorageFragment.getTag()));
+            mSdStorageFragment.setSelectedCardBg(-1);
+        }
     }
 
     public interface IBackPressedListener {

@@ -159,6 +159,7 @@
     <string name="group_count">5</string>
     <string name="group_title">Camera</string>
     <string name="USB_device_connected">USB设备已连接</string>
+    <string name="USB_device_disconnected">USB设备已移除</string>
     <string name="operation_not_support">当前页面不支持此操作</string>
     <string name="grid_view">网格视图！</string>
     <string name="list_view">列表视图！</string>

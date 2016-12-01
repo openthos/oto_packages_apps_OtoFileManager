@@ -63,6 +63,7 @@ public class SdStorageFragment extends BaseFragment {
     private String mountDiskPath = null;
 //    private Context context;
     private LinearLayout mFragment_sds_ll;
+    private LinearLayout mLlMobileDevice;
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public SdStorageFragment(FragmentManager mManager,
@@ -88,6 +89,7 @@ public class SdStorageFragment extends BaseFragment {
         mRl_android_service = (RelativeLayout) rootView.findViewById(R.id.rl_android_service);
         mRl_mount_space_one = (RelativeLayout) rootView.findViewById(R.id.rl_mount_space_one);
         mRl_mount_space_two = (RelativeLayout) rootView.findViewById(R.id.rl_mount_space_two);
+        mLlMobileDevice = (LinearLayout) rootView.findViewById(R.id.ll_mobile_device);
 
         tv_system_total = (TextView) rootView.findViewById(R.id.tv_system_total);
         tv_system_avail = (TextView) rootView.findViewById(R.id.tv_system_avail);
@@ -160,13 +162,19 @@ public class SdStorageFragment extends BaseFragment {
             String[] usbs = Util.execUsb(cmd);
             if (usbs != null && usbs.length > 0) {
                 showMountDevices(usbs);
+                mLlMobileDevice.setVisibility(View.VISIBLE);
                 mRl_mount_space_one.setVisibility(View.VISIBLE);
                 mRl_mount_space_one.setOnGenericMotionListener
                                    (new MouseRelativeOnGenericMotionListener());
+                T.showShort(mMainActivity, getResources()
+                            .getString(R.string.USB_device_connected));
+                mMainActivity.mHandler.sendEmptyMessage(Constants.USB_READY);
             }
         } else if (usbDeviceIsAttached != null
                    && usbDeviceIsAttached.equals("usb_device_detached")) {
+            mLlMobileDevice.setVisibility(View.GONE);
             mRl_mount_space_one.setVisibility(View.GONE);
+            T.showShort(mMainActivity, getResources().getString(R.string.USB_device_disconnected));
         }
     }
 

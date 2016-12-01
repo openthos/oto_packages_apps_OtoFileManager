@@ -157,6 +157,7 @@
     <string name="group_count">5</string>
     <string name="group_title">Camera</string>
     <string name="USB_device_connected">USB device is connected</string>
+    <string name="USB_device_disconnected">USB device is disconnected</string>
     <string name="operation_not_support">The current page does not support this operation</string>
     <string name="grid_view">View items as a grid of icons!</string>
     <string name="list_view">View items as a list!</string>
