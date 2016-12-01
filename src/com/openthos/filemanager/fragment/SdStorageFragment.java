@@ -33,6 +33,7 @@ import java.util.ArrayList;
 
 public class SdStorageFragment extends BaseFragment {
     private static final String TAG = SdStorageFragment.class.getSimpleName();
+    private static final String PERSONAL_TAG = "MY_SPACE";
 //    private String usbDeviceIsAttached;
 
     ArrayList<FileInfo> mFileInfoArrayList = null;
@@ -43,6 +44,7 @@ public class SdStorageFragment extends BaseFragment {
     private RelativeLayout mRl_android_service;
     private RelativeLayout mRl_mount_space_one;
     private RelativeLayout mRl_mount_space_two;
+    private RelativeLayout mRl_personal_space;
     private TextView tv_system_total;
     private TextView tv_system_avail;
     private ProgressBar pb_system;
@@ -89,6 +91,7 @@ public class SdStorageFragment extends BaseFragment {
         mRl_android_service = (RelativeLayout) rootView.findViewById(R.id.rl_android_service);
         mRl_mount_space_one = (RelativeLayout) rootView.findViewById(R.id.rl_mount_space_one);
         mRl_mount_space_two = (RelativeLayout) rootView.findViewById(R.id.rl_mount_space_two);
+        mRl_personal_space = (RelativeLayout) rootView.findViewById(R.id.rl_personal_space);
         mLlMobileDevice = (LinearLayout) rootView.findViewById(R.id.ll_mobile_device);
 
         tv_system_total = (TextView) rootView.findViewById(R.id.tv_system_total);
@@ -184,6 +187,7 @@ public class SdStorageFragment extends BaseFragment {
         mRl_android_system.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
         mRl_sd_space.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
         mRl_android_service.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
+        mRl_personal_space.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
     }
 
     private class MouseRelativeOnGenericMotionListener implements View.OnGenericMotionListener {
@@ -232,6 +236,8 @@ public class SdStorageFragment extends BaseFragment {
             case R.id.rl_android_service:
                 setDiskClickInfo(R.id.rl_android_service, Constants.YUN_SPACE_FRAGMENT, null);
                 break;
+            case R.id.rl_personal_space:
+                setDiskClickInfo(R.id.rl_personal_space, PERSONAL_TAG, null);
             default:
                 setSelectedCardBg(-1);
                 break;
@@ -244,8 +250,10 @@ public class SdStorageFragment extends BaseFragment {
             lastBackTime = currentBackTime;
         } else {
             if (mCurFragment != null) {
-                mFileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
-                copyOrMove = ((SystemSpaceFragment) mCurFragment).getCurCopyOrMoveMode();
+                if (mCurFragment instanceof SystemSpaceFragment) {
+                    mFileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
+                    copyOrMove = ((SystemSpaceFragment) mCurFragment).getCurCopyOrMoveMode();
+                }
             }
             if (mFileInfoArrayList != null && copyOrMove != null) {
                 T.showShort(context,
@@ -253,7 +261,11 @@ public class SdStorageFragment extends BaseFragment {
             }
 //            SystemSpaceFragment  systemSpaceFragment = new SystemSpaceFragment(tag,
 //                                                       path, fileInfoArrayList, copyOrMove);
-            mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, copyOrMove);
+            if (PERSONAL_TAG.equals(tag)) {
+                mCurFragment = new PersonalSpaceFragment();
+            } else {
+                mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, copyOrMove);
+            }
             FragmentTransaction transaction = mManager.beginTransaction();
             transaction.hide(mMainActivity.mCurFragment);
             transaction.add(R.id.fl_mian, mCurFragment, Constants.SYSTEM_SPACE_FRAGMENT_TAG)
@@ -311,6 +323,9 @@ public class SdStorageFragment extends BaseFragment {
         if (baseFragment instanceof SystemSpaceFragment) {
             SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) baseFragment;
             canGoBack = systemSpaceFragment.canGoBack();
+        } else {
+            PersonalSpaceFragment personalSpaceFragment = (PersonalSpaceFragment) baseFragment;
+            canGoBack = personalSpaceFragment.canGoBack();
         }
         return canGoBack;
     }
@@ -320,6 +335,9 @@ public class SdStorageFragment extends BaseFragment {
         if (baseFragment instanceof SystemSpaceFragment) {
             SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) baseFragment;
             systemSpaceFragment.goBack();
+        } else {
+            PersonalSpaceFragment personalSpaceFragment = (PersonalSpaceFragment) baseFragment;
+            personalSpaceFragment.goBack();
         }
     }
 }

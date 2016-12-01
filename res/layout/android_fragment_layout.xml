@@ -39,6 +39,40 @@
         android:visibility="visible">
 
         <RelativeLayout
+            android:id="@+id/rl_personal_space"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/sd_page_bg_selector"
+            android:gravity="center"
+            android:paddingBottom="20dp"
+            android:paddingTop="10dp">
+
+            <ImageView
+                android:id="@+id/iv_personal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/storage" />
+
+            <TextView
+                android:id="@+id/tv_personal_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"
+                android:text="@string/text_personal"
+                android:layout_toRightOf="@id/iv_personal"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3" />
+
+        <RelativeLayout
             android:id="@+id/rl_android_system"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

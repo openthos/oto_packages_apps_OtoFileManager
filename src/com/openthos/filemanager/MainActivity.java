@@ -38,6 +38,7 @@ import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.utils.T;
 import com.openthos.filemanager.fragment.SystemSpaceFragment;
 import com.openthos.filemanager.system.Constants;
+import com.openthos.filemanager.fragment.PersonalSpaceFragment;
 import java.util.HashMap;
 import java.util.List;
 import java.io.File;
@@ -78,7 +79,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     private FragmentManager mManager = getSupportFragmentManager();
     private PopWinShare mPopWinShare;
     public Fragment mCurFragment;
-    private SdStorageFragment mSdStorageFragment;
+    public SdStorageFragment mSdStorageFragment;
     public boolean mIsSdStorageFragmentHided;
     private SystemSpaceFragment mDeskFragment, mMusicFragment, mVideoFragment,
                                 mPictrueFragment, mAddressFragment;
@@ -154,6 +155,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         mHashMap.put(Constants.DETAILFRAGMENT_TAG,R.id.tv_picture);
         mHashMap.put(Constants.SYSTEMSPACEFRAGMENT_TAG,R.id.tv_storage);
         mHashMap.put(Constants.ADDRESSFRAGMENT_TAG,R.id.tv_storage);
+        mHashMap.put(Constants.SYSTEM_SPACE_FRAGMENT_TAG, R.id.tv_computer);
     }
 
     private void initUsb(int flags) {
@@ -471,6 +473,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
             transaction.hide(mCurFragment);
             if (mIsSdStorageFragmentHided) {
                 transaction.hide(mSdStorageFragment.mCurFragment);
+                if (mSdStorageFragment.mCurFragment instanceof PersonalSpaceFragment) {
+                    PersonalSpaceFragment personalSpaceFragment =
+                               (PersonalSpaceFragment) mSdStorageFragment.mCurFragment;
+                    transaction.hide(personalSpaceFragment);
+                    if (personalSpaceFragment.mCurFragment != null) {
+                        transaction.hide(personalSpaceFragment.mCurFragment);
+                    }
+                }
                 mIsSdStorageFragmentHided = false;
             }
         }
@@ -611,7 +621,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                     mManager.popBackStackImmediate();
                     mCurFragment = getVisibleFragment();
                     if (mCurFragment != null) {
-                        setSelectedBackground(mHashMap.get(mCurFragment.getTag()));
+                        if (mCurFragment.getTag() != null) {
+                            setSelectedBackground(mHashMap.get(mCurFragment.getTag()));
+                        }
                     } else {
                         mManager.beginTransaction().show(mSdStorageFragment).commit();
                         mCurFragment = mSdStorageFragment;

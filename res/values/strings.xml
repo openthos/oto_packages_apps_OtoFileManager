@@ -183,4 +183,7 @@
     <string name="file_type_folder">Folder</string>
     <string name="file_type_file">File</string>
     <string name="address_search_false">Invalid Address</string>
+    <string name="downloads">Downloads</string>
+    <string name="docement">Docement</string>
+    <string name="text_personal">My Space</string>
 </resources>
