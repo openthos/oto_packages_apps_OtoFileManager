@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.io.File;
 import android.widget.Toast;
+import java.io.IOException;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener,
                                                TextView.OnEditorActionListener {
@@ -65,6 +66,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     private TextView mTv_computer;
     private TextView mTv_picture;
     private TextView mTv_storage;
+    private TextView mTv_document;
+    private TextView mTv_download;
     private TextView mTv_net_service;
     private ImageView mIv_list_view;
     private ImageView mIv_grid_view;
@@ -82,7 +85,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     public SdStorageFragment mSdStorageFragment;
     public boolean mIsSdStorageFragmentHided;
     private SystemSpaceFragment mDeskFragment, mMusicFragment, mVideoFragment,
-                                mPictrueFragment, mAddressFragment;
+                                mPictrueFragment, mAddressFragment,
+                                mDocumentFragment, mDownloadFragment;
     private OnlineNeighborFragment mOnlineNeighborFragment;
     private UsbConnectReceiver mReceiver;
     private String[] mUsbs;
@@ -132,6 +136,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         mTv_video = (TextView) findViewById(R.id.tv_video);
         mTv_computer = (TextView) findViewById(R.id.tv_computer);
         mTv_picture = (TextView) findViewById(R.id.tv_picture);
+        mTv_document = (TextView) findViewById(R.id.tv_document);
+        mTv_download = (TextView) findViewById(R.id.tv_download);
         mTv_storage = (TextView) findViewById(R.id.tv_storage);
         mTv_net_service = (TextView) findViewById(R.id.tv_net_service);
         mIv_list_view = (ImageView) findViewById(R.id.iv_list_view);
@@ -145,16 +151,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         mRl_usb = (RelativeLayout) findViewById(R.id.rl_usb);
         mIv_grid_view.setSelected(true);
 
+        File file = new File(Constants.DOCUMENT_PATH);
+        if (!file.exists() && !file.isDirectory()) {
+            file.mkdir();
+        }
+
         mHashMap = new HashMap<>();
-        mHashMap.put(Constants.DESKFRAGMENT_TAG,R.id.tv_desk);
-        mHashMap.put(Constants.MUSICFRAGMENT_TAG,R.id.tv_music);
-        mHashMap.put(Constants.VIDEOFRAGMENT_TAG,R.id.tv_video);
-        mHashMap.put(Constants.PICTRUEFRAGMENT_TAG,R.id.tv_picture);
-        mHashMap.put(Constants.SDSTORAGEFRAGMENT_TAG,R.id.tv_computer);
-        mHashMap.put(Constants.ONLINENEIGHBORFRAGMENT_TAG,R.id.tv_net_service);
-        mHashMap.put(Constants.DETAILFRAGMENT_TAG,R.id.tv_picture);
-        mHashMap.put(Constants.SYSTEMSPACEFRAGMENT_TAG,R.id.tv_storage);
-        mHashMap.put(Constants.ADDRESSFRAGMENT_TAG,R.id.tv_storage);
+        mHashMap.put(Constants.DESKFRAGMENT_TAG, R.id.tv_desk);
+        mHashMap.put(Constants.MUSICFRAGMENT_TAG, R.id.tv_music);
+        mHashMap.put(Constants.VIDEOFRAGMENT_TAG, R.id.tv_video);
+        mHashMap.put(Constants.PICTRUEFRAGMENT_TAG, R.id.tv_picture);
+        mHashMap.put(Constants.DOCUMENTFRAGMENT_TAG, R.id.tv_document);
+        mHashMap.put(Constants.DOWNLOADFRRAGMENT_TAG, R.id.tv_download);
+        mHashMap.put(Constants.SDSTORAGEFRAGMENT_TAG, R.id.tv_computer);
+        mHashMap.put(Constants.ONLINENEIGHBORFRAGMENT_TAG, R.id.tv_net_service);
+        mHashMap.put(Constants.DETAILFRAGMENT_TAG, R.id.tv_picture);
+        mHashMap.put(Constants.SYSTEMSPACEFRAGMENT_TAG, R.id.tv_storage);
+        mHashMap.put(Constants.ADDRESSFRAGMENT_TAG, R.id.tv_storage);
         mHashMap.put(Constants.SYSTEM_SPACE_FRAGMENT_TAG, R.id.tv_computer);
     }
 
@@ -225,6 +238,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
             transaction.add(R.id.fl_mian, mPictrueFragment,Constants.PICTRUEFRAGMENT_TAG)
                        .hide(mPictrueFragment);
         }
+        if (mDocumentFragment == null) {
+            mDocumentFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
+                                                        Constants.DOCUMENT_PATH, null, null);
+            transaction.add(R.id.fl_mian, mDocumentFragment, Constants.DOCUMENTFRAGMENT_TAG)
+                       .hide(mDocumentFragment);
+        }
+        if (mDownloadFragment == null) {
+            mDownloadFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
+                                                        Constants.DOWNLOAD_PATH, null, null);
+            transaction.add(R.id.fl_mian, mDownloadFragment, Constants.DOWNLOADFRRAGMENT_TAG)
+                       .hide(mDownloadFragment);
+        }
         if (mOnlineNeighborFragment == null) {
             mOnlineNeighborFragment = new OnlineNeighborFragment();
             transaction.add(R.id.fl_mian, mOnlineNeighborFragment,
@@ -244,6 +269,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         mTv_video.setOnClickListener(this);
         mTv_computer.setOnClickListener(this);
         mTv_picture.setOnClickListener(this);
+        mTv_document.setOnClickListener(this);
+        mTv_download.setOnClickListener(this);
         mTv_net_service.setOnClickListener(this);
         mIv_list_view.setOnClickListener(this);
         mIv_grid_view.setOnClickListener(this);
@@ -400,6 +427,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
             case R.id.tv_picture:
                 setFileInfo(R.id.tv_picture, Constants.PICTURES_PATH, mPictrueFragment);
                 break;
+            case R.id.tv_document:
+                setFileInfo(R.id.tv_document, Constants.DOCUMENT_PATH, mDocumentFragment);
+                break;
+            case R.id.tv_download:
+                setFileInfo(R.id.tv_download, Constants.DOWNLOAD_PATH, mDownloadFragment);
+                break;
             case R.id.tv_computer:
                 mIsSdStorageFragment = true;
                 mEt_nivagation.setText(null);
@@ -501,6 +534,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                 mTv_picture.setSelected(false);
                 mTv_storage.setSelected(false);
                 mTv_net_service.setSelected(false);
+                mTv_document.setSelected(false);
+                mTv_download.setSelected(false);
                 break;
             case R.id.tv_desk:
                 mTv_desk.setSelected(true);
@@ -510,6 +545,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                 mTv_picture.setSelected(false);
                 mTv_storage.setSelected(false);
                 mTv_net_service.setSelected(false);
+                mTv_document.setSelected(false);
+                mTv_download.setSelected(false);
                 break;
             case R.id.tv_music:
                 mTv_music.setSelected(true);
@@ -519,6 +556,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                 mTv_picture.setSelected(false);
                 mTv_storage.setSelected(false);
                 mTv_net_service.setSelected(false);
+                mTv_document.setSelected(false);
+                mTv_download.setSelected(false);
                 break;
             case R.id.tv_video:
                 mTv_music.setSelected(false);
@@ -528,6 +567,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                 mTv_picture.setSelected(false);
                 mTv_storage.setSelected(false);
                 mTv_net_service.setSelected(false);
+                mTv_document.setSelected(false);
+                mTv_download.setSelected(false);
                 break;
             case R.id.tv_picture:
                 mTv_music.setSelected(false);
@@ -537,6 +578,30 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                 mTv_picture.setSelected(true);
                 mTv_storage.setSelected(false);
                 mTv_net_service.setSelected(false);
+                mTv_document.setSelected(false);
+                mTv_download.setSelected(false);
+                break;
+            case R.id.tv_document:
+                mTv_music.setSelected(false);
+                mTv_desk.setSelected(false);
+                mTv_video.setSelected(false);
+                mTv_computer.setSelected(false);
+                mTv_picture.setSelected(false);
+                mTv_storage.setSelected(false);
+                mTv_net_service.setSelected(false);
+                mTv_document.setSelected(true);
+                mTv_download.setSelected(false);
+                break;
+            case R.id.tv_download:
+                mTv_music.setSelected(false);
+                mTv_desk.setSelected(false);
+                mTv_video.setSelected(false);
+                mTv_computer.setSelected(false);
+                mTv_picture.setSelected(false);
+                mTv_storage.setSelected(false);
+                mTv_net_service.setSelected(false);
+                mTv_document.setSelected(false);
+                mTv_download.setSelected(true);
                 break;
             case R.id.tv_storage:
                 mTv_music.setSelected(false);

@@ -205,4 +205,8 @@
     <string name="dialog_property_confirm">OK</string>
     <string name="dialog_property_cancel">Cancel</string>
     <string name="dialog_property_apply">Apply</string>
+    <string name="qq_image">QQ_Images</string>
+    <string name="qq_file">QQfile_recv</string>
+    <string name="winxin">WinXin</string>
+    <string name="baidu_disk">BaiduNetdisk</string>
 </resources>

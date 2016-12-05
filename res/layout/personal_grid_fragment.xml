@@ -135,4 +135,112 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/ll_personal_qq_image"
+        android:layout_width="@dimen/grid_item_width"
+        android:layout_height="@dimen/grid_item_height"
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="1dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:src="@mipmap/folder" />
+
+        <TextView
+            android:id="@+id/personal_qq_image"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="@string/qq_image"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_personal_qq_file"
+        android:layout_width="@dimen/grid_item_width"
+        android:layout_height="@dimen/grid_item_height"
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="1dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:src="@mipmap/folder" />
+
+        <TextView
+            android:id="@+id/personal_qq_file"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="@string/qq_file"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_personal_weixin"
+        android:layout_width="@dimen/grid_item_width"
+        android:layout_height="@dimen/grid_item_height"
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="1dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:src="@mipmap/folder" />
+
+        <TextView
+            android:id="@+id/personal_file_weixin"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="@string/winxin"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_personal_baidudisk"
+        android:layout_width="@dimen/grid_item_width"
+        android:layout_height="@dimen/grid_item_height"
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="1dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:src="@mipmap/folder" />
+
+        <TextView
+            android:id="@+id/personal_file_baidudisk"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="@string/baidu_disk"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
+
 </LinearLayout>

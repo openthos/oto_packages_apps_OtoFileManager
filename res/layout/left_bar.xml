@@ -20,29 +20,41 @@
             android:textColor="@android:color/darker_gray"
             android:textSize="13sp" />
 
-            <TextView
-                android:id="@+id/tv_desk"
-                style="@style/textSet"
-                android:drawableLeft="@drawable/left_desk_selector"
-                android:text="@string/desk" />
+        <TextView
+            android:id="@+id/tv_desk"
+            style="@style/textSet"
+            android:drawableLeft="@drawable/left_desk_selector"
+            android:text="@string/desk" />
 
-            <TextView
-                android:id="@+id/tv_music"
-                style="@style/textSet"
-                android:drawableLeft="@drawable/left_music_selector"
-                android:text="@string/music" />
+        <TextView
+            android:id="@+id/tv_music"
+            style="@style/textSet"
+            android:drawableLeft="@drawable/left_music_selector"
+            android:text="@string/music" />
 
-            <TextView
-                android:id="@+id/tv_video"
-                style="@style/textSet"
-                android:drawableLeft="@drawable/left_video_selector"
-                android:text="@string/video" />
+        <TextView
+            android:id="@+id/tv_video"
+            style="@style/textSet"
+            android:drawableLeft="@drawable/left_video_selector"
+            android:text="@string/video" />
 
-            <TextView
-                android:id="@+id/tv_picture"
-                style="@style/textSet"
-                android:drawableLeft="@drawable/left_picture_selector"
-                android:text="@string/picture" />
+        <TextView
+            android:id="@+id/tv_picture"
+            style="@style/textSet"
+            android:drawableLeft="@drawable/left_picture_selector"
+            android:text="@string/picture" />
+
+        <TextView
+            android:id="@+id/tv_document"
+            style="@style/textSet"
+            android:drawableLeft="@drawable/left_picture_selector"
+            android:text="@string/docement" />
+
+        <TextView
+            android:id="@+id/tv_download"
+            style="@style/textSet"
+            android:drawableLeft="@drawable/left_picture_selector"
+            android:text="@string/downloads" />
 
         <TextView
             android:id="@+id/left_local_up"
