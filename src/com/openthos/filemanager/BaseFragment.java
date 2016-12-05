@@ -35,6 +35,7 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
     public String directorPath;
     public ArrayList<FileInfo> mFileInfoList;
     public FileViewInteractionHub.CopyOrMove mCopyOrMove;
+    public FileViewInteractionHub mFileViewInteractionHub;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,

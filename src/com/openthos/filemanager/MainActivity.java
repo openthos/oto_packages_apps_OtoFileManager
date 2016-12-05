@@ -2,6 +2,7 @@ package com.openthos.filemanager;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -12,6 +13,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 import android.support.v4.app.FragmentTransaction;
 import android.view.inputmethod.EditorInfo;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.openthos.filemanager.component.PopOnClickLintener;
 import com.openthos.filemanager.component.PopWinShare;
@@ -37,8 +40,13 @@ import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.utils.T;
 import com.openthos.filemanager.fragment.SystemSpaceFragment;
+import com.openthos.filemanager.system.IFileInteractionListener;
 import com.openthos.filemanager.system.Constants;
+import com.openthos.filemanager.system.FileInfo;
+import com.openthos.filemanager.system.FileOperationHelper;
+import com.openthos.filemanager.system.FileSortHelper;
 import com.openthos.filemanager.fragment.PersonalSpaceFragment;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.io.File;
@@ -95,29 +103,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     private Editor mEditor;
     public boolean mIsSdStorageFragment;
 
-    public Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            if (!Thread.currentThread().isInterrupted()) {
-                switch (msg.what) {
-                    case UsbConnectReceiver.USB_STATE_ON:
-                        initUsb(UsbConnectReceiver.USB_STATE_ON);
-                        break;
-                    case UsbConnectReceiver.USB_STATE_OFF:
-                        initUsb(UsbConnectReceiver.USB_STATE_OFF);
-                        break;
-                    case 2:
-                        initUsb(0);
-                        break;
-                    case Constants.USB_READY:
-                        mRl_usb.setVisibility(View.VISIBLE);
-                        mTv_computer.performClick();
-                        break;
-                }
-            }
-            super.handleMessage(msg);
-        }
-    };
+    public static Handler mHandler;
     private boolean mIsFirst = true;
     private HashMap<String, Integer> mHashMap;
     private SearchOnEditorActionListener mSearchOnEditorActionListener;
@@ -169,6 +155,42 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         mHashMap.put(Constants.SYSTEMSPACEFRAGMENT_TAG, R.id.tv_storage);
         mHashMap.put(Constants.ADDRESSFRAGMENT_TAG, R.id.tv_storage);
         mHashMap.put(Constants.SYSTEM_SPACE_FRAGMENT_TAG, R.id.tv_computer);
+        mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                if (!Thread.currentThread().isInterrupted()) {
+                    switch (msg.what) {
+                        case UsbConnectReceiver.USB_STATE_ON:
+                            initUsb(UsbConnectReceiver.USB_STATE_ON);
+                            break;
+                        case UsbConnectReceiver.USB_STATE_OFF:
+                            initUsb(UsbConnectReceiver.USB_STATE_OFF);
+                            break;
+                        case 2:
+                            initUsb(0);
+                            break;
+                        case Constants.USB_READY:
+                            mRl_usb.setVisibility(View.VISIBLE);
+                            mTv_computer.performClick();
+                            break;
+                        case Constants.REFRESH:
+                            ((IFileInteractionListener) getVisibleFragment())
+                                         .onRefreshFileList((String) msg.obj, new FileSortHelper());
+                            break;
+                        case Constants.COPY:
+                            copy();
+                            break;
+                        case Constants.CUT:
+                            cut();
+                            break;
+                        case Constants.PASTE:
+                            paste();
+                            break;
+                    }
+                }
+                super.handleMessage(msg);
+            }
+        };
     }
 
     private void initUsb(int flags) {
@@ -396,12 +418,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         }
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_X) {
             sendBroadcastMessage("iv_menu", "pop_cut", false);
+            cut();
         }
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_C) {
             sendBroadcastMessage("iv_menu", "pop_copy", false);
+            copy();
         }
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_V) {
             sendBroadcastMessage("iv_menu", "pop_paste", false);
+            paste();
         }
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_Z) {
             sendBroadcastMessage("iv_menu", "pop_cacel", false);
@@ -410,6 +435,78 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
             sendBroadcastMessage("iv_menu", "pop_delete", false);
         }
         return false;
+    }
+
+    private void cut() {
+        ArrayList<FileInfo> list =
+               ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.getSelectedFileList();
+        if (!list.isEmpty()) {
+            ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE))
+                      .setText(Intent.EXTRA_CROP_FILE_HEADER + list.get(list.size() - 1).filePath);
+        }
+    }
+
+    public void paste() {
+        String sourcePath = "";
+        String destPath =
+                    ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.getCurrentPath();
+        try {
+            sourcePath =
+               (String) ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE)).getText();
+        } catch (ClassCastException e) {
+            sourcePath = "";
+        }
+        if (!TextUtils.isEmpty(sourcePath) && sourcePath.startsWith(Intent.EXTRA_FILE_HEADER)) {
+            new CopyThread(sourcePath.replace(Intent.EXTRA_FILE_HEADER, ""), destPath).start();
+        } else if (!TextUtils.isEmpty(sourcePath)
+                                        && sourcePath.startsWith(Intent.EXTRA_CROP_FILE_HEADER)) {
+            new CropThread(sourcePath.replace(Intent.EXTRA_CROP_FILE_HEADER, ""), destPath).start();
+        }
+    }
+
+    class CopyThread extends Thread {
+        String mSourcePath;
+        String mDestPath;
+
+        public CopyThread(String sourcePath, String destPath) {
+            super();
+            mSourcePath = sourcePath;
+            mDestPath = destPath;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            FileOperationHelper.CopyFile(
+                                 mSourcePath.replace(Intent.EXTRA_FILE_HEADER, ""), mDestPath);
+        }
+    }
+
+    class CropThread extends Thread {
+        String mSourcePath;
+        String mDestPath;
+
+        public CropThread(String sourcePath, String destPath) {
+            super();
+            mSourcePath = sourcePath;
+            mDestPath = destPath;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            FileOperationHelper.MoveFile(
+                                 mSourcePath.replace(Intent.EXTRA_CROP_FILE_HEADER, ""), mDestPath);
+        }
+    }
+
+    public void copy() {
+        ArrayList<FileInfo> list =
+                ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.getSelectedFileList();
+        if (!list.isEmpty()) {
+            ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE))
+                            .setText(Intent.EXTRA_FILE_HEADER + list.get(list.size() - 1).filePath);
+        }
     }
 
     @Override

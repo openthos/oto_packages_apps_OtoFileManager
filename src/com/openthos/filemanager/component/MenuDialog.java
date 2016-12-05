@@ -2,6 +2,8 @@ package com.openthos.filemanager.component;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -13,7 +15,9 @@ import android.widget.TextView;
 import android.app.Activity;
 import android.widget.LinearLayout;
 import android.view.Display;
+import android.text.TextUtils;
 
+import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.system.FileViewInteractionHub;
 import com.openthos.filemanager.system.Constants;
@@ -65,12 +69,21 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
 
     private void initData() {
         dialog_copy.setOnClickListener(this);
-        if (!isCopy || mFileViewInteractionHub.getSelectedFileList() == null){
-            dialog_paste.setTextColor(Color.LTGRAY);
-        }else {
+        String sourcePath = "";
+        try {
+            sourcePath = (String)
+                 ((ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE)).getText();
+        } catch (ClassCastException e) {
+            sourcePath = "";
+        }
+        if (!TextUtils.isEmpty(sourcePath)
+              && (sourcePath.startsWith(Intent.EXTRA_FILE_HEADER)
+                   || sourcePath.startsWith(Intent.EXTRA_CROP_FILE_HEADER))) {
             dialog_paste.setTextColor(Color.BLACK);
             dialog_paste.setOnClickListener(this);
             isCopy = false;
+        } else {
+            dialog_paste.setTextColor(Color.LTGRAY);
         }
         dialog_rename.setOnClickListener(this);
         dialog_delete.setOnClickListener(this);
@@ -108,16 +121,18 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.dialog_copy:
                 try {
-                    mFileViewInteractionHub.doOnOperationCopy();
+                    //mFileViewInteractionHub.doOnOperationCopy();
                     isCopy = true;
+                    MainActivity.mHandler.sendEmptyMessage(Constants.COPY);
                     mFileViewInteractionHub.dismissContextDialog();
                 }catch (Exception e){
                     e.printStackTrace();
                 }
                 break;
             case R.id.dialog_paste:
-                mFileViewInteractionHub.getSelectedFileList();
-                mFileViewInteractionHub.onOperationButtonConfirm();
+                //mFileViewInteractionHub.getSelectedFileList();
+                //mFileViewInteractionHub.onOperationButtonConfirm();
+                MainActivity.mHandler.sendEmptyMessage(Constants.PASTE);
                 mFileViewInteractionHub.dismissContextDialog();
                 break;
             case R.id.dialog_rename:
@@ -130,7 +145,8 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
                 break;
             case R.id.dialog_move:
                 isCopy = true;
-                mFileViewInteractionHub.onOperationMove();
+                //mFileViewInteractionHub.onOperationMove();
+                MainActivity.mHandler.sendEmptyMessage(Constants.CUT);
                 mFileViewInteractionHub.dismissContextDialog();
                 break;
             case R.id.dialog_send:

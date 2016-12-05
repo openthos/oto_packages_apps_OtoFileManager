@@ -2,6 +2,7 @@ package com.openthos.filemanager.system;
 
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -13,6 +14,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.openthos.filemanager.MainActivity;
 
 public class FileOperationHelper {
     private static final String LOG_TAG = "FileOperation";
@@ -218,7 +221,7 @@ public class FileOperationHelper {
         });
         return true;
     }
-    //删除1个文件
+
     protected void DeleteFile(FileInfo f) {
         if (f == null) {
             Log.e(LOG_TAG, "DeleteFile: null parameter");
@@ -255,6 +258,12 @@ public class FileOperationHelper {
             Runtime.getRuntime().exec(new String[] {command, arg, srcFile,
                                                     destFile.getAbsolutePath()});
         } catch (IOException e) {
+        }
+        try {
+            MainActivity.mHandler.sendMessage(
+                               Message.obtain(MainActivity.mHandler, Constants.REFRESH, destDir));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -363,5 +372,22 @@ public class FileOperationHelper {
             Log.e(TAG, "e.toString()=" + e.toString());
             return null;
         }
+    }
+
+    public static void CopyFile(String sourcefile, String dest) {
+        String command = "/system/xbin/cp";
+        String arg = "-v";
+        File file = new File(sourcefile);
+        if (file.isDirectory()) {
+            arg = "-rv";
+        }
+        copyOrMoveFile(command, arg, sourcefile, dest);
+    }
+
+    public static boolean MoveFile(String sourcefile, String dest) {
+        String command = "/system/xbin/mv";
+        String arg = "-v";
+        copyOrMoveFile(command, arg, sourcefile, dest);
+        return false;
     }
 }

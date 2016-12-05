@@ -47,7 +47,6 @@ public class SystemSpaceFragment extends BaseFragment implements
     private static final String TAG = SystemSpaceFragment.class.getSimpleName();
     public static final String ROOT_DIRECTORY = "root_directory";
     private FileListAdapter mAdapter;
-    private FileViewInteractionHub mFileViewInteractionHub;
     private FileCategoryHelper mFileCagetoryHelper;
     private FileIconHelper mFileIconHelper;
     private ArrayList<FileInfo> mFileNameList = new ArrayList<>();
@@ -87,7 +86,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                 case "com.switchmenu":
                     if (null != intent.getExtras().getString("pop_menu")) {
                         String pop_menu = intent.getExtras().getString("pop_menu");
-                        selectorMenuId(pop_menu);
+                        //selectorMenuId(pop_menu);
                     }
                     break;
                 case "com.isCtrlPress":

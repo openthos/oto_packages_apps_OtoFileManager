@@ -521,4 +521,8 @@ public abstract class Constants {
             {"zac", "application/x-zaurus-zac"},
             {"zip", "application/zip"},
     };
+    public static final int COPY = 0x1001;
+    public static final int CUT = 0x1002;
+    public static final int PASTE = 0x1003;
+    public static final int REFRESH = 0x1004;
 }
