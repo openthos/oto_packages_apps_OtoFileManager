@@ -210,4 +210,5 @@
     <string name="winxin">WinXin</string>
     <string name="baidu_disk">BaiduNetdisk</string>
     <string name="USB_recognising">USB_recognising</string>
+    <string name="copy_info">Do in progress...</string>
 </resources>

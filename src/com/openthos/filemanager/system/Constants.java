@@ -526,4 +526,8 @@ public abstract class Constants {
     public static final int CUT = 0x1002;
     public static final int PASTE = 0x1003;
     public static final int REFRESH = 0x1004;
+    public static final int COPY_INFO_SHOW = 0x1005;
+    public static final int COPY_INFO_HIDE = 0x1006;
+    public static final int COPY_INFO = 0x1007;
+
 }

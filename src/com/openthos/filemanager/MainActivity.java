@@ -25,6 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.app.ProgressDialog;
 
+import com.openthos.filemanager.component.CopyInfoDialog;
 import com.openthos.filemanager.component.PopOnClickLintener;
 import com.openthos.filemanager.component.PopWinShare;
 import com.openthos.filemanager.component.SearchOnClickListener;
@@ -109,6 +110,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     private HashMap<String, Integer> mHashMap;
     private SearchOnEditorActionListener mSearchOnEditorActionListener;
     private ProgressDialog mProgressDialog;
+    private CopyInfoDialog mCopyInfoDialog;
 
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -158,6 +160,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         mHashMap.put(Constants.ADDRESSFRAGMENT_TAG, R.id.tv_storage);
         mHashMap.put(Constants.SYSTEM_SPACE_FRAGMENT_TAG, R.id.tv_computer);
         mHashMap.put(Constants.USBFRAGMENT_TAG,R.id.tv_storage);
+        mCopyInfoDialog = CopyInfoDialog.getInstance(MainActivity.this);
         mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -182,7 +185,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                         case Constants.REFRESH:
                             ((IFileInteractionListener) getVisibleFragment())
                                          .onRefreshFileList((String) msg.obj, new FileSortHelper());
-
                             resetClipboard();
                             break;
                         case Constants.COPY:
@@ -193,6 +195,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                             break;
                         case Constants.PASTE:
                             paste();
+                            break;
+                        case Constants.COPY_INFO_SHOW:
+                            mCopyInfoDialog.showDialog();
+                            mCopyInfoDialog.changeTitle(MainActivity.this.getResources()
+                                                                    .getString(R.string.copy_info));
+                            break;
+                        case Constants.COPY_INFO:
+                            mCopyInfoDialog.changeMsg((String) msg.obj);
+                            break;
+                        case Constants.COPY_INFO_HIDE:
+                            mCopyInfoDialog.cancel();
                             break;
                     }
                 }
@@ -434,14 +447,29 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         }
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_X) {
             sendBroadcastMessage("iv_menu", "pop_cut", false);
+            if (getVisibleFragment() instanceof PersonalSpaceFragment
+                                       || getVisibleFragment() instanceof SdStorageFragment
+                                       || getVisibleFragment() instanceof OnlineNeighborFragment) {
+                return false;
+            }
             cut();
         }
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_C) {
             sendBroadcastMessage("iv_menu", "pop_copy", false);
+            if (getVisibleFragment() instanceof PersonalSpaceFragment
+                                       || getVisibleFragment() instanceof SdStorageFragment
+                                       || getVisibleFragment() instanceof OnlineNeighborFragment) {
+                return false;
+            }
             copy();
         }
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_V) {
             sendBroadcastMessage("iv_menu", "pop_paste", false);
+            if (getVisibleFragment() instanceof PersonalSpaceFragment
+                                       || getVisibleFragment() instanceof SdStorageFragment
+                                       || getVisibleFragment() instanceof OnlineNeighborFragment) {
+                return false;
+            }
             paste();
         }
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_Z) {
@@ -488,7 +516,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         } catch (ClassCastException e) {
             sourcePath = "";
         }
-        if (!TextUtils.isEmpty(sourcePath) && sourcePath.startsWith("OtoCropFile:///")) {
+        if (!TextUtils.isEmpty(sourcePath)
+               && sourcePath.startsWith(Intent.EXTRA_CROP_FILE_HEADER)) {
             ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE)).setText("");
         }
     }

@@ -261,9 +261,20 @@ public class FileOperationHelper {
                                                     destFile.getAbsolutePath()});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
+            MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_SHOW);
+            int i = 0;
             while ((line = in.readLine()) != null) {
+                if (i == 0) {
+                    MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
+                                                                Constants.COPY_INFO, line));
+                    i = 10;
+                } else {
+                    i--;
+                }
             }
+            MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
         } catch (IOException e) {
+            MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
         } finally {
             if (in != null) {
                 try {
@@ -282,7 +293,7 @@ public class FileOperationHelper {
     }
 
     private void CopyFile(FileInfo f, String dest) {
-        String command = "/system/xbin/cp";
+        String command = "/system/bin/cp";
         String arg = "-v";
         File file = new File(f.filePath);
         if (file.isDirectory()){
@@ -319,7 +330,7 @@ public class FileOperationHelper {
     }
 
     private boolean MoveFile(FileInfo f, String dest) {
-        String command = "/system/xbin/mv";
+        String command = "/system/bin/mv";
         String arg = "-v";
         copyOrMoveFile(command, arg, f.filePath, dest);
 //        Log.v(LOG_TAG, "MoveFile >>> " + f.filePath + "," + dest);
@@ -389,7 +400,7 @@ public class FileOperationHelper {
     }
 
     public static void CopyFile(String sourcefile, String dest) {
-        String command = "/system/xbin/cp";
+        String command = "/system/bin/cp";
         String arg = "-v";
         File file = new File(sourcefile);
         if (file.isDirectory()) {
@@ -399,7 +410,7 @@ public class FileOperationHelper {
     }
 
     public static boolean MoveFile(String sourcefile, String dest) {
-        String command = "/system/xbin/mv";
+        String command = "/system/bin/mv";
         String arg = "-v";
         copyOrMoveFile(command, arg, sourcefile, dest);
         return false;
