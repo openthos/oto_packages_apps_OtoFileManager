@@ -209,4 +209,5 @@
     <string name="qq_file">QQfile_recv</string>
     <string name="winxin">WinXin</string>
     <string name="baidu_disk">BaiduNetdisk</string>
+    <string name="USB_recognising">USB_recognising</string>
 </resources>

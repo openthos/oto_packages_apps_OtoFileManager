@@ -20,6 +20,7 @@ public abstract class Constants {
     public static final String ADDRESSFRAGMENT_TAG = "addressfragment";
     public static final long DOUBLE_CLICK_INTERVAL_TIME = 1000; // 1.0 second
     public static final String SYSTEM_SPACE_FRAGMENT_TAG = "System_Space_Fragment_tag";
+    public static final String USBFRAGMENT_TAG = "usbfragment_tag";
 
     public static final String LEFT_FAVORITES = "left_favorites";
     public static final String SYSTEM_SPACE_FRAGMENT = "system_space_fragment";

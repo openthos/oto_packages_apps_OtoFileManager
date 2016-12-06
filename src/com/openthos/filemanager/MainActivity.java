@@ -23,6 +23,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.inputmethod.EditorInfo;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.app.ProgressDialog;
 
 import com.openthos.filemanager.component.PopOnClickLintener;
 import com.openthos.filemanager.component.PopWinShare;
@@ -107,6 +108,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     private boolean mIsFirst = true;
     private HashMap<String, Integer> mHashMap;
     private SearchOnEditorActionListener mSearchOnEditorActionListener;
+    private ProgressDialog mProgressDialog;
 
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -155,6 +157,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         mHashMap.put(Constants.SYSTEMSPACEFRAGMENT_TAG, R.id.tv_storage);
         mHashMap.put(Constants.ADDRESSFRAGMENT_TAG, R.id.tv_storage);
         mHashMap.put(Constants.SYSTEM_SPACE_FRAGMENT_TAG, R.id.tv_computer);
+        mHashMap.put(Constants.USBFRAGMENT_TAG,R.id.tv_storage);
         mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -171,6 +174,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                             break;
                         case Constants.USB_READY:
                             mRl_usb.setVisibility(View.VISIBLE);
+                            if (mProgressDialog != null) {
+                                mProgressDialog.dismiss();
+                            }
                             mTv_computer.performClick();
                             break;
                         case Constants.REFRESH:
@@ -216,6 +222,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                         Constants.SDSTORAGEFRAGMENT_TAG).commit();
           //  T.showShort(MainActivity.this, getResources().getString(R.string.USB_device_connected));
           //  mTv_computer.performClick();
+            if (mProgressDialog == null) {
+                mProgressDialog = new ProgressDialog(this);
+            }
+            mProgressDialog.setMessage(getString(R.string.USB_recognising));
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setCancelable(true);
+            mProgressDialog.setCanceledOnTouchOutside(true);
+            mProgressDialog.show();
             mCurFragment = mSdStorageFragment;
         } else if (flags == UsbConnectReceiver.USB_STATE_OFF) {
             mRl_usb.setVisibility(View.GONE);
@@ -558,10 +572,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                 break;
             case R.id.tv_storage:
                 setSelectedBackground(R.id.tv_storage);
+                if (mCurFragment != null) {
+                    mManager.beginTransaction().hide(mCurFragment).commit();
+                }
                 SystemSpaceFragment usbStorageFragment = new SystemSpaceFragment
                                           (Constants.USB_SPACE_FRAGMENT, mUsbs[0], null, null);
-                mManager.beginTransaction().add(R.id.fl_mian, usbStorageFragment)
-                                          .hide(usbStorageFragment).commit();
+                mManager.beginTransaction().add(R.id.fl_mian, usbStorageFragment,
+                                               Constants.USBFRAGMENT_TAG)
+                                          .addToBackStack(null).show(usbStorageFragment).commit();
+                mCurFragment = usbStorageFragment;
                 break;
             case R.id.tv_pop_up:
                 mRl_usb.setVisibility(View.GONE);
@@ -834,6 +853,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         }
         if (mCurFragment == mSdStorageFragment && !mIsSdStorageFragmentHided) {
             mEt_nivagation.setText(null);
+            returnToRootDir();
         }
         if (mCurFragment instanceof SystemSpaceFragment) {
             SystemSpaceFragment sdCurFrament = (SystemSpaceFragment) mCurFragment;
