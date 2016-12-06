@@ -176,6 +176,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                         case Constants.REFRESH:
                             ((IFileInteractionListener) getVisibleFragment())
                                          .onRefreshFileList((String) msg.obj, new FileSortHelper());
+
+                            resetClipboard();
                             break;
                         case Constants.COPY:
                             copy();
@@ -461,6 +463,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         } else if (!TextUtils.isEmpty(sourcePath)
                                         && sourcePath.startsWith(Intent.EXTRA_CROP_FILE_HEADER)) {
             new CropThread(sourcePath.replace(Intent.EXTRA_CROP_FILE_HEADER, ""), destPath).start();
+        }
+    }
+
+    private void resetClipboard() {
+        String sourcePath = "";
+        try {
+            sourcePath =
+                (String) ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE)).getText();
+        } catch (ClassCastException e) {
+            sourcePath = "";
+        }
+        if (!TextUtils.isEmpty(sourcePath) && sourcePath.startsWith("OtoCropFile:///")) {
+            ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE)).setText("");
         }
     }
 

@@ -243,6 +243,8 @@ public class FileOperationHelper {
     }
 
     private static void copyOrMoveFile(String command, String arg, String srcFile, String destDir) {
+        Process pro;
+        BufferedReader in = null;
         try {
             File f = new File(destDir, new File(srcFile).getName());
             File destFile = f;
@@ -255,9 +257,21 @@ public class FileOperationHelper {
                     }
                 }
             }
-            Runtime.getRuntime().exec(new String[] {command, arg, srcFile,
+            pro = Runtime.getRuntime().exec(new String[] {command, arg, srcFile,
                                                     destFile.getAbsolutePath()});
+            in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+            String line;
+            while ((line = in.readLine()) != null) {
+            }
         } catch (IOException e) {
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         try {
             MainActivity.mHandler.sendMessage(
