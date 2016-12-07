@@ -307,6 +307,26 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     protected void initData() {
         initFragment();
+        checkFolder(null);
+    }
+
+    private void checkFolder(Fragment fragment) {
+        List<String> fileList = new ArrayList<>();
+        fileList.add(Constants.DESKTOP_PATH);
+        fileList.add(Constants.MUSIC_PATH);
+        fileList.add(Constants.VIDEOS_PATH);
+        fileList.add(Constants.PICTURES_PATH);
+        fileList.add(Constants.DOCUMENT_PATH);
+        fileList.add(Constants.DOWNLOAD_PATH);
+        for (int i = 0; i < fileList.size(); i++) {
+            File file = new File(fileList.get(i));
+            if (!file.exists() && !file.isDirectory()) {
+                file.mkdir();
+            }
+        }
+        if (fragment != null) {
+            ((SystemSpaceFragment) fragment).refreshUI();
+        }
     }
 
     @Override
@@ -599,21 +619,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.tv_desk:
                 setFileInfo(R.id.tv_desk, Constants.DESKTOP_PATH, mDeskFragment);
+                checkFolder(mDeskFragment);
                 break;
             case R.id.tv_music:
                 setFileInfo(R.id.tv_music, Constants.MUSIC_PATH, mMusicFragment);
+                checkFolder(mMusicFragment);
                 break;
             case R.id.tv_video:
                 setFileInfo(R.id.tv_video, Constants.VIDEOS_PATH, mVideoFragment);
+                checkFolder(mVideoFragment);
                 break;
             case R.id.tv_picture:
                 setFileInfo(R.id.tv_picture, Constants.PICTURES_PATH, mPictrueFragment);
+                checkFolder(mPictrueFragment);
                 break;
             case R.id.tv_document:
                 setFileInfo(R.id.tv_document, Constants.DOCUMENT_PATH, mDocumentFragment);
+                checkFolder(mDocumentFragment);
                 break;
             case R.id.tv_download:
                 setFileInfo(R.id.tv_download, Constants.DOWNLOAD_PATH, mDownloadFragment);
+                checkFolder(mDownloadFragment);
                 break;
             case R.id.tv_computer:
                 mIsSdStorageFragment = true;

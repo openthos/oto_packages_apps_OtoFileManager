@@ -211,4 +211,13 @@
     <string name="baidu_disk">BaiduNetdisk</string>
     <string name="USB_recognising">USB_recognising</string>
     <string name="copy_info">Do in progress...</string>
+    <string name="file_type_default">.doc</string>
+
+    <string-array name="file_type_array">
+        <item>.doc</item>
+        <item>.docx</item>
+        <item>.xls</item>
+        <item>.pptx</item>
+        <item>.txt</item>
+    </string-array>
 </resources>

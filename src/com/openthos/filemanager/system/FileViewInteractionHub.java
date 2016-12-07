@@ -302,12 +302,12 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     }
 
     public void onOperationCreateFile() {
-        TextInputDialog dialog = new TextInputDialog(
+        CreateFileDialog dialog = new CreateFileDialog(
                                  mContext,
                                  mContext.getString(R.string.operation_create_file),
                                  mContext.getString(R.string.operation_create_file_message),
                                  mContext.getString(R.string.new_file_name),
-                                 new TextInputDialog.OnFinishListener() {
+                                 new CreateFileDialog.OnFinishListener() {
                                      @Override
                                      public boolean onFinish(String text) {
                                          return doCreateFile(text);

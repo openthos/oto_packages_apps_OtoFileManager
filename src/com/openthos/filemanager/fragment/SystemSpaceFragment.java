@@ -726,4 +726,8 @@ public class SystemSpaceFragment extends BaseFragment implements
         return mFileViewInteractionHub.getCurrentPath();
     }
 
+    public void refreshUI() {
+        mFileViewInteractionHub.refreshFileList();
+    }
+
 }
