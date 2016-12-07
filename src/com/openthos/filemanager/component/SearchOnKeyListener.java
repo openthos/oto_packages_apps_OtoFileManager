@@ -6,6 +6,7 @@ import android.os.Environment;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.TextView;
 
 import com.openthos.filemanager.MainActivity;
@@ -15,27 +16,28 @@ import com.openthos.filemanager.fragment.SearchFragment;
 import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.utils.T;
-import com.openthos.filemanager.fragment.SearchFragment;
+
 import android.support.v4.app.Fragment;
+
 import com.openthos.filemanager.system.Constants;
 
 import java.io.File;
 import java.util.ArrayList;
 
-public class SearchOnEditorActionListener implements TextView.OnEditorActionListener {
+public class SearchOnKeyListener implements TextView.OnKeyListener {
     private String mInputData;
     private String LOG_TAG = "SearchOnQueryTextListener";
     private ProgressDialog progressDialog;
     private ArrayList<SearchInfo> mFileList = new ArrayList<>();
     FragmentManager manager;
     private final static String rootPath
-                                = Environment.getExternalStorageDirectory().getAbsolutePath();
+            = Environment.getExternalStorageDirectory().getAbsolutePath();
     File root = new File(rootPath);
     private Context context;
     private SearchFragment mSearchFragment;
 
-    public SearchOnEditorActionListener(FragmentManager manager,
-                                        Editable text, MainActivity context) {
+    public SearchOnKeyListener(FragmentManager manager,
+                               Editable text, MainActivity context) {
         this.manager = manager;
         this.context = context;
     }
@@ -45,37 +47,51 @@ public class SearchOnEditorActionListener implements TextView.OnEditorActionList
     }
 
     @Override
-    public boolean onEditorAction(TextView input, int actionId, KeyEvent event) {
-            L.d(LOG_TAG,input.getText().toString());
-            if (mInputData != null && mInputData .equals(input.getText().toString())) {
+    public boolean onKey(View v, int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_ENTER:
+            case KeyEvent.KEYCODE_NUMPAD_ENTER:
+                v.clearFocus();
+                showSearchFragment((TextView) v);
                 return true;
-            }
-            if (mFileList.size() >0 && LocalCache.getSearchText() != null) {
-                mFileList.clear();
-                startSearch(input.toString().trim());
-                if (mFileList.size() > 0) {
-                    startSearchFragment();
-                } else {
-                    if (progressDialog != null) {
-                        progressDialog.dismiss();
-                    }
-                }
-            }
-            assert mFileList != null;
+            case KeyEvent.KEYCODE_ESCAPE:
+                v.clearFocus();
+                return true;
+        }
+        return false;
+    }
+
+    private void showSearchFragment(TextView input) {
+        L.d(LOG_TAG, input.getText().toString());
+        if (mInputData != null && mInputData.equals(input.getText().toString())) {
+            return;
+        }
+        if (mFileList.size() > 0 && LocalCache.getSearchText() != null) {
             mFileList.clear();
-            LocalCache.setSearchText(input.getText().toString().trim());
-            showDialog();
-            startSearch(input.getText().toString().trim());
-            L.e(LOG_TAG, mFileList.size() + "");
+            startSearch(input.toString().trim());
             if (mFileList.size() > 0) {
                 startSearchFragment();
             } else {
-                progressDialog.dismiss();
-                T.showShort(context, context.getString(R.string.found_no_file));
+                if (progressDialog != null) {
+                    progressDialog.dismiss();
+                }
             }
+        }
+        assert mFileList != null;
+        mFileList.clear();
+        LocalCache.setSearchText(input.getText().toString().trim());
+        showDialog();
+        startSearch(input.getText().toString().trim());
+        L.e(LOG_TAG, mFileList.size() + "");
+        if (mFileList.size() > 0) {
+            startSearchFragment();
+        } else {
+            progressDialog.dismiss();
+            T.showShort(context, context.getString(R.string.found_no_file));
+        }
 
         mInputData = input.getText().toString();
-        return true;
+        return;
     }
 
     private void showDialog() {
@@ -110,7 +126,7 @@ public class SearchOnEditorActionListener implements TextView.OnEditorActionList
         StringBuilder str_builder = new StringBuilder();
         File[] currentFiles;
         int length = files.length;
-        for (int i = 0; i < length; i ++) {
+        for (int i = 0; i < length; i++) {
             File file = files[i];
             SearchInfo searchInfo = new SearchInfo();
             if (file.isDirectory()) {
@@ -119,7 +135,6 @@ public class SearchOnEditorActionListener implements TextView.OnEditorActionList
             }
             String fileName = file.getName();
             String filePath = file.getPath();
-
             if (fileName.contains(text_search)) {
                 searchInfo.setFileName(fileName);
                 searchInfo.setFilePath(filePath);

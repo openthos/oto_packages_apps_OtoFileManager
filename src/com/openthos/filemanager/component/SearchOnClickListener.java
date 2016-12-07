@@ -37,6 +37,7 @@ public class SearchOnClickListener implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        v.requestFocus();
         if (mFileList.size() > 0 && LocalCache.getSearchText() != null) {
             mFileList.clear();
             startSearch(input.trim());

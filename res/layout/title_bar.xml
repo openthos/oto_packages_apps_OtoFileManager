@@ -70,6 +70,7 @@
             android:layout_weight="8"
             android:background="@drawable/edit_bg_shape"
             android:hint="@string/text_file_path"
+            android:singleLine="true"
             android:paddingLeft="8dp" />
         <RelativeLayout
             android:layout_width="0dp"
@@ -85,6 +86,7 @@
                 android:background="@drawable/edit_bg_shape"
                 android:hint="@string/text_input_content"
                 android:paddingLeft="10dp"
+                android:singleLine="true"
                 android:layout_alignParentRight="true"
                 android:paddingRight="8dp" />
             <ImageView

@@ -29,7 +29,7 @@ import com.openthos.filemanager.component.CopyInfoDialog;
 import com.openthos.filemanager.component.PopOnClickLintener;
 import com.openthos.filemanager.component.PopWinShare;
 import com.openthos.filemanager.component.SearchOnClickListener;
-import com.openthos.filemanager.component.SearchOnEditorActionListener;
+import com.openthos.filemanager.component.SearchOnKeyListener;
 import com.openthos.filemanager.fragment.DeskFragment;
 import com.openthos.filemanager.fragment.MusicFragment;
 import com.openthos.filemanager.fragment.OnlineNeighborFragment;
@@ -56,8 +56,7 @@ import java.io.File;
 import android.widget.Toast;
 import java.io.IOException;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener,
-                                               TextView.OnEditorActionListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
     private static final int POPWINDOW_WINTH = 120;
     private static final int POPWINDOW_HEIGHT = 40;
     private static final int POPWINDOW_X = -15;
@@ -109,7 +108,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     public static Handler mHandler;
     private boolean mIsFirst = true;
     private HashMap<String, Integer> mHashMap;
-    private SearchOnEditorActionListener mSearchOnEditorActionListener;
+    private SearchOnKeyListener mSearchOnKeyListener;
     private ProgressDialog mProgressDialog;
     private CopyInfoDialog mCopyInfoDialog;
     public PersonalSpaceFragment mPersonalSpaceFragment;
@@ -327,12 +326,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         mTv_computer.performClick();
 //        search_view.addTextChangedListener(new EditTextChangeListener(mManager,
 //                                                                        MainActivity.this));
-        mSearchOnEditorActionListener = new SearchOnEditorActionListener(mManager,
+        mSearchOnKeyListener = new SearchOnKeyListener(mManager,
                                         mEt_search_view.getText(), MainActivity.this);
-        mEt_search_view.setOnEditorActionListener(mSearchOnEditorActionListener);
+        mEt_search_view.setOnKeyListener(mSearchOnKeyListener);
         mIv_search_view.setOnClickListener(new SearchOnClickListener(mManager,
                                           mEt_search_view.getText(), MainActivity.this));
-        mEt_nivagation.setOnEditorActionListener(this);
+        NivagationOnClickLinstener nivagationOnClickLinstener = new NivagationOnClickLinstener();
+        NivagationOnKeyLinstener nivagationOnKeyLinstener =new NivagationOnKeyLinstener();
+        mEt_nivagation.setOnClickListener(nivagationOnClickLinstener);
+        mEt_nivagation.setOnKeyListener(nivagationOnKeyLinstener);
         initUsb(-1);
         mCurFragment = mSdStorageFragment;
         Intent intent = getIntent();
@@ -346,23 +348,48 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         }
     }
 
-    @Override
-    public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+    class NivagationOnClickLinstener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            v.requestFocus();
+        }
+    }
+
+    class NivagationOnKeyLinstener implements View.OnKeyListener {
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_ENTER:
+                case KeyEvent.KEYCODE_NUMPAD_ENTER:
+                    v.clearFocus();
+                    showSpaceFragment((TextView) v);
+                    return true;
+                case KeyEvent.KEYCODE_ESCAPE:
+                    v.clearFocus();
+                    return true;
+            }
+            return false;
+        }
+    }
+
+    private void showSpaceFragment(TextView textView) {
         FragmentTransaction transaction = mManager.beginTransaction();
         String path = textView.getText().toString().trim();
+        if (TextUtils.isEmpty(path)) {
+            return;
+        }
         File file = new File(path);
         if (file.exists()) {
             transaction.hide(mCurFragment);
             mAddressFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES, path, null, null);
-            transaction.add(R.id.fl_mian, mAddressFragment ,Constants.ADDRESSFRAGMENT_TAG);
+            transaction.add(R.id.fl_mian, mAddressFragment, Constants.ADDRESSFRAGMENT_TAG);
             transaction.show(mAddressFragment).addToBackStack(null).commit();
             mCurFragment = mAddressFragment;
             setFileInfo(R.id.et_nivagation, path, mAddressFragment);
         } else {
             Toast.makeText(this, "" + getResources().getString(R.string.address_search_false),
-                                                                   Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_SHORT).show();
         }
-        return false;
     }
 
     @Override
@@ -445,8 +472,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_X) {
             sendBroadcastMessage("iv_menu", "pop_cut", false);
             if (getVisibleFragment() instanceof PersonalSpaceFragment
-                                       || getVisibleFragment() instanceof SdStorageFragment
-                                       || getVisibleFragment() instanceof OnlineNeighborFragment) {
+                                     || getVisibleFragment() instanceof SdStorageFragment
+                                     || getVisibleFragment() instanceof OnlineNeighborFragment
+                                     || mEt_nivagation.isFocused() || mEt_search_view.isFocused()) {
                 return false;
             }
             cut();
@@ -454,8 +482,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_C) {
             sendBroadcastMessage("iv_menu", "pop_copy", false);
             if (getVisibleFragment() instanceof PersonalSpaceFragment
-                                       || getVisibleFragment() instanceof SdStorageFragment
-                                       || getVisibleFragment() instanceof OnlineNeighborFragment) {
+                                     || getVisibleFragment() instanceof SdStorageFragment
+                                     || getVisibleFragment() instanceof OnlineNeighborFragment
+                                     || mEt_nivagation.isFocused() || mEt_search_view.isFocused()) {
                 return false;
             }
             copy();
@@ -463,8 +492,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_V) {
             sendBroadcastMessage("iv_menu", "pop_paste", false);
             if (getVisibleFragment() instanceof PersonalSpaceFragment
-                                       || getVisibleFragment() instanceof SdStorageFragment
-                                       || getVisibleFragment() instanceof OnlineNeighborFragment) {
+                                     || getVisibleFragment() instanceof SdStorageFragment
+                                     || getVisibleFragment() instanceof OnlineNeighborFragment
+                                     || mEt_nivagation.isFocused() || mEt_search_view.isFocused()) {
                 return false;
             }
             paste();
@@ -816,7 +846,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
 
     @Override
     public void onBackPressed() {
-        mSearchOnEditorActionListener.setInputData(null);
+        mSearchOnKeyListener.setInputData(null);
         mManager.findFragmentById(R.id.fl_mian);
         if (mCurFragment != mSdStorageFragment) {
             if (mCurFragment instanceof SystemSpaceFragment) {
