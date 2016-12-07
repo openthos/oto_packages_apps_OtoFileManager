@@ -147,6 +147,7 @@ public class PersonalSpaceFragment extends BaseFragment {
                 break;
             case R.id.ll_personal_music:
                 setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.MUSIC_PATH);
+                break;
             case R.id.ll_personal_qq_image:
                 setDiskClickInfo(Constants.LEFT_FAVORITES, QQ_IMAGE_PATH);
                 break;
@@ -179,11 +180,9 @@ public class PersonalSpaceFragment extends BaseFragment {
             mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, mCopyOrMove);
 
             FragmentTransaction transaction = mManager.beginTransaction();
-            transaction.hide(mMainActivity.mSdStorageFragment.mCurFragment);
-            transaction.add(R.id.fl_mian, mCurFragment, Constants.SYSTEM_SPACE_FRAGMENT_TAG)
-                                                             .addToBackStack(null).commit();
-            mMainActivity.mIsSdStorageFragmentHided = true;
-            mMainActivity.mIsSdStorageFragment = false;
+            transaction.hide(mMainActivity.mCurFragment);
+            transaction.add(R.id.fl_mian, mCurFragment, Constants.PERSONALSYSTEMSPACE_TAG).commit();
+            mMainActivity.mCurFragment = mCurFragment;
         }
     }
 }

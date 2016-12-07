@@ -36,6 +36,7 @@ import com.openthos.filemanager.fragment.OnlineNeighborFragment;
 import com.openthos.filemanager.fragment.PictrueFragment;
 import com.openthos.filemanager.fragment.SdStorageFragment;
 import com.openthos.filemanager.fragment.VideoFragment;
+import com.openthos.filemanager.fragment.PersonalSpaceFragment;
 import com.openthos.filemanager.system.Util;
 import com.openthos.filemanager.utils.DisplayUtil;
 import com.openthos.filemanager.utils.L;
@@ -111,6 +112,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     private SearchOnEditorActionListener mSearchOnEditorActionListener;
     private ProgressDialog mProgressDialog;
     private CopyInfoDialog mCopyInfoDialog;
+    public PersonalSpaceFragment mPersonalSpaceFragment;
+    private SystemSpaceFragment mUsbStorageFragment;
 
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -227,12 +230,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
             mTv_pop_up.setOnClickListener(this);
             mManager.beginTransaction().remove(mSdStorageFragment).commit();
             mManager.beginTransaction().hide(mCurFragment).commit();
-
             mSdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_ATTACHED,
                                                       MainActivity.this);
             setSelectedBackground(R.id.tv_computer);
-            mManager.beginTransaction().replace(R.id.fl_mian, mSdStorageFragment,
-                        Constants.SDSTORAGEFRAGMENT_TAG).commit();
+            mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment).commit();
           //  T.showShort(MainActivity.this, getResources().getString(R.string.USB_device_connected));
           //  mTv_computer.performClick();
             if (mProgressDialog == null) {
@@ -246,13 +247,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
             mCurFragment = mSdStorageFragment;
         } else if (flags == UsbConnectReceiver.USB_STATE_OFF) {
             mRl_usb.setVisibility(View.GONE);
+            mManager.beginTransaction().remove(mSdStorageFragment).commit();
             mManager.beginTransaction().hide(mCurFragment).commit();
             mSdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_DETACHED,
                                                       MainActivity.this);
             setSelectedBackground(R.id.tv_computer);
            // mManager.beginTransaction().remove(mSdStorageFragment).commit();
-            mManager.beginTransaction().replace(R.id.fl_mian, mSdStorageFragment,
-                     Constants.SDSTORAGEFRAGMENT_TAG).commit();
+            mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment).commit();
+            mCurFragment = mSdStorageFragment;
         }
     }
 
@@ -261,50 +263,45 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         FragmentTransaction transaction = mManager.beginTransaction();
         if (mSdStorageFragment == null) {
             mSdStorageFragment = new SdStorageFragment(mManager, null, MainActivity.this);
-            transaction.add(R.id.fl_mian, mSdStorageFragment,Constants.SDSTORAGEFRAGMENT_TAG)
-                           .hide(mSdStorageFragment)
-                           .addToBackStack(null);
+            transaction.add(R.id.fl_mian, mSdStorageFragment).hide(mSdStorageFragment);
         }
         if (mDeskFragment == null) {
             mDeskFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
                                                     Constants.DESKTOP_PATH, null, null);
-            transaction.add(R.id.fl_mian, mDeskFragment,Constants.DESKFRAGMENT_TAG)
-                       .hide(mDeskFragment);
+            transaction.add(R.id.fl_mian, mDeskFragment).hide(mDeskFragment);
         }
         if (mMusicFragment == null) {
             mMusicFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
                                                      Constants.MUSIC_PATH, null, null);
-            transaction.add(R.id.fl_mian, mMusicFragment,Constants.MUSICFRAGMENT_TAG)
-                       .hide(mMusicFragment);
+            transaction.add(R.id.fl_mian, mMusicFragment).hide(mMusicFragment);
         }
         if (mVideoFragment == null) {
             mVideoFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
                                                      Constants.VIDEOS_PATH, null, null);
-            transaction.add(R.id.fl_mian, mVideoFragment,Constants.VIDEOFRAGMENT_TAG)
-                       .hide(mVideoFragment);
+            transaction.add(R.id.fl_mian, mVideoFragment).hide(mVideoFragment);
         }
         if (mPictrueFragment == null) {
             mPictrueFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
                                                        Constants.PICTURES_PATH, null, null);
-            transaction.add(R.id.fl_mian, mPictrueFragment,Constants.PICTRUEFRAGMENT_TAG)
-                       .hide(mPictrueFragment);
+            transaction.add(R.id.fl_mian, mPictrueFragment).hide(mPictrueFragment);
         }
         if (mDocumentFragment == null) {
             mDocumentFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
                                                         Constants.DOCUMENT_PATH, null, null);
-            transaction.add(R.id.fl_mian, mDocumentFragment, Constants.DOCUMENTFRAGMENT_TAG)
-                       .hide(mDocumentFragment);
+            transaction.add(R.id.fl_mian, mDocumentFragment).hide(mDocumentFragment);
         }
         if (mDownloadFragment == null) {
             mDownloadFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
                                                         Constants.DOWNLOAD_PATH, null, null);
-            transaction.add(R.id.fl_mian, mDownloadFragment, Constants.DOWNLOADFRRAGMENT_TAG)
-                       .hide(mDownloadFragment);
+            transaction.add(R.id.fl_mian, mDownloadFragment).hide(mDownloadFragment);
         }
         if (mOnlineNeighborFragment == null) {
             mOnlineNeighborFragment = new OnlineNeighborFragment();
-            transaction.add(R.id.fl_mian, mOnlineNeighborFragment,
-                            Constants.ONLINENEIGHBORFRAGMENT_TAG).hide(mOnlineNeighborFragment);
+            transaction.add(R.id.fl_mian, mOnlineNeighborFragment).hide(mOnlineNeighborFragment);
+        }
+        if (mPersonalSpaceFragment == null) {
+            mPersonalSpaceFragment = new PersonalSpaceFragment();
+            transaction.add(R.id.fl_mian, mPersonalSpaceFragment).hide(mPersonalSpaceFragment);
         }
         transaction.commit();
     }
@@ -604,25 +601,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                 if (mCurFragment != null) {
                     mManager.beginTransaction().hide(mCurFragment).commit();
                 }
-                SystemSpaceFragment usbStorageFragment = new SystemSpaceFragment
+                mUsbStorageFragment = new SystemSpaceFragment
                                           (Constants.USB_SPACE_FRAGMENT, mUsbs[0], null, null);
-                mManager.beginTransaction().add(R.id.fl_mian, usbStorageFragment,
-                                               Constants.USBFRAGMENT_TAG)
-                                          .addToBackStack(null).show(usbStorageFragment).commit();
-                mCurFragment = usbStorageFragment;
+                mManager.beginTransaction().add(R.id.fl_mian, mUsbStorageFragment,
+                                               Constants.USBFRAGMENT_TAG).commit();
+                mCurFragment = mUsbStorageFragment;
                 break;
             case R.id.tv_pop_up:
                 mRl_usb.setVisibility(View.GONE);
-                mManager.beginTransaction().remove(getVisibleFragment()).commit();
+                mManager.beginTransaction().hide(getVisibleFragment()).commit();
                 mSdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_DETACHED,
                         MainActivity.this);
                 setSelectedBackground(R.id.tv_computer);
-                mManager.beginTransaction().replace(R.id.fl_mian,
-                         mSdStorageFragment,Constants.SDSTORAGEFRAGMENT_TAG)
-                        .commit();
-                mCurFragment = null;
-                mIsSdStorageFragmentHided = false;
-                mTv_computer.performClick();
+                mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment).commit();
+                mCurFragment = mSdStorageFragment;
                 break;
             case R.id.tv_net_service:
                 setFileInfo(R.id.tv_net_service, "", mOnlineNeighborFragment);
@@ -664,21 +656,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         FragmentTransaction transaction = mManager.beginTransaction();
         if (mCurFragment != null) {
             transaction.hide(mCurFragment);
-            if (mIsSdStorageFragmentHided) {
-                transaction.hide(mSdStorageFragment.mCurFragment);
-                if (mSdStorageFragment.mCurFragment instanceof PersonalSpaceFragment) {
-                    PersonalSpaceFragment personalSpaceFragment =
-                               (PersonalSpaceFragment) mSdStorageFragment.mCurFragment;
-                    transaction.hide(personalSpaceFragment);
-                    if (personalSpaceFragment.mCurFragment != null) {
-                        transaction.hide(personalSpaceFragment.mCurFragment);
-                    }
-                }
-                mIsSdStorageFragmentHided = false;
-            }
         }
         if (fragment != null) {
-            transaction.show(fragment).addToBackStack(null);
+            transaction.show(fragment);
         }
         transaction.commit();
         mCurFragment = fragment;
@@ -838,56 +818,44 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     public void onBackPressed() {
         mSearchOnEditorActionListener.setInputData(null);
         mManager.findFragmentById(R.id.fl_mian);
-        if ((mCurFragment != null) && (mCurFragment == mSdStorageFragment)) {
-            if (mSdStorageFragment.canGoBack()) {
-                mSdStorageFragment.goBack();
-            } else {
-                if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
-                    mManager.popBackStackImmediate();
-                    mCurFragment = getVisibleFragment();
-                    if (mCurFragment != null) {
-                        if (mCurFragment.getTag() != null) {
-                            setSelectedBackground(mHashMap.get(mCurFragment.getTag()));
-                        }
+        if (mCurFragment != mSdStorageFragment) {
+            if (mCurFragment instanceof SystemSpaceFragment) {
+                SystemSpaceFragment sdCurFrament = (SystemSpaceFragment) mCurFragment;
+                String currentPath = sdCurFrament.getCurrentPath();
+                mEt_nivagation.setText(currentPath);
+                if (mCurFragment.getTag() != null &&
+                    mCurFragment.getTag().equals(Constants.PERSONALSYSTEMSPACE_TAG)) {
+                    if (mPersonalSpaceFragment.canGoBack()) {
+                        mPersonalSpaceFragment.goBack();
+                    } else if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        mManager.popBackStack();
                     } else {
-                        mManager.beginTransaction().show(mSdStorageFragment).commit();
-                        mCurFragment = mSdStorageFragment;
+                        returnToPersonalDir();
+                    }
+                } else if (mCurFragment.getTag() != null &&
+                          mCurFragment.getTag().equals(Constants.SDSSYSTEMSPACE_TAG)) {
+                    if (mSdStorageFragment.canGoBack()) {
+                        mSdStorageFragment.goBack();
+                    } else if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        mManager.popBackStack();
+                    } else {
+                        returnToRootDir();
+                    }
+                } else if (mCurFragment.getTag() != null &&
+                          mCurFragment.getTag().equals(Constants.USBFRAGMENT_TAG)) {
+                    if (mUsbStorageFragment.canGoBack()) {
+                        mUsbStorageFragment.goBack();
+                    } else if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        mManager.popBackStack();
+                    } else {
+                        returnToRootDir();
                     }
                 } else {
-//                    finish();
                     returnToRootDir();
                 }
-            }
-        } else {
-            if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
-                mManager.popBackStackImmediate();
-                mCurFragment = getVisibleFragment();
-                if (mCurFragment != null) {
-                    setSelectedBackground(mHashMap.get(mCurFragment.getTag()));
-                } else {
-                    mManager.beginTransaction().show(mSdStorageFragment).commit();
-                    mCurFragment = mSdStorageFragment;
-                }
             } else {
-//                finish();
                 returnToRootDir();
             }
-            if (mCurFragment == mSdStorageFragment && mSdStorageFragment.canGoBack()
-                    && !mIsSdStorageFragment) {
-                if (mSdStorageFragment.mCurFragment instanceof SystemSpaceFragment) {
-                    mManager.beginTransaction().hide(mSdStorageFragment).commit();
-                    mIsSdStorageFragmentHided = true;
-                }
-            }
-        }
-        if (mCurFragment == mSdStorageFragment && !mIsSdStorageFragmentHided) {
-            mEt_nivagation.setText(null);
-            returnToRootDir();
-        }
-        if (mCurFragment instanceof SystemSpaceFragment) {
-            SystemSpaceFragment sdCurFrament = (SystemSpaceFragment) mCurFragment;
-            String currentPath = sdCurFrament.getCurrentPath();
-            mEt_nivagation.setText(currentPath);
         }
     }
 
@@ -901,16 +869,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         return null;
     }
 
+    private void returnToPersonalDir() {
+        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
+        fragmentTransaction.hide(getVisibleFragment());
+        fragmentTransaction.show(mPersonalSpaceFragment);
+        fragmentTransaction.commit();
+        mEt_nivagation.setText("SDCard");
+        setSelectedBackground(R.id.tv_computer);
+        mCurFragment = mPersonalSpaceFragment;
+    }
+
     public void returnToRootDir() {
-        if (mCurFragment != null) {
-            mManager.beginTransaction().hide(mCurFragment).commit();
-        }
-        mManager.beginTransaction().show(mSdStorageFragment).commit();
+        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
+        fragmentTransaction.hide(mCurFragment);
+        fragmentTransaction.show(mSdStorageFragment);
+        fragmentTransaction.commit();
+        mEt_nivagation.setText(null);
+        setSelectedBackground(R.id.tv_computer);
+        mSdStorageFragment.setSelectedCardBg(-1);
         mCurFragment = mSdStorageFragment;
-        if (mCurFragment.getTag() != null) {
-            setSelectedBackground(mHashMap.get(mSdStorageFragment.getTag()));
-            mSdStorageFragment.setSelectedCardBg(-1);
-        }
     }
 
     public interface IBackPressedListener {

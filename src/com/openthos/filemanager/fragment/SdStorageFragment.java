@@ -261,18 +261,17 @@ public class SdStorageFragment extends BaseFragment {
             }
 //            SystemSpaceFragment  systemSpaceFragment = new SystemSpaceFragment(tag,
 //                                                       path, fileInfoArrayList, copyOrMove);
-            if (PERSONAL_TAG.equals(tag)) {
-                mCurFragment = new PersonalSpaceFragment();
-            } else {
-                mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, copyOrMove);
-            }
             FragmentTransaction transaction = mManager.beginTransaction();
             transaction.hide(mMainActivity.mCurFragment);
-            transaction.add(R.id.fl_mian, mCurFragment, Constants.SYSTEM_SPACE_FRAGMENT_TAG)
-                                           .addToBackStack(null).commit();
-//            mainActivity.mCurFragment  = systemSpaceFragment;
-            mMainActivity.mIsSdStorageFragmentHided = true;
-            mMainActivity.mIsSdStorageFragment = false;
+            if (PERSONAL_TAG.equals(tag)) {
+            //    mCurFragment = new PersonalSpaceFragment();
+                transaction.show(mMainActivity.mPersonalSpaceFragment).commit();
+                mCurFragment = mMainActivity.mPersonalSpaceFragment;
+            } else {
+                mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, copyOrMove);
+                transaction.add(R.id.fl_mian, mCurFragment,Constants.SDSSYSTEMSPACE_TAG).commit();
+            }
+            mMainActivity.mCurFragment = mCurFragment;
         }
     }
 
@@ -323,10 +322,11 @@ public class SdStorageFragment extends BaseFragment {
         if (baseFragment instanceof SystemSpaceFragment) {
             SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) baseFragment;
             canGoBack = systemSpaceFragment.canGoBack();
-        } else {
-            PersonalSpaceFragment personalSpaceFragment = (PersonalSpaceFragment) baseFragment;
-            canGoBack = personalSpaceFragment.canGoBack();
         }
+       //else {
+       //    PersonalSpaceFragment personalSpaceFragment = (PersonalSpaceFragment) baseFragment;
+       //    canGoBack = personalSpaceFragment.canGoBack();
+       //}
         return canGoBack;
     }
 
@@ -335,9 +335,10 @@ public class SdStorageFragment extends BaseFragment {
         if (baseFragment instanceof SystemSpaceFragment) {
             SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) baseFragment;
             systemSpaceFragment.goBack();
-        } else {
-            PersonalSpaceFragment personalSpaceFragment = (PersonalSpaceFragment) baseFragment;
-            personalSpaceFragment.goBack();
         }
+       // else {
+       //     PersonalSpaceFragment personalSpaceFragment = (PersonalSpaceFragment) baseFragment;
+       //     personalSpaceFragment.goBack();
+       // }
     }
 }
