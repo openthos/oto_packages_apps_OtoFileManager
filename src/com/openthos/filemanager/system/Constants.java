@@ -11,6 +11,7 @@ public abstract class Constants {
     public static final String PICTRUEFRAGMENT_TAG = "pictruefragment";
     public static final String DOCUMENTFRAGMENT_TAG = "documentfragment";
     public static final String DOWNLOADFRRAGMENT_TAG = "downloadfragment";
+    public static final String RECYCLEFRAGMENT_TAG = "recyclefragment";
     public static final String SDSTORAGEFRAGMENT_TAG = "sdstoragefragment";
     public static final String USBSTORAGEFRAGMENT_TAG = "usbstoragefragment";
     public static final String ONLINENEIGHBORFRAGMENT_TAG = "onlineneighborfragment";
@@ -44,6 +45,7 @@ public abstract class Constants {
     public static final String PICTURES_PATH = ROOT_PATH + "Pictures";
     public static final String DOCUMENT_PATH = ROOT_PATH + "documents";
     public static final String DOWNLOAD_PATH = ROOT_PATH + "Download";
+    public static final String RECYCLE_PATH = ROOT_PATH + "Recycle";
     // Menu id
     public static final int MENU_NEW_FOLDER = 100;
     public static final int MENU_NEW_FILE = 119;

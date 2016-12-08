@@ -185,6 +185,7 @@
     <string name="address_search_false">Invalid Address</string>
     <string name="downloads">Downloads</string>
     <string name="docement">Docement</string>
+    <string name="recycle">Recycle</string>
     <string name="text_personal">My Space</string>
     <string name="dialog_property_title">Propertys</string>
     <string name="dialog_property_file_type">Type of file:</string>

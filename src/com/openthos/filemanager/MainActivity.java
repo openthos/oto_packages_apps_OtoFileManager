@@ -78,6 +78,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private TextView mTv_storage;
     private TextView mTv_document;
     private TextView mTv_download;
+    private TextView mTv_recycle;
     private TextView mTv_net_service;
     private ImageView mIv_list_view;
     private ImageView mIv_grid_view;
@@ -96,7 +97,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public boolean mIsSdStorageFragmentHided;
     private SystemSpaceFragment mDeskFragment, mMusicFragment, mVideoFragment,
                                 mPictrueFragment, mAddressFragment,
-                                mDocumentFragment, mDownloadFragment;
+                                mDocumentFragment, mDownloadFragment,
+                                mRecycleFragment;
     private OnlineNeighborFragment mOnlineNeighborFragment;
     private UsbConnectReceiver mReceiver;
     private String[] mUsbs;
@@ -130,6 +132,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mTv_picture = (TextView) findViewById(R.id.tv_picture);
         mTv_document = (TextView) findViewById(R.id.tv_document);
         mTv_download = (TextView) findViewById(R.id.tv_download);
+        mTv_recycle = (TextView) findViewById(R.id.tv_recycle);
         mTv_storage = (TextView) findViewById(R.id.tv_storage);
         mTv_net_service = (TextView) findViewById(R.id.tv_net_service);
         mIv_list_view = (ImageView) findViewById(R.id.iv_list_view);
@@ -155,6 +158,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mHashMap.put(Constants.PICTRUEFRAGMENT_TAG, R.id.tv_picture);
         mHashMap.put(Constants.DOCUMENTFRAGMENT_TAG, R.id.tv_document);
         mHashMap.put(Constants.DOWNLOADFRRAGMENT_TAG, R.id.tv_download);
+        mHashMap.put(Constants.RECYCLEFRAGMENT_TAG, R.id.tv_recycle);
         mHashMap.put(Constants.SDSTORAGEFRAGMENT_TAG, R.id.tv_computer);
         mHashMap.put(Constants.ONLINENEIGHBORFRAGMENT_TAG, R.id.tv_net_service);
         mHashMap.put(Constants.DETAILFRAGMENT_TAG, R.id.tv_picture);
@@ -300,6 +304,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             transaction.add(R.id.fl_mian, mDownloadFragment, Constants.DOWNLOADFRRAGMENT_TAG)
                        .hide(mDownloadFragment);
         }
+        if (mRecycleFragment == null) {
+            mRecycleFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
+                                                        Constants.RECYCLE_PATH, null, null);
+            transaction.add(R.id.fl_mian, mRecycleFragment, Constants.RECYCLEFRAGMENT_TAG)
+                       .hide(mRecycleFragment);
+        }
+
         if (mOnlineNeighborFragment == null) {
             mOnlineNeighborFragment = new OnlineNeighborFragment();
             transaction.add(R.id.fl_mian, mOnlineNeighborFragment).hide(mOnlineNeighborFragment);
@@ -324,6 +335,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         fileList.add(Constants.PICTURES_PATH);
         fileList.add(Constants.DOCUMENT_PATH);
         fileList.add(Constants.DOWNLOAD_PATH);
+        fileList.add(Constants.RECYCLE_PATH);
         for (int i = 0; i < fileList.size(); i++) {
             File file = new File(fileList.get(i));
             if (!file.exists() && !file.isDirectory()) {
@@ -344,6 +356,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mTv_picture.setOnClickListener(this);
         mTv_document.setOnClickListener(this);
         mTv_download.setOnClickListener(this);
+        mTv_recycle.setOnClickListener(this);
         mTv_net_service.setOnClickListener(this);
         mIv_list_view.setOnClickListener(this);
         mIv_grid_view.setOnClickListener(this);
@@ -656,6 +669,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 setFileInfo(R.id.tv_download, Constants.DOWNLOAD_PATH, mDownloadFragment);
                 checkFolder(mDownloadFragment);
                 break;
+            case R.id.tv_recycle:
+                setFileInfo(R.id.tv_recycle, Constants.RECYCLE_PATH, mRecycleFragment);
+                checkFolder(mRecycleFragment);
+                break;
             case R.id.tv_computer:
                 mIsSdStorageFragment = true;
                 mEt_nivagation.setText(null);
@@ -747,6 +764,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_net_service.setSelected(false);
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
+                mTv_recycle.setSelected(false);
                 break;
             case R.id.tv_desk:
                 mTv_desk.setSelected(true);
@@ -758,6 +776,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_net_service.setSelected(false);
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
+                mTv_recycle.setSelected(false);
                 break;
             case R.id.tv_music:
                 mTv_music.setSelected(true);
@@ -769,6 +788,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_net_service.setSelected(false);
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
+                mTv_recycle.setSelected(false);
                 break;
             case R.id.tv_video:
                 mTv_music.setSelected(false);
@@ -780,6 +800,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_net_service.setSelected(false);
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
+                mTv_recycle.setSelected(false);
                 break;
             case R.id.tv_picture:
                 mTv_music.setSelected(false);
@@ -791,6 +812,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_net_service.setSelected(false);
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
+                mTv_recycle.setSelected(false);
                 break;
             case R.id.tv_document:
                 mTv_music.setSelected(false);
@@ -802,6 +824,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_net_service.setSelected(false);
                 mTv_document.setSelected(true);
                 mTv_download.setSelected(false);
+                mTv_recycle.setSelected(false);
                 break;
             case R.id.tv_download:
                 mTv_music.setSelected(false);
@@ -813,6 +836,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_net_service.setSelected(false);
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(true);
+                mTv_recycle.setSelected(false);
+                break;
+            case R.id.tv_recycle:
+                mTv_music.setSelected(false);
+                mTv_desk.setSelected(false);
+                mTv_video.setSelected(false);
+                mTv_computer.setSelected(false);
+                mTv_picture.setSelected(false);
+                mTv_storage.setSelected(false);
+                mTv_net_service.setSelected(false);
+                mTv_document.setSelected(false);
+                mTv_download.setSelected(false);
+                mTv_recycle.setSelected(true);
                 break;
             case R.id.tv_storage:
                 mTv_music.setSelected(false);
@@ -822,6 +858,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_picture.setSelected(false);
                 mTv_storage.setSelected(true);
                 mTv_net_service.setSelected(false);
+                mTv_document.setSelected(false);
+                mTv_download.setSelected(false);
+                mTv_recycle.setSelected(false);
                 break;
             case R.id.tv_net_service:
                 mTv_music.setSelected(false);
@@ -831,6 +870,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_picture.setSelected(false);
                 mTv_storage.setSelected(false);
                 mTv_net_service.setSelected(true);
+                mTv_document.setSelected(false);
+                mTv_download.setSelected(false);
+                mTv_recycle.setSelected(false);
                 break;
             default:
                 break;
@@ -987,6 +1029,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     } else {
                         returnToRootDir();
                     }
+                } else if (mCurFragment.getTag() != null
+                               && mCurFragment.getTag().equals(Constants.RECYCLEFRAGMENT_TAG)) {
+                    if (mRecycleFragment.canGoBack()) {
+                        mRecycleFragment.goBack();
+                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        mManager.popBackStack();
+                    } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        returnToRecycleDir();
+                    } else {
+                        returnToRootDir();
+                    }
                 } else {
                     returnToRootDir();
                 }
@@ -1064,6 +1117,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mEt_nivagation.setText(Constants.DOWNLOAD_PATH);
         setSelectedBackground(R.id.tv_download);
         mCurFragment = mDownloadFragment;
+    }
+
+    private void returnToRecycleDir() {
+        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
+        fragmentTransaction.hide(getVisibleFragment());
+        fragmentTransaction.show(mRecycleFragment);
+        fragmentTransaction.commit();
+        mEt_nivagation.setText(Constants.RECYCLE_PATH);
+        setSelectedBackground(R.id.tv_recycle);
+        mCurFragment = mRecycleFragment;
     }
 
     private void returnToPersonalDir() {

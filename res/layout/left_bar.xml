@@ -57,6 +57,12 @@
             android:text="@string/downloads" />
 
         <TextView
+            android:id="@+id/tv_recycle"
+            style="@style/textSet"
+            android:drawableLeft="@drawable/left_picture_selector"
+            android:text="@string/recycle" />
+
+        <TextView
             android:id="@+id/left_local_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

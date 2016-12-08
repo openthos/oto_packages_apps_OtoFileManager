@@ -29,6 +29,7 @@ public class PersonalSpaceFragment extends BaseFragment {
     private LinearLayout mLlDocument;
     private LinearLayout mLlDownload;
     private LinearLayout mLlMusic;
+    private LinearLayout mLlRecycle;
     private LinearLayout mLlQqImage;
     private LinearLayout mLlQqFile;
     private LinearLayout mLlWeixin;
@@ -69,6 +70,7 @@ public class PersonalSpaceFragment extends BaseFragment {
         mLlDocument.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
         mLlDownload.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
         mLlMusic.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
+        mLlRecycle.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
         mLlQqImage.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
         mLlQqFile.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
         mLlWeixin.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
@@ -84,6 +86,7 @@ public class PersonalSpaceFragment extends BaseFragment {
         mLlDocument = (LinearLayout) rootView.findViewById(R.id.ll_personal_document);
         mLlDownload = (LinearLayout) rootView.findViewById(R.id.ll_personal_downloads);
         mLlMusic = (LinearLayout) rootView.findViewById(R.id.ll_personal_music);
+        mLlRecycle = (LinearLayout) rootView.findViewById(R.id.ll_personal_recycle);
         mLlQqImage = (LinearLayout) rootView.findViewById(R.id.ll_personal_qq_image);
         mLlQqFile = (LinearLayout) rootView.findViewById(R.id.ll_personal_qq_file);
         mLlWeixin = (LinearLayout) rootView.findViewById(R.id.ll_personal_weixin);
@@ -157,6 +160,10 @@ public class PersonalSpaceFragment extends BaseFragment {
             case R.id.ll_personal_music:
                 setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.MUSIC_PATH,
                                                            R.id.ll_personal_music);
+                break;
+            case R.id.ll_personal_recycle:
+                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.RECYCLE_PATH,
+                                                           R.id.ll_personal_recycle);
                 break;
             case R.id.ll_personal_qq_image:
                 setDiskClickInfo(Constants.LEFT_FAVORITES, QQ_IMAGE_PATH,
