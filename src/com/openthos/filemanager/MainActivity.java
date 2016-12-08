@@ -267,32 +267,38 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (mDeskFragment == null) {
             mDeskFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
                                                     Constants.DESKTOP_PATH, null, null);
-            transaction.add(R.id.fl_mian, mDeskFragment).hide(mDeskFragment);
+            transaction.add(R.id.fl_mian, mDeskFragment, Constants.DESKFRAGMENT_TAG)
+                       .hide(mDeskFragment);
         }
         if (mMusicFragment == null) {
             mMusicFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
                                                      Constants.MUSIC_PATH, null, null);
-            transaction.add(R.id.fl_mian, mMusicFragment).hide(mMusicFragment);
+            transaction.add(R.id.fl_mian, mMusicFragment, Constants.MUSICFRAGMENT_TAG)
+                       .hide(mMusicFragment);
         }
         if (mVideoFragment == null) {
             mVideoFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
                                                      Constants.VIDEOS_PATH, null, null);
-            transaction.add(R.id.fl_mian, mVideoFragment).hide(mVideoFragment);
+            transaction.add(R.id.fl_mian, mVideoFragment, Constants.VIDEOFRAGMENT_TAG)
+                       .hide(mVideoFragment);
         }
         if (mPictrueFragment == null) {
             mPictrueFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
                                                        Constants.PICTURES_PATH, null, null);
-            transaction.add(R.id.fl_mian, mPictrueFragment).hide(mPictrueFragment);
+            transaction.add(R.id.fl_mian, mPictrueFragment, Constants.PICTRUEFRAGMENT_TAG)
+                       .hide(mPictrueFragment);
         }
         if (mDocumentFragment == null) {
             mDocumentFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
                                                         Constants.DOCUMENT_PATH, null, null);
-            transaction.add(R.id.fl_mian, mDocumentFragment).hide(mDocumentFragment);
+            transaction.add(R.id.fl_mian, mDocumentFragment, Constants.DOCUMENTFRAGMENT_TAG)
+                       .hide(mDocumentFragment);
         }
         if (mDownloadFragment == null) {
             mDownloadFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
                                                         Constants.DOWNLOAD_PATH, null, null);
-            transaction.add(R.id.fl_mian, mDownloadFragment).hide(mDownloadFragment);
+            transaction.add(R.id.fl_mian, mDownloadFragment, Constants.DOWNLOADFRRAGMENT_TAG)
+                       .hide(mDownloadFragment);
         }
         if (mOnlineNeighborFragment == null) {
             mOnlineNeighborFragment = new OnlineNeighborFragment();
@@ -906,6 +912,72 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     } else {
                         returnToRootDir();
                     }
+                } else if (mCurFragment.getTag() != null
+                               && mCurFragment.getTag().equals(Constants.DESKFRAGMENT_TAG)) {
+                    if (mDeskFragment.canGoBack()) {
+                        mDeskFragment.goBack();
+                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        mManager.popBackStack();
+                    } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        returnToDeskDir();
+                    } else {
+                        returnToRootDir();
+                    }
+                } else if (mCurFragment.getTag() != null
+                               && mCurFragment.getTag().equals(Constants.MUSICFRAGMENT_TAG)) {
+                    if (mMusicFragment.canGoBack()) {
+                        mMusicFragment.goBack();
+                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        mManager.popBackStack();
+                    } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        returnToMusicDir();
+                    } else {
+                        returnToRootDir();
+                    }
+                } else if (mCurFragment.getTag() != null
+                               && mCurFragment.getTag().equals(Constants.VIDEOFRAGMENT_TAG)) {
+                    if (mVideoFragment.canGoBack()) {
+                        mVideoFragment.goBack();
+                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        mManager.popBackStack();
+                    } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        returnToVideoDir();
+                    } else {
+                        returnToRootDir();
+                    }
+                } else if (mCurFragment.getTag() != null
+                               && mCurFragment.getTag().equals(Constants.PICTRUEFRAGMENT_TAG)) {
+                    if (mPictrueFragment.canGoBack()) {
+                        mPictrueFragment.goBack();
+                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        mManager.popBackStack();
+                    } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        returnToPicDir();
+                    } else {
+                        returnToRootDir();
+                    }
+                } else if (mCurFragment.getTag() != null
+                               && mCurFragment.getTag().equals(Constants.DOCUMENTFRAGMENT_TAG)) {
+                    if (mDocumentFragment.canGoBack()) {
+                        mDocumentFragment.goBack();
+                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        mManager.popBackStack();
+                    } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        returnToDocDir();
+                    } else {
+                        returnToRootDir();
+                    }
+                } else if (mCurFragment.getTag() != null
+                               && mCurFragment.getTag().equals(Constants.DOWNLOADFRRAGMENT_TAG)) {
+                    if (mDownloadFragment.canGoBack()) {
+                        mDownloadFragment.goBack();
+                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        mManager.popBackStack();
+                    } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        returnToDownloadDir();
+                    } else {
+                        returnToRootDir();
+                    }
                 } else {
                     returnToRootDir();
                 }
@@ -923,6 +995,66 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             }
         }
         return null;
+    }
+
+    private void returnToDeskDir() {
+        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
+        fragmentTransaction.hide(getVisibleFragment());
+        fragmentTransaction.show(mDeskFragment);
+        fragmentTransaction.commit();
+        mEt_nivagation.setText(Constants.DESKTOP_PATH);
+        setSelectedBackground(R.id.tv_desk);
+        mCurFragment = mDeskFragment;
+    }
+
+    private void returnToMusicDir() {
+        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
+        fragmentTransaction.hide(getVisibleFragment());
+        fragmentTransaction.show(mMusicFragment);
+        fragmentTransaction.commit();
+        mEt_nivagation.setText(Constants.MUSIC_PATH);
+        setSelectedBackground(R.id.tv_music);
+        mCurFragment = mMusicFragment;
+    }
+
+    private void returnToVideoDir() {
+        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
+        fragmentTransaction.hide(getVisibleFragment());
+        fragmentTransaction.show(mVideoFragment);
+        fragmentTransaction.commit();
+        mEt_nivagation.setText(Constants.VIDEOS_PATH);
+        setSelectedBackground(R.id.tv_video);
+        mCurFragment = mVideoFragment;
+    }
+
+    private void returnToPicDir() {
+        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
+        fragmentTransaction.hide(getVisibleFragment());
+        fragmentTransaction.show(mPictrueFragment);
+        fragmentTransaction.commit();
+        mEt_nivagation.setText(Constants.PICTURES_PATH);
+        setSelectedBackground(R.id.tv_picture);
+        mCurFragment = mPictrueFragment;
+    }
+
+    private void returnToDocDir() {
+        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
+        fragmentTransaction.hide(getVisibleFragment());
+        fragmentTransaction.show(mDocumentFragment);
+        fragmentTransaction.commit();
+        mEt_nivagation.setText(Constants.DOCUMENT_PATH);
+        setSelectedBackground(R.id.tv_document);
+        mCurFragment = mDocumentFragment;
+    }
+
+    private void returnToDownloadDir() {
+        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
+        fragmentTransaction.hide(getVisibleFragment());
+        fragmentTransaction.show(mDownloadFragment);
+        fragmentTransaction.commit();
+        mEt_nivagation.setText(Constants.DOWNLOAD_PATH);
+        setSelectedBackground(R.id.tv_download);
+        mCurFragment = mDownloadFragment;
     }
 
     private void returnToPersonalDir() {
