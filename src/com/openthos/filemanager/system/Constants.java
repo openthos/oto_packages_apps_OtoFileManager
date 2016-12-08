@@ -56,7 +56,7 @@ public abstract class Constants {
     public static final int USB_READY = 5;
 
     public static final int BAR_Y = 25;
-
+    public static final int RETURN_TO_WHITE = -2;
     public static final int LIMIT_LENGTH = 10;
     public static final int LIMIT_OWNER_READ = 1;
     public static final int LIMIT_OWNER_WRITE = 2;

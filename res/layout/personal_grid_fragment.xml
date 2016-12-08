@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_personal_fragment"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,6 +11,7 @@
         android:layout_width="@dimen/grid_item_width"
         android:layout_height="@dimen/grid_item_height"
         android:orientation="vertical"
+        android:background="@drawable/list_item_bg_selector"
         android:padding="5dp">
 
         <ImageView
@@ -36,6 +38,7 @@
         android:layout_width="@dimen/grid_item_width"
         android:layout_height="@dimen/grid_item_height"
         android:orientation="vertical"
+        android:background="@drawable/list_item_bg_selector"
         android:padding="5dp">
 
         <ImageView
@@ -62,6 +65,7 @@
         android:layout_width="@dimen/grid_item_width"
         android:layout_height="@dimen/grid_item_height"
         android:orientation="vertical"
+        android:background="@drawable/list_item_bg_selector"
         android:padding="5dp">
 
         <ImageView
@@ -88,6 +92,7 @@
         android:layout_width="@dimen/grid_item_width"
         android:layout_height="@dimen/grid_item_height"
         android:orientation="vertical"
+        android:background="@drawable/list_item_bg_selector"
         android:padding="5dp">
 
         <ImageView
@@ -114,6 +119,7 @@
         android:layout_width="@dimen/grid_item_width"
         android:layout_height="@dimen/grid_item_height"
         android:orientation="vertical"
+        android:background="@drawable/list_item_bg_selector"
         android:padding="5dp">
 
         <ImageView
@@ -141,6 +147,7 @@
         android:layout_height="@dimen/grid_item_height"
         android:orientation="vertical"
         android:padding="5dp"
+        android:background="@drawable/list_item_bg_selector"
         android:visibility="gone">
 
         <ImageView
@@ -168,6 +175,7 @@
         android:layout_height="@dimen/grid_item_height"
         android:orientation="vertical"
         android:padding="5dp"
+        android:background="@drawable/list_item_bg_selector"
         android:visibility="gone">
 
         <ImageView
@@ -195,6 +203,7 @@
         android:layout_height="@dimen/grid_item_height"
         android:orientation="vertical"
         android:padding="5dp"
+        android:background="@drawable/list_item_bg_selector"
         android:visibility="gone">
 
         <ImageView
@@ -222,6 +231,7 @@
         android:layout_height="@dimen/grid_item_height"
         android:orientation="vertical"
         android:padding="5dp"
+        android:background="@drawable/list_item_bg_selector"
         android:visibility="gone">
 
         <ImageView

@@ -34,10 +34,12 @@ public class PersonalSpaceFragment extends BaseFragment {
     private LinearLayout mLlWeixin;
     private LinearLayout mLlBaiduPan;
     private long mCurrentBackTime;
+    private LinearLayout mLlPersonalFragment;
     private double mLastBackTime;
     public Fragment mCurFragment;
     ArrayList<FileInfo> mFileInfoArrayList = null;
     FileViewInteractionHub.CopyOrMove mCopyOrMove = null;
+    private int mCurId;
 
     @Override
     protected void initData() {
@@ -61,6 +63,7 @@ public class PersonalSpaceFragment extends BaseFragment {
 
     @Override
     protected void initListener() {
+        mLlPersonalFragment.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
         mLlVideos.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
         mLlPictures.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
         mLlDocument.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
@@ -72,8 +75,10 @@ public class PersonalSpaceFragment extends BaseFragment {
         mLlBaiduPan.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
     }
 
+
     @Override
     protected void initView() {
+        mLlPersonalFragment = (LinearLayout) rootView.findViewById(R.id.ll_personal_fragment);
         mLlVideos = (LinearLayout) rootView.findViewById(R.id.ll_personal_videos);
         mLlPictures = (LinearLayout) rootView.findViewById(R.id.ll_personal_pictures);
         mLlDocument = (LinearLayout) rootView.findViewById(R.id.ll_personal_document);
@@ -134,39 +139,52 @@ public class PersonalSpaceFragment extends BaseFragment {
         mCurrentBackTime = System.currentTimeMillis();
         switch (view.getId()) {
             case R.id.ll_personal_videos:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.VIDEOS_PATH);
+                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.VIDEOS_PATH,
+                                                           R.id.ll_personal_videos);
                 break;
             case R.id.ll_personal_pictures:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.PICTURES_PATH);
+                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.PICTURES_PATH,
+                                                           R.id.ll_personal_pictures);
                 break;
             case R.id.ll_personal_document:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.DOCUMENT_PATH);
+                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.DOCUMENT_PATH,
+                                                           R.id.ll_personal_document);
                 break;
             case R.id.ll_personal_downloads:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.DOWNLOAD_PATH);
+                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.DOWNLOAD_PATH,
+                                                           R.id.ll_personal_downloads);
                 break;
             case R.id.ll_personal_music:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.MUSIC_PATH);
+                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.MUSIC_PATH,
+                                                           R.id.ll_personal_music);
                 break;
             case R.id.ll_personal_qq_image:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, QQ_IMAGE_PATH);
+                setDiskClickInfo(Constants.LEFT_FAVORITES, QQ_IMAGE_PATH,
+                                                           R.id.ll_personal_qq_image);
                 break;
             case R.id.ll_personal_qq_file:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, QQ_FILE_PATH);
+                setDiskClickInfo(Constants.LEFT_FAVORITES, QQ_FILE_PATH,
+                                                           R.id.ll_personal_qq_file);
                 break;
             case R.id.ll_personal_weixin:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, WEIXIN_IMG_PATH);
+                setDiskClickInfo(Constants.LEFT_FAVORITES, WEIXIN_IMG_PATH,
+                                                           R.id.ll_personal_weixin);
                 break;
             case R.id.ll_personal_baidudisk:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, BAIDU_PAN_PATH);
+                setDiskClickInfo(Constants.LEFT_FAVORITES, BAIDU_PAN_PATH,
+                                                           R.id.ll_personal_baidudisk);
                 break;
             default:
+                setItemBackGround(Constants.RETURN_TO_WHITE);
                 break;
         }
     }
 
-    private void setDiskClickInfo(String tag, String path) {
-        if (mCurrentBackTime - mLastBackTime > Constants.DOUBLE_CLICK_INTERVAL_TIME) {
+    private void setDiskClickInfo(String tag, String path, int id) {
+        if (mCurrentBackTime - mLastBackTime > Constants.DOUBLE_CLICK_INTERVAL_TIME
+                || id != mCurId) {
+            setItemBackGround(id);
+            mCurId = id;
             mLastBackTime = mCurrentBackTime;
         } else {
             if (mCurFragment != null) {
@@ -183,6 +201,122 @@ public class PersonalSpaceFragment extends BaseFragment {
             transaction.hide(mMainActivity.mCurFragment);
             transaction.add(R.id.fl_mian, mCurFragment, Constants.PERSONALSYSTEMSPACE_TAG).commit();
             mMainActivity.mCurFragment = mCurFragment;
+            mCurId = Constants.RETURN_TO_WHITE;
+        }
+    }
+
+    private void setItemBackGround(int id) {
+        switch (id) {
+            case  R.id.ll_personal_videos:
+                mLlVideos.setSelected(true);
+                mLlPictures.setSelected(false);
+                mLlDocument.setSelected(false);
+                mLlDownload.setSelected(false);
+                mLlMusic.setSelected(false);
+                mLlQqImage.setSelected(false);
+                mLlQqFile.setSelected(false);
+                mLlWeixin.setSelected(false);
+                mLlBaiduPan.setSelected(false);
+            break;
+            case  R.id.ll_personal_pictures:
+                mLlVideos.setSelected(false);
+                mLlPictures.setSelected(true);
+                mLlDocument.setSelected(false);
+                mLlDownload.setSelected(false);
+                mLlMusic.setSelected(false);
+                mLlQqImage.setSelected(false);
+                mLlQqFile.setSelected(false);
+                mLlWeixin.setSelected(false);
+                mLlBaiduPan.setSelected(false);
+            break;
+            case  R.id.ll_personal_document:
+                mLlVideos.setSelected(false);
+                mLlPictures.setSelected(false);
+                mLlDocument.setSelected(true);
+                mLlDownload.setSelected(false);
+                mLlMusic.setSelected(false);
+                mLlQqImage.setSelected(false);
+                mLlQqFile.setSelected(false);
+                mLlWeixin.setSelected(false);
+                mLlBaiduPan.setSelected(false);
+            break;
+            case  R.id.ll_personal_downloads:
+                mLlVideos.setSelected(false);
+                mLlPictures.setSelected(false);
+                mLlDocument.setSelected(false);
+                mLlDownload.setSelected(true);
+                mLlMusic.setSelected(false);
+                mLlQqImage.setSelected(false);
+                mLlQqFile.setSelected(false);
+                mLlWeixin.setSelected(false);
+                mLlBaiduPan.setSelected(false);
+            break;
+            case R.id.ll_personal_music :
+                mLlVideos.setSelected(false);
+                mLlPictures.setSelected(false);
+                mLlDocument.setSelected(false);
+                mLlDownload.setSelected(false);
+                mLlMusic.setSelected(true);
+                mLlQqImage.setSelected(false);
+                mLlQqFile.setSelected(false);
+                mLlWeixin.setSelected(false);
+                mLlBaiduPan.setSelected(false);
+            break;
+            case  R.id.ll_personal_qq_image:
+                mLlVideos.setSelected(false);
+                mLlPictures.setSelected(false);
+                mLlDocument.setSelected(false);
+                mLlDownload.setSelected(false);
+                mLlMusic.setSelected(false);
+                mLlQqImage.setSelected(true);
+                mLlQqFile.setSelected(false);
+                mLlWeixin.setSelected(false);
+                mLlBaiduPan.setSelected(false);
+            break;
+            case  R.id.ll_personal_qq_file:
+                mLlVideos.setSelected(false);
+                mLlPictures.setSelected(false);
+                mLlDocument.setSelected(false);
+                mLlDownload.setSelected(false);
+                mLlMusic.setSelected(false);
+                mLlQqImage.setSelected(false);
+                mLlQqFile.setSelected(true);
+                mLlWeixin.setSelected(false);
+                mLlBaiduPan.setSelected(false);
+            break;
+            case  R.id.ll_personal_weixin:
+                mLlVideos.setSelected(false);
+                mLlPictures.setSelected(false);
+                mLlDocument.setSelected(false);
+                mLlDownload.setSelected(false);
+                mLlMusic.setSelected(false);
+                mLlQqImage.setSelected(false);
+                mLlQqFile.setSelected(false);
+                mLlWeixin.setSelected(true);
+                mLlBaiduPan.setSelected(false);
+                break;
+            case  R.id.ll_personal_baidudisk:
+                mLlVideos.setSelected(false);
+                mLlPictures.setSelected(false);
+                mLlDocument.setSelected(false);
+                mLlDownload.setSelected(false);
+                mLlMusic.setSelected(false);
+                mLlQqImage.setSelected(false);
+                mLlQqFile.setSelected(false);
+                mLlWeixin.setSelected(false);
+                mLlBaiduPan.setSelected(true);
+                break;
+            case  Constants.RETURN_TO_WHITE:
+                mLlVideos.setSelected(false);
+                mLlPictures.setSelected(false);
+                mLlDocument.setSelected(false);
+                mLlDownload.setSelected(false);
+                mLlMusic.setSelected(false);
+                mLlQqImage.setSelected(false);
+                mLlQqFile.setSelected(false);
+                mLlWeixin.setSelected(false);
+                mLlBaiduPan.setSelected(false);
+                break;
         }
     }
 }

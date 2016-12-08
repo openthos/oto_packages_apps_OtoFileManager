@@ -942,7 +942,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         fragmentTransaction.commit();
         mEt_nivagation.setText(null);
         setSelectedBackground(R.id.tv_computer);
-        mSdStorageFragment.setSelectedCardBg(-1);
+        mSdStorageFragment.setSelectedCardBg(Constants.RETURN_TO_WHITE);
         mCurFragment = mSdStorageFragment;
     }
 
@@ -961,12 +961,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             if (mCurFragment == mSdStorageFragment && mSdStorageFragment.mCurFragment != null) {
                 mEt_nivagation.setText(displayPath);
             } else {
-                if (mCurFragment instanceof SystemSpaceFragment){
+                if (mCurFragment instanceof SystemSpaceFragment) {
                     mEt_nivagation.setText(displayPath);
                 }else {
                     mEt_nivagation.setText(null);
                 }
             }
         }
+    }
+
+    public void setNavigationPath(String displayPath) {
+        mEt_nivagation.setText(displayPath);
     }
 }

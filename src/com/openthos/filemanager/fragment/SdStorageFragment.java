@@ -66,6 +66,7 @@ public class SdStorageFragment extends BaseFragment {
 //    private Context context;
     private LinearLayout mFragment_sds_ll;
     private LinearLayout mLlMobileDevice;
+    private int mCurId;
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public SdStorageFragment(FragmentManager mManager,
@@ -238,15 +239,18 @@ public class SdStorageFragment extends BaseFragment {
                 break;
             case R.id.rl_personal_space:
                 setDiskClickInfo(R.id.rl_personal_space, PERSONAL_TAG, null);
+                break;
             default:
-                setSelectedCardBg(-1);
+                setSelectedCardBg(Constants.RETURN_TO_WHITE);
                 break;
         }
     }
 
     private void setDiskClickInfo(int id, String tag, String path) {
-        if (currentBackTime - lastBackTime > Constants.DOUBLE_CLICK_INTERVAL_TIME) {
+        if (currentBackTime - lastBackTime > Constants.DOUBLE_CLICK_INTERVAL_TIME
+                 || id != mCurId) {
             setSelectedCardBg(id);
+            mCurId = id;
             lastBackTime = currentBackTime;
         } else {
             if (mCurFragment != null) {
@@ -265,6 +269,7 @@ public class SdStorageFragment extends BaseFragment {
             transaction.hide(mMainActivity.mCurFragment);
             if (PERSONAL_TAG.equals(tag)) {
             //    mCurFragment = new PersonalSpaceFragment();
+                mMainActivity.setNavigationPath("SDCard");
                 transaction.show(mMainActivity.mPersonalSpaceFragment).commit();
                 mCurFragment = mMainActivity.mPersonalSpaceFragment;
             } else {
@@ -272,6 +277,7 @@ public class SdStorageFragment extends BaseFragment {
                 transaction.add(R.id.fl_mian, mCurFragment,Constants.SDSSYSTEMSPACE_TAG).commit();
             }
             mMainActivity.mCurFragment = mCurFragment;
+            mCurId = Constants.RETURN_TO_WHITE;
         }
     }
 
@@ -282,30 +288,42 @@ public class SdStorageFragment extends BaseFragment {
                 mRl_sd_space.setSelected(false);
                 mRl_mount_space_one.setSelected(false);
                 mRl_android_service.setSelected(false);
+                mRl_personal_space.setSelected(false);
                 break;
             case R.id.rl_sd_space:
                 mRl_android_system.setSelected(false);
                 mRl_sd_space.setSelected(true);
                 mRl_mount_space_one.setSelected(false);
                 mRl_android_service.setSelected(false);
+                mRl_personal_space.setSelected(false);
                 break;
             case R.id.rl_mount_space_one:
                 mRl_android_system.setSelected(false);
                 mRl_sd_space.setSelected(false);
                 mRl_mount_space_one.setSelected(true);
                 mRl_android_service.setSelected(false);
+                mRl_personal_space.setSelected(false);
                 break;
             case R.id.rl_android_service:
                 mRl_android_system.setSelected(false);
                 mRl_sd_space.setSelected(false);
                 mRl_mount_space_one.setSelected(false);
                 mRl_android_service.setSelected(true);
+                mRl_personal_space.setSelected(false);
                 break;
-            case -1:
+            case R.id.rl_personal_space:
                 mRl_android_system.setSelected(false);
                 mRl_sd_space.setSelected(false);
                 mRl_mount_space_one.setSelected(false);
                 mRl_android_service.setSelected(false);
+                mRl_personal_space.setSelected(true);
+                break;
+            case Constants.RETURN_TO_WHITE:
+                mRl_android_system.setSelected(false);
+                mRl_sd_space.setSelected(false);
+                mRl_mount_space_one.setSelected(false);
+                mRl_android_service.setSelected(false);
+                mRl_personal_space.setSelected(false);
                 break;
         }
     }
