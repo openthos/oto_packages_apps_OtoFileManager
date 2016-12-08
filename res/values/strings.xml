@@ -212,6 +212,9 @@
     <string name="USB_recognising">USB_recognising</string>
     <string name="copy_info">Do in progress...</string>
     <string name="file_type_default">.doc</string>
+    <string name="delete_dialog_move">Are you sure you want to move it/them to the Recycle?</string>
+    <string name="delete_dialog_delete">Are you sure you want to delete it/them permanently?</string>
+    <string name="delete_dialog_clean">Are you sure you want to clean the Recycle?</string>
 
     <string-array name="file_type_array">
         <item>.doc</item>

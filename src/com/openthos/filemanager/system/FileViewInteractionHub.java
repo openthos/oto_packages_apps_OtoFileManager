@@ -545,11 +545,15 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         doOperationDelete(getSelectedFileList());
     }
 
+    public void onOperationDeleteDirect() {
+        doOperationDeleteDirect(getSelectedFileList());
+    }
+
     public void onOperationDelete(int position) {
         FileInfo file = mFileViewListener.getItem(position);
-        if (file == null)
+        if (file == null) {
             return;
-
+        }
         ArrayList<FileInfo> selectedFileList = new ArrayList<FileInfo>();
         selectedFileList.add(file);
         doOperationDelete(selectedFileList);
@@ -557,26 +561,121 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 
     private void doOperationDelete(final ArrayList<FileInfo> selectedFileList) {
         final ArrayList<FileInfo> selectedFiles = new ArrayList<>(selectedFileList);
-        Dialog dialog = new AlertDialog.Builder(mContext)
-                .setMessage(mContext.getString(R.string.operation_delete_confirm_message))
-                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        if (mFileOperationHelper.Delete(selectedFiles)) {
-                            showProgress(mContext.getString(R.string.operation_deleting));
-                        }
-                        clearSelection();
-                        T.showShort(mContext,
-                                    mContext.getResources().getString(R.string.success_delete));
-                    }
-                }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
+        if (selectedFileList.size() == 0) {
+            return;
+        }
+        String path = selectedFiles.get(0).filePath;
+        if (path.equals(FileOperationHelper.RECYCLE_PATH1)
+                || path.equals(FileOperationHelper.RECYCLE_PATH2)
+                || path.equals(FileOperationHelper.RECYCLE_PATH3)) {
+            //clean Recycle
+            dialog.setMessage(mContext.getString(R.string.delete_dialog_clean));
+        } else if (path.contains(FileOperationHelper.RECYCLE_PATH1)
+                || path.contains(FileOperationHelper.RECYCLE_PATH2)
+                || path.contains(FileOperationHelper.RECYCLE_PATH3)) {
+            //delete file
+            dialog.setMessage(mContext.getString(R.string.delete_dialog_delete));
+        } else {
+            //move to Recycle
+            dialog.setMessage(mContext.getString(R.string.delete_dialog_move));
+        }
+
+        dialog.setPositiveButton(R.string.confirm, new DeleteClickListener(path))
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         clearSelection();
                     }
                 }).create();
         dialog.setCancelable(false);
-        dialog.setCanceledOnTouchOutside(false);
         dialog.show();
+    }
+
+    private void doOperationDeleteDirect(final ArrayList<FileInfo> selectedFileList) {
+        final ArrayList<FileInfo> selectedFiles = new ArrayList<>(selectedFileList);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
+        if (selectedFileList.size() == 0) {
+            return;
+        }
+        String path = selectedFiles.get(0).filePath;
+        if (path.equals(FileOperationHelper.RECYCLE_PATH1)
+                || path.equals(FileOperationHelper.RECYCLE_PATH2)
+                || path.equals(FileOperationHelper.RECYCLE_PATH3)) {
+            //clean Recycle
+            dialog.setMessage(mContext.getString(R.string.delete_dialog_clean));
+        } else {
+            //delete file
+            dialog.setMessage(mContext.getString(R.string.delete_dialog_delete));
+        }
+
+        dialog.setPositiveButton(R.string.confirm, new DeleteDirectClickListener(path))
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        clearSelection();
+                    }
+                }).create();
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+    class DeleteDirectClickListener implements DialogInterface.OnClickListener {
+        String mPath;
+
+        public DeleteDirectClickListener(String path) {
+            super();
+            mPath = path;
+        }
+
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            new DeleteDirectThread(mPath).start();
+        }
+    }
+
+    class DeleteDirectThread extends Thread {
+        String mPath;
+
+        public DeleteDirectThread(String path) {
+            super();
+            mPath = path;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            FileOperationHelper.deleteDirectFile(mPath);
+        }
+    }
+
+    class DeleteClickListener implements DialogInterface.OnClickListener {
+        String mPath;
+
+        public DeleteClickListener(String path) {
+            super();
+            mPath = path;
+        }
+
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            new DeleteThread(mPath).start();
+        }
+    }
+
+    class DeleteThread extends Thread {
+        String mPath;
+
+        public DeleteThread(String path) {
+            super();
+            mPath = path;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            FileOperationHelper.deleteFile(mPath);
+        }
     }
 
     public void onOperationInfo() {

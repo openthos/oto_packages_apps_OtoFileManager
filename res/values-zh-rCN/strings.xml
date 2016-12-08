@@ -190,4 +190,7 @@
     <string name="text_personal">个人空间</string>
     <string name="USB_recognising">正在识别...</string>
     <string name="copy_info">正在操作……</string>
+    <string name="delete_dialog_move">确认删除到回收站?</string>
+    <string name="delete_dialog_delete">确认永久删除？</string>
+    <string name="delete_dialog_clean">确认清空回收站?</string>
 </resources>

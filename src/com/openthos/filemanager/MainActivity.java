@@ -497,30 +497,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_X) {
             sendBroadcastMessage("iv_menu", "pop_cut", false);
-            if (getVisibleFragment() instanceof PersonalSpaceFragment
-                                     || getVisibleFragment() instanceof SdStorageFragment
-                                     || getVisibleFragment() instanceof OnlineNeighborFragment
-                                     || mEt_nivagation.isFocused() || mEt_search_view.isFocused()) {
+            if (isCopyByHot()) {
                 return false;
             }
             cut();
         }
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_C) {
             sendBroadcastMessage("iv_menu", "pop_copy", false);
-            if (getVisibleFragment() instanceof PersonalSpaceFragment
-                                     || getVisibleFragment() instanceof SdStorageFragment
-                                     || getVisibleFragment() instanceof OnlineNeighborFragment
-                                     || mEt_nivagation.isFocused() || mEt_search_view.isFocused()) {
+            if (isCopyByHot()) {
                 return false;
             }
             copy();
         }
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_V) {
             sendBroadcastMessage("iv_menu", "pop_paste", false);
-            if (getVisibleFragment() instanceof PersonalSpaceFragment
-                                     || getVisibleFragment() instanceof SdStorageFragment
-                                     || getVisibleFragment() instanceof OnlineNeighborFragment
-                                     || mEt_nivagation.isFocused() || mEt_search_view.isFocused()) {
+            if (isCopyByHot()) {
                 return false;
             }
             paste();
@@ -528,10 +519,28 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_Z) {
             sendBroadcastMessage("iv_menu", "pop_cacel", false);
         }
-        if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_D) {
+        if ((keyCode == KeyEvent.KEYCODE_FORWARD_DEL && !event.isShiftPressed())
+                || (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_D)) {
             sendBroadcastMessage("iv_menu", "pop_delete", false);
+            if (isCopyByHot()) {
+                return false;
+            }
+            ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.onOperationDelete();
+        } else if (keyCode == KeyEvent.KEYCODE_FORWARD_DEL && event.isShiftPressed()) {
+            sendBroadcastMessage("iv_menu", "pop_delete", false);
+            if (isCopyByHot()) {
+                return false;
+            }
+            ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.onOperationDeleteDirect();
         }
         return false;
+    }
+
+    private boolean isCopyByHot() {
+        return getVisibleFragment() instanceof PersonalSpaceFragment
+                || getVisibleFragment() instanceof SdStorageFragment
+                || getVisibleFragment() instanceof OnlineNeighborFragment
+                || mEt_nivagation.isFocused() || mEt_search_view.isFocused();
     }
 
     private void cut() {
@@ -607,7 +616,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         public void run() {
             super.run();
             FileOperationHelper.MoveFile(
-                                 mSourcePath.replace(Intent.EXTRA_CROP_FILE_HEADER, ""), mDestPath);
+                           mSourcePath.replace(Intent.EXTRA_CROP_FILE_HEADER, ""), mDestPath, true);
         }
     }
 

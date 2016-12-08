@@ -124,7 +124,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                 break;
             case "pop_delete":
                 if (mFileViewInteractionHub.getSelectedFileList() != null) {
-                    mFileViewInteractionHub.onOperationDelete();
+                    //mFileViewInteractionHub.onOperationDelete();
                 }
                 break;
             case "pop_send":
