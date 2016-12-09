@@ -10,6 +10,7 @@ import com.openthos.filemanager.R;
 import com.openthos.filemanager.system.FileViewInteractionHub;
 import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.T;
+import com.openthos.filemanager.system.Constants;
 
 public class GridOnGenericMotionListener implements View.OnGenericMotionListener {
     private GridView file_path_grid;
@@ -63,8 +64,8 @@ public class GridOnGenericMotionListener implements View.OnGenericMotionListener
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (mLastClickId == position
                 && (Math.abs(System.currentTimeMillis() - mLastClickTime) < 1200)) {
-                String doubleTag = "double";
-                mFileViewInteractionHub.onListItemClick(position, doubleTag, event, null);
+                mFileViewInteractionHub.onListItemClick(position,
+                                                  Constants.DOUBLE_TAG, event, null);
                 mFileViewInteractionHub.clearSelection();
             } else {
                 parent.getChildAt(position).setSelected(true);

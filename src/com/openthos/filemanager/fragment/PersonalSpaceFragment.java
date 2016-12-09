@@ -220,6 +220,7 @@ public class PersonalSpaceFragment extends BaseFragment {
                 mLlDocument.setSelected(false);
                 mLlDownload.setSelected(false);
                 mLlMusic.setSelected(false);
+                mLlRecycle.setSelected(false);
                 mLlQqImage.setSelected(false);
                 mLlQqFile.setSelected(false);
                 mLlWeixin.setSelected(false);
@@ -231,6 +232,7 @@ public class PersonalSpaceFragment extends BaseFragment {
                 mLlDocument.setSelected(false);
                 mLlDownload.setSelected(false);
                 mLlMusic.setSelected(false);
+                mLlRecycle.setSelected(false);
                 mLlQqImage.setSelected(false);
                 mLlQqFile.setSelected(false);
                 mLlWeixin.setSelected(false);
@@ -242,6 +244,7 @@ public class PersonalSpaceFragment extends BaseFragment {
                 mLlDocument.setSelected(true);
                 mLlDownload.setSelected(false);
                 mLlMusic.setSelected(false);
+                mLlRecycle.setSelected(false);
                 mLlQqImage.setSelected(false);
                 mLlQqFile.setSelected(false);
                 mLlWeixin.setSelected(false);
@@ -253,6 +256,7 @@ public class PersonalSpaceFragment extends BaseFragment {
                 mLlDocument.setSelected(false);
                 mLlDownload.setSelected(true);
                 mLlMusic.setSelected(false);
+                mLlRecycle.setSelected(false);
                 mLlQqImage.setSelected(false);
                 mLlQqFile.setSelected(false);
                 mLlWeixin.setSelected(false);
@@ -264,17 +268,31 @@ public class PersonalSpaceFragment extends BaseFragment {
                 mLlDocument.setSelected(false);
                 mLlDownload.setSelected(false);
                 mLlMusic.setSelected(true);
+                mLlRecycle.setSelected(false);
                 mLlQqImage.setSelected(false);
                 mLlQqFile.setSelected(false);
                 mLlWeixin.setSelected(false);
                 mLlBaiduPan.setSelected(false);
             break;
+            case R.id.ll_personal_recycle :
+                mLlVideos.setSelected(false);
+                mLlPictures.setSelected(false);
+                mLlDocument.setSelected(false);
+                mLlDownload.setSelected(false);
+                mLlMusic.setSelected(false);
+                mLlRecycle.setSelected(true);
+                mLlQqImage.setSelected(false);
+                mLlQqFile.setSelected(false);
+                mLlWeixin.setSelected(false);
+                mLlBaiduPan.setSelected(false);
+                break;
             case  R.id.ll_personal_qq_image:
                 mLlVideos.setSelected(false);
                 mLlPictures.setSelected(false);
                 mLlDocument.setSelected(false);
                 mLlDownload.setSelected(false);
                 mLlMusic.setSelected(false);
+                mLlRecycle.setSelected(false);
                 mLlQqImage.setSelected(true);
                 mLlQqFile.setSelected(false);
                 mLlWeixin.setSelected(false);
@@ -286,6 +304,7 @@ public class PersonalSpaceFragment extends BaseFragment {
                 mLlDocument.setSelected(false);
                 mLlDownload.setSelected(false);
                 mLlMusic.setSelected(false);
+                mLlRecycle.setSelected(false);
                 mLlQqImage.setSelected(false);
                 mLlQqFile.setSelected(true);
                 mLlWeixin.setSelected(false);
@@ -297,6 +316,7 @@ public class PersonalSpaceFragment extends BaseFragment {
                 mLlDocument.setSelected(false);
                 mLlDownload.setSelected(false);
                 mLlMusic.setSelected(false);
+                mLlRecycle.setSelected(false);
                 mLlQqImage.setSelected(false);
                 mLlQqFile.setSelected(false);
                 mLlWeixin.setSelected(true);
@@ -308,6 +328,7 @@ public class PersonalSpaceFragment extends BaseFragment {
                 mLlDocument.setSelected(false);
                 mLlDownload.setSelected(false);
                 mLlMusic.setSelected(false);
+                mLlRecycle.setSelected(false);
                 mLlQqImage.setSelected(false);
                 mLlQqFile.setSelected(false);
                 mLlWeixin.setSelected(false);
@@ -319,6 +340,7 @@ public class PersonalSpaceFragment extends BaseFragment {
                 mLlDocument.setSelected(false);
                 mLlDownload.setSelected(false);
                 mLlMusic.setSelected(false);
+                mLlRecycle.setSelected(false);
                 mLlQqImage.setSelected(false);
                 mLlQqFile.setSelected(false);
                 mLlWeixin.setSelected(false);

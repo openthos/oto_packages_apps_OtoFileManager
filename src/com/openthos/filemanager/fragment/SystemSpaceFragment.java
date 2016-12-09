@@ -625,9 +625,8 @@ public class SystemSpaceFragment extends BaseFragment implements
                 if ("button_primary".equals(mouseRightTag) && mLastClickId == position
                         && (Math.abs(System.currentTimeMillis() - mLastClickTime)
                             < Constants.DOUBLE_CLICK_INTERVAL_TIME)) {
-                    String doubleTag = "double";
                     mFileViewInteractionHub.onListItemClick(position,
-                                                            doubleTag, motionEvent, fileInfo);
+                                            Constants.DOUBLE_TAG, motionEvent, fileInfo);
                     integerList.clear();
                     mFileViewInteractionHub.clearSelection();
                 } else if (mouseRightTag.equals("button_secondary") && isDialogShow == false) {

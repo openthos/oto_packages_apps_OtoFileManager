@@ -10,6 +10,11 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <TextView
+            android:id="@+id/dialog_open"
+            android:layout_marginTop="@dimen/left_margrin_text"
+            style="@style/textDialog"
+            android:text="@string/operation_open"/>
+        <TextView
             android:id="@+id/dialog_copy"
             android:layout_marginTop="@dimen/left_margrin_text"
             style="@style/textDialog"

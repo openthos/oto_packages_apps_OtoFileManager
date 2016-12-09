@@ -777,11 +777,16 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             } else {
                 viewFile(fileInfo,event);
             }
-        } else if (doubleTag.equals("double") && doubleTag != null) {
+        } else if (doubleTag != null && Constants.DOUBLE_TAG.equals(doubleTag)) {
 //            mCheckedFileNameList.remove(lFileInfo);  //
             mCurrentPath = getAbsoluteName(mCurrentPath, fileInfo.fileName);
             refreshFileList();
         }
+    }
+
+    public void onOperationOpen(MotionEvent event) {
+        FileInfo fileInfo = getSelectedFileList().get(0);
+        onListItemClick(selectedDialogItem, Constants.DOUBLE_TAG, event, fileInfo);
     }
 
     public void setBackground(int position, FileInfo lFileInfo) {
@@ -922,7 +927,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 
     public void shownContextDialog(FileViewInteractionHub mFileViewInteractionHub,
                                    MotionEvent event) {
-        menuDialog = new MenuDialog(mContext, R.style.menu_dialog, mFileViewInteractionHub);
+        menuDialog = new MenuDialog(mContext, R.style.menu_dialog, mFileViewInteractionHub, event);
         menuDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         menuDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
 //                menuDialog.setEnablePaste(canPaste);

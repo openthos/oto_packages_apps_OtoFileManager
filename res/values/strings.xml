@@ -9,6 +9,7 @@
     <string name="menu_item_sort_size">Size</string>
     <string name="menu_item_sort_date">Time</string>
     <string name="menu_item_sort_type">Type</string>
+    <string name="operation_open">Open</string>
     <string name="operation_copy">Copy</string>
     <string name="operation_folder">Create Folder</string>
     <string name="operation_copy_path">Copy Path</string>

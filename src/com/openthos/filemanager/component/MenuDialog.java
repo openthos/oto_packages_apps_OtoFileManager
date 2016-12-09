@@ -16,6 +16,7 @@ import android.app.Activity;
 import android.widget.LinearLayout;
 import android.view.Display;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
@@ -23,6 +24,7 @@ import com.openthos.filemanager.system.FileViewInteractionHub;
 import com.openthos.filemanager.system.Constants;
 
 public class MenuDialog extends Dialog implements View.OnClickListener {
+    private TextView mDialog_open;
     private TextView dialog_copy;
     private TextView dialog_paste;
     private TextView dialog_rename;
@@ -44,8 +46,10 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
     private int newX;
     private int newY;
     private MenuSecondDialog menuSecondDialog;
+    private MotionEvent mMotionEvent;
 
-    public MenuDialog(Context mContext, int id, FileViewInteractionHub mFileViewInteractionHub) {
+    public MenuDialog(Context mContext, int id, FileViewInteractionHub mFileViewInteractionHub,
+                                                MotionEvent mMotionEvent) {
         super(mContext);
         this.context = mContext;
         this.mFileViewInteractionHub = mFileViewInteractionHub;
@@ -68,6 +72,7 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
     }
 
     private void initData() {
+        mDialog_open.setOnClickListener(this);
         dialog_copy.setOnClickListener(this);
         String sourcePath = "";
         try {
@@ -98,6 +103,7 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
     }
 
     private void initView() {
+        mDialog_open = (TextView) findViewById(R.id.dialog_open);
         dialog_copy = (TextView) findViewById(R.id.dialog_copy);
         dialog_paste = (TextView) findViewById(R.id.dialog_paste);
         dialog_rename = (TextView) findViewById(R.id.dialog_rename);
@@ -119,6 +125,11 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.dialog_open:
+                mFileViewInteractionHub.onOperationOpen(mMotionEvent);
+                mFileViewInteractionHub.clearSelection();
+                mFileViewInteractionHub.dismissContextDialog();
+                break;
             case R.id.dialog_copy:
                 try {
                     //mFileViewInteractionHub.doOnOperationCopy();

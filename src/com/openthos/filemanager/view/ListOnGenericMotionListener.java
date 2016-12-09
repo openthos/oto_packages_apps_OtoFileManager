@@ -7,6 +7,7 @@ import android.widget.ListView;
 
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.system.FileViewInteractionHub;
+import com.openthos.filemanager.system.Constants;
 
 public class ListOnGenericMotionListener implements View.OnGenericMotionListener {
     private ListView file_path_list;
@@ -75,8 +76,8 @@ public class ListOnGenericMotionListener implements View.OnGenericMotionListener
                 && (Math.abs(System.currentTimeMillis() - mLastClickTime) < 1500)) {
                 view.setSelected(false);
 
-                String doubleTag = "double";
-                mFileViewInteractionHub.onListItemClick(position, doubleTag, event, null);
+                mFileViewInteractionHub.onListItemClick(position,
+                                                  Constants.DOUBLE_TAG, event, null);
                 mFileViewInteractionHub.clearSelection();
             } else {
                 view.setSelected(true);
