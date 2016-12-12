@@ -33,7 +33,6 @@ import java.util.ArrayList;
 
 public class SdStorageFragment extends BaseFragment {
     private static final String TAG = SdStorageFragment.class.getSimpleName();
-    private static final String PERSONAL_TAG = "MY_SPACE";
 //    private String usbDeviceIsAttached;
 
     ArrayList<FileInfo> mFileInfoArrayList = null;
@@ -66,7 +65,6 @@ public class SdStorageFragment extends BaseFragment {
 //    private Context context;
     private LinearLayout mFragment_sds_ll;
     private LinearLayout mLlMobileDevice;
-    private int mCurId;
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public SdStorageFragment(FragmentManager mManager,
@@ -238,7 +236,7 @@ public class SdStorageFragment extends BaseFragment {
                 setDiskClickInfo(R.id.rl_android_service, Constants.YUN_SPACE_FRAGMENT, null);
                 break;
             case R.id.rl_personal_space:
-                setDiskClickInfo(R.id.rl_personal_space, PERSONAL_TAG, null);
+                setDiskClickInfo(R.id.rl_personal_space, Constants.PERSONAL_TAG, null);
                 break;
             default:
                 setSelectedCardBg(Constants.RETURN_TO_WHITE);
@@ -253,32 +251,42 @@ public class SdStorageFragment extends BaseFragment {
             mCurId = id;
             lastBackTime = currentBackTime;
         } else {
-            if (mCurFragment != null) {
-                if (mCurFragment instanceof SystemSpaceFragment) {
-                    mFileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
-                    copyOrMove = ((SystemSpaceFragment) mCurFragment).getCurCopyOrMoveMode();
-                }
-            }
-            if (mFileInfoArrayList != null && copyOrMove != null) {
-                T.showShort(context,
-                            context.getString(R.string.operation_failed_permission_refuse));
-            }
-//            SystemSpaceFragment  systemSpaceFragment = new SystemSpaceFragment(tag,
-//                                                       path, fileInfoArrayList, copyOrMove);
-            FragmentTransaction transaction = mManager.beginTransaction();
-            transaction.hide(mMainActivity.mCurFragment);
-            if (PERSONAL_TAG.equals(tag)) {
-            //    mCurFragment = new PersonalSpaceFragment();
-                mMainActivity.setNavigationPath("SDCard");
-                transaction.show(mMainActivity.mPersonalSpaceFragment).commit();
-                mCurFragment = mMainActivity.mPersonalSpaceFragment;
-            } else {
-                mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, copyOrMove);
-                transaction.add(R.id.fl_mian, mCurFragment,Constants.SDSSYSTEMSPACE_TAG).commit();
-            }
-            mMainActivity.mCurFragment = mCurFragment;
-            mCurId = Constants.RETURN_TO_WHITE;
+            enter(tag, path);
         }
+    }
+
+    @Override
+    public void enter() {
+        super.enter();
+        if (mCurId == R.id.rl_mount_space_one) {
+            enter(Constants.USB_SPACE_FRAGMENT, mountPath);
+        }
+    }
+
+    @Override
+    protected void enter(String tag, String path) {
+        if (mCurFragment != null) {
+            if (mCurFragment instanceof SystemSpaceFragment) {
+                mFileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
+                copyOrMove = ((SystemSpaceFragment) mCurFragment).getCurCopyOrMoveMode();
+            }
+        }
+        if (mFileInfoArrayList != null && copyOrMove != null) {
+            T.showShort(context,
+                        context.getString(R.string.operation_failed_permission_refuse));
+        }
+        FragmentTransaction transaction = mManager.beginTransaction();
+        transaction.hide(mMainActivity.mCurFragment);
+        if (Constants.PERSONAL_TAG.equals(tag)) {
+            mMainActivity.setNavigationPath("SDCard");
+            transaction.show(mMainActivity.mPersonalSpaceFragment).commit();
+            mCurFragment = mMainActivity.mPersonalSpaceFragment;
+        } else {
+            mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, copyOrMove);
+            transaction.add(R.id.fl_mian, mCurFragment, Constants.SDSSYSTEMSPACE_TAG).commit();
+        }
+        mMainActivity.mCurFragment = mCurFragment;
+        mCurId = Constants.RETURN_TO_WHITE;
     }
 
     public void setSelectedCardBg(int id) {

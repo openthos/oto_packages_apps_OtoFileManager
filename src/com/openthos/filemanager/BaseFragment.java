@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.openthos.filemanager.bean.ImageBean;
 import com.openthos.filemanager.bean.SearchInfo;
+import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.system.FileInfo;
 import com.openthos.filemanager.system.FileViewInteractionHub;
 
@@ -29,6 +30,7 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
     public HashMap<String, List<String>> mGruopMap;
     public List<ImageBean> list;
     public int index;
+    public int mCurId;
 
     public ArrayList<SearchInfo> mSearchList = new ArrayList<>();
     public String sdOrSystem;
@@ -88,6 +90,56 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
         mCopyOrMove = copyOrMove;
         this.directorPath = directPath;
     }
+
+    public void enter() {
+        switch (mCurId) {
+            case R.id.rl_android_system:
+                enter(Constants.SYSTEM_SPACE_FRAGMENT, null);
+                break;
+            case R.id.rl_sd_space:
+                enter(Constants.SD_SPACE_FRAGMENT, Constants.SD_PATH);
+                break;
+            case R.id.rl_android_service:
+                enter(Constants.YUN_SPACE_FRAGMENT, null);
+                break;
+            case R.id.rl_personal_space:
+                enter(Constants.PERSONAL_TAG, null);
+                break;
+            case R.id.ll_personal_videos:
+                enter(Constants.LEFT_FAVORITES, Constants.VIDEOS_PATH);
+                break;
+            case R.id.ll_personal_pictures:
+                enter(Constants.LEFT_FAVORITES, Constants.PICTURES_PATH);
+                break;
+            case R.id.ll_personal_document:
+                enter(Constants.LEFT_FAVORITES, Constants.DOCUMENT_PATH);
+                break;
+            case R.id.ll_personal_downloads:
+                enter(Constants.LEFT_FAVORITES, Constants.DOWNLOAD_PATH);
+                break;
+            case R.id.ll_personal_music:
+                enter(Constants.LEFT_FAVORITES, Constants.MUSIC_PATH);
+                break;
+            case R.id.ll_personal_recycle:
+                enter(Constants.LEFT_FAVORITES, Constants.RECYCLE_PATH);
+                break;
+            case R.id.ll_personal_qq_image:
+                enter(Constants.LEFT_FAVORITES, Constants.QQ_IMAGE_PATH);
+                break;
+            case R.id.ll_personal_qq_file:
+                enter(Constants.LEFT_FAVORITES, Constants.QQ_FILE_PATH);
+                break;
+            case R.id.ll_personal_weixin:
+                enter(Constants.LEFT_FAVORITES, Constants.WEIXIN_IMG_PATH);
+                break;
+            case R.id.ll_personal_baidudisk:
+                enter(Constants.LEFT_FAVORITES, Constants.BAIDU_PAN_PATH);
+                break;
+
+        }
+    }
+
+    protected abstract void enter(String tag, String path);
 
     protected abstract void initData();
     protected abstract void initListener();

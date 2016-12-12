@@ -695,4 +695,8 @@ public class SystemSpaceFragment extends BaseFragment implements
             return false;
         }
     }
+
+    @Override
+    protected void enter(String tag, String path) {
+    }
 }

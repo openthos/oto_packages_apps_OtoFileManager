@@ -20,6 +20,7 @@ import android.view.Window;
 import android.widget.GridView;
 import android.widget.ListView;
 
+import com.openthos.filemanager.BaseActivity;
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.component.MenuDialog;
@@ -60,8 +61,8 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         mFileViewListener = fileViewListener;
         setup();
         mFileOperationHelper = new FileOperationHelper(this);
-        mFileSortHelper = new FileSortHelper();
         mContext = mFileViewListener.getContext();
+        mFileSortHelper = ((BaseActivity)mContext).getFileSortHelper();
     }
 
     private void showProgress(String msg) {
@@ -785,8 +786,10 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     }
 
     public void onOperationOpen(MotionEvent event) {
-        FileInfo fileInfo = getSelectedFileList().get(0);
-        onListItemClick(selectedDialogItem, Constants.DOUBLE_TAG, event, fileInfo);
+        if (getSelectedFileList().size() != 0) {
+            FileInfo fileInfo = getSelectedFileList().get(0);
+            onListItemClick(selectedDialogItem, Constants.DOUBLE_TAG, event, fileInfo);
+        }
     }
 
     public void setBackground(int position, FileInfo lFileInfo) {

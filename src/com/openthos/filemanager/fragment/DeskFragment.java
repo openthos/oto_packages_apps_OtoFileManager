@@ -153,4 +153,8 @@ public class DeskFragment extends BaseFragment {
     @Override
     public void goBack() {
     }
+
+    @Override
+    protected void enter(String tag, String path) {
+    }
 }

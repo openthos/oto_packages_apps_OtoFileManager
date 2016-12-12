@@ -729,4 +729,12 @@ public class SystemSpaceFragment extends BaseFragment implements
         mFileViewInteractionHub.refreshFileList();
     }
 
+    @Override
+    public void enter() {
+        mFileViewInteractionHub.onOperationOpen(null);
+    }
+
+    @Override
+    protected void enter(String tag, String path) {
+    }
 }

@@ -25,6 +25,7 @@ public abstract class Constants {
     public static final String PERSONALSYSTEMSPACE_TAG = "personalsystemspace_tag";
     public static final String SDSSYSTEMSPACE_TAG = "sdssystemspace_tag";
     public static final String DOUBLE_TAG = "double_tag";
+    public static final String PERSONAL_TAG = "MY_SPACE";
 
     public static final String LEFT_FAVORITES = "left_favorites";
     public static final String SYSTEM_SPACE_FRAGMENT = "system_space_fragment";
@@ -47,6 +48,10 @@ public abstract class Constants {
     public static final String DOCUMENT_PATH = ROOT_PATH + "documents";
     public static final String DOWNLOAD_PATH = ROOT_PATH + "Download";
     public static final String RECYCLE_PATH = ROOT_PATH + "Recycle";
+    public static final String QQ_IMAGE_PATH = Constants.ROOT_PATH + "Tencent/QQ_Images";
+    public static final String QQ_FILE_PATH = Constants.ROOT_PATH + "Tencent/QQfile_recv";
+    public static final String WEIXIN_IMG_PATH = Constants.ROOT_PATH + "Tencent/MicroMsg/WeiXin";
+    public static final String BAIDU_PAN_PATH = Constants.ROOT_PATH + "BaiduNetdisk";
     // Menu id
     public static final int MENU_NEW_FOLDER = 100;
     public static final int MENU_NEW_FILE = 119;
@@ -534,5 +539,5 @@ public abstract class Constants {
     public static final int COPY_INFO_SHOW = 0x1005;
     public static final int COPY_INFO_HIDE = 0x1006;
     public static final int COPY_INFO = 0x1007;
-
+    public static final int ONLY_REFRESH = 0x1008;
 }

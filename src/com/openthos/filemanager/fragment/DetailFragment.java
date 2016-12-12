@@ -82,4 +82,8 @@ public class DetailFragment extends BaseFragment {
     public void goBack() {
 
     }
+
+    @Override
+    protected void enter(String tag, String path) {
+    }
 }

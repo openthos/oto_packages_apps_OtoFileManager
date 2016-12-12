@@ -5,8 +5,11 @@ import android.support.v4.app.FragmentActivity;
 import android.view.Window;
 
 import com.openthos.filemanager.component.AppManager;
+import com.openthos.filemanager.system.FileSortHelper;
 
 public abstract class BaseActivity extends FragmentActivity {
+
+    private FileSortHelper mFileSortHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -14,6 +17,7 @@ public abstract class BaseActivity extends FragmentActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(getLayoutId());
         AppManager.getAppManager().addActivity(this);
+        mFileSortHelper = new FileSortHelper();
         initView();
         initData();
         initListener();
@@ -26,6 +30,10 @@ public abstract class BaseActivity extends FragmentActivity {
     }
 
     public void setNavigationBar(String displayPath) {
+    }
+
+    public FileSortHelper getFileSortHelper() {
+        return mFileSortHelper;
     }
 
     protected abstract void initListener();

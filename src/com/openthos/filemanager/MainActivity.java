@@ -190,7 +190,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             break;
                         case Constants.REFRESH:
                             ((IFileInteractionListener) getVisibleFragment())
-                                         .onRefreshFileList((String) msg.obj, new FileSortHelper());
+                                         .onRefreshFileList((String) msg.obj, getFileSortHelper());
                             resetClipboard();
                             break;
                         case Constants.COPY:
@@ -212,6 +212,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             break;
                         case Constants.COPY_INFO_HIDE:
                             mCopyInfoDialog.cancel();
+                            break;
+                        case Constants.ONLY_REFRESH:
+                            ((IFileInteractionListener) getVisibleFragment())
+                                    .onRefreshFileList((String) msg.obj, getFileSortHelper());
                             break;
                     }
                 }
@@ -498,9 +502,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (keyCode == KeyEvent.KEYCODE_DEL && !mEt_search_view.hasFocus()) {
             onBackPressed();
         }
-        if (keyCode == KeyEvent.KEYCODE_ENTER) {
-            L.e("KEYCODE_ENTER", "KEYCODE_ENTER");
-        }
         if (event.isCtrlPressed()) {
             mIsMutiSelect = true;
         }
@@ -545,6 +546,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 return false;
             }
             ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.onOperationDeleteDirect();
+        }
+        if (keyCode == KeyEvent.KEYCODE_F2) {
+            if (isCopyByHot()) {
+                return false;
+            }
+            ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.onOperationRename();
+        }
+        if (keyCode == KeyEvent.KEYCODE_F5) {
+            if (isCopyByHot()) {
+                return false;
+            }
+            mHandler.sendMessage(Message.obtain(mHandler, Constants.ONLY_REFRESH,
+                  ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.getCurrentPath()));
+        }
+        if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
+            if (mEt_nivagation.isFocused() || mEt_search_view.isFocused()) {
+                return false;
+            }
+            if (getVisibleFragment() instanceof BaseFragment) {
+                ((BaseFragment) getVisibleFragment()).enter();
+            }
         }
         return false;
     }

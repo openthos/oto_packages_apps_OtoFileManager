@@ -20,10 +20,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class PersonalSpaceFragment extends BaseFragment {
-    private static final String QQ_IMAGE_PATH = Constants.ROOT_PATH + "Tencent/QQ_Images";
-    private static final String QQ_FILE_PATH = Constants.ROOT_PATH + "Tencent/QQfile_recv";
-    private static final String WEIXIN_IMG_PATH = Constants.ROOT_PATH + "Tencent/MicroMsg/WeiXin";
-    private static final String BAIDU_PAN_PATH = Constants.ROOT_PATH + "BaiduNetdisk";
     private LinearLayout mLlVideos;
     private LinearLayout mLlPictures;
     private LinearLayout mLlDocument;
@@ -40,15 +36,14 @@ public class PersonalSpaceFragment extends BaseFragment {
     public Fragment mCurFragment;
     ArrayList<FileInfo> mFileInfoArrayList = null;
     FileViewInteractionHub.CopyOrMove mCopyOrMove = null;
-    private int mCurId;
 
     @Override
     protected void initData() {
         HashMap<String, LinearLayout> layoutMap = new HashMap<>();
-        layoutMap.put(QQ_IMAGE_PATH, mLlQqImage);
-        layoutMap.put(QQ_FILE_PATH, mLlQqFile);
-        layoutMap.put(WEIXIN_IMG_PATH, mLlWeixin);
-        layoutMap.put(BAIDU_PAN_PATH, mLlBaiduPan);
+        layoutMap.put(Constants.QQ_IMAGE_PATH, mLlQqImage);
+        layoutMap.put(Constants.QQ_FILE_PATH, mLlQqFile);
+        layoutMap.put(Constants.WEIXIN_IMG_PATH, mLlWeixin);
+        layoutMap.put(Constants.BAIDU_PAN_PATH, mLlBaiduPan);
         Iterator iterator = layoutMap.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry entry = (Map.Entry) iterator.next();
@@ -166,19 +161,19 @@ public class PersonalSpaceFragment extends BaseFragment {
                                                            R.id.ll_personal_recycle);
                 break;
             case R.id.ll_personal_qq_image:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, QQ_IMAGE_PATH,
+                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.QQ_IMAGE_PATH,
                                                            R.id.ll_personal_qq_image);
                 break;
             case R.id.ll_personal_qq_file:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, QQ_FILE_PATH,
+                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.QQ_FILE_PATH,
                                                            R.id.ll_personal_qq_file);
                 break;
             case R.id.ll_personal_weixin:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, WEIXIN_IMG_PATH,
+                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.WEIXIN_IMG_PATH,
                                                            R.id.ll_personal_weixin);
                 break;
             case R.id.ll_personal_baidudisk:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, BAIDU_PAN_PATH,
+                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.BAIDU_PAN_PATH,
                                                            R.id.ll_personal_baidudisk);
                 break;
             default:
@@ -194,22 +189,26 @@ public class PersonalSpaceFragment extends BaseFragment {
             mCurId = id;
             mLastBackTime = mCurrentBackTime;
         } else {
-            if (mCurFragment != null) {
-                mFileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
-                mCopyOrMove = ((SystemSpaceFragment) mCurFragment).getCurCopyOrMoveMode();
-            }
-            if (mFileInfoArrayList != null && mCopyOrMove != null) {
-                T.showShort(context,
-                        context.getString(R.string.operation_failed_permission_refuse));
-            }
-            mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, mCopyOrMove);
-
-            FragmentTransaction transaction = mManager.beginTransaction();
-            transaction.hide(mMainActivity.mCurFragment);
-            transaction.add(R.id.fl_mian, mCurFragment, Constants.PERSONALSYSTEMSPACE_TAG).commit();
-            mMainActivity.mCurFragment = mCurFragment;
-            mCurId = Constants.RETURN_TO_WHITE;
+            enter(tag, path);
         }
+    }
+
+    @Override
+    protected void enter(String tag, String path) {
+        if (mCurFragment != null) {
+            mFileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
+            mCopyOrMove = ((SystemSpaceFragment) mCurFragment).getCurCopyOrMoveMode();
+        }
+        if (mFileInfoArrayList != null && mCopyOrMove != null) {
+            T.showShort(context,
+                    context.getString(R.string.operation_failed_permission_refuse));
+        }
+        mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, mCopyOrMove);
+        FragmentTransaction transaction = mManager.beginTransaction();
+        transaction.hide(mMainActivity.mCurFragment);
+        transaction.add(R.id.fl_mian, mCurFragment, Constants.PERSONALSYSTEMSPACE_TAG).commit();
+        mMainActivity.mCurFragment = mCurFragment;
+        mCurId = Constants.RETURN_TO_WHITE;
     }
 
     private void setItemBackGround(int id) {

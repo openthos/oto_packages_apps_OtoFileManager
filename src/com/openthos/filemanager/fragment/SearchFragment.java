@@ -126,4 +126,8 @@ public class SearchFragment extends BaseFragment{
         super.onDestroyView();
         LocalCache.setSearchText(null);
     }
+
+    @Override
+    protected void enter(String tag, String path) {
+    }
 }

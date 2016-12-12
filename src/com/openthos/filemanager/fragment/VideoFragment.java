@@ -117,4 +117,8 @@ public class VideoFragment extends BaseFragment implements AdapterView.OnItemCli
     @Override
     public void goBack() {
     }
+
+    @Override
+    protected void enter(String tag, String path) {
+    }
 }
