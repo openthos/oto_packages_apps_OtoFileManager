@@ -1,7 +1,7 @@
 package com.openthos.filemanager.bean;
 
 public class SearchInfo {
-
+    public String fileAbsolutePath;
     public String fileName;
     public String filePath;
     public long fileSize;

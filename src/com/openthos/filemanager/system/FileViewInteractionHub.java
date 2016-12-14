@@ -47,6 +47,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     private CopyOrMove copyOrMoveMode;
     private int selectedDialogItem;
     private MenuDialog menuDialog;
+    private MainActivity mMainActivity;
 
     public enum Mode {
         View, Pick
@@ -782,6 +783,8 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 //            mCheckedFileNameList.remove(lFileInfo);  //
             mCurrentPath = getAbsoluteName(mCurrentPath, fileInfo.fileName);
             refreshFileList();
+            mMainActivity = (MainActivity) mContext;
+            mMainActivity.setCurPath(mCurrentPath);
         }
     }
 

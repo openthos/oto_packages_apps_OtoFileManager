@@ -195,4 +195,5 @@
     <string name="delete_dialog_move">确认删除到回收站?</string>
     <string name="delete_dialog_delete">确认永久删除？</string>
     <string name="delete_dialog_clean">确认清空回收站?</string>
+    <string name="found_no_corresponding_application_to_open">没有找到相应打开的程序</string>
 </resources>

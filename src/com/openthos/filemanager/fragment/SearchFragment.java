@@ -1,39 +1,40 @@
 package com.openthos.filemanager.fragment;
 
 import android.annotation.SuppressLint;
-import android.os.Bundle;
+import android.content.Context;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import com.openthos.filemanager.BaseFragment;
+import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.bean.SearchInfo;
-import com.openthos.filemanager.utils.L;
+import com.openthos.filemanager.system.FileIconHelper;
+import com.openthos.filemanager.system.IntentBuilder;
+import com.openthos.filemanager.system.Util;
 import com.openthos.filemanager.utils.LocalCache;
-import com.openthos.filemanager.fragment.SystemSpaceFragment;
-import com.openthos.filemanager.system.FileViewInteractionHub;
-import com.openthos.filemanager.system.FileInfo;
 import com.openthos.filemanager.system.Constants;
-
+import java.io.File;
 import java.util.ArrayList;
 
 public class SearchFragment extends BaseFragment{
-    private static final String TAG = SearchFragment.class.getSimpleName();
-    private BaseFragment mCurFragment;
-    private ArrayList<FileInfo> mFileInfoArrayList;
-    private FileViewInteractionHub.CopyOrMove mCopyOrMove;
-    private String LOG_TAG = "SearchFragment";
-//    private ArrayList<SearchInfo> mSearchList = new ArrayList<>();
-//    FragmentmManager mManager = getFragmentmManager();
-
+    private static final String TAG = Constants.LEFT_FAVORITES;
+    private Fragment mCurFragment;
     private ListView lv_mian_search;
+    private SearchAdapter mSearchAdapter;
+    private MainActivity mActivity;
+    private LinearLayout mLlEmptyView;
+
     @SuppressLint({"NewApi", "ValidFragment"})
     public SearchFragment(FragmentManager manager, ArrayList<SearchInfo> mFileList) {
         super(manager,mFileList);
@@ -52,35 +53,49 @@ public class SearchFragment extends BaseFragment{
     @Override
     protected void initView() {
         lv_mian_search = (ListView) rootView.findViewById(R.id.lv_mian_search);
+        mLlEmptyView = (LinearLayout) rootView.findViewById(R.id.empty_view);
+        if (mSearchList == null) {
+            lv_mian_search.setVisibility(View.GONE);
+            mLlEmptyView.setVisibility(View.VISIBLE);
+        } else {
+            lv_mian_search.setVisibility(View.VISIBLE);
+            mLlEmptyView.setVisibility(View.GONE);
+        }
     }
 
     protected void initData() {
-        L.e("initData"+LOG_TAG,mSearchList.size()+"");
-        SearchAdapter searchAdapter = new SearchAdapter();
-        lv_mian_search.setAdapter(searchAdapter);
+        mSearchAdapter = new SearchAdapter();
+        lv_mian_search.setAdapter(mSearchAdapter);
     }
 
     @Override
     protected void initListener() {
         lv_mian_search.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String filePath = mSearchList.get(i).getFilePath();
-                String fileRealPath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
-                //mManager.popBackStack();
-                mManager.beginTransaction().hide(mMainActivity.mCurFragment).commit();
-                if (mCurFragment != null) {
-                    mFileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
-                    mCopyOrMove = ((SystemSpaceFragment) mCurFragment).getCurCopyOrMoveMode();
-                    mCurFragment = new SystemSpaceFragment(TAG, fileRealPath, mFileInfoArrayList,
-                                                           mCopyOrMove);
+                String fileRealPath = mSearchList.get(i).fileAbsolutePath;
+                if (!new File(fileRealPath).isDirectory()) {
+                    Context context = getActivity();
+                    try {
+                        IntentBuilder.viewFile(context,fileRealPath,null);
+                    } catch (Exception e) {
+                        Toast.makeText(context,getString(
+                                       R.string.found_no_corresponding_application_to_open),
+                                       Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    mCurFragment = new SystemSpaceFragment(TAG, fileRealPath, null, null);
+                    if (mCurFragment != null) {
+                        mManager.beginTransaction().remove(mCurFragment).commit();
+                    }
+                    mActivity = (MainActivity) getActivity();
+                    mManager.beginTransaction().hide(mActivity.getVisibleFragment()).commit();
+                    mCurFragment = new SystemSpaceFragment(TAG, fileRealPath, null,null);
+                    mManager.beginTransaction().add(R.id.fl_mian, mCurFragment,
+                            Constants.SEARCHSYSTEMSPACE_TAG).commit();
+                    mActivity.mCurFragment = mCurFragment;
+                    notifyModify();
                 }
-                mManager.beginTransaction().add(R.id.fl_mian, mCurFragment,
-                              Constants.SYSTEMSPACEFRAGMENT_TAG)
-                        .show(mCurFragment).addToBackStack(null).commit();
-                mMainActivity.mCurFragment = mCurFragment;
             }
         });
     }
@@ -92,19 +107,18 @@ public class SearchFragment extends BaseFragment{
 
     @Override
     public void goBack() {
-
     }
+
     private class SearchAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
-//            L.e("mSearchList"+LOG_TAG,mSearchList.size()+"");
-            return mSearchList.size();
+            return mSearchList == null ? -1 : mSearchList.size();
         }
 
         @Override
         public Object getItem(int i) {
-            return mSearchList.get(i);
+            return mSearchList == null ? -1 : mSearchList.get(i);
         }
 
         @Override
@@ -114,11 +128,33 @@ public class SearchFragment extends BaseFragment{
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
-            view = View.inflate(getActivity(), R.layout.search_file_item,null);
-            TextView search_file_name = (TextView) view.findViewById(R.id.search_file_name);
-            search_file_name.setText(mSearchList.get(i).fileName);
-            return view;
+            if (mSearchList != null) {
+                view = View.inflate(getActivity(), R.layout.search_file_item,null);
+                TextView search_file_name = (TextView) view.findViewById(R.id.search_file_name);
+                ImageView image = (ImageView) view.findViewById(R.id.search_file_bg);
+                String fileName = mSearchList.get(i).fileName;
+                search_file_name.setText(fileName);
+                String fileAbsolutePath = mSearchList.get(i).fileAbsolutePath;
+                String filePath = mSearchList.get(i).filePath;
+                boolean isDirectory = new File(filePath).isDirectory();
+                int fileIcon = FileIconHelper.getFileIcon(Util.getExtFromFilename(filePath));
+                image.setBackgroundResource(!isDirectory ? fileIcon : R.mipmap.folder);
+                return view;
+            } else {
+                return null;
+            }
         }
+    }
+
+    public void notifyModify() {
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mSearchAdapter != null) {
+                    mSearchAdapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
 
     @Override

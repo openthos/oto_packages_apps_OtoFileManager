@@ -24,6 +24,7 @@ public abstract class Constants {
     public static final String USBFRAGMENT_TAG = "usbfragment_tag";
     public static final String PERSONALSYSTEMSPACE_TAG = "personalsystemspace_tag";
     public static final String SDSSYSTEMSPACE_TAG = "sdssystemspace_tag";
+    public static final String SEARCHSYSTEMSPACE_TAG = "searchsystemspace_tag";
     public static final String DOUBLE_TAG = "double_tag";
     public static final String PERSONAL_TAG = "MY_SPACE";
 

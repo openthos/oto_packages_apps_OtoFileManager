@@ -8,38 +8,44 @@ import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
-
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.bean.SearchInfo;
+import com.openthos.filemanager.fragment.PersonalSpaceFragment;
+import com.openthos.filemanager.fragment.SdStorageFragment;
 import com.openthos.filemanager.fragment.SearchFragment;
+import com.openthos.filemanager.BaseFragment;
 import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.utils.T;
-
 import android.support.v4.app.Fragment;
-
 import com.openthos.filemanager.system.Constants;
-
 import java.io.File;
 import java.util.ArrayList;
+import android.widget.Toast;
 
 public class SearchOnKeyListener implements TextView.OnKeyListener {
     private String mInputData;
     private String LOG_TAG = "SearchOnQueryTextListener";
-    private ProgressDialog progressDialog;
+    private static ProgressDialog progressDialog;
     private ArrayList<SearchInfo> mFileList = new ArrayList<>();
     FragmentManager manager;
-    private final static String rootPath
-            = Environment.getExternalStorageDirectory().getAbsolutePath();
-    File root = new File(rootPath);
-    private Context context;
-    private SearchFragment mSearchFragment;
+//    private final static String rootPath
+//            = Environment.getExternalStorageDirectory().getAbsolutePath();
+//    File root = new File(rootPath);
+//    private Context context;
+    private String mInputText;
+    private MainActivity mMainActivity;
+    private String mCurPath;
+    private SearchFragment mCurSearchFragment;
 
     public SearchOnKeyListener(FragmentManager manager,
                                Editable text, MainActivity context) {
         this.manager = manager;
-        this.context = context;
+//        this.context = context;
+        mMainActivity = context;
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage("search...");
     }
 
     public void setInputData(String inputData) {
@@ -52,7 +58,7 @@ public class SearchOnKeyListener implements TextView.OnKeyListener {
             case KeyEvent.KEYCODE_ENTER:
             case KeyEvent.KEYCODE_NUMPAD_ENTER:
                 v.clearFocus();
-                showSearchFragment((TextView) v);
+                excuSearch((TextView) v);
                 return true;
             case KeyEvent.KEYCODE_ESCAPE:
                 v.clearFocus();
@@ -61,89 +67,108 @@ public class SearchOnKeyListener implements TextView.OnKeyListener {
         return false;
     }
 
-    private void showSearchFragment(TextView input) {
-        L.d(LOG_TAG, input.getText().toString());
-        if (mInputData != null && mInputData.equals(input.getText().toString())) {
-            return;
-        }
-        if (mFileList.size() > 0 && LocalCache.getSearchText() != null) {
-            mFileList.clear();
-            startSearch(input.toString().trim());
-            if (mFileList.size() > 0) {
-                startSearchFragment();
-            } else {
-                if (progressDialog != null) {
-                    progressDialog.dismiss();
-                }
-            }
-        }
-        assert mFileList != null;
-        mFileList.clear();
-        LocalCache.setSearchText(input.getText().toString().trim());
-        showDialog();
-        startSearch(input.getText().toString().trim());
-        L.e(LOG_TAG, mFileList.size() + "");
-        if (mFileList.size() > 0) {
-            startSearchFragment();
-        } else {
-            progressDialog.dismiss();
-            T.showShort(context, context.getString(R.string.found_no_file));
-        }
-
-        mInputData = input.getText().toString();
-        return;
-    }
-
-    private void showDialog() {
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage("loading...");
+    private void excuSearch(TextView input) {
         progressDialog.show();
-    }
-
-    private void startSearchFragment() {
-        if (mSearchFragment != null) {
-            mSearchFragment.mManager.beginTransaction().hide(mSearchFragment).commit();
+        mInputText = input.getText().toString().trim();
+        if (mFileList != null && mFileList.size() > 0) {
+            mFileList.clear();
         }
-        mSearchFragment = new SearchFragment(manager, mFileList);
-        MainActivity mainActivity = (MainActivity) context;
-        Fragment mCurFragment = manager.findFragmentByTag(Constants.SYSTEM_SPACE_FRAGMENT_TAG);
-        //manager.popBackStack();
-        manager.beginTransaction().hide(mCurFragment).commit();
-        manager.beginTransaction().add(R.id.fl_mian, mSearchFragment, Constants.SEARCHFRAGMENT_TAG)
-               .show(mSearchFragment).addToBackStack(null).commit();
-        mainActivity.mCurFragment = mSearchFragment;
-        progressDialog.dismiss();
+        new Thread() {
+            @Override
+            public void run() {
+                startSearch(mInputText);
+            }
+        }.start();
     }
 
-    public void startSearch(final String text_search) {
-        if (root.exists() && root.isDirectory()) {
-            final File[] currentFiles = root.listFiles();
-            mFileList = searchFileFromDir(text_search, currentFiles);
+    public void startSearch(String text_search) {
+        if (mMainActivity.mCurFragment instanceof SdStorageFragment) {
+            mCurPath = Constants.SD_PATH;
+        } else if (mMainActivity.mCurFragment instanceof PersonalSpaceFragment) {
+            mCurPath = Constants.ROOT_PATH;
+        } else {
+            mCurPath = mMainActivity.getCurPath();
+        }
+        File curFile = new File(mCurPath);
+        if (curFile.exists() && curFile.isDirectory()) {
+            final File[] currentFiles = curFile.listFiles();
+            if (currentFiles != null && currentFiles.length != 0) {
+                mFileList = searchFileFromDir(text_search, currentFiles);
+            }
+            mMainActivity.runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (mFileList != null && mFileList.size() > 0) {
+                        startSearchFragment();
+                    } else {
+                        showEmptyView();
+                    }
+                }
+            });
         }
     }
 
     private ArrayList<SearchInfo> searchFileFromDir(String text_search, File[] files) {
-        StringBuilder str_builder = new StringBuilder();
-        File[] currentFiles;
         int length = files.length;
         for (int i = 0; i < length; i++) {
             File file = files[i];
             SearchInfo searchInfo = new SearchInfo();
-            if (file.isDirectory()) {
-                currentFiles = file.listFiles();
-                str_builder.append(searchFileFromDir(text_search, currentFiles));
-            }
             String fileName = file.getName();
             String filePath = file.getPath();
+            String fileAbsolutePath = file.getAbsolutePath();
+            boolean isDir = file.isDirectory();
             if (fileName.contains(text_search)) {
                 searchInfo.setFileName(fileName);
                 searchInfo.setFilePath(filePath);
-                if (mFileList.contains(fileName) && mFileList.contains(filePath)) {
+                searchInfo.fileAbsolutePath = fileAbsolutePath;
+                searchInfo.IsDir = isDir;
+                if (mFileList != null && mFileList.contains(fileName)
+                                      && mFileList.contains(filePath)) {
+                    continue;
                 } else {
                     mFileList.add(searchInfo);
                 }
             }
         }
         return mFileList;
+    }
+
+    private void startSearchFragment() {
+        mMainActivity.mStartSearchFragment = (BaseFragment) mMainActivity.getVisibleFragment();
+        manager.beginTransaction().hide(mMainActivity.getVisibleFragment()).commit();
+        if (manager.findFragmentByTag(Constants.SEARCHFRAGMENT_TAG) != null) {
+            mCurSearchFragment  = (SearchFragment) manager
+                                  .findFragmentByTag(Constants.SEARCHFRAGMENT_TAG);
+            if (mCurSearchFragment != null) {
+                manager.beginTransaction().remove(mCurSearchFragment).commit();
+            }
+        }
+        mCurSearchFragment = new SearchFragment(manager, mFileList);
+        manager.beginTransaction().add(R.id.fl_mian, mCurSearchFragment,
+                                       Constants.SEARCHFRAGMENT_TAG).commit();
+        mMainActivity.mCurFragment = mCurSearchFragment;
+        progressDialog.dismiss();
+    }
+
+    private void showEmptyView() {
+        Toast.makeText(mMainActivity, mMainActivity.getString(R.string.found_no_file),
+                       Toast.LENGTH_SHORT).show();
+        if (!(mMainActivity.getVisibleFragment() instanceof SearchFragment)) {
+            mMainActivity.mStartSearchFragment = (BaseFragment) mMainActivity.getVisibleFragment();
+        }
+        manager.beginTransaction().hide(mMainActivity.getVisibleFragment()).commit();
+        if (manager.findFragmentByTag(Constants.SEARCHFRAGMENT_TAG) != null) {
+            mCurSearchFragment  = (SearchFragment) manager
+                                  .findFragmentByTag(Constants.SEARCHFRAGMENT_TAG);
+            if (mCurSearchFragment != null) {
+                manager.beginTransaction().remove(mCurSearchFragment).commit();
+            }
+        }
+        mCurSearchFragment = new SearchFragment(manager,null);
+        manager.beginTransaction().add(R.id.fl_mian, mCurSearchFragment,
+                                       Constants.SEARCHFRAGMENT_TAG).commit();
+        mMainActivity.mCurFragment = mCurSearchFragment;
+        progressDialog.dismiss();
     }
 }

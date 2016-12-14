@@ -51,6 +51,7 @@ public class SystemSpaceFragment extends BaseFragment implements
     private FileIconHelper mFileIconHelper;
     private ArrayList<FileInfo> mFileNameList = new ArrayList<>();
     private Activity mActivity;
+    private MainActivity mMainActivity;
 //    private View view;
     private DragListView file_path_list;
     private DragGridView file_path_grid;
@@ -190,6 +191,7 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     protected void initData() {
         mActivity = getActivity();
+        mMainActivity = (MainActivity) getActivity();
         mFileCagetoryHelper = new FileCategoryHelper(mActivity);
         mFileViewInteractionHub = new FileViewInteractionHub(this);
         Intent intent = getActivity().getIntent();
@@ -221,6 +223,7 @@ public class SystemSpaceFragment extends BaseFragment implements
 
         String currentDir = FileManagerPreferenceActivity.getPrimaryFolder
                                                               (mActivity, sdOrSystem, directorPath);
+        mMainActivity.setCurPath(currentDir);
         Uri uri = intent.getData();
         if (uri != null) {
             if (baseSd && sdDir.startsWith(uri.getPath())) {
@@ -578,7 +581,7 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     @Override
     public void runOnUiThread(Runnable r) {
-        mActivity.runOnUiThread(r);
+        mMainActivity.runOnUiThread(r);
     }
 
     public boolean canGoBack() {

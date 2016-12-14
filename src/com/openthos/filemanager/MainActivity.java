@@ -37,6 +37,7 @@ import com.openthos.filemanager.fragment.PictrueFragment;
 import com.openthos.filemanager.fragment.SdStorageFragment;
 import com.openthos.filemanager.fragment.VideoFragment;
 import com.openthos.filemanager.fragment.PersonalSpaceFragment;
+import com.openthos.filemanager.fragment.SearchFragment;
 import com.openthos.filemanager.system.Util;
 import com.openthos.filemanager.utils.DisplayUtil;
 import com.openthos.filemanager.utils.L;
@@ -115,6 +116,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private CopyInfoDialog mCopyInfoDialog;
     public PersonalSpaceFragment mPersonalSpaceFragment;
     private SystemSpaceFragment mUsbStorageFragment;
+    public BaseFragment mStartSearchFragment;
+    private SearchFragment mSearchFragment;
+    public String mCurPath;
 
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -372,8 +376,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mSearchOnKeyListener = new SearchOnKeyListener(mManager,
                                         mEt_search_view.getText(), MainActivity.this);
         mEt_search_view.setOnKeyListener(mSearchOnKeyListener);
-        mIv_search_view.setOnClickListener(new SearchOnClickListener(mManager,
-                                          mEt_search_view.getText(), MainActivity.this));
+//        mIv_search_view.setOnClickListener(new SearchOnClickListener(mManager,
+//                                          mEt_search_view.getText(), MainActivity.this));
+        mIv_search_view.setOnClickListener(this);
         NivagationOnClickLinstener nivagationOnClickLinstener = new NivagationOnClickLinstener();
         NivagationOnKeyLinstener nivagationOnKeyLinstener =new NivagationOnKeyLinstener();
         mEt_nivagation.setOnClickListener(nivagationOnClickLinstener);
@@ -757,6 +762,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mEditor.putString(VIEW_TAG, VIEW_TAG_LIST);
                 mEditor.commit();
                 break;
+            case R.id.iv_search:
+                mEt_search_view.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_ENTER));
+                break;
         }
     }
 
@@ -957,6 +966,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             if (mCurFragment instanceof SystemSpaceFragment) {
                 SystemSpaceFragment sdCurFrament = (SystemSpaceFragment) mCurFragment;
                 String currentPath = sdCurFrament.getCurrentPath();
+                setCurPath(currentPath);
                 mEt_nivagation.setText(currentPath);
                 if (mCurFragment.getTag() != null &&
                     mCurFragment.getTag().equals(Constants.PERSONALSYSTEMSPACE_TAG)) {
@@ -1062,9 +1072,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     } else {
                         returnToRootDir();
                     }
-                } else {
-                    returnToRootDir();
+                } else if (mCurFragment.getTag() != null
+                               && mCurFragment.getTag().equals(Constants.SEARCHSYSTEMSPACE_TAG)) {
+                    SystemSpaceFragment searchSysFragment = (SystemSpaceFragment) mCurFragment;
+                    if (searchSysFragment.canGoBack()) {
+                        searchSysFragment.goBack();
+                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        mManager.popBackStack();
+                    } else {
+                        returnToSearchFragment();
+                    }
                 }
+            } else if (mStartSearchFragment != null && mCurFragment instanceof SearchFragment) {
+                mManager.beginTransaction().hide(mCurFragment).show(mStartSearchFragment).commit();
+                mCurFragment = mStartSearchFragment;
+                mStartSearchFragment = null;
             } else {
                 returnToRootDir();
             }
@@ -1079,6 +1101,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             }
         }
         return null;
+    }
+
+    private void returnToSearchFragment() {
+        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
+        fragmentTransaction.hide(getVisibleFragment());
+        mSearchFragment = (SearchFragment) mManager
+                              .findFragmentByTag(Constants.SEARCHFRAGMENT_TAG);
+        fragmentTransaction.show(mSearchFragment);
+        fragmentTransaction.commit();
+        mCurFragment = mSearchFragment;
     }
 
     private void returnToDeskDir() {
@@ -1198,5 +1230,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     public void setNavigationPath(String displayPath) {
         mEt_nivagation.setText(displayPath);
+    }
+
+    public void setCurPath(String path) {
+        mCurPath = path;
+    }
+
+    public String getCurPath() {
+        return mCurPath;
     }
 }
