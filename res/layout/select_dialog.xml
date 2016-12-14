@@ -15,6 +15,11 @@
             style="@style/textDialog"
             android:text="@string/operation_open"/>
         <TextView
+            android:id="@+id/dialog_open_with"
+            android:layout_marginTop="@dimen/left_margrin_text"
+            style="@style/textDialog"
+            android:text="@string/operation_open_with"/>
+        <TextView
             android:id="@+id/dialog_copy"
             android:layout_marginTop="@dimen/left_margrin_text"
             style="@style/textDialog"

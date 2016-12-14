@@ -22,9 +22,13 @@ import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.system.FileViewInteractionHub;
 import com.openthos.filemanager.system.Constants;
+import com.openthos.filemanager.system.FileInfo;
+
+import java.util.ArrayList;
 
 public class MenuDialog extends Dialog implements View.OnClickListener {
     private TextView mDialog_open;
+    private TextView mDialog_openWith;
     private TextView dialog_copy;
     private TextView dialog_paste;
     private TextView dialog_rename;
@@ -40,7 +44,7 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
     private LinearLayout mLinearLayout;
     private int mDialogWidth;
     private int mDialogHeight;
-    private Context context;
+    private Context mContext;
     private FileViewInteractionHub mFileViewInteractionHub;
     private static boolean isCopy = false;
     private int newX;
@@ -48,11 +52,12 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
     private MenuSecondDialog menuSecondDialog;
     private MotionEvent mMotionEvent;
 
-    public MenuDialog(Context mContext, int id, FileViewInteractionHub mFileViewInteractionHub,
-                                                MotionEvent mMotionEvent) {
-        super(mContext);
-        this.context = mContext;
-        this.mFileViewInteractionHub = mFileViewInteractionHub;
+    public MenuDialog(Context context, int id, FileViewInteractionHub fileViewInteractionHub,
+                                                MotionEvent motionEvent) {
+        super(context);
+        mContext = context;
+        mFileViewInteractionHub = fileViewInteractionHub;
+        mMotionEvent = motionEvent;
     }
 
     @Override
@@ -73,11 +78,12 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
 
     private void initData() {
         mDialog_open.setOnClickListener(this);
+        mDialog_openWith.setOnClickListener(this);
         dialog_copy.setOnClickListener(this);
         String sourcePath = "";
         try {
             sourcePath = (String)
-                 ((ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE)).getText();
+                ((ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE)).getText();
         } catch (ClassCastException e) {
             sourcePath = "";
         }
@@ -104,6 +110,7 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
 
     private void initView() {
         mDialog_open = (TextView) findViewById(R.id.dialog_open);
+        mDialog_openWith = (TextView) findViewById(R.id.dialog_open_with);
         dialog_copy = (TextView) findViewById(R.id.dialog_copy);
         dialog_paste = (TextView) findViewById(R.id.dialog_paste);
         dialog_rename = (TextView) findViewById(R.id.dialog_rename);
@@ -128,6 +135,10 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
             case R.id.dialog_open:
                 mFileViewInteractionHub.onOperationOpen(mMotionEvent);
                 mFileViewInteractionHub.clearSelection();
+                mFileViewInteractionHub.dismissContextDialog();
+                break;
+            case R.id.dialog_open_with:
+                showOpenWith();
                 mFileViewInteractionHub.dismissContextDialog();
                 break;
             case R.id.dialog_copy:
@@ -167,7 +178,7 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
             case R.id.dialog_sort:
                 mFileViewInteractionHub.dismissContextDialog();
                 menuSecondDialog = new MenuSecondDialog
-                                   (context, R.style.menu_dialog,mFileViewInteractionHub);
+                                   (mContext, R.style.menu_dialog,mFileViewInteractionHub);
                 menuSecondDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 menuSecondDialog.showSecondDialog(newX,newY,210,160);
                 break;
@@ -194,15 +205,25 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
         }
     }
 
+    private void showOpenWith() {
+        ArrayList<FileInfo> selectedFileList = mFileViewInteractionHub.getSelectedFileList();
+        if (selectedFileList.size() != 0
+               && !selectedFileList.get(selectedFileList.size() - 1).IsDir) {
+            OpenWithDialog openWithDialog = new OpenWithDialog(mContext, mFileViewInteractionHub);
+            openWithDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            openWithDialog.showDialog();
+        }
+    }
+
     public void showDialog(int x, int y) {
         show();
         Window dialogWindow = getWindow();
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
         lp.dimAmount = 0.0f;
         dialogWindow.setGravity(Gravity.LEFT | Gravity.TOP);
-        WindowManager m = ((Activity) context).getWindowManager();
+        WindowManager m = ((Activity) mContext).getWindowManager();
         Display d = m.getDefaultDisplay();
-        int dialogPadding = (int) context.getResources().getDimension(R.dimen.left_margrin_text);
+        int dialogPadding = (int) mContext.getResources().getDimension(R.dimen.left_margrin_text);
         if (x > (d.getWidth() - mDialogWidth)) {
             lp.x = x - mDialogWidth + dialogPadding;
         } else {
