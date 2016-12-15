@@ -586,9 +586,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void cut() {
         ArrayList<FileInfo> list =
                ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.getSelectedFileList();
+        StringBuffer stringBuffer = new StringBuffer();
         if (!list.isEmpty()) {
+            for (int i = 0; i < list.size(); i++ ) {
+                stringBuffer.append(Intent.EXTRA_CROP_FILE_HEADER + list.get(i).filePath);
+            }
             ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE))
-                      .setText(Intent.EXTRA_CROP_FILE_HEADER + list.get(list.size() - 1).filePath);
+                    .setText(stringBuffer);
         }
     }
 
@@ -602,11 +606,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         } catch (ClassCastException e) {
             sourcePath = "";
         }
+        String[] srcCopyPaths = sourcePath.split(Intent.EXTRA_FILE_HEADER);
+        String[] srcCropPaths = sourcePath.split(Intent.EXTRA_CROP_FILE_HEADER);
         if (!TextUtils.isEmpty(sourcePath) && sourcePath.startsWith(Intent.EXTRA_FILE_HEADER)) {
-            new CopyThread(sourcePath.replace(Intent.EXTRA_FILE_HEADER, ""), destPath).start();
+            new CopyThread(srcCopyPaths, destPath).start();
         } else if (!TextUtils.isEmpty(sourcePath)
                                         && sourcePath.startsWith(Intent.EXTRA_CROP_FILE_HEADER)) {
-            new CropThread(sourcePath.replace(Intent.EXTRA_CROP_FILE_HEADER, ""), destPath).start();
+            new CropThread(srcCropPaths, destPath).start();
         }
     }
 
@@ -625,47 +631,55 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     class CopyThread extends Thread {
-        String mSourcePath;
+        String[] mSrcCopyPaths;
         String mDestPath;
 
-        public CopyThread(String sourcePath, String destPath) {
+        public CopyThread(String[] srcPaths, String destPath) {
             super();
-            mSourcePath = sourcePath;
+            mSrcCopyPaths = srcPaths;
             mDestPath = destPath;
         }
 
         @Override
         public void run() {
             super.run();
-            FileOperationHelper.CopyFile(
-                                 mSourcePath.replace(Intent.EXTRA_FILE_HEADER, ""), mDestPath);
+            for (int i = 1; i < mSrcCopyPaths.length; i++) {
+                FileOperationHelper.CopyFile(
+                        mSrcCopyPaths[i].replace(Intent.EXTRA_FILE_HEADER, ""), mDestPath);
+            }
         }
     }
 
     class CropThread extends Thread {
-        String mSourcePath;
+        String[] mSrcCropPaths;
         String mDestPath;
 
-        public CropThread(String sourcePath, String destPath) {
+        public CropThread(String[] srcPaths, String destPath) {
             super();
-            mSourcePath = sourcePath;
+            mSrcCropPaths = srcPaths;
             mDestPath = destPath;
         }
 
         @Override
         public void run() {
             super.run();
-            FileOperationHelper.MoveFile(
-                           mSourcePath.replace(Intent.EXTRA_CROP_FILE_HEADER, ""), mDestPath, true);
+            for (int i = 1; i < mSrcCropPaths.length; i++) {
+                FileOperationHelper.MoveFile(
+                        mSrcCropPaths[i].replace(Intent.EXTRA_CROP_FILE_HEADER, ""), mDestPath, true);
+            }
         }
     }
 
     public void copy() {
         ArrayList<FileInfo> list =
                 ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.getSelectedFileList();
+        StringBuffer stringBuffer = new StringBuffer();
         if (!list.isEmpty()) {
+            for (int i = 0; i < list.size(); i++ ) {
+                stringBuffer.append(Intent.EXTRA_FILE_HEADER + list.get(i).filePath);
+            }
             ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE))
-                            .setText(Intent.EXTRA_FILE_HEADER + list.get(list.size() - 1).filePath);
+                            .setText(stringBuffer);
         }
     }
 
