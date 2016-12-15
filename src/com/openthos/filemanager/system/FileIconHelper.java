@@ -68,14 +68,75 @@ public class FileIconHelper implements FileIconLoader.IconLoadFinishListener {
         }
     }
 
-    public static int getFileIcon(String ext) {
-        Integer i = fileExtToIcons.get(ext.toLowerCase());
-        if (i != null) {
-            return i;
-        } else {
-            return R.mipmap.file_icon_default;
-        }
+    private static final String SUFFIX_APE = "ape";
+    private static final String SUFFIX_AVI = "avi";
+    private static final String SUFFIX_DOC = "doc";
+    private static final String SUFFIX_HTML = "html";
+    private static final String SUFFIX_MP3 = "mp3";
+    private static final String SUFFIX_MP4 = "mp4";
+    private static final String SUFFIX_PPT = "ppt";
+    private static final String SUFFIX_TXT = "txt";
+    private static final String SUFFIX_WAV = "wav";
+    private static final String SUFFIX_WMV = "wmv";
+    private static final String SUFFIX_XLS = "xls";
+    private static final String SUFFIX_PDF = "pdf";
+    private static final String SUFFIX_RM = "rm";
+    private static final String SUFFIX_RMVB = "rmvb";
+    private static final String SUFFIX_TAR = "tar";
+    private static final String SUFFIX_BZ2 = "bz2";
+    private static final String SUFFIX_GZ = "gz";
+    private static final String SUFFIX_ZIP = "zip";
+    private static final String SUFFIX_RAR = "rar";
 
+    public static int getFileIcon(String ext) {
+        // Integer i = fileExtToIcons.get(ext.toLowerCase());
+        // if (i != null) {
+        //     return i;
+        // } else {
+        //     return R.mipmap.file_icon_default;
+        // }
+        switch (ext) {
+            case SUFFIX_APE:
+                return R.mipmap.suffix_ape;
+            case SUFFIX_AVI:
+                return R.mipmap.suffix_avi;
+            case SUFFIX_DOC:
+                return R.mipmap.suffix_doc;
+            case SUFFIX_HTML:
+                return R.mipmap.suffix_html;
+            case SUFFIX_MP3:
+                return R.mipmap.suffix_mp3;
+            case SUFFIX_MP4:
+                return R.mipmap.suffix_mp4;
+            case SUFFIX_PPT:
+                return R.mipmap.suffix_ppt;
+            case SUFFIX_TXT:
+                return R.mipmap.suffix_txt;
+            case SUFFIX_WAV:
+                return R.mipmap.suffix_wav;
+            case SUFFIX_WMV:
+                return R.mipmap.suffix_wmv;
+            case SUFFIX_XLS:
+                return R.mipmap.suffix_xls;
+            case SUFFIX_PDF:
+                return R.mipmap.suffix_default;
+            case SUFFIX_RM:
+                return R.mipmap.suffix_default;
+            case SUFFIX_RMVB:
+                return R.mipmap.suffix_default;
+            case SUFFIX_TAR:
+                return R.mipmap.suffix_default;
+            case SUFFIX_BZ2:
+                return R.mipmap.suffix_default;
+            case SUFFIX_GZ:
+                return R.mipmap.suffix_default;
+            case SUFFIX_ZIP:
+                return R.mipmap.suffix_default;
+            case SUFFIX_RAR:
+                return R.mipmap.suffix_default;
+            default:
+                return R.mipmap.suffix_default;
+        }
     }
 
     public void setIcon(FileInfo fileInfo, ImageView fileImage, ImageView fileImageFrame) {
