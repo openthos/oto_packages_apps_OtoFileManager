@@ -120,6 +120,7 @@
     <string name="computer">Computer</string>
     <string name="usb">USB</string>
     <string name="internet">My Network Places</string>
+    <string name="cloud">Cloud Service</string>
     <string name="text_about">About</string>
     <string name="text_app_name">File Manager</string>
     <string name="text_theme">In the trend of the classic forever</string>
@@ -219,12 +220,14 @@
     <string name="delete_dialog_delete">Are you sure you want to delete it/them permanently?</string>
     <string name="delete_dialog_clean">Are you sure you want to clean the Recycle?</string>
     <string name="found_no_corresponding_application_to_open">found_no_corresponding_application_to_open</string>
+    <string name="cloud_create_folder">Create Folder</string>
+    <string name="cloud_sync">Sync</string>
+    <string name="cloud_desync">Desync</string>
 
     <string-array name="file_type_array">
         <item>.doc</item>
-        <item>.docx</item>
         <item>.xls</item>
-        <item>.pptx</item>
+        <item>.ppt</item>
         <item>.txt</item>
     </string-array>
 </resources>

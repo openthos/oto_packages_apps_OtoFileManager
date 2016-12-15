@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cloud_ll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/cloud_create"
+        style="@style/textDialog"
+        android:layout_marginTop="@dimen/left_margrin_text"
+        android:text="@string/cloud_create_folder" />
+
+    <TextView
+        android:id="@+id/cloud_sync"
+        style="@style/textDialog"
+        android:layout_marginTop="@dimen/left_margrin_text"
+        android:text="@string/cloud_sync" />
+
+    <TextView
+        android:id="@+id/cloud_desync"
+        style="@style/textDialog"
+        android:layout_marginTop="@dimen/left_margrin_text"
+        android:layout_marginBottom="@dimen/left_margrin_text"
+        android:text="@string/cloud_desync" />
+</LinearLayout>

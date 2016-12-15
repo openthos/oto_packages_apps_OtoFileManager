@@ -122,6 +122,7 @@
     <string name="computer">计算机</string>
     <string name="usb">USB</string>
     <string name="internet">网上邻居</string>
+    <string name="cloud">云服务</string>
     <string name="text_about">关于</string>
     <string name="text_app_name">文件管理器</string>
     <string name="text_theme">于潮流中经典永存</string>
@@ -197,4 +198,7 @@
     <string name="delete_dialog_delete">确认永久删除？</string>
     <string name="delete_dialog_clean">确认清空回收站?</string>
     <string name="found_no_corresponding_application_to_open">没有找到相应打开的程序</string>
+    <string name="cloud_create_folder">创建文件夹</string>
+    <string name="cloud_sync">同步</string>
+    <string name="cloud_desync">解除同步</string>
 </resources>

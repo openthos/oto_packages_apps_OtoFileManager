@@ -15,6 +15,7 @@ public abstract class Constants {
     public static final String SDSTORAGEFRAGMENT_TAG = "sdstoragefragment";
     public static final String USBSTORAGEFRAGMENT_TAG = "usbstoragefragment";
     public static final String ONLINENEIGHBORFRAGMENT_TAG = "onlineneighborfragment";
+    public static final String CLOUDSERVICEFRAGMENT_TAG = "cloudservicefragment";
     public static final String DETAILFRAGMENT_TAG = "detailfragment";
     public static final String SYSTEMSPACEFRAGMENT_TAG = "systemspacefragment";
     public static final String SEARCHFRAGMENT_TAG = "searchfragment";

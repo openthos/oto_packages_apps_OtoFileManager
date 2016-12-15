@@ -50,6 +50,8 @@ import com.openthos.filemanager.system.FileInfo;
 import com.openthos.filemanager.system.FileOperationHelper;
 import com.openthos.filemanager.system.FileSortHelper;
 import com.openthos.filemanager.fragment.PersonalSpaceFragment;
+import com.openthos.filemanager.fragment.CloudServiceFragment;
+import com.openthos.filemanager.utils.SeafileUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -80,6 +82,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private TextView mTv_document;
     private TextView mTv_download;
     private TextView mTv_recycle;
+    private TextView mTv_cloud_service;
     private TextView mTv_net_service;
     private ImageView mIv_list_view;
     private ImageView mIv_grid_view;
@@ -101,6 +104,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                 mDocumentFragment, mDownloadFragment,
                                 mRecycleFragment;
     private OnlineNeighborFragment mOnlineNeighborFragment;
+    private CloudServiceFragment mCloudServiceFragment;
     private UsbConnectReceiver mReceiver;
     private String[] mUsbs;
     private boolean mIsMutiSelect;
@@ -125,6 +129,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     protected void initView() {
+        SeafileUtils.init();
+        SeafileUtils.start();
         mSharedPreferences = getSharedPreferences("view", Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
         String viewTag = mSharedPreferences.getString(VIEW_TAG, VIEW_TAG_GRID);
@@ -138,6 +144,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mTv_download = (TextView) findViewById(R.id.tv_download);
         mTv_recycle = (TextView) findViewById(R.id.tv_recycle);
         mTv_storage = (TextView) findViewById(R.id.tv_storage);
+        mTv_cloud_service = (TextView) findViewById(R.id.tv_cloud_service);
         mTv_net_service = (TextView) findViewById(R.id.tv_net_service);
         mIv_list_view = (ImageView) findViewById(R.id.iv_list_view);
         mIv_grid_view = (ImageView) findViewById(R.id.iv_grid_view);
@@ -165,6 +172,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mHashMap.put(Constants.RECYCLEFRAGMENT_TAG, R.id.tv_recycle);
         mHashMap.put(Constants.SDSTORAGEFRAGMENT_TAG, R.id.tv_computer);
         mHashMap.put(Constants.ONLINENEIGHBORFRAGMENT_TAG, R.id.tv_net_service);
+        mHashMap.put(Constants.CLOUDSERVICEFRAGMENT_TAG, R.id.tv_cloud_service);
         mHashMap.put(Constants.DETAILFRAGMENT_TAG, R.id.tv_picture);
         mHashMap.put(Constants.SYSTEMSPACEFRAGMENT_TAG, R.id.tv_storage);
         mHashMap.put(Constants.ADDRESSFRAGMENT_TAG, R.id.tv_storage);
@@ -327,6 +335,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             mPersonalSpaceFragment = new PersonalSpaceFragment();
             transaction.add(R.id.fl_mian, mPersonalSpaceFragment).hide(mPersonalSpaceFragment);
         }
+        if (mCloudServiceFragment == null) {
+            mCloudServiceFragment = new CloudServiceFragment(mManager,
+                                                    USB_DEVICE_ATTACHED, MainActivity.this);
+            transaction.add(R.id.fl_mian, mCloudServiceFragment,
+                            Constants.CLOUDSERVICEFRAGMENT_TAG).hide(mCloudServiceFragment);
+        }
         transaction.commit();
     }
 
@@ -365,6 +379,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mTv_document.setOnClickListener(this);
         mTv_download.setOnClickListener(this);
         mTv_recycle.setOnClickListener(this);
+        mTv_cloud_service.setOnClickListener(this);
         mTv_net_service.setOnClickListener(this);
         mIv_list_view.setOnClickListener(this);
         mIv_grid_view.setOnClickListener(this);
@@ -748,6 +763,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.tv_net_service:
                 setFileInfo(R.id.tv_net_service, "", mOnlineNeighborFragment);
                 break;
+            case R.id.tv_cloud_service:
+                setFileInfo(R.id.tv_cloud_service, "", mCloudServiceFragment);
+                break;
             case R.id.iv_back:
                 onBackPressed();
                 break;
@@ -810,6 +828,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
                 mTv_recycle.setSelected(false);
+                mTv_cloud_service.setSelected(false);
                 break;
             case R.id.tv_desk:
                 mTv_desk.setSelected(true);
@@ -822,6 +841,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
                 mTv_recycle.setSelected(false);
+                mTv_cloud_service.setSelected(false);
                 break;
             case R.id.tv_music:
                 mTv_music.setSelected(true);
@@ -834,6 +854,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
                 mTv_recycle.setSelected(false);
+                mTv_cloud_service.setSelected(false);
                 break;
             case R.id.tv_video:
                 mTv_music.setSelected(false);
@@ -846,6 +867,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
                 mTv_recycle.setSelected(false);
+                mTv_cloud_service.setSelected(false);
                 break;
             case R.id.tv_picture:
                 mTv_music.setSelected(false);
@@ -858,6 +880,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
                 mTv_recycle.setSelected(false);
+                mTv_cloud_service.setSelected(false);
                 break;
             case R.id.tv_document:
                 mTv_music.setSelected(false);
@@ -870,6 +893,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_document.setSelected(true);
                 mTv_download.setSelected(false);
                 mTv_recycle.setSelected(false);
+                mTv_cloud_service.setSelected(false);
                 break;
             case R.id.tv_download:
                 mTv_music.setSelected(false);
@@ -882,6 +906,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(true);
                 mTv_recycle.setSelected(false);
+                mTv_cloud_service.setSelected(false);
                 break;
             case R.id.tv_recycle:
                 mTv_music.setSelected(false);
@@ -894,6 +919,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
                 mTv_recycle.setSelected(true);
+                mTv_cloud_service.setSelected(false);
                 break;
             case R.id.tv_storage:
                 mTv_music.setSelected(false);
@@ -906,6 +932,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
                 mTv_recycle.setSelected(false);
+                mTv_cloud_service.setSelected(false);
                 break;
             case R.id.tv_net_service:
                 mTv_music.setSelected(false);
@@ -915,6 +942,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mTv_picture.setSelected(false);
                 mTv_storage.setSelected(false);
                 mTv_net_service.setSelected(true);
+                mTv_document.setSelected(false);
+                mTv_download.setSelected(false);
+                mTv_recycle.setSelected(false);
+                mTv_cloud_service.setSelected(false);
+                break;
+            case R.id.tv_cloud_service:
+                mTv_music.setSelected(false);
+                mTv_desk.setSelected(false);
+                mTv_video.setSelected(false);
+                mTv_computer.setSelected(false);
+                mTv_picture.setSelected(false);
+                mTv_storage.setSelected(false);
+                mTv_cloud_service.setSelected(true);
+                mTv_net_service.setSelected(false);
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
                 mTv_recycle.setSelected(false);
@@ -1087,6 +1128,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         returnToRootDir();
                     }
                 } else if (mCurFragment.getTag() != null
+                        && mCurFragment.getTag().equals(Constants.CLOUDSERVICEFRAGMENT_TAG)) {
+                    if (mCloudServiceFragment.canGoBack()) {
+                        mCloudServiceFragment.goBack();
+                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        mManager.popBackStack();
+                    } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        returnToCloudDir();
+                    } else {
+                        returnToRootDir();
+                    }
+                } else if (mCurFragment.getTag() != null
                                && mCurFragment.getTag().equals(Constants.SEARCHSYSTEMSPACE_TAG)) {
                     SystemSpaceFragment searchSysFragment = (SystemSpaceFragment) mCurFragment;
                     if (searchSysFragment.canGoBack()) {
@@ -1195,6 +1247,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mEt_nivagation.setText(Constants.RECYCLE_PATH);
         setSelectedBackground(R.id.tv_recycle);
         mCurFragment = mRecycleFragment;
+    }
+
+    private void returnToCloudDir() {
+        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
+        fragmentTransaction.hide(getVisibleFragment());
+        fragmentTransaction.show(mCloudServiceFragment);
+        fragmentTransaction.commit();
+        mEt_nivagation.setText(getResources().getString(R.string.cloud));
+        setSelectedBackground(R.id.tv_computer);
+        mCurFragment = mCloudServiceFragment;
     }
 
     private void returnToPersonalDir() {

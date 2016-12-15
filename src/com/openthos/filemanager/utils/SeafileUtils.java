@@ -7,10 +7,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class SeafileUtils{
-    public static final String SEAFILE_CONFIGPATH = "/home/www/";
+    public static final String SEAFILE_CONFIGPATH = "/data/";
     public static final String SEAFILE_CONFIGNAME = "seafile-config";
     public static final String SEAFILE_NETNAME = ".ccnet";
     public static final String SEAFILE_BASE_COMMAND ="seaf-cli";
+    public static final String SEAFILE_BASE_COMMAND1 ="./data/sea/proot.sh";
+    public static final String SEAFILE_BASE_COMMAND2 ="-b";
+    public static final String SEAFILE_BASE_COMMAND3 ="/data/data/test:/data";
     public static final String SEAFILE_BASE_URL = "https://dev.openthos.org/";
     public static final int SEAFILE_ID_LENGTH = 36;
 
@@ -35,7 +38,8 @@ public class SeafileUtils{
         Process pro;
         BufferedReader in = null;
         try {
-            pro = runtime.exec(new String[]{SEAFILE_BASE_COMMAND, arg0, arg1, fileName});
+            pro = runtime.exec(new String[]{SEAFILE_BASE_COMMAND1, SEAFILE_BASE_COMMAND2,
+                               SEAFILE_BASE_COMMAND3, SEAFILE_BASE_COMMAND, arg0, arg1, fileName});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {
@@ -60,7 +64,8 @@ public class SeafileUtils{
         Process pro;
         BufferedReader in = null;
         try {
-            pro = runtime.exec(new String[]{SEAFILE_BASE_COMMAND, arg0});
+            pro = runtime.exec(new String[]{SEAFILE_BASE_COMMAND1, SEAFILE_BASE_COMMAND2,
+                                     SEAFILE_BASE_COMMAND3, SEAFILE_BASE_COMMAND, arg0});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {
@@ -90,8 +95,9 @@ public class SeafileUtils{
         Process pro;
         BufferedReader in = null;
         try {
-            pro = runtime.exec(new String[]{SEAFILE_BASE_COMMAND, arg0, arg1, id,
-                       arg2, SEAFILE_BASE_URL, arg3, fileName, arg4, userName, arg5, userPassword});
+            pro = runtime.exec(new String[]{SEAFILE_BASE_COMMAND1, SEAFILE_BASE_COMMAND2,
+                     SEAFILE_BASE_COMMAND3, SEAFILE_BASE_COMMAND, arg0, arg1, id,
+                     arg2, SEAFILE_BASE_URL, arg3, fileName, arg4, userName, arg5, userPassword});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {
@@ -121,8 +127,9 @@ public class SeafileUtils{
         Process pro;
         BufferedReader in = null;
         try {
-            pro = runtime.exec(new String[]{SEAFILE_BASE_COMMAND, arg0, arg1, id,
-                       arg2, SEAFILE_BASE_URL, arg3, fileName, arg4, userName, arg5, userPassword});
+            pro = runtime.exec(new String[]{SEAFILE_BASE_COMMAND1, SEAFILE_BASE_COMMAND2,
+                     SEAFILE_BASE_COMMAND3, SEAFILE_BASE_COMMAND, arg0, arg1, id, arg2,
+                     SEAFILE_BASE_URL, arg3, fileName, arg4, userName, arg5, userPassword});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {
@@ -152,8 +159,9 @@ public class SeafileUtils{
         BufferedReader in = null;
         String id = "";
         try {
-            pro = runtime.exec(new String[]{SEAFILE_BASE_COMMAND, arg0, arg1, fileName,
-                                      arg2, SEAFILE_BASE_URL, arg3, userName, arg4, userPassword});
+            pro = runtime.exec(new String[]{SEAFILE_BASE_COMMAND1, SEAFILE_BASE_COMMAND2,
+                               SEAFILE_BASE_COMMAND3, SEAFILE_BASE_COMMAND, arg0, arg1, fileName,
+                               arg2, SEAFILE_BASE_URL, arg3, userName, arg4, userPassword});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {
@@ -183,8 +191,9 @@ public class SeafileUtils{
         BufferedReader in = null;
         StringBuffer sb = new StringBuffer();
         try {
-            pro = runtime.exec(new String[]{SEAFILE_BASE_COMMAND, arg0, arg1, SEAFILE_BASE_URL,
-                                                       arg2, userName, arg3, userPassword});
+            pro = runtime.exec(new String[]{SEAFILE_BASE_COMMAND1, SEAFILE_BASE_COMMAND2,
+                               SEAFILE_BASE_COMMAND3, SEAFILE_BASE_COMMAND, arg0, arg1,
+                               SEAFILE_BASE_URL, arg2, userName, arg3, userPassword});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
             sb.append("[");
@@ -217,7 +226,8 @@ public class SeafileUtils{
         Runtime runtime = Runtime.getRuntime();
         Process pro;
         try {
-            pro = runtime.exec(new String[]{SEAFILE_BASE_COMMAND, arg0});
+            pro = runtime.exec(new String[]{SEAFILE_BASE_COMMAND1, SEAFILE_BASE_COMMAND2,
+                               SEAFILE_BASE_COMMAND3, SEAFILE_BASE_COMMAND, arg0});
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -229,7 +239,8 @@ public class SeafileUtils{
         Process pro;
         BufferedReader in = null;
         try {
-            pro = runtime.exec(new String[]{SEAFILE_BASE_COMMAND, arg0});
+            pro = runtime.exec(new String[]{SEAFILE_BASE_COMMAND1, SEAFILE_BASE_COMMAND2,
+                               SEAFILE_BASE_COMMAND3, SEAFILE_BASE_COMMAND, arg0});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {
@@ -262,8 +273,9 @@ public class SeafileUtils{
         Process pro;
         BufferedReader in = null;
         try {
-            pro = runtime.exec(new String[]{SEAFILE_BASE_COMMAND, arg0,
-                                                    arg1, SEAFILE_CONFIGPATH + SEAFILE_CONFIGNAME});
+            pro = runtime.exec(new String[]{SEAFILE_BASE_COMMAND1, SEAFILE_BASE_COMMAND2,
+                               SEAFILE_BASE_COMMAND3, SEAFILE_BASE_COMMAND, arg0, arg1,
+                               SEAFILE_CONFIGPATH + SEAFILE_CONFIGNAME});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {
