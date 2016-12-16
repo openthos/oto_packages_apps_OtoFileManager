@@ -484,6 +484,7 @@ public class FileOperationHelper {
                 MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
             } catch (IOException e) {
                 e.printStackTrace();
+                MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
             } finally {
                 if (in != null) {
                     try {
@@ -504,41 +505,45 @@ public class FileOperationHelper {
 
     public static void compress(String path, CompressFormatType type) {
         File f = new File(path);
-        String command = "/system/bin/7za";
-        String arg0 = "a";
-        String arg1 = "";
+        String arg = "";
         String suffix = "";
         BufferedReader in = null;
         boolean isOk = false;
         switch (type) {
             case TAR:
-                arg1 = "-r";
+                arg = "-r";
                 suffix = Constants.SUFFIX_TAR;
                 break;
             case GZIP:
-                arg1 = "-w";
+                arg = "-w";
                 suffix = Constants.SUFFIX_TAR_GZIP;
                 break;
             case BZIP2:
-                arg1 = "-w";
+                arg = "-w";
                 suffix = Constants.SUFFIX_TAR_BZIP2;
                 break;
             case ZIP:
-                arg1 = "-w";
+                arg = "-w";
                 suffix = Constants.SUFFIX_ZIP;
                 break;
         }
         String tarPath = path + suffix;
         try {
             Process pro = Runtime.getRuntime().exec(
-                    new String[]{command, arg0, tarPath, arg1, path});
+                    new String[]{"/system/bin/7za", "a", tarPath, arg, path, "-bb3", "-y"});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
-            while (in.readLine() != null) {
+            MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_SHOW);
+            String line;
+            while ((line = in.readLine()) != null) {
+                MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
+                            Constants.COPY_INFO, line));
             }
+            MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
             MainActivity.mHandler.sendMessage(
                 Message.obtain(MainActivity.mHandler, Constants.ONLY_REFRESH, f.getParent()));
         } catch (IOException e) {
             e.printStackTrace();
+            MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
         } finally {
             if (in != null) {
                 try {
@@ -552,21 +557,24 @@ public class FileOperationHelper {
 
     // command
     public static void decompress(String path) {
-        String command = "/system/bin/7za";
-        String arg0 = "x";
-        String arg1 = "-o";
         File f = new File(path);
         BufferedReader in = null;
         try {
-            Process pro = Runtime.getRuntime().exec(new String[]{command, arg0,
-                                                       path, arg1 + f.getParent()});
+            Process pro = Runtime.getRuntime().exec(new String[]{"/system/bin/7za", "x",
+                                                       path, "-o" + f.getParent(), "-bb3", "-y"});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
-            while (in.readLine() != null) {
+            MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_SHOW);
+            String line;
+            while ((line = in.readLine()) != null) {
+                MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
+                            Constants.COPY_INFO, line));
             }
+            MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
             MainActivity.mHandler.sendMessage(
                 Message.obtain(MainActivity.mHandler, Constants.ONLY_REFRESH, f.getParent()));
         } catch (IOException e) {
             e.printStackTrace();
+            MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
         } finally {
             if (in != null) {
                 try {
