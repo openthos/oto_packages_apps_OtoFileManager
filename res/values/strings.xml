@@ -209,6 +209,13 @@
     <string name="dialog_property_confirm">OK</string>
     <string name="dialog_property_cancel">Cancel</string>
     <string name="dialog_property_apply">Apply</string>
+    <string name="dialog_compress_title">Please select the compression format</string>
+    <string name="launcher_tar">tar</string>
+    <string name="launcher_tar_gz">tar.gz</string>
+    <string name="launcher_tar_bz2">tar.bz2</string>
+    <string name="launcher_zip">zip</string>
+    <string name="operation_compress">Compress</string>
+    <string name="operation_decompress">Decompress</string>
     <string name="qq_image">QQ_Images</string>
     <string name="qq_file">QQfile_recv</string>
     <string name="winxin">WinXin</string>

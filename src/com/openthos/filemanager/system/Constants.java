@@ -542,4 +542,9 @@ public abstract class Constants {
     public static final int COPY_INFO_HIDE = 0x1006;
     public static final int COPY_INFO = 0x1007;
     public static final int ONLY_REFRESH = 0x1008;
+
+    public static final String SUFFIX_TAR = ".tar";
+    public static final String SUFFIX_ZIP = ".zip";
+    public static final String SUFFIX_TAR_GZIP = ".gz";
+    public static final String SUFFIX_TAR_BZIP2 = ".bz2";
 }

@@ -29,6 +29,8 @@ import java.util.ArrayList;
 public class MenuDialog extends Dialog implements View.OnClickListener {
     private TextView mDialog_open;
     private TextView mDialog_openWith;
+    private TextView mDialogCompress;
+    private TextView mDialogDecompress;
     private TextView dialog_copy;
     private TextView dialog_paste;
     private TextView dialog_rename;
@@ -106,6 +108,8 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
         dialog_new_file.setOnClickListener(this);
         dialog_copy_path.setOnClickListener(this);
         dialog_visibale_file.setOnClickListener(this);
+        mDialogCompress.setOnClickListener(this);
+        mDialogDecompress.setOnClickListener(this);
     }
 
     private void initView() {
@@ -123,6 +127,8 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
         dialog_new_folder = (TextView) findViewById(R.id.dialog_new_folder);
         dialog_new_file = (TextView) findViewById(R.id.dialog_new_file);
         dialog_visibale_file = (TextView) findViewById(R.id.dialog_visibale_file);
+        mDialogCompress = (TextView) findViewById(R.id.dialog_compress);
+        mDialogDecompress = (TextView) findViewById(R.id.dialog_decompress);
         mLinearLayout = (LinearLayout) findViewById(R.id.dialog_ll);
         mLinearLayout.measure(0, 0);
         mDialogWidth = mLinearLayout.getMeasuredWidth();
@@ -200,6 +206,14 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
                 break;
             case R.id.dialog_visibale_file:
                 mFileViewInteractionHub.onOperationShowSysFiles();
+                mFileViewInteractionHub.dismissContextDialog();
+                break;
+            case R.id.dialog_compress:
+                mFileViewInteractionHub.onOperationCompress();
+                mFileViewInteractionHub.dismissContextDialog();
+                break;
+            case R.id.dialog_decompress:
+                mFileViewInteractionHub.onOperationDecompress();
                 mFileViewInteractionHub.dismissContextDialog();
                 break;
         }

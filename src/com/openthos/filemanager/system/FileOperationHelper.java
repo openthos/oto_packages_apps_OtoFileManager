@@ -501,4 +501,80 @@ public class FileOperationHelper {
             }
         }
     }
+
+    public static void compress(String path, CompressFormatType type) {
+        File f = new File(path);
+        String command = "/system/bin/7za";
+        String arg0 = "a";
+        String arg1 = "";
+        String suffix = "";
+        BufferedReader in = null;
+        boolean isOk = false;
+        switch (type) {
+            case TAR:
+                arg1 = "-r";
+                suffix = Constants.SUFFIX_TAR;
+                break;
+            case GZIP:
+                arg1 = "-w";
+                suffix = Constants.SUFFIX_TAR_GZIP;
+                break;
+            case BZIP2:
+                arg1 = "-w";
+                suffix = Constants.SUFFIX_TAR_BZIP2;
+                break;
+            case ZIP:
+                arg1 = "-w";
+                suffix = Constants.SUFFIX_ZIP;
+                break;
+        }
+        String tarPath = path + suffix;
+        try {
+            Process pro = Runtime.getRuntime().exec(
+                    new String[]{command, arg0, tarPath, arg1, path});
+            in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+            while (in.readLine() != null) {
+            }
+            MainActivity.mHandler.sendMessage(
+                Message.obtain(MainActivity.mHandler, Constants.ONLY_REFRESH, f.getParent()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    // command
+    public static void decompress(String path) {
+        String command = "/system/bin/7za";
+        String arg0 = "x";
+        String arg1 = "-o";
+        File f = new File(path);
+        BufferedReader in = null;
+        try {
+            Process pro = Runtime.getRuntime().exec(new String[]{command, arg0,
+                                                       path, arg1 + f.getParent()});
+            in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+            while (in.readLine() != null) {
+            }
+            MainActivity.mHandler.sendMessage(
+                Message.obtain(MainActivity.mHandler, Constants.ONLY_REFRESH, f.getParent()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }

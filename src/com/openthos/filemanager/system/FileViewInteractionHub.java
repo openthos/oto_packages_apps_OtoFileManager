@@ -23,6 +23,7 @@ import android.widget.ListView;
 import com.openthos.filemanager.BaseActivity;
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.component.CompressDialog;
 import com.openthos.filemanager.component.MenuDialog;
 import com.openthos.filemanager.component.PropertyDialog;
 import com.openthos.filemanager.utils.L;
@@ -708,6 +709,38 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         } else {
             onOperationPaste();
         }
+    }
+
+    public void onOperationCompress() {
+        if (getSelectedFileList().size() == 0) {
+            return;
+        }
+
+        FileInfo file = getSelectedFileList().get(0);
+        if (file == null) {
+            return;
+        }
+        CompressDialog compressDialog = new CompressDialog(mContext, file.filePath);
+        compressDialog.showDialog();
+        clearSelection();
+    }
+
+    public void onOperationDecompress() {
+        if (getSelectedFileList().size() == 0) {
+            return;
+        }
+
+        final FileInfo file = getSelectedFileList().get(0);
+        if (file == null) {
+            return;
+        }
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                FileOperationHelper.decompress(file.filePath);
+            }
+        }.start();
     }
 
     public void onOperationButtonCancel() {
