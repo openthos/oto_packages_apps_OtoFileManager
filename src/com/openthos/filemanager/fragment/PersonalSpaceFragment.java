@@ -203,7 +203,7 @@ public class PersonalSpaceFragment extends BaseFragment {
             T.showShort(context,
                     context.getString(R.string.operation_failed_permission_refuse));
         }
-        mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, mCopyOrMove);
+        mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, mCopyOrMove, false);
         FragmentTransaction transaction = mManager.beginTransaction();
         transaction.hide(mMainActivity.mCurFragment);
         transaction.add(R.id.fl_mian, mCurFragment, Constants.PERSONALSYSTEMSPACE_TAG).commit();

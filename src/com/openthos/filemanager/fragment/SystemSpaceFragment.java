@@ -66,6 +66,7 @@ public class SystemSpaceFragment extends BaseFragment implements
     private String mouseRightTag = "mouse";
     private boolean isDialogShow = false;
     private boolean isShow = false;
+    private boolean mIsLeftItem;
 
     // memorize the scroll positions of previous paths
     private ArrayList<PathScrollPositionItem> mScrollPositionList = new ArrayList<>();
@@ -160,8 +161,9 @@ public class SystemSpaceFragment extends BaseFragment implements
     @SuppressLint({"NewApi", "ValidFragment"})
     public SystemSpaceFragment(String sdSpaceFragment, String directPath,
                                ArrayList<FileInfo> fileInfoList,
-                               FileViewInteractionHub.CopyOrMove mCopyOrMove) {
+                               FileViewInteractionHub.CopyOrMove mCopyOrMove, boolean isLeftItem) {
         super(sdSpaceFragment,directPath,fileInfoList,mCopyOrMove);
+        mIsLeftItem = isLeftItem;
     }
 
     @SuppressLint({"NewApi", "ValidFragment"})
@@ -223,7 +225,9 @@ public class SystemSpaceFragment extends BaseFragment implements
 
         String currentDir = FileManagerPreferenceActivity.getPrimaryFolder
                                                               (mActivity, sdOrSystem, directorPath);
-        mMainActivity.setCurPath(currentDir);
+        if (!mIsLeftItem) {
+            mMainActivity.setCurPath(currentDir);
+        }
         Uri uri = intent.getData();
         if (uri != null) {
             if (baseSd && sdDir.startsWith(uri.getPath())) {

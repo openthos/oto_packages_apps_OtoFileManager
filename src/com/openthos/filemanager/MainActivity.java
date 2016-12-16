@@ -198,7 +198,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             if (mProgressDialog != null) {
                                 mProgressDialog.dismiss();
                             }
-                            mTv_computer.performClick();
+                            if (TextUtils.isEmpty(getCurPath()) ) {
+                                mTv_computer.performClick();
+                            }
                             break;
                         case Constants.REFRESH:
                             ((IFileInteractionListener) getVisibleFragment())
@@ -247,12 +249,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
          // mRl_usb.setVisibility(View.VISIBLE);
             mTv_storage.setOnClickListener(MainActivity.this);
             mTv_pop_up.setOnClickListener(this);
-            mManager.beginTransaction().remove(mSdStorageFragment).commit();
-            mManager.beginTransaction().hide(mCurFragment).commit();
-            mSdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_ATTACHED,
-                                                      MainActivity.this);
-            setSelectedBackground(R.id.tv_computer);
-            mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment).commit();
+            if (TextUtils.isEmpty(getCurPath()) ) {
+                mManager.beginTransaction().remove(mSdStorageFragment).commit();
+                mManager.beginTransaction().hide(mCurFragment).commit();
+                mSdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_ATTACHED,
+                        MainActivity.this);
+                setSelectedBackground(R.id.tv_computer);
+                mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment)
+                        .show(mSdStorageFragment).commit();
+                mCurFragment = mSdStorageFragment;
+            } else {
+                BaseFragment visibleFragment = (BaseFragment) getVisibleFragment();
+                mManager.beginTransaction().remove(mSdStorageFragment).commit();
+                mSdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_ATTACHED,
+                        MainActivity.this);
+                mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment)
+                        .hide(mSdStorageFragment).commit();
+                mSdStorageFragment.mCurFragment =  visibleFragment;
+            }
           //  T.showShort(MainActivity.this, getResources().getString(R.string.USB_device_connected));
           //  mTv_computer.performClick();
             if (mProgressDialog == null) {
@@ -263,18 +277,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             mProgressDialog.setCancelable(true);
             mProgressDialog.setCanceledOnTouchOutside(true);
             mProgressDialog.show();
-            mCurFragment = mSdStorageFragment;
-        } else if (flags == UsbConnectReceiver.USB_STATE_OFF) {
-            mRl_usb.setVisibility(View.GONE);
-            mManager.beginTransaction().remove(mSdStorageFragment).commit();
-            mManager.beginTransaction().hide(mCurFragment).commit();
-            mSdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_DETACHED,
-                                                      MainActivity.this);
-            setSelectedBackground(R.id.tv_computer);
+          //  mCurFragment = mSdStorageFragment;
+        }// else if (flags == UsbConnectReceiver.USB_STATE_OFF) {
+         //   mRl_usb.setVisibility(View.GONE);
+         //   mManager.beginTransaction().remove(mSdStorageFragment).commit();
+         //   mManager.beginTransaction().hide(mCurFragment).commit();
+         //   mSdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_DETACHED,
+         //                                             MainActivity.this);
+         //   setSelectedBackground(R.id.tv_computer);
            // mManager.beginTransaction().remove(mSdStorageFragment).commit();
-            mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment).commit();
-            mCurFragment = mSdStorageFragment;
-        }
+         //   mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment).commit();
+         //   mCurFragment = mSdStorageFragment;
+        //}
     }
 
     private void initFragment() {
@@ -286,43 +300,43 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
         if (mDeskFragment == null) {
             mDeskFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                                                    Constants.DESKTOP_PATH, null, null);
+                                                    Constants.DESKTOP_PATH, null, null, true);
             transaction.add(R.id.fl_mian, mDeskFragment, Constants.DESKFRAGMENT_TAG)
                        .hide(mDeskFragment);
         }
         if (mMusicFragment == null) {
             mMusicFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                                                     Constants.MUSIC_PATH, null, null);
+                                                     Constants.MUSIC_PATH, null, null, true);
             transaction.add(R.id.fl_mian, mMusicFragment, Constants.MUSICFRAGMENT_TAG)
                        .hide(mMusicFragment);
         }
         if (mVideoFragment == null) {
             mVideoFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                                                     Constants.VIDEOS_PATH, null, null);
+                                                     Constants.VIDEOS_PATH, null, null, true);
             transaction.add(R.id.fl_mian, mVideoFragment, Constants.VIDEOFRAGMENT_TAG)
                        .hide(mVideoFragment);
         }
         if (mPictrueFragment == null) {
             mPictrueFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                                                       Constants.PICTURES_PATH, null, null);
+                                                       Constants.PICTURES_PATH, null, null, true);
             transaction.add(R.id.fl_mian, mPictrueFragment, Constants.PICTRUEFRAGMENT_TAG)
                        .hide(mPictrueFragment);
         }
         if (mDocumentFragment == null) {
             mDocumentFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                                                        Constants.DOCUMENT_PATH, null, null);
+                                                        Constants.DOCUMENT_PATH, null, null, true);
             transaction.add(R.id.fl_mian, mDocumentFragment, Constants.DOCUMENTFRAGMENT_TAG)
                        .hide(mDocumentFragment);
         }
         if (mDownloadFragment == null) {
             mDownloadFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                                                        Constants.DOWNLOAD_PATH, null, null);
+                                                        Constants.DOWNLOAD_PATH, null, null, true);
             transaction.add(R.id.fl_mian, mDownloadFragment, Constants.DOWNLOADFRRAGMENT_TAG)
                        .hide(mDownloadFragment);
         }
         if (mRecycleFragment == null) {
             mRecycleFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                                                        Constants.RECYCLE_PATH, null, null);
+                                                        Constants.RECYCLE_PATH, null, null, true);
             transaction.add(R.id.fl_mian, mRecycleFragment, Constants.RECYCLEFRAGMENT_TAG)
                        .hide(mRecycleFragment);
         }
@@ -409,6 +423,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             mEt_nivagation.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP,
                                                          KeyEvent.KEYCODE_ENTER));
         }
+        setCurPath(path);
     }
 
     class NivagationOnClickLinstener implements View.OnClickListener {
@@ -444,7 +459,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         File file = new File(path);
         if (file.exists()) {
             transaction.hide(mCurFragment);
-            mAddressFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES, path, null, null);
+            mAddressFragment = new SystemSpaceFragment(
+                                   Constants.LEFT_FAVORITES, path, null, null, false);
             transaction.add(R.id.fl_mian, mAddressFragment, Constants.ADDRESSFRAGMENT_TAG);
             transaction.show(mAddressFragment).addToBackStack(null).commit();
             mCurFragment = mAddressFragment;
@@ -745,8 +761,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 if (mCurFragment != null) {
                     mManager.beginTransaction().hide(mCurFragment).commit();
                 }
-                mUsbStorageFragment = new SystemSpaceFragment
-                                          (Constants.USB_SPACE_FRAGMENT, mUsbs[0], null, null);
+                mUsbStorageFragment = new SystemSpaceFragment(
+                                      Constants.USB_SPACE_FRAGMENT, mUsbs[0], null, null, true);
                 mManager.beginTransaction().add(R.id.fl_mian, mUsbStorageFragment,
                                                Constants.USBFRAGMENT_TAG).commit();
                 mCurFragment = mUsbStorageFragment;
@@ -804,6 +820,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void setFileInfo(int id, String path, Fragment fragment) {
         setSelectedBackground(id);
         mEt_nivagation.setText(path);
+        setCurPath(path);
         FragmentTransaction transaction = mManager.beginTransaction();
         if (mCurFragment != null) {
             transaction.hide(mCurFragment);
