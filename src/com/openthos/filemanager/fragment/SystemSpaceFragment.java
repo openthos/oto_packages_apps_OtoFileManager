@@ -744,4 +744,8 @@ public class SystemSpaceFragment extends BaseFragment implements
     @Override
     protected void enter(String tag, String path) {
     }
+
+    public FileListAdapter getAdapter() {
+        return mAdapter;
+    }
 }

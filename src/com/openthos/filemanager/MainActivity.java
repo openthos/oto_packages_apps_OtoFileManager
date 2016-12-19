@@ -39,6 +39,7 @@ import com.openthos.filemanager.fragment.VideoFragment;
 import com.openthos.filemanager.fragment.PersonalSpaceFragment;
 import com.openthos.filemanager.fragment.SearchFragment;
 import com.openthos.filemanager.system.Util;
+import com.openthos.filemanager.system.FileListAdapter;
 import com.openthos.filemanager.utils.DisplayUtil;
 import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
@@ -568,6 +569,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_Z) {
             sendBroadcastMessage("iv_menu", "pop_cacel", false);
+        }
+        if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_A) {
+            sendBroadcastMessage("iv_menu", "pop_cacel", false);
+            if (getVisibleFragment() instanceof SystemSpaceFragment) {
+                final SystemSpaceFragment fragment = (SystemSpaceFragment) getVisibleFragment();
+                fragment.mFileViewInteractionHub.onOperationSelectAll();
+                FileListAdapter adapter = fragment.getAdapter();
+                List<FileInfo> list = adapter.getFileInfoList();
+                List<Integer> integerList = adapter.getSelectFileInfoList();
+                for (int i = 0; i < list.size(); i++) {
+                    integerList.add(i);
+                }
+                adapter.notifyDataSetChanged();
+            }
         }
         if ((keyCode == KeyEvent.KEYCODE_FORWARD_DEL && !event.isShiftPressed())
                 || (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_D)) {
