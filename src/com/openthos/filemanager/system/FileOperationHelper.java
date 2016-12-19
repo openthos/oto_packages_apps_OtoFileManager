@@ -406,6 +406,9 @@ public class FileOperationHelper {
     }
 
     public static void CopyFile(String sourcefile, String dest) {
+        if (sourcefile.equals(dest)) {
+            return;
+        }
         String command = "/system/bin/cp";
         String arg = "-v";
         File file = new File(sourcefile);
@@ -423,6 +426,9 @@ public class FileOperationHelper {
     }
 
     public static boolean MoveFile(String sourcefile, String dest, boolean isRefreah) {
+        if (new File(sourcefile).getParent().equals(dest)) {
+            return false;
+        }
         String command = "/system/bin/mv";
         String arg = "-v";
         copyOrMoveFile(command, arg, sourcefile, dest, isRefreah);
