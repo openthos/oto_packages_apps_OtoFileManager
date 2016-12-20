@@ -298,6 +298,21 @@ public class FileOperationHelper {
                 }
             }
             MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
+            if (command.contains("cp")) {
+                if (destFile.getAbsolutePath().contains(Constants.DESKTOP_PATH)) {
+                    MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
+                            Constants.DESKTOP_SHOW_FILE, destFile.getAbsolutePath()));
+                }
+            } else if (command.contains("mv")) {
+                if (destFile.getAbsolutePath().contains(Constants.DESKTOP_PATH)) {
+                    MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
+                            Constants.DESKTOP_SHOW_FILE, destFile.getAbsolutePath()));
+                }
+                if (sourceFile.getAbsolutePath().contains(Constants.DESKTOP_PATH)) {
+                    MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
+                            Constants.DESKTOP_DELETE_FILE, sourceFile.getAbsolutePath()));
+                }
+            }
         } catch (IOException e) {
             MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
         } finally {
@@ -488,6 +503,10 @@ public class FileOperationHelper {
                     }
                 }
                 MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
+                if (file.getAbsolutePath().contains(Constants.DESKTOP_PATH)) {
+                    MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
+                            Constants.DESKTOP_DELETE_FILE, file.getAbsolutePath()));
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);

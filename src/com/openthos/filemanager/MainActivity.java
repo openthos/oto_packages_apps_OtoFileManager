@@ -188,6 +188,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             public void handleMessage(Message msg) {
                 if (!Thread.currentThread().isInterrupted()) {
                     switch (msg.what) {
+                        case Constants.DESKTOP_SHOW_FILE:
+                            Intent showIntent = new Intent();
+                            showIntent.setAction(Intent.ACTION_DESKTOP_SHOW_FILE);
+                            showIntent.putExtra(Intent.EXTRA_DESKTOP_PATH_TAG, (String) msg.obj);
+                            MainActivity.this.sendBroadcast(showIntent);
+                            break;
+                        case Constants.DESKTOP_DELETE_FILE:
+                            Intent deleteIntent = new Intent();
+                            deleteIntent.setAction(Intent.ACTION_DESKTOP_DELETE_FILE);
+                            deleteIntent.putExtra(Intent.EXTRA_DESKTOP_PATH_TAG, (String) msg.obj);
+                            MainActivity.this.sendBroadcast(deleteIntent);
+                            break;
                         case UsbConnectReceiver.USB_STATE_ON:
                             initUsb(UsbConnectReceiver.USB_STATE_ON);
                             break;
