@@ -229,7 +229,8 @@
     <string name="dialog_compress_title">请选择压缩格式</string>
     <string name="qq_image">QQ图片</string>
     <string name="qq_file">QQ文件</string>
-    <string name="winxin">微信</string>
     <string name="baidu_disk">百度云盘</string>
+    <string name="winxin">微信</string>
+    <string name="USB_umounting">正在卸载...微信</string>
     <string name="no_app_open_with">没有可以打开此文件的应用。\n请前往应用商店下载。</string>
 </resources>

@@ -59,6 +59,8 @@ import java.util.List;
 import java.io.File;
 import android.widget.Toast;
 import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
     private static final int POPWINDOW_WINTH = 120;
@@ -117,8 +119,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private boolean mIsFirst = true;
     private HashMap<String, Integer> mHashMap;
     private SearchOnKeyListener mSearchOnKeyListener;
-    private ProgressDialog mProgressDialog;
     private CopyInfoDialog mCopyInfoDialog;
+    private ProgressDialog mProgressDialog;
+    private ProgressDialog mPopUpProgressDialog;
     public PersonalSpaceFragment mPersonalSpaceFragment;
     private SystemSpaceFragment mUsbStorageFragment;
     public BaseFragment mStartSearchFragment;
@@ -232,6 +235,29 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             ((IFileInteractionListener) getVisibleFragment())
                                     .onRefreshFileList((String) msg.obj, getFileSortHelper());
                             break;
+                        case Constants.SUCCESS_SYNC:
+                            mRl_usb.setVisibility(View.GONE);
+                            if (TextUtils.isEmpty(getCurPath()) ) {
+                                mManager.beginTransaction().remove(mSdStorageFragment).commit();
+                                mManager.beginTransaction().hide(mCurFragment).commit();
+                                mSdStorageFragment = new SdStorageFragment(mManager,
+                                                          USB_DEVICE_DETACHED, MainActivity.this);
+                                setSelectedBackground(R.id.tv_computer);
+                                mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment)
+                                        .show(mSdStorageFragment).commit();
+                                mCurFragment = mSdStorageFragment;
+                            } else {
+                                BaseFragment visibleFragment = (BaseFragment) getVisibleFragment();
+                                mManager.beginTransaction().remove(mSdStorageFragment).commit();
+                                mSdStorageFragment = new SdStorageFragment(mManager,
+                                                          USB_DEVICE_DETACHED, MainActivity.this);
+                                mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment)
+                                        .hide(mSdStorageFragment).commit();
+                                mSdStorageFragment.mCurFragment =  visibleFragment;
+                            }
+                            if (mPopUpProgressDialog != null) {
+                                mPopUpProgressDialog.dismiss();
+                            }
                     }
                 }
                 super.handleMessage(msg);
@@ -279,7 +305,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             mProgressDialog.setCanceledOnTouchOutside(true);
             mProgressDialog.show();
           //  mCurFragment = mSdStorageFragment;
-        }// else if (flags == UsbConnectReceiver.USB_STATE_OFF) {
+        } else if (flags == UsbConnectReceiver.USB_STATE_OFF) {
+            mTv_pop_up.performClick();
          //   mRl_usb.setVisibility(View.GONE);
          //   mManager.beginTransaction().remove(mSdStorageFragment).commit();
          //   mManager.beginTransaction().hide(mCurFragment).commit();
@@ -289,7 +316,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
            // mManager.beginTransaction().remove(mSdStorageFragment).commit();
          //   mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment).commit();
          //   mCurFragment = mSdStorageFragment;
-        //}
+        }
     }
 
     private void initFragment() {
@@ -783,13 +810,31 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mCurFragment = mUsbStorageFragment;
                 break;
             case R.id.tv_pop_up:
-                mRl_usb.setVisibility(View.GONE);
-                mManager.beginTransaction().hide(getVisibleFragment()).commit();
-                mSdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_DETACHED,
-                        MainActivity.this);
-                setSelectedBackground(R.id.tv_computer);
-                mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment).commit();
-                mCurFragment = mSdStorageFragment;
+                if (mPopUpProgressDialog == null) {
+                    mPopUpProgressDialog = new ProgressDialog(this);
+                }
+                mPopUpProgressDialog.setMessage(getString(R.string.USB_umounting));
+                mPopUpProgressDialog.setIndeterminate(true);
+                mPopUpProgressDialog.setCancelable(true);
+                mPopUpProgressDialog.setCanceledOnTouchOutside(true);
+                mPopUpProgressDialog.show();
+                new Thread() {
+                    @Override
+                    public void run() {
+                        Process pro;
+                        BufferedReader in = null;
+                        try {
+                            pro = Runtime.getRuntime().exec("sync");
+                            in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+                            String line;
+                            while ((line = in.readLine()) != null) {
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        MainActivity.mHandler.sendEmptyMessage(Constants.SUCCESS_SYNC);
+                    }
+                }.start();
                 break;
             case R.id.tv_net_service:
                 setFileInfo(R.id.tv_net_service, "", mOnlineNeighborFragment);

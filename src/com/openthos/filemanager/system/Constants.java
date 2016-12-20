@@ -88,6 +88,7 @@ public abstract class Constants {
     public static final int INDEX_TIME_BEGIN = 8;
     public static final int INDEX_TIME_END = 27;
     public static final int INDEX_7Z_FILENAME = 53;
+    public static final int SUCCESS_SYNC = 11;
 
     /**
      *
