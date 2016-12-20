@@ -87,6 +87,16 @@ public class FileIconHelper implements FileIconLoader.IconLoadFinishListener {
     private static final String SUFFIX_GZ = "gz";
     private static final String SUFFIX_ZIP = "zip";
     private static final String SUFFIX_RAR = "rar";
+    private static final String SUFFIX_XLSX = "xlsx";
+    private static final String SUFFIX_DOCX = "docx";
+    private static final String SUFFIX_PPTX = "pptx";
+    private static final String SUFFIX_3GP = "3gp";
+    private static final String SUFFIX_BMP = "bmp";
+    private static final String SUFFIX_GIF = "gif";
+    private static final String SUFFIX_PNG = "png";
+    private static final String SUFFIX_ISO = "iso";
+    private static final String SUFFIX_JPG = "jpg";
+    private static final String SUFFIX_JPEG = "jpeg";
 
     public static int getFileIcon(String ext) {
         // Integer i = fileExtToIcons.get(ext.toLowerCase());
@@ -101,6 +111,7 @@ public class FileIconHelper implements FileIconLoader.IconLoadFinishListener {
             case SUFFIX_AVI:
                 return R.mipmap.suffix_avi;
             case SUFFIX_DOC:
+            case SUFFIX_DOCX:
                 return R.mipmap.suffix_doc;
             case SUFFIX_HTML:
                 return R.mipmap.suffix_html;
@@ -109,6 +120,7 @@ public class FileIconHelper implements FileIconLoader.IconLoadFinishListener {
             case SUFFIX_MP4:
                 return R.mipmap.suffix_mp4;
             case SUFFIX_PPT:
+            case SUFFIX_PPTX:
                 return R.mipmap.suffix_ppt;
             case SUFFIX_TXT:
                 return R.mipmap.suffix_txt;
@@ -117,23 +129,38 @@ public class FileIconHelper implements FileIconLoader.IconLoadFinishListener {
             case SUFFIX_WMV:
                 return R.mipmap.suffix_wmv;
             case SUFFIX_XLS:
+            case SUFFIX_XLSX:
                 return R.mipmap.suffix_xls;
             case SUFFIX_PDF:
-                return R.mipmap.suffix_default;
+                return R.mipmap.suffix_pdf;
             case SUFFIX_RM:
-                return R.mipmap.suffix_default;
+                return R.mipmap.suffix_rm;
             case SUFFIX_RMVB:
-                return R.mipmap.suffix_default;
+                return R.mipmap.suffix_rmvb;
             case SUFFIX_TAR:
-                return R.mipmap.suffix_default;
+                return R.mipmap.suffix_tar;
             case SUFFIX_BZ2:
-                return R.mipmap.suffix_default;
+                return R.mipmap.suffix_bz2;
             case SUFFIX_GZ:
-                return R.mipmap.suffix_default;
+                return R.mipmap.suffix_gz;
             case SUFFIX_ZIP:
-                return R.mipmap.suffix_default;
+                return R.mipmap.suffix_zip;
             case SUFFIX_RAR:
-                return R.mipmap.suffix_default;
+                return R.mipmap.suffix_rar;
+            case SUFFIX_3GP:
+                return R.mipmap.suffix_3gp;
+            case SUFFIX_BMP:
+                return R.mipmap.suffix_bmp;
+            case SUFFIX_PNG:
+                return R.mipmap.suffix_png;
+            case SUFFIX_GIF:
+                return R.mipmap.suffix_gif;
+            case SUFFIX_JPG:
+                return R.mipmap.suffix_jpg;
+            case SUFFIX_JPEG:
+                return R.mipmap.suffix_jpeg;
+            case SUFFIX_ISO:
+                return R.mipmap.suffix_iso;
             default:
                 return R.mipmap.suffix_default;
         }
