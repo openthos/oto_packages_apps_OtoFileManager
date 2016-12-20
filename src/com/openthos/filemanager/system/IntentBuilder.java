@@ -6,11 +6,15 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.Window;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.view.TextSelectDialog;
+import com.openthos.filemanager.component.OpenWithDialog;
 
 import java.io.File;
+import java.util.List;
 import java.util.ArrayList;
 
 public class IntentBuilder {
@@ -18,11 +22,25 @@ public class IntentBuilder {
     public static void viewFile(final Context context, final String filePath, MotionEvent event) {
         String type = getMimeType(filePath);
         if (!TextUtils.isEmpty(type) && !TextUtils.equals(type, "*/*")) {
+            List<ResolveInfo> resolveInfoList = new ArrayList<>();
+            PackageManager manager = context.getPackageManager();
             Intent intent = new Intent();
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setAction(Intent.ACTION_VIEW);
             intent.setDataAndType(Uri.fromFile(new File(filePath)), type);
-            context.startActivity(intent);
+            resolveInfoList = manager.queryIntentActivities(intent,
+                                               PackageManager.MATCH_DEFAULT_ONLY);
+            if (resolveInfoList.size() > 0) {
+                Intent intents = new Intent();
+                intents.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intents.setAction(Intent.ACTION_VIEW);
+                intents.setDataAndType(Uri.fromFile(new File(filePath)), type);
+                context.startActivity(intents);
+            } else {
+                OpenWithDialog openWithDialog = new OpenWithDialog(context, filePath);
+                openWithDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                openWithDialog.showDialog();
+            }
         } else {
             // unknown MimeType
 //            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);

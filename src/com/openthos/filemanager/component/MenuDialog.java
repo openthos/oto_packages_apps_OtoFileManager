@@ -223,7 +223,8 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
         ArrayList<FileInfo> selectedFileList = mFileViewInteractionHub.getSelectedFileList();
         if (selectedFileList.size() != 0
                && !selectedFileList.get(selectedFileList.size() - 1).IsDir) {
-            OpenWithDialog openWithDialog = new OpenWithDialog(mContext, mFileViewInteractionHub);
+            String filePath = selectedFileList.get(selectedFileList.size() - 1).filePath;
+            OpenWithDialog openWithDialog = new OpenWithDialog(mContext, filePath);
             openWithDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             openWithDialog.showDialog();
         }

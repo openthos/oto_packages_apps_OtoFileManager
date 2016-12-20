@@ -34,16 +34,17 @@ import java.util.List;
 public class OpenWithDialog extends Dialog implements AdapterView.OnItemClickListener {
     private Context mContext;
     private ListView mListView;
+    private TextView mTextView;
     private List<ResolveInfo> mResolveList;
     private ResolveAdapter mResolveAdapter;
-    private FileViewInteractionHub mFileViewInteractionHub;
     private PackageManager mPackageManager;
     private String mFilePath;
+    private String mFileType;
 
-    public OpenWithDialog(Context context, FileViewInteractionHub fileViewInteractionHub) {
+    public OpenWithDialog(Context context, String filePath) {
         super(context);
         mContext = context;
-        mFileViewInteractionHub = fileViewInteractionHub;
+        mFilePath = filePath;
     }
 
     @Override
@@ -61,24 +62,28 @@ public class OpenWithDialog extends Dialog implements AdapterView.OnItemClickLis
     private void initView() {
         mPackageManager = mContext.getPackageManager();
         mListView = (ListView) findViewById(R.id.lv_open_with);
+        mTextView = (TextView) findViewById(R.id.tv_no_open_with);
         initList();
-        mResolveAdapter = new ResolveAdapter();
-        mListView.setAdapter(mResolveAdapter);
+        if (mResolveList.size() > 0) {
+            mResolveAdapter = new ResolveAdapter();
+            mListView.setAdapter(mResolveAdapter);
+            mListView.setVisibility(View.VISIBLE);
+            mTextView.setVisibility(View.GONE);
+        } else {
+            mListView.setVisibility(View.GONE);
+            mTextView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void initList() {
         mResolveList = new ArrayList<>();
-        ArrayList<FileInfo> selectedFileList = mFileViewInteractionHub.getSelectedFileList();
-        if (selectedFileList.size() != 0) {
-            mFilePath = selectedFileList.get(selectedFileList.size() - 1).filePath;
-            String type = Constants.getMIMEType(new File(mFilePath));
-            Intent intent = new Intent();
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setAction(Intent.ACTION_VIEW);
-            intent.setDataAndType(Uri.fromFile(new File(mFilePath)), type);
-            mResolveList = mPackageManager.queryIntentActivities(intent,
+        mFileType = Constants.getMIMEType(new File(mFilePath));
+        Intent intent = new Intent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.fromFile(new File(mFilePath)), mFileType);
+        mResolveList = mPackageManager.queryIntentActivities(intent,
                                            PackageManager.MATCH_DEFAULT_ONLY);
-        }
     }
 
     public void showDialog() {
@@ -98,7 +103,7 @@ public class OpenWithDialog extends Dialog implements AdapterView.OnItemClickLis
         intent.setAction(Intent.ACTION_VIEW);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         ComponentName cn = new ComponentName(packageName, className);
-        intent.setData(Uri.fromFile(new File(mFilePath)));
+        intent.setDataAndType(Uri.fromFile(new File(mFilePath)), mFileType);
         intent.setComponent(cn);
         mContext.startActivity(intent);
         dismiss();
