@@ -41,6 +41,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.HashMap;
 
 public class SystemSpaceFragment extends BaseFragment implements
         IFileInteractionListener, MainActivity.IBackPressedListener {
@@ -74,6 +75,11 @@ public class SystemSpaceFragment extends BaseFragment implements
     private boolean mSdCardReady;
     private View mEmptyView;
     private View mNoSdView;
+    private HashMap<Enum, Boolean> mSortMap;
+    private boolean mNamePositive;
+    private boolean mSizePositive;
+    private boolean mDatePositive;
+    private boolean mTypePositive;
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -188,7 +194,16 @@ public class SystemSpaceFragment extends BaseFragment implements
         mNoSdView = rootView.findViewById(R.id.sd_not_available_page);
         file_path_list = (DragListView) rootView.findViewById(R.id.file_path_list);
         file_path_grid = (DragGridView) rootView.findViewById(R.id.file_path_grid);
-        //TODO  delete
+
+        initSortMap();
+    }
+
+    private void initSortMap() {
+        mSortMap = new HashMap<>();
+        mSortMap.put(FileSortHelper.SortMethod.name, mNamePositive);
+        mSortMap.put(FileSortHelper.SortMethod.size, mSizePositive);
+        mSortMap.put(FileSortHelper.SortMethod.date, mDatePositive);
+        mSortMap.put(FileSortHelper.SortMethod.type, mTypePositive);
     }
 
     protected void initData() {
@@ -563,7 +578,11 @@ public class SystemSpaceFragment extends BaseFragment implements
     @SuppressWarnings("unchecked")
     @Override
     public void sortCurrentList(FileSortHelper sort) {
-        Collections.sort(mFileNameList, sort.getComparator());
+        if (mSortMap.get(sort.getSortMethod())) {
+            Collections.sort(mFileNameList, sort.getComparator());
+        } else {
+            Collections.sort(mFileNameList, Collections.reverseOrder(sort.getComparator()));
+        }
         onDataChanged();
     }
 
@@ -747,5 +766,13 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     public FileListAdapter getAdapter() {
         return mAdapter;
+    }
+
+    public void setSortTag(Enum sort, boolean positive) {
+        mSortMap.put(sort, positive);
+    }
+
+    public boolean getSortTag(Enum sort) {
+        return mSortMap.get(sort);
     }
 }

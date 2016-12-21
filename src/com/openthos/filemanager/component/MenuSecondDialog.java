@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.system.FileSortHelper;
 import com.openthos.filemanager.system.FileViewInteractionHub;
+import com.openthos.filemanager.fragment.SystemSpaceFragment;
 
 public class MenuSecondDialog extends Dialog implements View.OnClickListener {
     private TextView dialog_sort_name;
@@ -74,23 +75,33 @@ public class MenuSecondDialog extends Dialog implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.dialog_sort_name:
+                setSortPositive(FileSortHelper.SortMethod.name);
                 mFileViewInteractionHub.onSortChanged(FileSortHelper.SortMethod.name);
                 this.dismiss();
                 break;
             case R.id.dialog_sort_size:
+                setSortPositive(FileSortHelper.SortMethod.size);
                 mFileViewInteractionHub.onSortChanged(FileSortHelper.SortMethod.size);
                 this.dismiss();
                 break;
             case R.id.dialog_sort_time:
+                setSortPositive(FileSortHelper.SortMethod.date);
                 mFileViewInteractionHub.onSortChanged(FileSortHelper.SortMethod.date);
                 this.dismiss();
                 break;
             case R.id.dialog_sort_type:
+                setSortPositive(FileSortHelper.SortMethod.type);
                 mFileViewInteractionHub.onSortChanged(FileSortHelper.SortMethod.type);
                 this.dismiss();
                 break;
             default:
                 break;
         }
+    }
+
+    private void setSortPositive(Enum sort) {
+        SystemSpaceFragment fragment = (SystemSpaceFragment)(mFileViewInteractionHub.
+                                                     getMainActivity().mCurFragment);
+        fragment.setSortTag(sort, !fragment.getSortTag(sort));
     }
 }

@@ -65,6 +65,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         mFileOperationHelper = new FileOperationHelper(this);
         mContext = mFileViewListener.getContext();
         mFileSortHelper = ((BaseActivity)mContext).getFileSortHelper();
+        mMainActivity = (MainActivity) mContext;
     }
 
     private void showProgress(String msg) {
@@ -816,7 +817,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 //            mCheckedFileNameList.remove(lFileInfo);  //
             mCurrentPath = getAbsoluteName(mCurrentPath, fileInfo.fileName);
             refreshFileList();
-            mMainActivity = (MainActivity) mContext;
             mMainActivity.setCurPath(mCurrentPath);
         }
     }
@@ -974,6 +974,10 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 
     public void dismissContextDialog() {
         menuDialog.dismiss();
+    }
+
+    public MainActivity getMainActivity() {
+        return mMainActivity;
     }
 
 //    // menu
