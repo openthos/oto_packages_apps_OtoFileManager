@@ -38,6 +38,32 @@
             android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
         </activity>
 
+        <activity
+            android:name=".PickerActivity"
+            android:label="@string/app_name"
+            android:uiOptions="none"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.GET_CONTENT" />
+                <category android:name="android.intent.category.OPENABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="*/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PICK" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="file" />
+                <data android:scheme="folder" />
+                <data android:scheme="directory" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.android.fileexplorer.action.DIR_SEL" />
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

@@ -808,7 +808,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 //        }
 
         if (!fileInfo.IsDir && doubleTag != null) {
-            if (mCurrentMode == Mode.Pick) {
+            if ("PickerActivity".equals(mContext.getClass().getSimpleName())) {
                 mFileViewListener.onPick(fileInfo);
             } else {
                 viewFile(fileInfo,event);
