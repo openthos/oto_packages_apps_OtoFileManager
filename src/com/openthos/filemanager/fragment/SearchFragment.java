@@ -131,11 +131,15 @@ public class SearchFragment extends BaseFragment{
             if (mSearchList != null) {
                 view = View.inflate(getActivity(), R.layout.search_file_item,null);
                 TextView search_file_name = (TextView) view.findViewById(R.id.search_file_name);
+                TextView search_file_path = (TextView) view.findViewById(R.id.search_file_path);
                 ImageView image = (ImageView) view.findViewById(R.id.search_file_bg);
                 String fileName = mSearchList.get(i).fileName;
                 search_file_name.setText(fileName);
                 String fileAbsolutePath = mSearchList.get(i).fileAbsolutePath;
                 String filePath = mSearchList.get(i).filePath;
+                fileAbsolutePath = fileAbsolutePath.substring(0,
+                                       fileAbsolutePath.lastIndexOf(Constants.SD_PATH));
+                search_file_path.setText(fileAbsolutePath);
                 boolean isDirectory = new File(filePath).isDirectory();
                 int fileIcon = FileIconHelper.getFileIcon(Util.getExtFromFilename(filePath));
                 image.setBackgroundResource(!isDirectory ? fileIcon : R.mipmap.folder);

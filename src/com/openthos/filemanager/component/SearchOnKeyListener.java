@@ -8,6 +8,8 @@ import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
+import android.os.Handler;
+import android.os.Message;
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.bean.SearchInfo;
@@ -58,7 +60,18 @@ public class SearchOnKeyListener implements TextView.OnKeyListener {
             case KeyEvent.KEYCODE_ENTER:
             case KeyEvent.KEYCODE_NUMPAD_ENTER:
                 v.clearFocus();
-                excuSearch((TextView) v);
+                if (mMainActivity.mCurFragment instanceof SdStorageFragment) {
+                    mCurPath = Constants.SD_PATH;
+                } else if (mMainActivity.mCurFragment instanceof PersonalSpaceFragment) {
+                    mCurPath = Constants.ROOT_PATH;
+                } else {
+                    mCurPath = mMainActivity.getCurPath();
+                }
+                if (Constants.SD_PATH.equals(mCurPath)) {
+                    MainActivity.mHandler.sendEmptyMessage(Constants.MENU_SHOWHIDE);
+                } else {
+                    excuSearch((TextView) v);
+                }
                 return true;
             case KeyEvent.KEYCODE_ESCAPE:
                 v.clearFocus();
@@ -82,18 +95,11 @@ public class SearchOnKeyListener implements TextView.OnKeyListener {
     }
 
     public void startSearch(String text_search) {
-        if (mMainActivity.mCurFragment instanceof SdStorageFragment) {
-            mCurPath = Constants.SD_PATH;
-        } else if (mMainActivity.mCurFragment instanceof PersonalSpaceFragment) {
-            mCurPath = Constants.ROOT_PATH;
-        } else {
-            mCurPath = mMainActivity.getCurPath();
-        }
         File curFile = new File(mCurPath);
         if (curFile.exists() && curFile.isDirectory()) {
             final File[] currentFiles = curFile.listFiles();
             if (currentFiles != null && currentFiles.length != 0) {
-                mFileList = searchFileFromDir(text_search, currentFiles);
+                getFiles(text_search, currentFiles);
             }
             mMainActivity.runOnUiThread(new Runnable() {
 
@@ -106,6 +112,31 @@ public class SearchOnKeyListener implements TextView.OnKeyListener {
                     }
                 }
             });
+        }
+    }
+
+    private void getFiles(String text_search, File[] files) {
+        for (int i = 0; i < files.length; i++) {
+            File file = files[i];
+            String fileName = file.getName();
+            if (fileName.contains(text_search)) {
+                SearchInfo searchInfo = new SearchInfo();
+                searchInfo.setFileName(fileName);
+                searchInfo.setFilePath(file.getPath());
+                searchInfo.fileAbsolutePath = file.getAbsolutePath();
+                searchInfo.IsDir = file.isDirectory();
+                if (mFileList != null && mFileList.contains(fileName)
+                                      && mFileList.contains(file.getPath())) {
+                    continue;
+                } else {
+                    mFileList.add(searchInfo);
+                }
+            }
+            if (file.isDirectory()) {
+                if (file.listFiles() != null) {
+                    getFiles(text_search, file.listFiles());
+                }
+            }
         }
     }
 

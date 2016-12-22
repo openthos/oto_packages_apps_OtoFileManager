@@ -233,4 +233,5 @@
     <string name="winxin">微信</string>
     <string name="USB_umounting">正在卸载...微信</string>
     <string name="no_app_open_with">没有可以打开此文件的应用。\n请前往应用商店下载。</string>
+    <string name="can_not_search">当前路径下不能进行搜索。</string>
 </resources>

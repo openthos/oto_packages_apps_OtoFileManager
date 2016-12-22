@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
     android:layout_marginTop="10dp"
     android:paddingTop="5dip"
     android:gravity="center_vertical">
@@ -22,6 +21,19 @@
         android:text="@string/text_every_year"
         android:layout_marginLeft="5dip"
         android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/search_file_bg"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/search_file_path"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:layout_marginLeft="5dp"
+        android:gravity="center"
+        android:layout_toRightOf="@id/search_file_bg"
+        android:layout_below="@id/search_file_name"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="14sp" />
+</RelativeLayout>

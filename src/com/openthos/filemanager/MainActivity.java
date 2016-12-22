@@ -270,6 +270,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             if (mPopUpProgressDialog != null) {
                                 mPopUpProgressDialog.dismiss();
                             }
+                            break;
+                        case Constants.MENU_SHOWHIDE:
+                            Toast.makeText(MainActivity.this,
+                                           getResources().getString(R.string.can_not_search),
+                                           Toast.LENGTH_SHORT).show();
+                            break;
                     }
                 }
                 super.handleMessage(msg);
