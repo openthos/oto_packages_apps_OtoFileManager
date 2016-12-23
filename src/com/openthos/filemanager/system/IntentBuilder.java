@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.view.Window;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.pm.ApplicationInfo;
 
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.view.TextSelectDialog;
@@ -35,6 +36,8 @@ public class IntentBuilder {
                 intents.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intents.setAction(Intent.ACTION_VIEW);
                 intents.setDataAndType(Uri.fromFile(new File(filePath)), type);
+                intents.putExtra(ApplicationInfo.PACKAGENAME_TAG,
+                                 ApplicationInfo.APPNAME_OTO_LAUNCHER);
                 context.startActivity(intents);
             } else {
                 OpenWithDialog openWithDialog = new OpenWithDialog(context, filePath);
