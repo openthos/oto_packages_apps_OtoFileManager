@@ -306,6 +306,9 @@ public class SystemSpaceFragment extends BaseFragment implements
                             isDialogShow = true;
                             mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub,
                                                                        event);
+                            if (mAdapter.getSelectFileInfoList().size() != 0) {
+                                mAdapter.notifyDataSetChanged();
+                            }
                         }
                 }
                 return false;
