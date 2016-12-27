@@ -25,8 +25,6 @@ public class CloudDialog extends Dialog implements View.OnClickListener {
     private LinearLayout mLinearLayout;
     private int mDialogWidth;
     private int mDialogHeight;
-    private String mId;
-    private String mPassword;
 
     public CloudDialog(Context context) {
         super(context);
@@ -78,10 +76,8 @@ public class CloudDialog extends Dialog implements View.OnClickListener {
         dismiss();
     }
 
-    public void showDialog(int x, int y, String id, String password) {
+    public void showDialog(int x, int y) {
         show();
-        mId = id;
-        mPassword = password;
         Window dialogWindow = getWindow();
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
         lp.dimAmount = 0.0f;

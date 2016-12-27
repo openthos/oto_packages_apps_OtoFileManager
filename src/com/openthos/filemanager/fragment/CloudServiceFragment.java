@@ -61,7 +61,7 @@ public class CloudServiceFragment extends BaseFragment implements AdapterView.On
         }
         mId = "ln01276294@126.com";
         mPassword = "luning";
-        String s = SeafileUtils.listRemote(mId, mPassword);
+        String s = SeafileUtils.listRemote();
     }
 
     @Override
@@ -110,10 +110,9 @@ public class CloudServiceFragment extends BaseFragment implements AdapterView.On
                 case MotionEvent.BUTTON_PRIMARY:
                     break;
                 case MotionEvent.BUTTON_SECONDARY:
-                    CloudDialog cloudDialog = new CloudDialog(mMainActivity);
+                    CloudDialog cloudDialog = new CloudDialog(context);
                     cloudDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                    cloudDialog.showDialog((int)motionEvent.getRawX(), (int)motionEvent.getRawY(),
-                                           mId, mPassword);
+                    cloudDialog.showDialog((int)motionEvent.getRawX(), (int)motionEvent.getRawY());
                     break;
                 case MotionEvent.BUTTON_TERTIARY:
                     break;

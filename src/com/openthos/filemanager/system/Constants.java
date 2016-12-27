@@ -5,6 +5,7 @@ import com.openthos.filemanager.utils.L;
 import java.io.File;
 
 public abstract class Constants {
+    public static final String OPENTHOS_URI = "content://com.otosoft.tools.myprovider/openthosID";
     public static final String DESKFRAGMENT_TAG = "deskfragment";
     public static final String MUSICFRAGMENT_TAG = "musicfragment";
     public static final String VIDEOFRAGMENT_TAG = "videofragment";
@@ -64,6 +65,7 @@ public abstract class Constants {
     public static final int MENU_COPY_PATH = 118;
     public static final int OPERATION_UP_LEVEL = 3;
     public static final int USB_READY = 5;
+    public static final int SEAFILE_DATA_OK = 6;
 
     public static final int BAR_Y = 25;
     public static final int RETURN_TO_WHITE = -2;

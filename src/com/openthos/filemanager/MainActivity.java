@@ -1,12 +1,15 @@
 package com.openthos.filemanager;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,6 +28,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.app.ProgressDialog;
 
+import com.openthos.filemanager.bean.SeafileAccount;
 import com.openthos.filemanager.component.CopyInfoDialog;
 import com.openthos.filemanager.component.PopOnClickLintener;
 import com.openthos.filemanager.component.PopWinShare;
@@ -51,7 +55,7 @@ import com.openthos.filemanager.system.FileInfo;
 import com.openthos.filemanager.system.FileOperationHelper;
 import com.openthos.filemanager.system.FileSortHelper;
 import com.openthos.filemanager.fragment.PersonalSpaceFragment;
-import com.openthos.filemanager.fragment.CloudServiceFragment;
+import com.openthos.filemanager.fragment.SeafileFragment;
 import com.openthos.filemanager.utils.SeafileUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,6 +65,9 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
     private static final int POPWINDOW_WINTH = 120;
@@ -107,7 +114,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                 mDocumentFragment, mDownloadFragment,
                                 mRecycleFragment;
     private OnlineNeighborFragment mOnlineNeighborFragment;
-    private CloudServiceFragment mCloudServiceFragment;
+    private SeafileFragment mSeafileFragment;
     private UsbConnectReceiver mReceiver;
     private String[] mUsbs;
     private boolean mIsMutiSelect;
@@ -127,14 +134,77 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public BaseFragment mStartSearchFragment;
     private SearchFragment mSearchFragment;
     public String mCurPath;
+    public SeafileAccount mAccount;
+    public SeafileUtils.SeafileSQLConsole mConsole;
 
     protected int getLayoutId() {
         return R.layout.activity_main;
     }
 
+    private class SeafileThread extends Thread {
+        @Override
+        public void run() {
+            super.run();
+            SeafileUtils.init();
+            SeafileUtils.start();
+            ContentResolver mResolver = MainActivity.this.getContentResolver();
+            Uri uriQuery = Uri.parse(Constants.OPENTHOS_URI);
+            Cursor cursor = mResolver.query(uriQuery, null, null, null, null);
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    //current openthos id and password
+                    SeafileUtils.mUserId = cursor.getString(cursor.getColumnIndex("openthosID"));
+                    SeafileUtils.mUserPassword =
+                                     cursor.getString(cursor.getColumnIndex("password"));
+                    break;
+                }
+                cursor.close();
+            }
+            if (TextUtils.isEmpty(SeafileUtils.mUserId)) {
+                SeafileUtils.mUserId = "potatomagic@163.com";
+            }
+            if (TextUtils.isEmpty(SeafileUtils.mUserPassword)) {
+                SeafileUtils.mUserPassword = "kiss5potato";
+            }
+            String librarys = SeafileUtils.listRemote();
+            mAccount = new SeafileAccount();
+            mAccount.mUserName = SeafileUtils.mUserId;
+            mConsole = new SeafileUtils.SeafileSQLConsole(MainActivity.this);
+            int id = mConsole.queryAccountId(mAccount.mUserName);
+            android.util.Log.i("wwwwww", id + "");
+            mAccount.mFile = new File(SeafileUtils.SEAFILE_DATA_PATH, mAccount.mUserName);
+            if (!mAccount.mFile.exists()) {
+                mAccount.mFile.mkdirs();
+            }
+            try {
+                JSONArray jsonArray = new JSONArray(librarys);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    HashMap<String, String> maps = new HashMap<>();
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    maps.put("libraryid", jsonObject.getString("id"));
+                    maps.put("libraryname", jsonObject.getString("name"));
+                    mAccount.mLibrarys.add(maps);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if (mAccount.mLibrarys.size() > 0) {
+                for (HashMap<String, String> map : mAccount.mLibrarys) {
+                    String name = map.get("libraryname");
+                    if (name.equals("My Library")) {
+                        continue;
+                    }
+                    int isSync = mConsole.queryFile(id, map.get("libraryid"),
+                            map.get("libraryname"));
+                    map.put("isSync", isSync + "");
+                }
+            }
+            MainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
+        }
+    }
+
     protected void initView() {
-        SeafileUtils.init();
-        SeafileUtils.start();
+        new SeafileThread().start();
         mSharedPreferences = getSharedPreferences("view", Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
         String viewTag = mSharedPreferences.getString(VIEW_TAG, VIEW_TAG_GRID);
@@ -395,10 +465,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             mPersonalSpaceFragment = new PersonalSpaceFragment();
             transaction.add(R.id.fl_mian, mPersonalSpaceFragment).hide(mPersonalSpaceFragment);
         }
-        if (mCloudServiceFragment == null) {
-            mCloudServiceFragment = new CloudServiceFragment();
-            transaction.add(R.id.fl_mian, mCloudServiceFragment,
-                            Constants.CLOUDSERVICEFRAGMENT_TAG).hide(mCloudServiceFragment);
+        if (mSeafileFragment == null) {
+            mSeafileFragment = new SeafileFragment();
+            transaction.add(R.id.fl_mian, mSeafileFragment).hide(mSeafileFragment);
         }
         transaction.commit();
     }
@@ -857,7 +926,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 setFileInfo(R.id.tv_net_service, "", mOnlineNeighborFragment);
                 break;
             case R.id.tv_cloud_service:
-                setFileInfo(R.id.tv_cloud_service, "", mCloudServiceFragment);
+                setFileInfo(R.id.tv_cloud_service, "", mSeafileFragment);
                 break;
             case R.id.iv_back:
                 onBackPressed();
@@ -1223,8 +1292,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     }
                 } else if (mCurFragment.getTag() != null
                         && mCurFragment.getTag().equals(Constants.CLOUDSERVICEFRAGMENT_TAG)) {
-                    if (mCloudServiceFragment.canGoBack()) {
-                        mCloudServiceFragment.goBack();
+                    if (mSeafileFragment.canGoBack()) {
+                        mSeafileFragment.goBack();
                     } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
                         mManager.popBackStack();
                     } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
@@ -1346,11 +1415,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void returnToCloudDir() {
         FragmentTransaction fragmentTransaction = mManager.beginTransaction();
         fragmentTransaction.hide(getVisibleFragment());
-        fragmentTransaction.show(mCloudServiceFragment);
+        fragmentTransaction.show(mSeafileFragment);
         fragmentTransaction.commit();
         mEt_nivagation.setText(getResources().getString(R.string.cloud));
         setSelectedBackground(R.id.tv_computer);
-        mCurFragment = mCloudServiceFragment;
+        mCurFragment = mSeafileFragment;
     }
 
     private void returnToPersonalDir() {
