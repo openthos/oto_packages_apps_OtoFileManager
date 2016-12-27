@@ -582,7 +582,8 @@ public class MainActivity extends BaseActivity
             mAddressFragment = new SystemSpaceFragment(
                                    Constants.LEFT_FAVORITES, path, null, null, false);
             transaction.add(R.id.fl_mian, mAddressFragment, Constants.ADDRESSFRAGMENT_TAG);
-            transaction.show(mAddressFragment).addToBackStack(null).commit();
+            //transaction.show(mAddressFragment).addToBackStack(null).commit();
+            transaction.show(mAddressFragment).commit();
             mCurFragment = mAddressFragment;
             setFileInfo(R.id.et_nivagation, path, mAddressFragment);
         } else {
@@ -1326,6 +1327,16 @@ public class MainActivity extends BaseActivity
                         mManager.popBackStack();
                     } else {
                         returnToSearchFragment();
+                    }
+                } else if (mCurFragment.getTag() != null
+                               && mCurFragment.getTag().equals(Constants.ADDRESSFRAGMENT_TAG)) {
+                    SystemSpaceFragment addressFragment = (SystemSpaceFragment) mCurFragment;
+                    if (addressFragment.canGoBack()) {
+                        addressFragment.goBack();
+                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        mManager.popBackStack();
+                    } else {
+                        returnToRootDir();
                     }
                 }
             } else if (mStartSearchFragment != null && mCurFragment instanceof SearchFragment) {
