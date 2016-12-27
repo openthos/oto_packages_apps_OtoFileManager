@@ -35,11 +35,11 @@ public class CloudServiceFragment extends BaseFragment implements AdapterView.On
         super();
     }
 
-    @SuppressLint({"NewApi", "ValidFragment"})
-    public CloudServiceFragment(FragmentManager mManager,
-                             String usbDeviceIsAttached, MainActivity context) {
-        super(mManager,usbDeviceIsAttached,context);
-    }
+    //@SuppressLint({"NewApi", "ValidFragment"})
+    //public CloudServiceFragment(FragmentManager mManager,
+    //                         String usbDeviceIsAttached, MainActivity context) {
+    //    super(mManager,usbDeviceIsAttached,context);
+    //}
 
     @Override
     public int getLayoutId() {
@@ -69,7 +69,7 @@ public class CloudServiceFragment extends BaseFragment implements AdapterView.On
         mGvCloud = (GridView) rootView.findViewById(R.id.gv_cloud_service);
 
         mList = new ArrayList<>();
-        mAdapter = new CloudAdapter(context, mList);
+        mAdapter = new CloudAdapter(mMainActivity, mList);
         mGvCloud.setAdapter(mAdapter);
         mGvCloud.setOnGenericMotionListener(new GridViewOnGenericMotionListener());
 
@@ -110,7 +110,7 @@ public class CloudServiceFragment extends BaseFragment implements AdapterView.On
                 case MotionEvent.BUTTON_PRIMARY:
                     break;
                 case MotionEvent.BUTTON_SECONDARY:
-                    CloudDialog cloudDialog = new CloudDialog(context);
+                    CloudDialog cloudDialog = new CloudDialog(mMainActivity);
                     cloudDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                     cloudDialog.showDialog((int)motionEvent.getRawX(), (int)motionEvent.getRawY(),
                                            mId, mPassword);

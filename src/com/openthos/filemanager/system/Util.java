@@ -39,29 +39,23 @@ public class Util {
 
     public static String[] execUsb(String[] args) {
         String []strs = null;
-        ProcessBuilder processBuilder = new ProcessBuilder(args);
         Process process = null;
-        InputStream inIs = null;
+        BufferedReader buff = null;
         try {
-            process = processBuilder.start();
-            inIs = process.getInputStream();
-            InputStreamReader inputStreamReader = new InputStreamReader(inIs);
-            BufferedReader buff= new BufferedReader(inputStreamReader);
-            String line=null;
+            process = Runtime.getRuntime().exec(args);
+            buff= new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line = null;
             while ((line = buff.readLine()) != null) {
                 if (line.startsWith("/storage/usb")){
                     strs = line.split("\\s+");
-                    L.d(LOG_TAG, Arrays.toString(strs) +"");
                 }
             }
-            buff.close();
-            inputStreamReader.close();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                if (inIs != null) {
-                    inIs.close();
+                if (buff != null) {
+                    buff.close();
                 }
             } catch (IOException e) {
                 e.printStackTrace();

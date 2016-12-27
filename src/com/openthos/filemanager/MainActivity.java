@@ -396,8 +396,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             transaction.add(R.id.fl_mian, mPersonalSpaceFragment).hide(mPersonalSpaceFragment);
         }
         if (mCloudServiceFragment == null) {
-            mCloudServiceFragment = new CloudServiceFragment(mManager,
-                                                    USB_DEVICE_ATTACHED, MainActivity.this);
+            mCloudServiceFragment = new CloudServiceFragment();
             transaction.add(R.id.fl_mian, mCloudServiceFragment,
                             Constants.CLOUDSERVICEFRAGMENT_TAG).hide(mCloudServiceFragment);
         }

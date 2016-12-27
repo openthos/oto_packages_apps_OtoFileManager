@@ -23,12 +23,12 @@ import java.util.List;
 public class CloudAdapter extends BaseAdapter {
     private Context mContext;
     private List<String> mList;
-    private LayoutInflater mInflater;
+    //private LayoutInflater mInflater;
 
     public CloudAdapter(Context mContext, List<String> mList) {
         this.mContext = mContext;
         this.mList = mList;
-        mInflater = LayoutInflater.from(mContext);
+    //    mInflater = LayoutInflater.from(mContext);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class CloudAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.icon_item, null);
+            convertView = View.inflate(mContext, R.layout.icon_item, null);
             viewHolder = new ViewHolder(convertView);
             convertView.setTag(viewHolder);
         }
