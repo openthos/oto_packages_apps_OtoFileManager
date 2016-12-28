@@ -11,7 +11,9 @@ import java.util.HashMap;
 public class SeafileAccount {
     public static final String LIBRARY_ID="libraryid";
     public static final String LIBRARY_NAME="libraryname";
+    public static final String LIBRARY_ISSYNC="isSync";
     public String mUserName;
+    public int mUserId;
     public ArrayList<HashMap<String, String>> mLibrarys;
     public File mFile;
 

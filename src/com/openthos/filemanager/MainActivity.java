@@ -175,36 +175,47 @@ public class MainActivity extends BaseActivity
             mAccount = new SeafileAccount();
             mAccount.mUserName = SeafileUtils.mUserId;
             mConsole = new SeafileUtils.SeafileSQLConsole(MainActivity.this);
-            int id = mConsole.queryAccountId(mAccount.mUserName);
-            android.util.Log.i("wwwwww", id + "");
+            mAccount.mUserId = mConsole.queryAccountId(mAccount.mUserName);
             mAccount.mFile = new File(SeafileUtils.SEAFILE_DATA_PATH, mAccount.mUserName);
             if (!mAccount.mFile.exists()) {
                 mAccount.mFile.mkdirs();
             }
             try {
+                if (librarys.equals("]")) {
+                    librarys = getSharedPreferences(SeafileUtils.SEAFILE_DATA,
+                            Context.MODE_PRIVATE).getString(SeafileUtils.SEAFILE_DATA, "");
+                }
                 JSONArray jsonArray = new JSONArray(librarys);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     HashMap<String, String> maps = new HashMap<>();
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    maps.put("libraryid", jsonObject.getString("id"));
-                    maps.put("libraryname", jsonObject.getString("name"));
+                    maps.put(SeafileAccount.LIBRARY_ID, jsonObject.getString("id"));
+                    maps.put(SeafileAccount.LIBRARY_NAME, jsonObject.getString("name"));
                     mAccount.mLibrarys.add(maps);
                 }
+                getSharedPreferences(SeafileUtils.SEAFILE_DATA, Context.MODE_PRIVATE).edit()
+                        .putString(SeafileUtils.SEAFILE_DATA, librarys).commit();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             if (mAccount.mLibrarys.size() > 0) {
+                MainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
                 for (HashMap<String, String> map : mAccount.mLibrarys) {
-                    String name = map.get("libraryname");
+                    String name = map.get(SeafileAccount.LIBRARY_NAME);
                     if (name.equals("My Library")) {
                         continue;
                     }
-                    int isSync = mConsole.queryFile(id, map.get("libraryid"),
-                            map.get("libraryname"));
-                    map.put("isSync", isSync + "");
+                    int isSync = mConsole.queryFile(mAccount.mUserId,
+                            map.get(SeafileAccount.LIBRARY_ID),
+                            map.get(SeafileAccount.LIBRARY_NAME));
+                    map.put(SeafileAccount.LIBRARY_ISSYNC, isSync + "");
+                    if (isSync == SeafileUtils.SYNC) {
+                        SeafileUtils.download(map.get(SeafileAccount.LIBRARY_ID),
+                                new File(mAccount.mFile, map.get(SeafileAccount.LIBRARY_NAME))
+                                        .getAbsolutePath());
+                    }
                 }
             }
-            MainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
         }
     }
 
@@ -350,6 +361,10 @@ public class MainActivity extends BaseActivity
                             Toast.makeText(MainActivity.this,
                                            getResources().getString(R.string.can_not_search),
                                            Toast.LENGTH_SHORT).show();
+                            break;
+                        case Constants.SEAFILE_DATA_OK:
+                            mSeafileFragment.setData(mAccount.mLibrarys);
+                            mSeafileFragment.getAdapter().notifyDataSetChanged();
                             break;
                     }
                 }
@@ -1213,6 +1228,15 @@ public class MainActivity extends BaseActivity
                         returnToPersonalDir();
                     }
                 } else if (mCurFragment.getTag() != null &&
+                        mCurFragment.getTag().equals(Constants.SEAFILESYSTEMSPACE_TAG)) {
+                    if (mSeafileFragment.canGoBack()) {
+                        mSeafileFragment.goBack();
+                    } else if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        mManager.popBackStack();
+                    } else {
+                        returnToSeafileDir();
+                    }
+                } else if (mCurFragment.getTag() != null &&
                           mCurFragment.getTag().equals(Constants.SDSSYSTEMSPACE_TAG)) {
                     if (mSdStorageFragment.canGoBack()) {
                         mSdStorageFragment.goBack();
@@ -1304,17 +1328,6 @@ public class MainActivity extends BaseActivity
                         mManager.popBackStack();
                     } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
                         returnToRecycleDir();
-                    } else {
-                        returnToRootDir();
-                    }
-                } else if (mCurFragment.getTag() != null
-                        && mCurFragment.getTag().equals(Constants.CLOUDSERVICEFRAGMENT_TAG)) {
-                    if (mSeafileFragment.canGoBack()) {
-                        mSeafileFragment.goBack();
-                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
-                        mManager.popBackStack();
-                    } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
-                        returnToCloudDir();
                     } else {
                         returnToRootDir();
                     }
@@ -1468,6 +1481,16 @@ public class MainActivity extends BaseActivity
         setSelectedBackground(R.id.tv_computer);
         mSdStorageFragment.setSelectedCardBg(Constants.RETURN_TO_WHITE);
         mCurFragment = mSdStorageFragment;
+    }
+
+    private void returnToSeafileDir() {
+        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
+        fragmentTransaction.hide(getVisibleFragment());
+        fragmentTransaction.show(mSeafileFragment);
+        fragmentTransaction.commit();
+        mEt_nivagation.setText("seafile");
+        setSelectedBackground(R.id.tv_cloud_service);
+        mCurFragment = mSeafileFragment;
     }
 
     public interface IBackPressedListener {
