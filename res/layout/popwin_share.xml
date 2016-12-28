@@ -52,4 +52,18 @@
             style="@style/wrap"
             android:text="@string/operation_show_sys" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_usb"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/pop_usb_view"
+            style="@style/wrap"
+            android:text="@string/remove_usb_device" />
+    </LinearLayout>
 </FrameLayout>

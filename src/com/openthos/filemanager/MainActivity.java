@@ -18,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -69,11 +70,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity
+                 implements View.OnClickListener, View.OnTouchListener {
     private static final int POPWINDOW_WINTH = 120;
     private static final int POPWINDOW_HEIGHT = 40;
     private static final int POPWINDOW_X = -15;
     private static final int POPWINDOW_Y = 10;
+    private static final int USB_POPWINDOW_X = 60;
+    private static final int USB_POPWINDOW_Y = 10;
     private static final int ACTIVITY_MIN_COUNT_FOR_BACK = 3;
     private static final String USB_SPACE_FRAGMENT = "usb_space_fragment";
     private static final String USB_DEVICE_ATTACHED = "usb_device_attached";
@@ -83,6 +87,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private static final String VIEW_TAG_LIST = "list";
     private static final String IV_SWITCH_VIEW = "iv_switch_view";
     private static final String SETTING_POPWINDOW_TAG = "iv_setting";
+    private static final String USB_POPWINDOW_TAG = "iv_usb";
     private TextView mTv_desk;
     private TextView mTv_music;
     private TextView mTv_video;
@@ -514,6 +519,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mIv_back.setOnClickListener(this);
         mIv_setting.setOnClickListener(this);
         mTv_computer.performClick();
+        mTv_storage.setOnTouchListener(this);
 //        search_view.addTextChangedListener(new EditTextChangeListener(mManager,
 //                                                                        MainActivity.this));
         mSearchOnKeyListener = new SearchOnKeyListener(mManager,
@@ -896,31 +902,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mCurFragment = mUsbStorageFragment;
                 break;
             case R.id.tv_pop_up:
-                if (mPopUpProgressDialog == null) {
-                    mPopUpProgressDialog = new ProgressDialog(this);
-                }
-                mPopUpProgressDialog.setMessage(getString(R.string.USB_umounting));
-                mPopUpProgressDialog.setIndeterminate(true);
-                mPopUpProgressDialog.setCancelable(true);
-                mPopUpProgressDialog.setCanceledOnTouchOutside(true);
-                mPopUpProgressDialog.show();
-                new Thread() {
-                    @Override
-                    public void run() {
-                        Process pro;
-                        BufferedReader in = null;
-                        try {
-                            pro = Runtime.getRuntime().exec("sync");
-                            in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
-                            String line;
-                            while ((line = in.readLine()) != null) {
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        MainActivity.mHandler.sendEmptyMessage(Constants.SUCCESS_SYNC);
-                    }
-                }.start();
+                uninstallUSB();
                 break;
             case R.id.tv_net_service:
                 setFileInfo(R.id.tv_net_service, "", mOnlineNeighborFragment);
@@ -961,6 +943,34 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         KeyEvent.KEYCODE_ENTER));
                 break;
         }
+    }
+
+    private void uninstallUSB() {
+        if (mPopUpProgressDialog == null) {
+            mPopUpProgressDialog = new ProgressDialog(this);
+        }
+        mPopUpProgressDialog.setMessage(getString(R.string.USB_umounting));
+        mPopUpProgressDialog.setIndeterminate(true);
+        mPopUpProgressDialog.setCancelable(true);
+        mPopUpProgressDialog.setCanceledOnTouchOutside(true);
+        mPopUpProgressDialog.show();
+        new Thread() {
+            @Override
+            public void run() {
+                Process pro;
+                BufferedReader in = null;
+                try {
+                    pro = Runtime.getRuntime().exec("sync");
+                    in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+                    String line;
+                    while ((line = in.readLine()) != null) {
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                MainActivity.mHandler.sendEmptyMessage(Constants.SUCCESS_SYNC);
+            }
+        }.start();
     }
 
     private void setFileInfo(int id, String path, Fragment fragment) {
@@ -1160,6 +1170,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                DisplayUtil.dip2px(MainActivity.this, POPWINDOW_HEIGHT), menu_tag);
             mPopWinShare.setFocusable(true);
             mPopWinShare.showAsDropDown(mIv_setting, POPWINDOW_X, POPWINDOW_Y);
+        } else if (USB_POPWINDOW_TAG.equals(menu_tag)) {
+            mPopWinShare = new PopWinShare(MainActivity.this, new usbListener(),
+                    DisplayUtil.dip2px(MainActivity.this, POPWINDOW_WINTH),
+                    DisplayUtil.dip2px(MainActivity.this, POPWINDOW_HEIGHT), menu_tag);
+            mPopWinShare.setFocusable(true);
+            mPopWinShare.showAsDropDown(mTv_storage, USB_POPWINDOW_X, USB_POPWINDOW_Y);
         }
         mPopWinShare.update();
         mPopWinShare.getContentView().setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -1477,5 +1493,26 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     public String getCurPath() {
         return mCurPath;
+    }
+
+    class usbListener implements View.OnClickListener{
+        @Override
+        public void onClick(View view) {
+            uninstallUSB();
+            DismissPopwindow();
+            Intent intent = new Intent();
+            intent.setAction("com.switchmenu");
+            intent.putExtra("pop_menu", "view_or_dismiss");
+            sendBroadcast(intent);
+        }
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        if (motionEvent.getButtonState() == MotionEvent.BUTTON_SECONDARY) {
+            shownPopWidndow(USB_POPWINDOW_TAG);
+            return true;
+        }
+        return false;
     }
 }

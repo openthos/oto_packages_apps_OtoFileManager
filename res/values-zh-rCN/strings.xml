@@ -234,4 +234,5 @@
     <string name="USB_umounting">正在卸载...</string>
     <string name="no_app_open_with">没有可以打开此文件的应用。\n请前往应用商店下载。</string>
     <string name="can_not_search">当前路径下不能进行搜索。</string>
+    <string name="remove_usb_device">卸载USB设备</string>
 </resources>
