@@ -456,7 +456,8 @@ public class FileOperationHelper {
             delete(new File(path), true);
         } else if (path.contains(RECYCLE_PATH1)
                 || path.contains(RECYCLE_PATH2)
-                || path.contains(RECYCLE_PATH3)) {
+                || path.contains(RECYCLE_PATH3)
+                || (path.split("/").length > 3 && path.startsWith("/storage/usb"))) {
             //delete file
             delete(new File(path), false);
         } else {

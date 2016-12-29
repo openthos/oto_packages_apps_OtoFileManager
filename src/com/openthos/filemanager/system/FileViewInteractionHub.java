@@ -577,7 +577,8 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             dialog.setMessage(mContext.getString(R.string.delete_dialog_clean));
         } else if (path.contains(FileOperationHelper.RECYCLE_PATH1)
                 || path.contains(FileOperationHelper.RECYCLE_PATH2)
-                || path.contains(FileOperationHelper.RECYCLE_PATH3)) {
+                || path.contains(FileOperationHelper.RECYCLE_PATH3)
+                || (path.split("/").length > 3 && path.startsWith("/storage/usb"))) {
             //delete file
             dialog.setMessage(mContext.getString(R.string.delete_dialog_delete));
         } else {
