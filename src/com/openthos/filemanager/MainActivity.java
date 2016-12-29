@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.support.v4.app.FragmentTransaction;
 import android.view.inputmethod.EditorInfo;
 import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.app.ProgressDialog;
 
@@ -1185,14 +1186,16 @@ public class MainActivity extends BaseActivity
                                                       MainActivity.this, mManager);
         if (SETTING_POPWINDOW_TAG.equals(menu_tag)) {
             mPopWinShare = new PopWinShare(MainActivity.this, paramOnClickListener,
-                               DisplayUtil.dip2px(MainActivity.this, POPWINDOW_WINTH),
-                               DisplayUtil.dip2px(MainActivity.this, POPWINDOW_HEIGHT), menu_tag);
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    menu_tag);
             mPopWinShare.setFocusable(true);
             mPopWinShare.showAsDropDown(mIv_setting, POPWINDOW_X, POPWINDOW_Y);
         } else if (USB_POPWINDOW_TAG.equals(menu_tag)) {
             mPopWinShare = new PopWinShare(MainActivity.this, new usbListener(),
-                    DisplayUtil.dip2px(MainActivity.this, POPWINDOW_WINTH),
-                    DisplayUtil.dip2px(MainActivity.this, POPWINDOW_HEIGHT), menu_tag);
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    menu_tag);
             mPopWinShare.setFocusable(true);
             mPopWinShare.showAsDropDown(mTv_storage, USB_POPWINDOW_X, USB_POPWINDOW_Y);
         }
