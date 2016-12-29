@@ -56,6 +56,7 @@ public abstract class Constants {
     public static final String QQ_FILE_PATH = Constants.ROOT_PATH + "Tencent/QQfile_recv";
     public static final String WEIXIN_IMG_PATH = Constants.ROOT_PATH + "Tencent/MicroMsg/WeiXin";
     public static final String BAIDU_PAN_PATH = Constants.ROOT_PATH + "BaiduNetdisk";
+    public static final String PERMISS_DIR_STORAGE_USB = "/storage/usb";
     // Menu id
     public static final int MENU_NEW_FOLDER = 100;
     public static final int MENU_NEW_FILE = 119;

@@ -335,7 +335,10 @@ public class MainActivity extends BaseActivity
                             break;
                         case Constants.SUCCESS_SYNC:
                             mRl_usb.setVisibility(View.GONE);
-                            if (TextUtils.isEmpty(getCurPath()) ) {
+                            if (TextUtils.isEmpty(getCurPath())
+                                    || (getCurPath() != null
+                                        && getCurPath().startsWith(
+                                            Constants.PERMISS_DIR_STORAGE_USB))) {
                                 mManager.beginTransaction().remove(mSdStorageFragment).commit();
                                 mManager.beginTransaction().hide(mCurFragment).commit();
                                 mSdStorageFragment = new SdStorageFragment(mManager,

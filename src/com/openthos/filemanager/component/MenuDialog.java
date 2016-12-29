@@ -55,7 +55,7 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
     private MotionEvent mMotionEvent;
     private String PERMISS_DIR_SDCARD = "/sdcard";
     private String PERMISS_DIR_STORAGE_SDCARD = "/storage/sdcard";
-    private String PERMISS_DIR_STORAGE_USB = "/storage/usb";
+    //private String PERMISS_DIR_STORAGE_USB = "/storage/usb";
     private String PERMISS_DIR_STORAGE_EMULATED_LEGACY = "/storage/emulated/legacy";
     private String PERMISS_DIR_STORAGE_EMULATED_0 = "/storage/emulated/0";
 
@@ -88,7 +88,7 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
         boolean hasPermission = false;
         if (path.startsWith(PERMISS_DIR_SDCARD)
                || path.startsWith(PERMISS_DIR_STORAGE_SDCARD)
-               || path.startsWith(PERMISS_DIR_STORAGE_USB)
+               || path.startsWith(Constants.PERMISS_DIR_STORAGE_USB)
                || path.startsWith(PERMISS_DIR_STORAGE_EMULATED_LEGACY)
                || path.startsWith(PERMISS_DIR_STORAGE_EMULATED_0)) {
             hasPermission = true;
