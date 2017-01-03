@@ -994,6 +994,9 @@ public class MainActivity extends BaseActivity
     }
 
     private void setFileInfo(int id, String path, Fragment fragment) {
+        if (fragment instanceof SystemSpaceFragment) {
+            ((SystemSpaceFragment) fragment).setPath(path);
+        }
         setSelectedBackground(id);
         mEt_nivagation.setText(path);
         setCurPath(path);

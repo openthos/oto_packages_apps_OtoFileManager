@@ -76,10 +76,10 @@ public class SystemSpaceFragment extends BaseFragment implements
     private View mEmptyView;
     private View mNoSdView;
     private HashMap<Enum, Boolean> mSortMap;
-    private boolean mNamePositive;
-    private boolean mSizePositive;
-    private boolean mDatePositive;
-    private boolean mTypePositive;
+    private boolean mNamePositive = true;
+    private boolean mSizePositive = true;
+    private boolean mDatePositive = true;
+    private boolean mTypePositive = true;
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

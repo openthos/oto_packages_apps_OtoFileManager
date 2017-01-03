@@ -190,18 +190,20 @@ public class FileOperationHelper {
 
         File file = new File(f.filePath);
         String newPath = Util.makePath(Util.getPathFromFilepath(f.filePath), newName);
-        final boolean needScan = file.isFile();
-        try {
-            boolean ret = file.renameTo(new File(newPath));
-            if (ret) {
-                if (needScan) {
-                    mOperationListener.onFileChanged(f.filePath);
+        if (!new File(newPath).exists()) {
+            final boolean needScan = file.isFile();
+            try {
+                boolean ret = file.renameTo(new File(newPath));
+                if (ret) {
+                    if (needScan) {
+                        mOperationListener.onFileChanged(f.filePath);
+                    }
+                    mOperationListener.onFileChanged(newPath);
                 }
-                mOperationListener.onFileChanged(newPath);
+                return ret;
+            } catch (SecurityException e) {
+                Log.e(LOG_TAG, "Fail to rename file," + e.toString());
             }
-            return ret;
-        } catch (SecurityException e) {
-            Log.e(LOG_TAG, "Fail to rename file," + e.toString());
         }
         return false;
     }

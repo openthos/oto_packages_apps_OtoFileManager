@@ -503,9 +503,12 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     }
 
     private boolean doRename(final FileInfo f, String text) {
-        if (TextUtils.isEmpty(text))
+        if (!isValidFileName(text)) {
+            new AlertDialog.Builder(mContext)
+                           .setMessage(mContext.getString(R.string.fail_name_illegal))
+                           .setPositiveButton(R.string.confirm, null).create().show();
             return false;
-
+        }
         if (mFileOperationHelper.Rename(f, text)) {
             f.fileName = text;
             mFileViewListener.onDataChanged();
@@ -517,6 +520,15 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         }
         refreshFileList();
         return true;
+    }
+
+    private boolean isValidFileName(String fileName) {
+        if (fileName == null) {
+            return false;
+        } else {
+            return fileName.matches("[^\\s\\\\/:\\*\\?\\\"<>\\|](\\x20|" +
+                                    "[^\\s\\\\/:\\*\\?\\\"<>\\|])[^\\s\\\\/:\\*\\?\\\"<>\\|\\.]$");
+        }
     }
 
     private void notifyFileSystemChanged(String path) {

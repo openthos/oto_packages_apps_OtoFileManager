@@ -234,6 +234,7 @@
     <string name="USB_umounting">USB_umounting</string>
     <string name="can_not_search">You can\'t search in the current path.</string>
     <string name="remove_usb_device">Umount usb devices</string>
+    <string name="fail_name_illegal">File name has illegal characters.</string>
     <string-array name="file_type_array">
         <item>.doc</item>
         <item>.xls</item>
