@@ -17,7 +17,7 @@ public class PopWinShare extends PopupWindow {
     private View mMainView;
     private TextView mPop_menu_refresh, mPop_menu_cancel_all, mPop_menu_copy,
                      mPop_menu_delete, mPop_menu_send, mPop_menu_create, mPop_menu_exit,
-                     mPop_setting_view, mPop_usb_view;
+                     mPop_setting_view, mPop_usb_view, mPop_usb_info;
     private LinearLayout mLl_menu, mLl_setting, mLl_usb;
 
     public PopWinShare(MainActivity mainActivity, View.OnClickListener paramOnClickListener,
@@ -60,8 +60,10 @@ public class PopWinShare extends PopupWindow {
             mLl_setting.setVisibility(View.GONE);
             mLl_usb.setVisibility(View.VISIBLE);
             mPop_usb_view = (TextView) mMainView.findViewById(R.id.pop_usb_view);
+            mPop_usb_info = (TextView) mMainView.findViewById(R.id.pop_usb_info);
             if (paramOnClickListener != null) {
                 mPop_usb_view.setOnClickListener(paramOnClickListener);
+                mPop_usb_info.setOnClickListener(paramOnClickListener);
             }
         }
         setContentView(mMainView);

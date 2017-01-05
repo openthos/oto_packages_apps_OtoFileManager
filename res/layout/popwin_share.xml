@@ -65,5 +65,10 @@
             android:id="@+id/pop_usb_view"
             style="@style/wrap"
             android:text="@string/remove_usb_device" />
+
+        <TextView
+            android:id="@+id/pop_usb_info"
+            style="@style/wrap"
+            android:text="@string/operation_info" />
     </LinearLayout>
 </FrameLayout>

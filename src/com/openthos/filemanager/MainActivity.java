@@ -62,6 +62,7 @@ import com.openthos.filemanager.system.FileSortHelper;
 import com.openthos.filemanager.fragment.PersonalSpaceFragment;
 import com.openthos.filemanager.fragment.SeafileFragment;
 import com.openthos.filemanager.utils.SeafileUtils;
+import com.openthos.filemanager.component.UsbPropertyDialog;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -1550,12 +1551,23 @@ public class MainActivity extends BaseActivity
     class usbListener implements View.OnClickListener{
         @Override
         public void onClick(View view) {
-            uninstallUSB();
             DismissPopwindow();
-            Intent intent = new Intent();
-            intent.setAction("com.switchmenu");
-            intent.putExtra("pop_menu", "view_or_dismiss");
-            sendBroadcast(intent);
+            switch (view.getId()) {
+                case R.id.pop_usb_view:
+                    uninstallUSB();
+                    Intent intent = new Intent();
+                    intent.setAction("com.switchmenu");
+                    intent.putExtra("pop_menu", "view_or_dismiss");
+                    sendBroadcast(intent);
+                    break;
+                case R.id.pop_usb_info:
+                    if (mUsbs[0] != null && new File(mUsbs[0]).exists()) {
+                        UsbPropertyDialog usbPropertyDialog =
+                            new UsbPropertyDialog(MainActivity.this, mUsbs);
+                        usbPropertyDialog.showDialog();
+                    }
+                    break;
+            }
         }
     }
 
