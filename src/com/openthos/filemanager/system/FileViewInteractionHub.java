@@ -598,7 +598,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             dialog.setMessage(mContext.getString(R.string.delete_dialog_move));
         }
 
-        dialog.setPositiveButton(R.string.confirm, new DeleteClickListener(path))
+        dialog.setPositiveButton(R.string.confirm, new DeleteClickListener(selectedFiles))
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -626,7 +626,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             dialog.setMessage(mContext.getString(R.string.delete_dialog_delete));
         }
 
-        dialog.setPositiveButton(R.string.confirm, new DeleteDirectClickListener(path))
+        dialog.setPositiveButton(R.string.confirm, new DeleteDirectClickListener(selectedFiles))
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -638,60 +638,60 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     }
 
     class DeleteDirectClickListener implements DialogInterface.OnClickListener {
-        String mPath;
+        ArrayList<FileInfo> mFiles;
 
-        public DeleteDirectClickListener(String path) {
+        public DeleteDirectClickListener(ArrayList<FileInfo> selectedFiles) {
             super();
-            mPath = path;
+            mFiles = selectedFiles;
         }
 
         @Override
         public void onClick(DialogInterface dialog, int which) {
-            new DeleteDirectThread(mPath).start();
+            new DeleteDirectThread(mFiles).start();
         }
     }
 
     class DeleteDirectThread extends Thread {
-        String mPath;
+        ArrayList<FileInfo> mFiles;
 
-        public DeleteDirectThread(String path) {
+        public DeleteDirectThread(ArrayList<FileInfo> selectedFiles) {
             super();
-            mPath = path;
+            mFiles = selectedFiles;
         }
 
         @Override
         public void run() {
             super.run();
-            FileOperationHelper.deleteDirectFile(mPath);
+            mFileOperationHelper.deleteDirectFile(mFiles);
         }
     }
 
     class DeleteClickListener implements DialogInterface.OnClickListener {
-        String mPath;
+        ArrayList<FileInfo> mFiles;
 
-        public DeleteClickListener(String path) {
+        public DeleteClickListener(ArrayList<FileInfo> selectedFiles) {
             super();
-            mPath = path;
+            mFiles = selectedFiles;
         }
 
         @Override
         public void onClick(DialogInterface dialog, int which) {
-            new DeleteThread(mPath).start();
+            new DeleteThread(mFiles).start();
         }
     }
 
     class DeleteThread extends Thread {
-        String mPath;
+        ArrayList<FileInfo> mFiles;
 
-        public DeleteThread(String path) {
+        public DeleteThread(ArrayList<FileInfo> selectedFiles) {
             super();
-            mPath = path;
+            mFiles = selectedFiles;
         }
 
         @Override
         public void run() {
             super.run();
-            FileOperationHelper.deleteFile(mPath);
+            mFileOperationHelper.deleteFile(mFiles);
         }
     }
 

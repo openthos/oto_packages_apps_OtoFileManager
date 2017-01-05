@@ -452,31 +452,40 @@ public class FileOperationHelper {
         return false;
     }
 
-    public static void deleteFile(String path) {
-        if (path.equals(RECYCLE_PATH1) || path.equals(RECYCLE_PATH2) || path.equals(RECYCLE_PATH3)) {
-            //clean Recycle
-            delete(new File(path), true);
-        } else if (path.contains(RECYCLE_PATH1)
-                || path.contains(RECYCLE_PATH2)
-                || path.contains(RECYCLE_PATH3)
-                || (path.split("/").length > 3 && path.startsWith("/storage/usb"))) {
-            //delete file
-            delete(new File(path), false);
-        } else {
-            //move to Recycle
-            MoveFile(path, RECYCLE_PATH1, false);
+    public void deleteFile(ArrayList<FileInfo> selectedFiles) {
+        for (int i = 0; i < selectedFiles.size(); i++) {
+            String path = selectedFiles.get(i).filePath;
+            if (path.equals(RECYCLE_PATH1)
+                    || path.equals(RECYCLE_PATH2)
+                    || path.equals(RECYCLE_PATH3)) {
+                //clean Recycle
+                delete(new File(path), true);
+            } else if (path.contains(RECYCLE_PATH1)
+                    || path.contains(RECYCLE_PATH2)
+                    || path.contains(RECYCLE_PATH3)
+                    || (path.split("/").length > 3 && path.startsWith("/storage/usb"))) {
+                //delete file
+                delete(new File(path), false);
+            } else {
+                //move to Recycle
+                MoveFile(path, RECYCLE_PATH1, false);
+            }
         }
     }
 
-    public static void deleteDirectFile(String path) {
-        if (path.equals(RECYCLE_PATH1) || path.equals(RECYCLE_PATH2) || path.equals(RECYCLE_PATH3)) {
-            //clean Recycle
-            delete(new File(path), true);
-        } else {
-            //delete file
-            delete(new File(path), false);
+    public void deleteDirectFile(ArrayList<FileInfo> selectedFiles) {
+        for (int i = 0; i < selectedFiles.size(); i++) {
+            String path = selectedFiles.get(i).filePath;
+            if (path.equals(RECYCLE_PATH1)
+                    || path.equals(RECYCLE_PATH2)
+                    || path.equals(RECYCLE_PATH3)) {
+                //clean Recycle
+                delete(new File(path), true);
+            } else {
+                //delete file
+                delete(new File(path), false);
+            }
         }
-
     }
 
     private static void delete(File file, boolean isReCreate) {
