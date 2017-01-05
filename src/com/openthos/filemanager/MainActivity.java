@@ -11,12 +11,15 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.FileObserver;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -142,6 +145,7 @@ public class MainActivity extends BaseActivity
     public String mCurPath;
     public SeafileAccount mAccount;
     public SeafileUtils.SeafileSQLConsole mConsole;
+    public CustomFileObserver mCustomFileObserver;
 
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -551,6 +555,7 @@ public class MainActivity extends BaseActivity
         NivagationOnKeyLinstener nivagationOnKeyLinstener =new NivagationOnKeyLinstener();
         mEt_nivagation.setOnClickListener(nivagationOnClickLinstener);
         mEt_nivagation.setOnKeyListener(nivagationOnKeyLinstener);
+        mEt_nivagation.addTextChangedListener(new TextChangeListener());
         initUsb(-1);
         mCurFragment = mSdStorageFragment;
         Intent intent = getIntent();
@@ -1509,6 +1514,10 @@ public class MainActivity extends BaseActivity
     protected void onDestroy() {
         super.onDestroy();
         mReceiver.unregisterReceiver();
+        if (mCustomFileObserver != null) {
+            mCustomFileObserver.stopWatching();
+            mCustomFileObserver = null;
+        }
     }
 
     @Override
@@ -1557,5 +1566,55 @@ public class MainActivity extends BaseActivity
             return true;
         }
         return false;
+    }
+
+    class CustomFileObserver extends FileObserver {
+        public CustomFileObserver(String path) {
+            super(path);
+        }
+
+        @Override
+        public void onEvent(int event, String path) {
+            switch (event) {
+                case FileObserver.CREATE:
+                case FileObserver.DELETE:
+                case FileObserver.MOVED_FROM:
+                case FileObserver.MOVED_TO:
+                case FileObserver.MODIFY:
+                    mHandler.sendMessage(Message.obtain(mHandler, Constants.ONLY_REFRESH,
+                                         ((BaseFragment) getVisibleFragment())
+                                                       .mFileViewInteractionHub.getCurrentPath()));
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private class TextChangeListener implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            String sdfolder = getResources().getString(R.string.sd_folder);
+            String path = editable.toString();
+            if (path.contains(sdfolder)) {
+                path = path.replace(sdfolder + "/", Constants.ROOT_PATH);
+            }
+            if (mCustomFileObserver != null) {
+                mCustomFileObserver.stopWatching();
+                mCustomFileObserver = null;
+            }
+            mCustomFileObserver = new CustomFileObserver(path);
+            mCustomFileObserver.startWatching();
+        }
     }
 }
