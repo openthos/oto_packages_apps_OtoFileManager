@@ -622,4 +622,49 @@ public class FileOperationHelper {
             }
         }
     }
+
+    public static String[] list(String file){
+        Runtime runtime = Runtime.getRuntime();
+        Process pro;
+        BufferedReader in = null;
+        boolean isPrint = false;
+        ArrayList<String> fileList= new ArrayList<>();
+        try {
+            pro = runtime.exec(new String[]{"/system/bin/7za", "l", file});
+            in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+            String line;
+            while ((line = in.readLine()) != null) {
+                if (isPrint) {
+                    if (line.contains("-----")) {
+                        isPrint = false;
+                        continue;
+                    }
+                    line = line.substring(Constants.INDEX_7Z_FILENAME);
+                    System.out.println(line);
+                    if (line.contains("/")) {
+                        line = line.replace(line.substring(line.indexOf("/")), "");
+                        if (!fileList.contains(line)) {
+                            fileList.add(line);
+                        }
+                    } else {
+                        fileList.add(line);
+                    }
+                }
+                if (line.contains("-----")) {
+                    isPrint = true;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return fileList.toString().substring(1, fileList.toString().length() - 1).split(", ");
+    }
 }

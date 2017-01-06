@@ -236,4 +236,7 @@
     <string name="can_not_search">当前路径下不能进行搜索。</string>
     <string name="remove_usb_device">卸载USB设备</string>
     <string name="fail_name_illegal">文件名含有不合法的字符。</string>
+    <string name="dialog_delete_yes">是</string>
+    <string name="dialog_delete_no">否</string>
+    <string name="dialog_decompress_text">桌面已存在"%1$s"，是否继续解压缩（将会覆盖重名文件）？</string>
 </resources>

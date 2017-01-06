@@ -743,10 +743,42 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         if (getSelectedFileList().size() == 0) {
             return;
         }
-
         final FileInfo file = getSelectedFileList().get(0);
         if (file == null) {
             return;
+        }
+        String[] files = FileOperationHelper.list(file.filePath);
+        for (String s : files) {
+            for (FileInfo info : ((SystemSpaceFragment) mFileViewListener).getAllFiles()) {
+                if (info.fileName.equals(s)) {
+                    new AlertDialog.Builder(mMainActivity)
+                         .setMessage(String.format(mMainActivity.getResources().getString(
+                                                            R.string.dialog_decompress_text), s))
+                         .setPositiveButton(mMainActivity.getResources().getString(
+                                                            R.string.dialog_delete_yes),
+                             new android.content.DialogInterface.OnClickListener() {
+                                 @Override
+                                 public void onClick(DialogInterface dialog, int which) {
+                                     new Thread(){
+                                         @Override
+                                         public void run() {
+                                             super.run();
+                                             FileOperationHelper.decompress(file.filePath);
+                                         }
+                                     }.start();
+                                 }
+                             })
+                         .setNegativeButton(mMainActivity.getResources().getString(
+                                                            R.string.dialog_delete_no),
+                             new android.content.DialogInterface.OnClickListener() {
+                                 @Override
+                                 public void onClick(DialogInterface dialog, int which) {
+                                     dialog.cancel();
+                                 }
+                             }).show();
+                    return;
+                }
+            }
         }
         new Thread(){
             @Override
