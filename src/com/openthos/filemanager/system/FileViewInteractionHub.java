@@ -351,7 +351,12 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             clearSelection();
             return false;
         }
-
+        if (!isValidFileName(text)) {
+            new AlertDialog.Builder(mContext)
+                           .setMessage(mContext.getString(R.string.fail_name_illegal))
+                           .setPositiveButton(R.string.confirm, null).create().show();
+            return false;
+        }
         if (mFileOperationHelper.CreateFile(mCurrentPath, text)) {
             mFileViewListener.addSingleFile(Util.GetFileInfo(Util.makePath(mCurrentPath, text)));
             if ("list".equals(LocalCache.getViewTag())) {
@@ -503,11 +508,15 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     }
 
     private boolean doRename(final FileInfo f, String text) {
-        if (!isValidFileName(text)) {
+        if (!f.IsDir && !isValidFileName(text)) {
             new AlertDialog.Builder(mContext)
                            .setMessage(mContext.getString(R.string.fail_name_illegal))
                            .setPositiveButton(R.string.confirm, null).create().show();
             return false;
+        }
+        String newPath = Util.makePath(Util.getPathFromFilepath(f.filePath), text);
+        if (f.filePath.equals(newPath)) {
+            return true;
         }
         if (mFileOperationHelper.Rename(f, text)) {
             f.fileName = text;

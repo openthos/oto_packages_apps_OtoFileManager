@@ -59,6 +59,8 @@ public class FileOperationHelper {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        } else {
+            return false;
         }
         return true;
     }
