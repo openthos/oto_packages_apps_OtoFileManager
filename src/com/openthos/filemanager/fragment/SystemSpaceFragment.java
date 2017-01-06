@@ -563,11 +563,13 @@ public class SystemSpaceFragment extends BaseFragment implements
     }
 
     public boolean setPath(String location) {
-        if (!location.startsWith(mFileViewInteractionHub.getRootPath())) {
-            return false;
+        if (mFileViewInteractionHub != null) {
+            if (!location.startsWith(mFileViewInteractionHub.getRootPath())) {
+                return false;
+            }
+            mFileViewInteractionHub.setCurrentPath(location);
+            mFileViewInteractionHub.refreshFileList();
         }
-        mFileViewInteractionHub.setCurrentPath(location);
-        mFileViewInteractionHub.refreshFileList();
         return true;
     }
 

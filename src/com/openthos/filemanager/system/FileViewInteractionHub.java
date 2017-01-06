@@ -527,7 +527,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             return false;
         } else {
             return fileName.matches("[^\\s\\\\/:\\*\\?\\\"<>\\|](\\x20|" +
-                                    "[^\\s\\\\/:\\*\\?\\\"<>\\|])[^\\s\\\\/:\\*\\?\\\"<>\\|\\.]$");
+                                    "[^\\s\\\\/:\\*\\?\\\"<>\\|])*[^\\s\\\\/:\\*\\?\\\"<>\\|\\.]$");
         }
     }
 
