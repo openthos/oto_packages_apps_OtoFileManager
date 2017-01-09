@@ -8,6 +8,8 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.openthos.filemanager.system.SeafileSQLiteHelper;
+import com.openthos.filemanager.system.Constants;
+import com.openthos.filemanager.MainActivity;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,6 +26,7 @@ public class SeafileUtils {
     public static final String SEAFILE_PROOT_BASEPATH = "/data";
     public static final String SEAFILE_CONFIG_PATH = "/data/seafile-config";
     public static final String SEAFILE_DATA_PATH = "/sdcard/.seafile-data";
+    public static final String SEAFILE_PATH = "/system/sea.tar.bz";
     public static final String SEAFILE_DATA_PATH_REAlLY = "/data/sea/data";
 
     public static final String SEAFILE_NET_NAME = ".ccnet";
@@ -76,6 +79,12 @@ public class SeafileUtils {
     }
 
     public static void init() {
+        File seafile = new File(SEAFILE_COMMAND_PROOT_BASE);
+        if (!seafile.exists()){
+            exec(new String[]{"su", "-c", "rm -r /data/sea"});
+            exec(new String[]{"tar", "xvf", SEAFILE_PATH, "-C", "/data"});
+            exec(new String[]{"su", "-c", "chmod -R 777 /data/sea"});
+        }
         File config = new File(SEAFILE_CONFIG_PATH);
         if (!config.exists()) {
             config.mkdirs();
