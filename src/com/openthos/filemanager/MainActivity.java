@@ -601,6 +601,20 @@ public class MainActivity extends BaseActivity
         if (TextUtils.isEmpty(path)) {
             return;
         }
+        int index = path.indexOf(Constants.SD_PATH);
+        if (path.startsWith(Constants.SD_PATH)) {
+            path = path.substring(index + 1);
+            index = path.indexOf(Constants.SD_PATH);
+        }
+        String str = index == -1 ? path : path.substring(0, index);
+        if (str.toLowerCase().equals(getResources().getString(R.string.address_sdcard))
+                || str.toLowerCase().equals(getResources().getString(R.string.address_sd))) {
+            if (index == -1) {
+                path = Util.getSdDirectory();
+            } else {
+                path = Util.getSdDirectory() + path.substring(index);
+            }
+        }
         File file = new File(path);
         if (file.exists()) {
             transaction.hide(mCurFragment);

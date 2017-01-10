@@ -239,4 +239,6 @@
     <string name="dialog_delete_yes">是</string>
     <string name="dialog_delete_no">否</string>
     <string name="dialog_decompress_text">桌面已存在"%1$s"，是否继续解压缩（将会覆盖重名文件）？</string>
+    <string name="address_sdcard">sdcard</string>
+    <string name="address_sd">sd卡</string>
 </resources>
