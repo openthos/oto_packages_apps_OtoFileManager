@@ -90,6 +90,7 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
                || path.startsWith(PERMISS_DIR_STORAGE_SDCARD)
                || path.startsWith(Constants.PERMISS_DIR_STORAGE_USB)
                || path.startsWith(PERMISS_DIR_STORAGE_EMULATED_LEGACY)
+               || path.startsWith(Constants.PERMISS_DIR_SEAFILE)
                || path.startsWith(PERMISS_DIR_STORAGE_EMULATED_0)) {
             hasPermission = true;
         }

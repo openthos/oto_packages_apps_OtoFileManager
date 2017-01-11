@@ -985,7 +985,7 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    private void uninstallUSB() {
+    public void uninstallUSB() {
         if (mPopUpProgressDialog == null) {
             mPopUpProgressDialog = new ProgressDialog(this);
         }

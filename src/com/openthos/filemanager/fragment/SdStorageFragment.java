@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -27,6 +28,7 @@ import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.utils.T;
 import com.openthos.filemanager.fragment.SystemSpaceFragment;
 import com.openthos.filemanager.system.Constants;
+import com.openthos.filemanager.component.DiskDialog;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -197,6 +199,7 @@ public class SdStorageFragment extends BaseFragment {
                     primaryClick(v);
                     break;
                 case MotionEvent.BUTTON_SECONDARY:
+                    secondaryClick(v, event);
                     break;
                 case MotionEvent.BUTTON_TERTIARY:
                     break;
@@ -242,6 +245,20 @@ public class SdStorageFragment extends BaseFragment {
                 setSelectedCardBg(Constants.RETURN_TO_WHITE);
                 break;
         }
+    }
+
+    public void secondaryClick(View view, MotionEvent event) {
+        switch (view.getId()) {
+            case R.id.rl_mount_space_one:
+                showDiskDialog(view, event, true, R.id.rl_mount_space_one);
+                break;
+        }
+    }
+
+    private void showDiskDialog(View view, MotionEvent event, boolean isUSB, int id) {
+        DiskDialog diskDialog = new DiskDialog(context, isUSB, view);
+        diskDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        diskDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
     }
 
     private void setDiskClickInfo(int id, String tag, String path) {
