@@ -20,6 +20,8 @@ import android.widget.LinearLayout;
 import com.openthos.filemanager.BaseFragment;
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.component.DiskDialog;
+import com.openthos.filemanager.component.MenuFirstDialog;
 import com.openthos.filemanager.system.FileInfo;
 import com.openthos.filemanager.system.FileViewInteractionHub;
 import com.openthos.filemanager.system.Util;

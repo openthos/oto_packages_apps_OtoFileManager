@@ -58,6 +58,10 @@ public abstract class Constants {
     public static final String BAIDU_PAN_PATH = Constants.ROOT_PATH + "BaiduNetdisk";
     public static final String PERMISS_DIR_STORAGE_USB = "/storage/usb";
     public static final String PERMISS_DIR_SEAFILE = "/data/sea/data";
+    public static final String PERMISS_DIR_SDCARD = "/sdcard";
+    public static final String PERMISS_DIR_STORAGE_SDCARD = "/storage/sdcard";
+    public static final String PERMISS_DIR_STORAGE_EMULATED_LEGACY = "/storage/emulated/legacy";
+    public static final String PERMISS_DIR_STORAGE_EMULATED_0 = "/storage/emulated/0";
     // Menu id
     public static final int MENU_NEW_FOLDER = 100;
     public static final int MENU_NEW_FILE = 119;

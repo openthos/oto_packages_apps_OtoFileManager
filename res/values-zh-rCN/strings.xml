@@ -242,4 +242,5 @@
     <string name="address_sdcard">sdcard</string>
     <string name="address_sd">sd卡</string>
     <string name="umount">卸载</string>
+    <string name="operation_delete_permanent">永久删除</string>
 </resources>

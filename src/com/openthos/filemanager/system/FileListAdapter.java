@@ -2,12 +2,16 @@ package com.openthos.filemanager.system;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.fragment.SearchFragment;
+import com.openthos.filemanager.fragment.SystemSpaceFragment;
 import com.openthos.filemanager.utils.LocalCache;
 
 import java.util.ArrayList;
@@ -21,15 +25,18 @@ public class FileListAdapter extends BaseAdapter {
     private int layoutId;
     private List<FileInfo> fileInfoList;
     private List<Integer> selectFileInfoListIndex = new ArrayList<>();
+    private SystemSpaceFragment.GridViewOnGenericMotionListener mMotionListener;
     public FileListAdapter(Context context, int resource,
                            List<FileInfo> objects, FileViewInteractionHub f,
-                           FileIconHelper fileIcon) {
+                           FileIconHelper fileIcon,
+                           SystemSpaceFragment.GridViewOnGenericMotionListener motionListener) {
         fileInfoList = objects;
         layoutId = resource;
         mInflater = LayoutInflater.from(context);
         mFileViewInteractionHub = f;
         mFileIcon = fileIcon;
         mContext = context;
+        mMotionListener = motionListener;
     }
 
     public List<FileInfo> getFileInfoList() {
@@ -57,13 +64,19 @@ public class FileListAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
+        ViewHolder viewHolder;
         if (convertView == null)  {
             if ("list".equals(LocalCache.getViewTag())) {
                 convertView = mInflater.inflate(R.layout.file_browser_item_list, parent, false);
             } else if ("grid".equals(LocalCache.getViewTag())) {
                 convertView = mInflater.inflate(R.layout.file_browser_item_grid, parent, false);
             }
+            viewHolder = new ViewHolder(convertView);
+            convertView.setTag(viewHolder);
+            convertView.setOnTouchListener(mMotionListener);
         }
+        viewHolder = (ViewHolder) convertView.getTag();
+        viewHolder.name.setTag(position);
 
         final FileInfo lFileInfo = fileInfoList.get(position);
         FileListItem.setupFileListItemInfo(mContext, convertView, position, lFileInfo,
@@ -75,5 +88,12 @@ public class FileListAdapter extends BaseAdapter {
 //                new FileListItem.FileItemOnClickListener(
 //                        mFileViewInteractionHub));
         return convertView;
+    }
+
+    public static class ViewHolder {
+        public TextView name;
+        public ViewHolder(View view) {
+            name = (TextView) view.findViewById(R.id.file_name);
+        }
     }
 }

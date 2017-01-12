@@ -38,7 +38,7 @@ public class GridOnGenericMotionListener implements View.OnGenericMotionListener
                 break;
             case MotionEvent.BUTTON_SECONDARY:
                 file_path_grid.setOnItemClickListener(new GridRigntItemClickListener());
-                mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub, event);
+               // mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub, event);
                 break;
             case MotionEvent.BUTTON_TERTIARY:
                 file_path_grid.setOnItemClickListener(new GridLeftItemClickListener(event));

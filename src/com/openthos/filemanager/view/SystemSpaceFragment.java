@@ -192,11 +192,11 @@ public class SystemSpaceFragment extends BaseFragment implements
         //TODO  delete
         mFileIconHelper = new FileIconHelper(mMainActivity);
         if ("list".equals(LocalCache.getViewTag())) {
-            mAdapter = new FileListAdapter(mMainActivity, R.layout.file_browser_item_list,
-                                           mFileNameList, mFileViewInteractionHub, mFileIconHelper);
+          //  mAdapter = new FileListAdapter(mMainActivity, R.layout.file_browser_item_list,
+          //                                 mFileNameList, mFileViewInteractionHub, mFileIconHelper);
         } else if ("grid".equals(LocalCache.getViewTag())) {
-            mAdapter = new FileListAdapter(mMainActivity, R.layout.file_browser_item_grid,
-                                           mFileNameList, mFileViewInteractionHub, mFileIconHelper);
+          //  mAdapter = new FileListAdapter(mMainActivity, R.layout.file_browser_item_grid,
+          //                                 mFileNameList, mFileViewInteractionHub, mFileIconHelper);
         }
 
         boolean baseSd = intent.getBooleanExtra(Constants.KEY_BASE_SD,
@@ -655,7 +655,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                 case MotionEvent.BUTTON_SECONDARY:
                     mouseRightTag = "button_secondary";
                     file_path_grid.setOnItemClickListener(new OnitemClickListener(event));
-                    mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub, event);
+                  //  mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub, event);
                     break;
                 case MotionEvent.BUTTON_TERTIARY:
                     file_path_grid.setOnItemClickListener(new OnitemClickListener(event));
@@ -680,7 +680,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                 case MotionEvent.BUTTON_SECONDARY:
                     mouseRightTag = "button_secondary";
                     file_path_list.setOnItemClickListener(new OnitemClickListener(event));
-                    mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub, event);
+                   // mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub, event);
                     break;
                 case MotionEvent.BUTTON_TERTIARY:
                     file_path_list.setOnItemClickListener(new OnitemClickListener(event));

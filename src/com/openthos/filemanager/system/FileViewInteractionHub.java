@@ -22,9 +22,9 @@ import android.widget.ListView;
 
 import com.openthos.filemanager.BaseActivity;
 import com.openthos.filemanager.MainActivity;
+import com.openthos.filemanager.component.MenuFirstDialog;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.component.CompressDialog;
-import com.openthos.filemanager.component.MenuDialog;
 import com.openthos.filemanager.component.PropertyDialog;
 import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
@@ -47,7 +47,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     private Context mContext;
     private CopyOrMove copyOrMoveMode;
     private int selectedDialogItem;
-    private MenuDialog menuDialog;
+    private MenuFirstDialog menuFirstDialog;
     private MainActivity mMainActivity;
 
     public enum Mode {
@@ -1019,15 +1019,27 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     }
 
     public void shownContextDialog(FileViewInteractionHub mFileViewInteractionHub,
-                                   MotionEvent event) {
-        menuDialog = new MenuDialog(mContext, R.style.menu_dialog, mFileViewInteractionHub, event);
-        menuDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        menuDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
-//                menuDialog.setEnablePaste(canPaste);
+                                   MotionEvent event, boolean isBlank, boolean isDirectory) {
+        boolean isProtected = true;
+           if (mCurrentPath.startsWith(Constants.PERMISS_DIR_SDCARD)
+                || mCurrentPath.startsWith(Constants.PERMISS_DIR_STORAGE_SDCARD)
+                || mCurrentPath.startsWith(Constants.PERMISS_DIR_STORAGE_USB)
+                || mCurrentPath.startsWith(Constants.PERMISS_DIR_STORAGE_EMULATED_LEGACY)
+                || mCurrentPath.startsWith(Constants.PERMISS_DIR_SEAFILE)
+                || mCurrentPath.startsWith(Constants.PERMISS_DIR_STORAGE_EMULATED_0)) {
+            isProtected = false;
+        }
+        menuFirstDialog = new MenuFirstDialog(mContext, mFileViewInteractionHub,
+                                              event, isBlank, isProtected, isDirectory);
+        menuFirstDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        menuFirstDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
     }
 
     public void dismissContextDialog() {
-        menuDialog.dismiss();
+        if (menuFirstDialog != null) {
+            menuFirstDialog.dismiss();
+            menuFirstDialog = null;
+        }
     }
 
     public MainActivity getMainActivity() {

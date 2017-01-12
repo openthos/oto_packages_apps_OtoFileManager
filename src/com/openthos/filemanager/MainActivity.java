@@ -785,7 +785,7 @@ public class MainActivity extends BaseActivity
                 || mEt_nivagation.isFocused() || mEt_search_view.isFocused();
     }
 
-    private void cut() {
+    public void cut() {
         ArrayList<FileInfo> list =
                ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.getSelectedFileList();
         StringBuffer stringBuffer = new StringBuffer();
