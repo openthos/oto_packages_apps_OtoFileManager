@@ -20,4 +20,17 @@ public class SeafileAccount {
     public SeafileAccount(){
         mLibrarys = new ArrayList<>();
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("[");
+        for (int i = 0; i < mLibrarys.size(); i++) {
+            sb.append("{\"id\":\"" + mLibrarys.get(i).get(LIBRARY_ID));
+            sb.append("\",\"name\":\"" + mLibrarys.get(i).get(LIBRARY_NAME) + "\"},");
+        }
+        sb.delete(sb.length() - 1, sb.length());
+        sb.append("]");
+        return sb.toString();
+    }
 }

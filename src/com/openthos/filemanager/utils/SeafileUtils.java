@@ -60,7 +60,6 @@ public class SeafileUtils {
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {
-                Log.i("wwwww", line);
                 if (line.contains("Started: seafile daemon")) {
                     break;
                 }
@@ -118,7 +117,6 @@ public class SeafileUtils {
             sb.append("[");
             boolean isOut = false;
             while ((line = in.readLine()) != null) {
-                Log.i("wwwwww", line);
                 if (line.contains("Name") && line.contains("ID")) {
                     isOut = true;
                     continue;
@@ -138,7 +136,6 @@ public class SeafileUtils {
             }
             sb.delete(sb.length() - 1, sb.length());
             sb.append("]");
-            Log.i("wwwww", sb.toString());
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -164,21 +161,14 @@ public class SeafileUtils {
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {
-                Log.i("wwwwww", line);
             }
             pro = Runtime.getRuntime().exec(new String[]{"su", "-c", SEAFILE_COMMAND_PROOT +
                     SEAFILE_BASE_ROOT_PATH
                     + SEAFILE_COMMAND_SEAFILE + "download -l " + libraryid + " -d "
                     + SEAFILE_PROOT_BASEPATH + filePath + " "
                     + SEAFILE_BASE_URL + getUserAccount()});
-            Log.i("wwwwww", SEAFILE_COMMAND_PROOT +
-                    SEAFILE_BASE_ROOT_PATH
-                    + SEAFILE_COMMAND_SEAFILE + "download -l " + libraryid + " -d "
-                    + SEAFILE_PROOT_BASEPATH + filePath + " "
-                    + SEAFILE_BASE_URL + getUserAccount());
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             while ((line = in.readLine()) != null) {
-                Log.i("wwwwww", line);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -193,6 +183,35 @@ public class SeafileUtils {
         }
     }
 
+    public static String create(String fileName) {
+        Process pro;
+        BufferedReader in = null;
+        String id = "";
+        try {
+            pro = Runtime.getRuntime().exec(new String[]{"su", "-c", SEAFILE_COMMAND_PROOT +
+                    SEAFILE_BASE_ROOT_PATH
+                    + SEAFILE_COMMAND_SEAFILE + "create -n " + fileName +  " "
+                    + SEAFILE_BASE_URL + getUserAccount()});
+            in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+            String line;
+            while ((line = in.readLine()) != null) {
+                id = line;
+                Log.i("iddidid",id);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return id;
+    }
+
     public static void desync(String filePath) {
         filePath = filePath.trim().replace(" ", "\\ ");
         Process pro;
@@ -204,7 +223,6 @@ public class SeafileUtils {
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {
-                Log.i("wwwwww", line);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -277,41 +295,6 @@ public class SeafileUtils {
             }
         }
     }
-
-
-    public static String create(String fileName, String userName, String userPassword) {
-        String arg0 = "create";
-        String arg1 = "-n";
-        String arg2 = "-s";
-        String arg3 = "-u";
-        String arg4 = "-p";
-        Runtime runtime = Runtime.getRuntime();
-        Process pro;
-        BufferedReader in = null;
-        String id = "";
-        try {
-            pro = runtime.exec(new String[]{SEAFILE_COMMAND_PROOT, SEAFILE_BASE_ARG,
-                    "", SEAFILE_COMMAND_SEAFILE, arg0, arg1, fileName,
-                    arg2, SEAFILE_BASE_URL, arg3, userName, arg4, userPassword});
-            in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
-            String line;
-            while ((line = in.readLine()) != null) {
-                id = line;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return id;
-    }
-
 
     public static void delete(File file) {
         if (file.exists()) {
@@ -387,6 +370,23 @@ public class SeafileUtils {
             Cursor c = db.rawQuery("select * from seafilefile where userid like ?"
                             + " and libraryid like ? and libraryname like ?",
                     new String[]{userId + "", libraryId, libraryName});
+            if (c.moveToNext()) {
+                isSync = c.getInt(c.getColumnIndex("isSync"));
+            }
+            c.close();
+            db.close();
+            return isSync;
+        }
+
+        public int insertLibrary(int userId, String libraryId, String libraryName) {
+            SQLiteDatabase db = mSeafileSQLiteHelper.getWritableDatabase();
+            db.execSQL("insert into seafilefile (userid,libraryid,libraryname,isSync) "
+                    + "values (" + userId + ",'" + libraryId
+                    + "' ,'" + libraryName + "'," + SYNC + ")");
+            Cursor c = db.rawQuery("select * from seafilefile where userid like ?"
+                            + " and libraryid like ? and libraryname like ?",
+                    new String[]{userId + "", libraryId, libraryName});
+            int isSync = -1;
             if (c.moveToNext()) {
                 isSync = c.getInt(c.getColumnIndex("isSync"));
             }

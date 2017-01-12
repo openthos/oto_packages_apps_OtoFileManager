@@ -1,6 +1,7 @@
 package com.openthos.filemanager.component;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -18,8 +19,10 @@ import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.bean.SeafileAccount;
 import com.openthos.filemanager.system.Constants;
+import com.openthos.filemanager.system.TextInputDialog;
 import com.openthos.filemanager.utils.SeafileUtils;
 
+import java.io.File;
 import java.util.HashMap;
 
 public class SeafileDialog extends Dialog implements View.OnClickListener {
@@ -75,6 +78,37 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.cloud_create:
+                TextInputDialog dialog = new TextInputDialog(mMainActivity,
+                        mMainActivity.getString(R.string.operation_create_folder),
+                        mMainActivity.getString(R.string.operation_create_folder_message),
+                        "My Library",
+                        new TextInputDialog.OnFinishListener() {
+                            @Override
+                            public boolean onFinish(final String text) {
+                                for (int i = 0;
+                                              i < mMainActivity.mAccount.mLibrarys.size(); i++) {
+                                    if (mMainActivity.mAccount.mLibrarys.get(i).get(
+                                                       SeafileAccount.LIBRARY_NAME).equals(text)) {
+                                        new AlertDialog.Builder(mMainActivity)
+                                                .setMessage(mMainActivity.getString(
+                                                                       R.string.fail_name_illegal))
+                                                .setPositiveButton(
+                                                            R.string.confirm, null).create().show();
+                                        return false;
+                                    }
+                                }
+                                new Thread() {
+                                    @Override
+                                    public void run() {
+                                        super.run();
+                                        create(text);
+                                    }
+                                }.start();
+                                return true;
+                            }
+                        }
+                );
+                dialog.show();
                 break;
             case R.id.cloud_sync:
                 mMainActivity.mConsole.updateSync(mMainActivity.mAccount.mUserId,
@@ -90,6 +124,22 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
                 break;
         }
         dismiss();
+    }
+
+    private void create(String text) {
+        String id = SeafileUtils.create(text);
+        int isSync = mMainActivity.mConsole.insertLibrary(
+                                                      mMainActivity.mAccount.mUserId, id, text);
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put(SeafileAccount.LIBRARY_ID, id);
+        map.put(SeafileAccount.LIBRARY_NAME, text);
+        map.put(SeafileAccount.LIBRARY_ISSYNC, isSync + "");
+        mMainActivity.mAccount.mLibrarys.add(map);
+        MainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
+        if (isSync == SeafileUtils.SYNC) {
+            SeafileUtils.download(isSync + "", new File(mMainActivity.mAccount.mFile, text)
+                    .getAbsolutePath());
+        }
     }
 
     public void showDialog(int x, int y) {

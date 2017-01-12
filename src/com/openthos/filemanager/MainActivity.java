@@ -208,9 +208,6 @@ public class MainActivity extends BaseActivity
                 MainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
                 for (HashMap<String, String> map : mAccount.mLibrarys) {
                     String name = map.get(SeafileAccount.LIBRARY_NAME);
-                    if (name.equals("My Library")) {
-                        continue;
-                    }
                     int isSync = mConsole.queryFile(mAccount.mUserId,
                             map.get(SeafileAccount.LIBRARY_ID),
                             map.get(SeafileAccount.LIBRARY_NAME));
