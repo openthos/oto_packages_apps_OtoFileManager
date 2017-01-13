@@ -137,7 +137,7 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
         mMainActivity.mAccount.mLibrarys.add(map);
         MainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
         if (isSync == SeafileUtils.SYNC) {
-            SeafileUtils.download(isSync + "", new File(mMainActivity.mAccount.mFile, text)
+            SeafileUtils.download(id, new File(mMainActivity.mAccount.mFile, text)
                     .getAbsolutePath());
         }
     }

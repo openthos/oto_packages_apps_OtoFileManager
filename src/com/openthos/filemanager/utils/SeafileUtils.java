@@ -184,6 +184,7 @@ public class SeafileUtils {
     }
 
     public static String create(String fileName) {
+        fileName = fileName.trim().replace(" ", "\\ ");
         Process pro;
         BufferedReader in = null;
         String id = "";
