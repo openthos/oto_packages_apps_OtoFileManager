@@ -147,6 +147,7 @@ public class MainActivity extends BaseActivity
     public SeafileAccount mAccount;
     public SeafileUtils.SeafileSQLConsole mConsole;
     public CustomFileObserver mCustomFileObserver;
+    private SeafileThread mSeafileThread;
 
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -171,11 +172,9 @@ public class MainActivity extends BaseActivity
                 }
                 cursor.close();
             }
-            if (TextUtils.isEmpty(SeafileUtils.mUserId)) {
-                SeafileUtils.mUserId = "potatomagic@163.com";
-            }
-            if (TextUtils.isEmpty(SeafileUtils.mUserPassword)) {
-                SeafileUtils.mUserPassword = "kiss5potato";
+            if (TextUtils.isEmpty(SeafileUtils.mUserId)
+                                               || TextUtils.isEmpty(SeafileUtils.mUserPassword)) {
+                return;
             }
             String librarys = SeafileUtils.listRemote();
             mAccount = new SeafileAccount();
@@ -222,8 +221,13 @@ public class MainActivity extends BaseActivity
         }
     }
 
+    public boolean isInitSeafile() {
+        return mSeafileThread.isAlive();
+    }
+
     protected void initView() {
-        new SeafileThread().start();
+        mSeafileThread = new SeafileThread();
+        mSeafileThread.start();
         mSharedPreferences = getSharedPreferences("view", Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
         String viewTag = mSharedPreferences.getString(VIEW_TAG, VIEW_TAG_GRID);

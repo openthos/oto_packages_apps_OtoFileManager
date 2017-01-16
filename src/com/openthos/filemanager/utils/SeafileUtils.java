@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.util.Log;
+import android.text.TextUtils;
 
 import com.openthos.filemanager.system.SeafileSQLiteHelper;
 import com.openthos.filemanager.system.Constants;
@@ -50,6 +51,10 @@ public class SeafileUtils {
 
     public static String getUserAccount() {
         return "-u " + mUserId + " -p " + mUserPassword;
+    }
+
+    public static boolean isExistsAccount() {
+        return !TextUtils.isEmpty(mUserId) || !TextUtils.isEmpty(mUserPassword);
     }
 
     private static void exec(String[] commands) {

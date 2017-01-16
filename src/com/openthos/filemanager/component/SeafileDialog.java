@@ -53,6 +53,9 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
     }
 
     private void initLisener() {
+        if (!SeafileUtils.isExistsAccount()){
+            return;
+        }
         mTvCreate.setOnClickListener(this);
         if (mIsItem) {
             mTvSync.setOnClickListener(this);
@@ -67,6 +70,9 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
         if (!mIsItem) {
             mTvSync.setTextColor(Color.LTGRAY);
             mTvDesync.setTextColor(Color.LTGRAY);
+        }
+        if (!SeafileUtils.isExistsAccount()){
+            mTvCreate.setTextColor(Color.LTGRAY);
         }
         mLinearLayout = (LinearLayout) findViewById(R.id.cloud_ll);
         mLinearLayout.measure(0, 0);
@@ -163,5 +169,12 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
             lp.y = y + dialogPadding;
         }
         dialogWindow.setAttributes(lp);
+        if (mMainActivity.isInitSeafile()) {
+           Toast.makeText(mMainActivity,
+                                     mMainActivity.getString(R.string.init_seafile), 0).show();
+        } else if (!SeafileUtils.isExistsAccount()) {
+           Toast.makeText(mMainActivity,
+                                     mMainActivity.getString(R.string.bind_openthosid), 0).show();
+        }
     }
 }

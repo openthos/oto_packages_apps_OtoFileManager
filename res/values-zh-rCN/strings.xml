@@ -243,4 +243,6 @@
     <string name="address_sd">sd卡</string>
     <string name="umount">卸载</string>
     <string name="operation_delete_permanent">永久删除</string>
+    <string name="bind_openthosid">OpenthosID不存在，请绑定OpenthosID</string>
+    <string name="init_seafile">系统正启动Seafile中</string>
 </resources>
