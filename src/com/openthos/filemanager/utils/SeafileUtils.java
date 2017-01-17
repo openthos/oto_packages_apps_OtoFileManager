@@ -218,6 +218,39 @@ public class SeafileUtils {
         return id;
     }
 
+    public static void sync(String libraryid, String filePath) {
+        filePath = filePath.trim().replace(" ", "\\ ");
+        File f = new File(filePath);
+        Process pro;
+        BufferedReader in = null;
+        try {
+            pro = Runtime.getRuntime().exec(new String[]{"su", "-c", SEAFILE_COMMAND_PROOT_BASE
+                    + "mkdir -p " + SEAFILE_PROOT_BASEPATH + filePath});
+            in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+            String line;
+            while ((line = in.readLine()) != null) {
+            }
+            pro = Runtime.getRuntime().exec(new String[]{"su", "-c", SEAFILE_COMMAND_PROOT +
+                    SEAFILE_BASE_ROOT_PATH
+                    + SEAFILE_COMMAND_SEAFILE + "sync -l " + libraryid + " -d "
+                    + SEAFILE_PROOT_BASEPATH + filePath + " "
+                    + SEAFILE_BASE_URL + getUserAccount()});
+            in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+            while ((line = in.readLine()) != null) {
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     public static void desync(String filePath) {
         filePath = filePath.trim().replace(" ", "\\ ");
         Process pro;
@@ -252,38 +285,6 @@ public class SeafileUtils {
         try {
             pro = Runtime.getRuntime().exec(new String[]{SEAFILE_COMMAND_PROOT, SEAFILE_BASE_ARG,
                     "", SEAFILE_COMMAND_SEAFILE, arg0});
-            in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
-            String line;
-            while ((line = in.readLine()) != null) {
-                System.out.println(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    public static void sync(String id, String fileName, String userName, String userPassword) {
-        String arg0 = "sync";
-        String arg1 = "-l";
-        String arg2 = "-s";
-        String arg3 = "-d";
-        String arg4 = "-u";
-        String arg5 = "-p";
-        Runtime runtime = Runtime.getRuntime();
-        Process pro;
-        BufferedReader in = null;
-        try {
-            pro = runtime.exec(new String[]{SEAFILE_COMMAND_PROOT, SEAFILE_BASE_ARG,
-                    "", SEAFILE_COMMAND_SEAFILE, arg0, arg1, id,
-                    arg2, SEAFILE_BASE_URL, arg3, fileName, arg4, userName, arg5, userPassword});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {

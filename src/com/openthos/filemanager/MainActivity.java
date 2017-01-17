@@ -212,7 +212,7 @@ public class MainActivity extends BaseActivity
                             map.get(SeafileAccount.LIBRARY_NAME));
                     map.put(SeafileAccount.LIBRARY_ISSYNC, isSync + "");
                     if (isSync == SeafileUtils.SYNC) {
-                        SeafileUtils.download(map.get(SeafileAccount.LIBRARY_ID),
+                        SeafileUtils.sync(map.get(SeafileAccount.LIBRARY_ID),
                                 new File(mAccount.mFile, map.get(SeafileAccount.LIBRARY_NAME))
                                         .getAbsolutePath());
                     }
