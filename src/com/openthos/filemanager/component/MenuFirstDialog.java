@@ -36,9 +36,6 @@ public class MenuFirstDialog extends Dialog {
     private int newX;
     private int newY;
     private MotionEvent mMotionEvent;
-    private boolean mIsProtected;
-    private boolean mIsBlank;
-    private boolean mIsDirectory;
     private ListView mListView;
     private ArrayList mData;
     private static boolean isCopy;
@@ -49,15 +46,12 @@ public class MenuFirstDialog extends Dialog {
     private int fix = 20;
 
     public MenuFirstDialog(Context context, FileViewInteractionHub fileViewInteractionHub,
-             MotionEvent motionEvent, boolean isBlank, boolean isProtected, boolean isDirectory) {
+             MotionEvent motionEvent) {
         super(context);
         mContext = context;
         mMainActivity = (MainActivity) mContext;
         mFileViewInteractionHub = fileViewInteractionHub;
         mMotionEvent = motionEvent;
-        mIsBlank = isBlank;
-        mIsProtected = isProtected;
-        mIsDirectory = isDirectory;
     }
 
     @Override
@@ -90,15 +84,15 @@ public class MenuFirstDialog extends Dialog {
         }
 
         mData = new ArrayList();
-        if (mIsBlank) {
-            if (mIsProtected) {
+        if (mFileViewInteractionHub.isBlank()) {
+            if (mFileViewInteractionHub.isProtected()) {
                 prepareData(mContext.getResources().getStringArray(R.array.protected_blank_menu));
             } else {
                 prepareData(mContext.getResources().getStringArray(R.array.common_blank_menu));
             }
         } else {
-            if (mIsProtected) {
-                if (mIsDirectory) {
+            if (mFileViewInteractionHub.isProtected()) {
+                if (mFileViewInteractionHub.isDirectory()) {
                     prepareData(mContext.getResources()
                                             .getStringArray(R.array.protected_folder_menu));
                 } else {
@@ -106,7 +100,7 @@ public class MenuFirstDialog extends Dialog {
                                             .getStringArray(R.array.protected_file_menu));
                 }
             } else {
-                if (mIsDirectory) {
+                if (mFileViewInteractionHub.isDirectory()) {
                     prepareData(mContext.getResources()
                                             .getStringArray(R.array.common_folder_menu));
                 } else {
@@ -148,18 +142,50 @@ public class MenuFirstDialog extends Dialog {
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
-            view = View.inflate(mContext, R.layout.dialog_base_item ,null);
-            view.setOnHoverListener(new MenuItemHoverListener());
+            view = View.inflate(mContext, R.layout.dialog_base_item, null);
             TextView mTvDialogItem = (TextView) view.findViewById(R.id.dialog_base_item);
             String content = mData.get(i).toString();
             mTvDialogItem.setText(content);
-            view.setTag(content);
+            boolean  isSetHoverListener = true;
             if (content.equals(mContext.getString(R.string.operation_paste).toString())) {
                 if (isCopy) {
                     mTvDialogItem.setTextColor(Color.BLACK);
                 } else {
                     mTvDialogItem.setTextColor(Color.LTGRAY);
+                    isSetHoverListener = false;
                 }
+            } else if (content.equals(mContext.getString(R.string.operation_compress))) {
+                switch (mFileViewInteractionHub.getCompressFileState()) {
+                    case Constants.COMPRESSIBLE:
+                    case Constants.COMPRESSIBLE_DECOMPRESSIBLE:
+                        mTvDialogItem.setTextColor(Color.BLACK);
+                        break;
+                    case Constants.DECOMPRESSIBLE:
+                        mTvDialogItem.setTextColor(Color.LTGRAY);
+                        isSetHoverListener = false;
+                        break;
+                    default:
+                        break;
+                }
+            } else if (content.equals(mContext.getString(R.string.operation_decompress))) {
+                switch (mFileViewInteractionHub.getCompressFileState()) {
+                    case Constants.COMPRESSIBLE:
+                        mTvDialogItem.setTextColor(Color.LTGRAY);
+                        isSetHoverListener = false;
+                        break;
+                    case Constants.DECOMPRESSIBLE:
+                    case Constants.COMPRESSIBLE_DECOMPRESSIBLE:
+                        mTvDialogItem.setTextColor(Color.BLACK);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (isSetHoverListener) {
+                view.setOnHoverListener(new MenuItemHoverListener());
+                view.setTag(content);
+            } else {
+                view.setTag("");
             }
             return view;
         }
@@ -218,8 +244,10 @@ public class MenuFirstDialog extends Dialog {
             } else if (mContext.getString(R.string.operation_decompress).equals(content)) {
                 mFileViewInteractionHub.onOperationDecompress();
             }
-            mFileViewInteractionHub.clearSelection();
-            mFileViewInteractionHub.dismissContextDialog();
+            if (!TextUtils.isEmpty(content)) {
+                mFileViewInteractionHub.clearSelection();
+                mFileViewInteractionHub.dismissContextDialog();
+            }
         }
     }
 

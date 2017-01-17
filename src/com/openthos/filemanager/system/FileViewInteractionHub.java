@@ -50,6 +50,11 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     private MenuFirstDialog menuFirstDialog;
     private MainActivity mMainActivity;
 
+    private boolean mIsBlank = true;
+    private boolean mIsDirectory = false;
+    private boolean mIsProtected = true;
+    private int mCompressFileState;
+
     public enum Mode {
         View, Pick
     }
@@ -1020,19 +1025,19 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         }
     }
 
-    public void shownContextDialog(FileViewInteractionHub mFileViewInteractionHub,
-                                   MotionEvent event, boolean isBlank, boolean isDirectory) {
-        boolean isProtected = true;
+    public void showContextDialog(FileViewInteractionHub fileViewInteractionHub,
+                                   MotionEvent event) {
            if (mCurrentPath.startsWith(Constants.PERMISS_DIR_SDCARD)
                 || mCurrentPath.startsWith(Constants.PERMISS_DIR_STORAGE_SDCARD)
                 || mCurrentPath.startsWith(Constants.PERMISS_DIR_STORAGE_USB)
                 || mCurrentPath.startsWith(Constants.PERMISS_DIR_STORAGE_EMULATED_LEGACY)
                 || mCurrentPath.startsWith(Constants.PERMISS_DIR_SEAFILE)
                 || mCurrentPath.startsWith(Constants.PERMISS_DIR_STORAGE_EMULATED_0)) {
-            isProtected = false;
+            fileViewInteractionHub.setIsProtected(false);
+        } else {
+            fileViewInteractionHub.setIsProtected(true);
         }
-        menuFirstDialog = new MenuFirstDialog(mContext, mFileViewInteractionHub,
-                                              event, isBlank, isProtected, isDirectory);
+        menuFirstDialog = new MenuFirstDialog(mContext, fileViewInteractionHub, event);
         menuFirstDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         menuFirstDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
     }
@@ -1046,6 +1051,38 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 
     public MainActivity getMainActivity() {
         return mMainActivity;
+    }
+
+    public void setIsBlank(boolean isBlank) {
+        mIsBlank = isBlank;
+    }
+
+    public void setIsDirectory(boolean isDirectory) {
+        mIsDirectory = isDirectory;
+    }
+
+    public void setCompressFileState(int compressFileState) {
+        mCompressFileState = compressFileState;
+    }
+
+    public void setIsProtected(boolean isProtected) {
+        mIsProtected = isProtected;
+    }
+
+    public boolean isDirectory() {
+        return mIsDirectory;
+    }
+
+    public boolean isBlank() {
+        return mIsBlank;
+    }
+
+    public int getCompressFileState() {
+        return mCompressFileState;
+    }
+
+    public boolean isProtected() {
+        return mIsProtected;
     }
 
 //    // menu

@@ -109,6 +109,24 @@ public class Util {
         return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }
 
+    public static int getCompressFileState(String path) {
+        if (path != null && path.contains(".")) {
+            String endStr = path.substring(path.lastIndexOf(".")).toLowerCase();
+            switch (endStr) {
+                case Constants.SUFFIX_TAR:
+                    return Constants.COMPRESSIBLE_DECOMPRESSIBLE;
+                case Constants.SUFFIX_TAR_BZIP2:
+                case Constants.SUFFIX_TAR_GZIP:
+                case Constants.SUFFIX_ZIP:
+                    return Constants.DECOMPRESSIBLE;
+                default:
+                    return Constants.COMPRESSIBLE;
+            }
+        } else {
+            return Constants.COMPRESSIBLE;
+        }
+    }
+
     // if path1 contains path2
     public static boolean containsPath(String path1, String path2) {
         String path = path2;

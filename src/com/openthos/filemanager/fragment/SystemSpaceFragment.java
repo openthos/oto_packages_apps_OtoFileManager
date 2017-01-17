@@ -395,19 +395,25 @@ public class SystemSpaceFragment extends BaseFragment implements
                     }
                     mAdapter.notifyDataSetChanged();
                     mouseRightTag = "mouse";
+
                     if (mIsShowDialog == true) {
-                        if (mIsItem) {
+                         int compressFileState = Constants.COMPRESSIBLE;
+                         if (mIsItem) {
                             boolean isDirectory = true;
                             if (fileInfo != null) {
                                 File file = new File(fileInfo.filePath);
                                 isDirectory = file.isDirectory() ? true : false;
+                                compressFileState = Util.getCompressFileState(fileInfo.filePath);
                             }
-                            mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub,
-                                    motionEvent, false , isDirectory);
+                            mFileViewInteractionHub.setIsBlank(false);
+                            mFileViewInteractionHub.setIsDirectory(isDirectory);
                         } else {
-                            mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub,
-                                    motionEvent , true, true);
+                            mFileViewInteractionHub.setIsBlank(true);
+                            mFileViewInteractionHub.setIsDirectory(true);
                         }
+                        mFileViewInteractionHub.setCompressFileState(compressFileState);
+                        mFileViewInteractionHub.showContextDialog(mFileViewInteractionHub,
+                                motionEvent);
                         mIsShowDialog = false;
                     }
             }

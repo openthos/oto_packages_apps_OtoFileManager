@@ -99,7 +99,11 @@ public abstract class Constants {
     public static final int INDEX_7Z_FILENAME = 53;
     public static final int SUCCESS_SYNC = 11;
 
-    /**
+    public static final int COMPRESSIBLE = 0;
+    public static final int DECOMPRESSIBLE = 1;
+    public static final int COMPRESSIBLE_DECOMPRESSIBLE = 2;
+
+     /**
      *
      * getMIMEType: Get the MIME Types from the file name.
      *
@@ -544,6 +548,9 @@ public abstract class Constants {
             {"zac", "application/x-zaurus-zac"},
             {"zip", "application/zip"},
     };
+
+    public static final String[] compressType = {".zip", ".gz", ".bz2"};
+
     public static final int COPY = 0x1001;
     public static final int CUT = 0x1002;
     public static final int PASTE = 0x1003;
