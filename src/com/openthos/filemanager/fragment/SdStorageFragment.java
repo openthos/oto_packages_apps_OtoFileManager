@@ -299,6 +299,7 @@ public class SdStorageFragment extends BaseFragment {
         if (Constants.PERSONAL_TAG.equals(tag)) {
             mMainActivity.setNavigationPath("SDCard");
             transaction.show(mMainActivity.mPersonalSpaceFragment).commit();
+            mMainActivity.mPersonalSpaceFragment.setItemBackGround(Constants.RETURN_TO_WHITE);
             mCurFragment = mMainActivity.mPersonalSpaceFragment;
         } else {
             mCurFragment = new SystemSpaceFragment(tag, path,
@@ -347,11 +348,13 @@ public class SdStorageFragment extends BaseFragment {
                 mRl_personal_space.setSelected(true);
                 break;
             case Constants.RETURN_TO_WHITE:
-                mRl_android_system.setSelected(false);
-                mRl_sd_space.setSelected(false);
-                mRl_mount_space_one.setSelected(false);
-                mRl_android_service.setSelected(false);
-                mRl_personal_space.setSelected(false);
+                if (mRl_android_system != null) {
+                    mRl_android_system.setSelected(false);
+                    mRl_sd_space.setSelected(false);
+                    mRl_mount_space_one.setSelected(false);
+                    mRl_android_service.setSelected(false);
+                    mRl_personal_space.setSelected(false);
+                }
                 break;
         }
     }

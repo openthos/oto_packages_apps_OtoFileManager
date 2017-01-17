@@ -869,6 +869,8 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             }
         } else if (doubleTag != null && Constants.DOUBLE_TAG.equals(doubleTag)) {
 //            mCheckedFileNameList.remove(lFileInfo);  //
+            ((SystemSpaceFragment) mFileViewListener).getAdapter().getSelectFileInfoList().clear();
+            clearSelection();
             mCurrentPath = getAbsoluteName(mCurrentPath, fileInfo.fileName);
             refreshFileList();
             mMainActivity.setCurPath(mCurrentPath);

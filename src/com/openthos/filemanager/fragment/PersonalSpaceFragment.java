@@ -211,7 +211,7 @@ public class PersonalSpaceFragment extends BaseFragment {
         mCurId = Constants.RETURN_TO_WHITE;
     }
 
-    private void setItemBackGround(int id) {
+    public void setItemBackGround(int id) {
         switch (id) {
             case  R.id.ll_personal_videos:
                 mLlVideos.setSelected(true);

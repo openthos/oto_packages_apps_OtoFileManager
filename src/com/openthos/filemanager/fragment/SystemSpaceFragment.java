@@ -717,6 +717,8 @@ public class SystemSpaceFragment extends BaseFragment implements
     }
 
     public void goBack() {
+        mAdapter.getSelectFileInfoList().clear();
+        mFileViewInteractionHub.clearSelection();
         mFileViewInteractionHub.onBackPressed();
     }
 
@@ -870,6 +872,10 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     public FileListAdapter getAdapter() {
         return mAdapter;
+    }
+
+    public FileViewInteractionHub getFileViewInteractionHub() {
+        return mFileViewInteractionHub;
     }
 
     public void setSortTag(Enum sort, boolean positive) {

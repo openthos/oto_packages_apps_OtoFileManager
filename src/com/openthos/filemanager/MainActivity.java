@@ -930,6 +930,9 @@ public class MainActivity extends BaseActivity
                 }
 
                 setFileInfo(R.id.tv_computer, "", mSdStorageFragment);
+                if (mSdStorageFragment != null) {
+                    mSdStorageFragment.setSelectedCardBg(Constants.RETURN_TO_WHITE);
+                }
                 break;
             case R.id.tv_storage:
                 setSelectedBackground(R.id.tv_storage);
@@ -1016,7 +1019,10 @@ public class MainActivity extends BaseActivity
 
     private void setFileInfo(int id, String path, Fragment fragment) {
         if (fragment instanceof SystemSpaceFragment) {
-            ((SystemSpaceFragment) fragment).setPath(path);
+            SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) fragment;
+            systemSpaceFragment.setPath(path);
+            systemSpaceFragment.getAdapter().getSelectFileInfoList().clear();
+            systemSpaceFragment.getFileViewInteractionHub().clearSelection();
         }
         setSelectedBackground(id);
         mEt_nivagation.setText(path);
@@ -1497,6 +1503,7 @@ public class MainActivity extends BaseActivity
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mPersonalSpaceFragment);
         fragmentTransaction.commit();
+        mPersonalSpaceFragment.setItemBackGround(Constants.RETURN_TO_WHITE);
         mEt_nivagation.setText("SDCard");
         setSelectedBackground(R.id.tv_computer);
         mCurFragment = mPersonalSpaceFragment;
