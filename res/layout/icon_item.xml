@@ -6,14 +6,21 @@
     android:background="@drawable/list_item_bg_selector"
     android:padding="5dp">
 
-    <ImageView
+    <RelativeLayout
         android:layout_width="65dp"
         android:layout_height="65dp"
         android:layout_gravity="center"
         android:layout_marginTop="1dp"
         android:gravity="center"
         android:padding="5dp"
-        android:src="@mipmap/folder" />
+        android:background="@mipmap/folder" >
+        <ImageView
+            android:id="@+id/iv_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/tv_icon"

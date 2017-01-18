@@ -204,7 +204,6 @@ public class MainActivity extends BaseActivity
                 e.printStackTrace();
             }
             if (mAccount.mLibrarys.size() > 0) {
-                MainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
                 for (HashMap<String, String> map : mAccount.mLibrarys) {
                     String name = map.get(SeafileAccount.LIBRARY_NAME);
                     int isSync = mConsole.queryFile(mAccount.mUserId,
@@ -217,6 +216,7 @@ public class MainActivity extends BaseActivity
                                         .getAbsolutePath());
                     }
                 }
+                MainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
             }
         }
     }

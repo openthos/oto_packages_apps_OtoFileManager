@@ -5,10 +5,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.widget.ImageView;
 
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.bean.SeafileAccount;
+import com.openthos.filemanager.utils.SeafileUtils;
 import com.openthos.filemanager.fragment.SeafileFragment;
 
 import java.io.File;
@@ -71,10 +73,12 @@ public class SeafileAdapter extends BaseAdapter {
         viewHolder = (ViewHolder) convertView.getTag();
         viewHolder.name.setText(mList.get(position).get(SeafileAccount.LIBRARY_NAME));
         viewHolder.name.setTag(position);
-        File f = new File(((MainActivity) mContext).mAccount.mFile,
-                mList.get(position).get(SeafileAccount.LIBRARY_NAME));
-        if (!f.exists()) {
-            f.mkdirs();
+        int isSync = Integer.parseInt(
+                               (String) mList.get(position).get(SeafileAccount.LIBRARY_ISSYNC));
+        if (isSync == SeafileUtils.SYNC) {
+            viewHolder.state.setImageResource(R.drawable.sync);
+        } else {
+            viewHolder.state.setImageResource(R.drawable.desync);
         }
         return convertView;
     }
@@ -82,9 +86,11 @@ public class SeafileAdapter extends BaseAdapter {
 
     public static class ViewHolder {
         public TextView name;
+        public ImageView state;
 
         public ViewHolder(View view) {
             name = (TextView) view.findViewById(R.id.tv_icon);
+            state = (ImageView) view.findViewById(R.id.iv_icon);
         }
     }
 }
