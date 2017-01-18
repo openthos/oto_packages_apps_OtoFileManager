@@ -35,13 +35,14 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
     private int mDialogHeight;
     private boolean mIsItem;
     private HashMap<String, String> mLibrary;
+    private int mPos;
 
-
-    public SeafileDialog(Context context, boolean isItem, HashMap<String, String> library) {
+    public SeafileDialog(Context context, boolean isItem, HashMap<String, String> library, int pos) {
         super(context);
         mMainActivity = (MainActivity) context;
         mIsItem = isItem;
         mLibrary = library;
+        mPos = pos;
     }
 
     @Override
@@ -121,6 +122,7 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
                         mLibrary.get(SeafileAccount.LIBRARY_ID),
                         mLibrary.get(SeafileAccount.LIBRARY_NAME),
                         SeafileUtils.SYNC);
+                mLibrary.put(SeafileAccount.LIBRARY_ISSYNC, SeafileUtils.SYNC + "");
                 new Thread() {
                     @Override
                     public void run() {
@@ -134,6 +136,7 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
                         mLibrary.get(SeafileAccount.LIBRARY_ID),
                         mLibrary.get(SeafileAccount.LIBRARY_NAME),
                         SeafileUtils.UNSYNC);
+                mLibrary.put(SeafileAccount.LIBRARY_ISSYNC, SeafileUtils.UNSYNC + "");
                 new Thread() {
                     @Override
                     public void run() {
@@ -166,12 +169,15 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
         SeafileUtils.sync((String) mLibrary.get(SeafileAccount.LIBRARY_ID),
                          new File(mMainActivity.mAccount.mFile,
                              (String) mLibrary.get(SeafileAccount.LIBRARY_NAME)).getAbsolutePath());
+        mMainActivity.mAccount.mLibrarys.set(mPos, mLibrary);
+        mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
     }
 
     private void desync() {
         SeafileUtils.desync(new File(mMainActivity.mAccount.mFile,
                      (String) mLibrary.get(SeafileAccount.LIBRARY_NAME)).getAbsolutePath());
-
+        mMainActivity.mAccount.mLibrarys.set(mPos, mLibrary);
+        mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
     }
 
     public void showDialog(int x, int y) {

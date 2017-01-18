@@ -144,8 +144,8 @@ public class SeafileFragment extends BaseFragment {
                         }
                         return true;
                     } else {
+                        mAdapter.clearSelected();
                         if (motionEvent.getButtonState() == MotionEvent.BUTTON_SECONDARY) {
-                            mAdapter.clearSelected();
                             mPos = -1;
                             mIsShowDialog = true;
                             mIsItem = false;
@@ -155,7 +155,7 @@ public class SeafileFragment extends BaseFragment {
                 case MotionEvent.ACTION_UP:
                     if (mIsShowDialog == true) {
                         if (mIsItem) {
-                            showItemDialog(motionEvent, mList.get(mPos));
+                            showItemDialog(motionEvent, mList.get(mPos), mPos);
                         } else {
                             showDialog(motionEvent);
                         }
@@ -166,14 +166,14 @@ public class SeafileFragment extends BaseFragment {
         }
     }
 
-    private void showItemDialog(MotionEvent motionEvent, HashMap<String, String> map) {
-        SeafileDialog seafileDialog = new SeafileDialog(mMainActivity, true, map);
+    private void showItemDialog(MotionEvent motionEvent, HashMap<String, String> map, int pos) {
+        SeafileDialog seafileDialog = new SeafileDialog(mMainActivity, true, map, pos);
         seafileDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         seafileDialog.showDialog((int) motionEvent.getRawX(), (int) motionEvent.getRawY());
     }
 
     void showDialog(MotionEvent motionEvent) {
-        SeafileDialog seafileDialog = new SeafileDialog(mMainActivity, false, null);
+        SeafileDialog seafileDialog = new SeafileDialog(mMainActivity, false, null, -1);
         seafileDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         seafileDialog.showDialog((int) motionEvent.getRawX(), (int) motionEvent.getRawY());
     }
