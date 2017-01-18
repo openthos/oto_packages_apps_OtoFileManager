@@ -939,10 +939,15 @@ public class MainActivity extends BaseActivity
                 if (mCurFragment != null) {
                     mManager.beginTransaction().hide(mCurFragment).commit();
                 }
-                mUsbStorageFragment = new SystemSpaceFragment(
-                                      Constants.USB_SPACE_FRAGMENT, mUsbs[0], null, null, true);
-                mManager.beginTransaction().add(R.id.fl_mian, mUsbStorageFragment,
-                                               Constants.USBFRAGMENT_TAG).commit();
+                if (mUsbStorageFragment == null) {
+                    mUsbStorageFragment = new SystemSpaceFragment(
+                                          Constants.USB_SPACE_FRAGMENT, mUsbs[0], null, null, true);
+                    mManager.beginTransaction().add(R.id.fl_mian, mUsbStorageFragment,
+                                                   Constants.USBFRAGMENT_TAG).commit();
+                } else {
+                    mManager.beginTransaction().show(mUsbStorageFragment).commit();
+                }
+                setCurPath(Constants.STORAGE_USB0);
                 mCurFragment = mUsbStorageFragment;
                 break;
             case R.id.tv_pop_up:
