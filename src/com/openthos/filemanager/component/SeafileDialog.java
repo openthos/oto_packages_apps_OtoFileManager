@@ -121,12 +121,26 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
                         mLibrary.get(SeafileAccount.LIBRARY_ID),
                         mLibrary.get(SeafileAccount.LIBRARY_NAME),
                         SeafileUtils.SYNC);
+                new Thread() {
+                    @Override
+                    public void run() {
+                        super.run();
+                        sync();
+                    }
+                }.start();
                 break;
             case R.id.cloud_desync:
                 mMainActivity.mConsole.updateSync(mMainActivity.mAccount.mUserId,
                         mLibrary.get(SeafileAccount.LIBRARY_ID),
                         mLibrary.get(SeafileAccount.LIBRARY_NAME),
                         SeafileUtils.UNSYNC);
+                new Thread() {
+                    @Override
+                    public void run() {
+                        super.run();
+                        desync();
+                    }
+                }.start();
                 break;
         }
         dismiss();
@@ -146,6 +160,18 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
             SeafileUtils.sync(id, new File(mMainActivity.mAccount.mFile, text)
                     .getAbsolutePath());
         }
+    }
+
+    private void sync() {
+        SeafileUtils.sync((String) mLibrary.get(SeafileAccount.LIBRARY_ID),
+                         new File(mMainActivity.mAccount.mFile,
+                             (String) mLibrary.get(SeafileAccount.LIBRARY_NAME)).getAbsolutePath());
+    }
+
+    private void desync() {
+        SeafileUtils.desync(new File(mMainActivity.mAccount.mFile,
+                     (String) mLibrary.get(SeafileAccount.LIBRARY_NAME)).getAbsolutePath());
+
     }
 
     public void showDialog(int x, int y) {
