@@ -19,6 +19,9 @@ import com.openthos.filemanager.MainActivity;
 
 public class FileOperationHelper {
     private static final String LOG_TAG = "FileOperation";
+    private static final String SUFFIX_TXT = "txt";
+    private static final String SUFFIX_DOC = "doc";
+    private static final String SUFFIX_XLS = "xls";
     private static final String TAG = FileOperationHelper.class.getSimpleName();
     private final ArrayList<FileInfo> mCurFileNameList = new ArrayList<>();
     private boolean mMoving;
@@ -54,11 +57,20 @@ public class FileOperationHelper {
         Log.v(LOG_TAG, "CreateFile >>> " + path);
         File dir = new File(Util.makePath(path, name));
         if (!dir.exists()){
-            try {
-              return  dir.createNewFile();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            String end = name.substring(name.lastIndexOf(".") + 1, name.length()).toLowerCase();
+                if (SUFFIX_TXT.equals(end)) {
+                    Util.exec(new String[]{"cp", "-i", "/data/create/ben.txt",
+                                            dir.getAbsolutePath()});
+                } else if (SUFFIX_DOC.equals(end)) {
+                    Util.exec(new String[]{"cp", "-i", "/data/create/wen.doc",
+                                            dir.getAbsolutePath()});
+                } else if (SUFFIX_XLS.equals(end)) {
+                    Util.exec(new String[]{"cp", "-i", "/data/create/biao.xls",
+                                            dir.getAbsolutePath()});
+                } else {
+                    Util.exec(new String[]{"cp", "-i", "/data/create/yan.ppt",
+                                            dir.getAbsolutePath()});
+                }
         } else {
             return false;
         }

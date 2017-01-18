@@ -31,7 +31,6 @@ public class PersonalSpaceFragment extends BaseFragment {
     private LinearLayout mLlWeixin;
     private LinearLayout mLlBaiduPan;
     private long mCurrentBackTime;
-    private LinearLayout mLlPersonalFragment;
     private double mLastBackTime;
     public Fragment mCurFragment;
     ArrayList<FileInfo> mFileInfoArrayList = null;
@@ -59,7 +58,6 @@ public class PersonalSpaceFragment extends BaseFragment {
 
     @Override
     protected void initListener() {
-        mLlPersonalFragment.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
         mLlVideos.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
         mLlPictures.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
         mLlDocument.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
@@ -75,7 +73,6 @@ public class PersonalSpaceFragment extends BaseFragment {
 
     @Override
     protected void initView() {
-        mLlPersonalFragment = (LinearLayout) rootView.findViewById(R.id.ll_personal_fragment);
         mLlVideos = (LinearLayout) rootView.findViewById(R.id.ll_personal_videos);
         mLlPictures = (LinearLayout) rootView.findViewById(R.id.ll_personal_pictures);
         mLlDocument = (LinearLayout) rootView.findViewById(R.id.ll_personal_document);

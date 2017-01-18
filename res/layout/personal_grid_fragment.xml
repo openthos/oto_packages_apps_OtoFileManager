@@ -1,283 +1,365 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ll_personal_fragment"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="5dp">
+    android:paddingTop="10dp">
 
     <LinearLayout
-        android:id="@+id/ll_personal_videos"
-        android:layout_width="@dimen/grid_item_width"
-        android:layout_height="@dimen/grid_item_height"
-        android:orientation="vertical"
-        android:background="@drawable/list_item_bg_selector"
+        android:id="@+id/ll_personal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:padding="5dp">
 
-        <ImageView
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="1dp"
-            android:gravity="center"
-            android:padding="5dp"
-            android:src="@mipmap/folder" />
+        <View
+            android:layout_width="20dp"
+            android:layout_height="130dp" />
 
-        <TextView
-            android:id="@+id/personal_file_videos"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:singleLine="true"
-            android:text="@string/video"
-            android:gravity="center"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+        <LinearLayout
+            android:id="@+id/ll_personal_videos"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/grid_item_height"
+            android:layout_weight="1"
+            android:background="@drawable/list_item_bg_selector"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="1dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:src="@mipmap/folder" />
+
+            <TextView
+                android:id="@+id/personal_file_videos"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="@string/video"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="60dp"
+            android:layout_height="130dp" />
+
+        <LinearLayout
+            android:id="@+id/ll_personal_pictures"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/grid_item_height"
+            android:layout_weight="1"
+            android:background="@drawable/list_item_bg_selector"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="1dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:src="@mipmap/folder" />
+
+            <TextView
+                android:id="@+id/personal_file_pictures"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="@string/picture"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="60dp"
+            android:layout_height="130dp" />
+
+        <LinearLayout
+            android:id="@+id/ll_personal_document"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/grid_item_height"
+            android:layout_weight="1"
+            android:background="@drawable/list_item_bg_selector"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="1dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:src="@mipmap/folder" />
+
+            <TextView
+                android:id="@+id/personal_file_document"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="@string/docement"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="60dp"
+            android:layout_height="130dp" />
+
+        <LinearLayout
+            android:id="@+id/ll_personal_downloads"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/grid_item_height"
+            android:layout_weight="1"
+            android:background="@drawable/list_item_bg_selector"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="1dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:src="@mipmap/folder" />
+
+            <TextView
+                android:id="@+id/personal_file_downloads"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="@string/downloads"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="60dp"
+            android:layout_height="130dp" />
+
+        <LinearLayout
+            android:id="@+id/ll_personal_music"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/grid_item_height"
+            android:layout_weight="1"
+            android:background="@drawable/list_item_bg_selector"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="1dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:src="@mipmap/folder" />
+
+            <TextView
+                android:id="@+id/personal_file_music"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="@string/music"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="60dp"
+            android:layout_height="130dp" />
+
+        <LinearLayout
+            android:id="@+id/ll_personal_recycle"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/grid_item_height"
+            android:layout_weight="1"
+            android:background="@drawable/list_item_bg_selector"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="1dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:src="@mipmap/folder" />
+
+            <TextView
+                android:id="@+id/personal_file_recycle"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="@string/recycle"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="60dp"
+            android:layout_height="130dp" />
+
+        <LinearLayout
+            android:id="@+id/ll_personal_qq_image"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/grid_item_height"
+            android:layout_weight="1"
+            android:background="@drawable/list_item_bg_selector"
+            android:orientation="vertical"
+            android:padding="5dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="1dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:src="@mipmap/folder" />
+
+            <TextView
+                android:id="@+id/personal_qq_image"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="@string/qq_image"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="60dp"
+            android:layout_height="130dp" />
+
+        <LinearLayout
+            android:id="@+id/ll_personal_qq_file"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/grid_item_height"
+            android:layout_weight="1"
+            android:background="@drawable/list_item_bg_selector"
+            android:orientation="vertical"
+            android:padding="5dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="1dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:src="@mipmap/folder" />
+
+            <TextView
+                android:id="@+id/personal_qq_file"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="@string/qq_file"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="60dp"
+            android:layout_height="130dp" />
+
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/ll_personal_pictures"
-        android:layout_width="@dimen/grid_item_width"
-        android:layout_height="@dimen/grid_item_height"
-        android:orientation="vertical"
-        android:background="@drawable/list_item_bg_selector"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ll_personal"
+        android:orientation="horizontal"
         android:padding="5dp">
 
-        <ImageView
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="1dp"
-            android:gravity="center"
-            android:padding="5dp"
-            android:src="@mipmap/folder" />
+        <View
+            android:layout_width="20dp"
+            android:layout_height="130dp" />
 
-        <TextView
-            android:id="@+id/personal_file_pictures"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:singleLine="true"
-            android:text="@string/picture"
-            android:gravity="center"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+        <LinearLayout
+            android:id="@+id/ll_personal_weixin"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/grid_item_height"
+            android:layout_weight="1"
+            android:background="@drawable/list_item_bg_selector"
+            android:orientation="vertical"
+            android:padding="5dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="1dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:src="@mipmap/folder" />
+
+            <TextView
+                android:id="@+id/personal_file_weixin"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="@string/winxin"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="60dp"
+            android:layout_height="130dp" />
+
+        <LinearLayout
+            android:id="@+id/ll_personal_baidudisk"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/grid_item_height"
+            android:layout_weight="1"
+            android:background="@drawable/list_item_bg_selector"
+            android:orientation="vertical"
+            android:padding="5dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="1dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:src="@mipmap/folder" />
+
+            <TextView
+                android:id="@+id/personal_file_baidudisk"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="@string/baidu_disk"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="420dp"
+            android:layout_height="130dp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="130dp"
+            android:layout_weight="6"
+            android:orientation="vertical"
+            android:padding="5dp"
+            android:visibility="visible"></LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/ll_personal_document"
-        android:layout_width="@dimen/grid_item_width"
-        android:layout_height="@dimen/grid_item_height"
-        android:orientation="vertical"
-        android:background="@drawable/list_item_bg_selector"
-        android:padding="5dp">
-
-        <ImageView
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="1dp"
-            android:gravity="center"
-            android:padding="5dp"
-            android:src="@mipmap/folder" />
-
-        <TextView
-            android:id="@+id/personal_file_document"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:singleLine="true"
-            android:text="@string/docement"
-            android:gravity="center"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_personal_downloads"
-        android:layout_width="@dimen/grid_item_width"
-        android:layout_height="@dimen/grid_item_height"
-        android:orientation="vertical"
-        android:background="@drawable/list_item_bg_selector"
-        android:padding="5dp">
-
-        <ImageView
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="1dp"
-            android:gravity="center"
-            android:padding="5dp"
-            android:src="@mipmap/folder" />
-
-        <TextView
-            android:id="@+id/personal_file_downloads"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:singleLine="true"
-            android:text="@string/downloads"
-            android:gravity="center"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_personal_music"
-        android:layout_width="@dimen/grid_item_width"
-        android:layout_height="@dimen/grid_item_height"
-        android:orientation="vertical"
-        android:background="@drawable/list_item_bg_selector"
-        android:padding="5dp">
-
-        <ImageView
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="1dp"
-            android:gravity="center"
-            android:padding="5dp"
-            android:src="@mipmap/folder" />
-
-        <TextView
-            android:id="@+id/personal_file_music"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:singleLine="true"
-            android:text="@string/music"
-            android:gravity="center"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_personal_recycle"
-        android:layout_width="@dimen/grid_item_width"
-        android:layout_height="@dimen/grid_item_height"
-        android:orientation="vertical"
-        android:background="@drawable/list_item_bg_selector"
-        android:padding="5dp">
-
-        <ImageView
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="1dp"
-            android:gravity="center"
-            android:padding="5dp"
-            android:src="@mipmap/folder" />
-
-        <TextView
-            android:id="@+id/personal_file_recycle"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center"
-            android:singleLine="true"
-            android:text="@string/recycle"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_personal_qq_image"
-        android:layout_width="@dimen/grid_item_width"
-        android:layout_height="@dimen/grid_item_height"
-        android:orientation="vertical"
-        android:padding="5dp"
-        android:background="@drawable/list_item_bg_selector"
-        android:visibility="gone">
-
-        <ImageView
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="1dp"
-            android:gravity="center"
-            android:padding="5dp"
-            android:src="@mipmap/folder" />
-
-        <TextView
-            android:id="@+id/personal_qq_image"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center"
-            android:singleLine="true"
-            android:text="@string/qq_image"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_personal_qq_file"
-        android:layout_width="@dimen/grid_item_width"
-        android:layout_height="@dimen/grid_item_height"
-        android:orientation="vertical"
-        android:padding="5dp"
-        android:background="@drawable/list_item_bg_selector"
-        android:visibility="gone">
-
-        <ImageView
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="1dp"
-            android:gravity="center"
-            android:padding="5dp"
-            android:src="@mipmap/folder" />
-
-        <TextView
-            android:id="@+id/personal_qq_file"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center"
-            android:singleLine="true"
-            android:text="@string/qq_file"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_personal_weixin"
-        android:layout_width="@dimen/grid_item_width"
-        android:layout_height="@dimen/grid_item_height"
-        android:orientation="vertical"
-        android:padding="5dp"
-        android:background="@drawable/list_item_bg_selector"
-        android:visibility="gone">
-
-        <ImageView
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="1dp"
-            android:gravity="center"
-            android:padding="5dp"
-            android:src="@mipmap/folder" />
-
-        <TextView
-            android:id="@+id/personal_file_weixin"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center"
-            android:singleLine="true"
-            android:text="@string/winxin"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_personal_baidudisk"
-        android:layout_width="@dimen/grid_item_width"
-        android:layout_height="@dimen/grid_item_height"
-        android:orientation="vertical"
-        android:padding="5dp"
-        android:background="@drawable/list_item_bg_selector"
-        android:visibility="gone">
-
-        <ImageView
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="1dp"
-            android:gravity="center"
-            android:padding="5dp"
-            android:src="@mipmap/folder" />
-
-        <TextView
-            android:id="@+id/personal_file_baidudisk"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center"
-            android:singleLine="true"
-            android:text="@string/baidu_disk"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

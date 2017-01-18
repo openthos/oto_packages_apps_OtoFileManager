@@ -522,6 +522,29 @@ public class Util {
         return fileSizeString;
     }
 
+    public static void exec(String[] commands) {
+        Process pro;
+        BufferedReader in = null;
+        try {
+            pro = Runtime.getRuntime().exec(commands);
+            in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+            String line;
+            while ((line = in.readLine()) != null) {
+                continue;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     public static String sZipFileMimeType = "application/zip";
 
     public static int CATEGORY_TAB_INDEX = 0;
