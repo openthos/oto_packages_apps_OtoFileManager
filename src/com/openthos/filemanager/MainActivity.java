@@ -34,6 +34,7 @@ import android.widget.TextView;
 import android.app.ProgressDialog;
 
 import com.openthos.filemanager.bean.SeafileAccount;
+import com.openthos.filemanager.bean.SeafileLibrary;
 import com.openthos.filemanager.component.CopyInfoDialog;
 import com.openthos.filemanager.component.PopOnClickLintener;
 import com.openthos.filemanager.component.PopWinShare;
@@ -192,11 +193,11 @@ public class MainActivity extends BaseActivity
                 }
                 JSONArray jsonArray = new JSONArray(librarys);
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    HashMap<String, String> maps = new HashMap<>();
+                    SeafileLibrary seafileLibrary = new SeafileLibrary();
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    maps.put(SeafileAccount.LIBRARY_ID, jsonObject.getString("id"));
-                    maps.put(SeafileAccount.LIBRARY_NAME, jsonObject.getString("name"));
-                    mAccount.mLibrarys.add(maps);
+                    seafileLibrary.libraryId = jsonObject.getString("id");
+                    seafileLibrary.libraryName =jsonObject.getString("name");
+                    mAccount.mLibrarys.add(seafileLibrary);
                 }
                 getSharedPreferences(SeafileUtils.SEAFILE_DATA, Context.MODE_PRIVATE).edit()
                         .putString(SeafileUtils.SEAFILE_DATA, librarys).commit();
@@ -204,15 +205,14 @@ public class MainActivity extends BaseActivity
                 e.printStackTrace();
             }
             if (mAccount.mLibrarys.size() > 0) {
-                for (HashMap<String, String> map : mAccount.mLibrarys) {
-                    String name = map.get(SeafileAccount.LIBRARY_NAME);
+                for (SeafileLibrary seafileLibrary : mAccount.mLibrarys) {
+                    String name = seafileLibrary.libraryName;
                     int isSync = mConsole.queryFile(mAccount.mUserId,
-                            map.get(SeafileAccount.LIBRARY_ID),
-                            map.get(SeafileAccount.LIBRARY_NAME));
-                    map.put(SeafileAccount.LIBRARY_ISSYNC, isSync + "");
+                            seafileLibrary.libraryId, seafileLibrary.libraryName);
+                    seafileLibrary.isSync = isSync;
                     if (isSync == SeafileUtils.SYNC) {
-                        SeafileUtils.sync(map.get(SeafileAccount.LIBRARY_ID),
-                                new File(mAccount.mFile, map.get(SeafileAccount.LIBRARY_NAME))
+                        SeafileUtils.sync(seafileLibrary.libraryId,
+                                new File(mAccount.mFile, seafileLibrary.libraryName)
                                         .getAbsolutePath());
                     }
                 }

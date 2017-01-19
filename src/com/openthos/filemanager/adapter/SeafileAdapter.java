@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.bean.SeafileAccount;
+import com.openthos.filemanager.bean.SeafileLibrary;
 import com.openthos.filemanager.utils.SeafileUtils;
 import com.openthos.filemanager.fragment.SeafileFragment;
 
@@ -18,19 +19,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SeafileAdapter extends BaseAdapter {
-    private ArrayList<HashMap<String, String>> mList;
+    private ArrayList<SeafileLibrary> mList;
     private Context mContext;
     private SeafileFragment.GridViewOnGenericMotionListener mMotionListener;
     private View mView;
 
-    public SeafileAdapter(Context context, ArrayList<HashMap<String, String>> mList,
+    public SeafileAdapter(Context context, ArrayList<SeafileLibrary> mList,
                           SeafileFragment.GridViewOnGenericMotionListener motionListener) {
         this.mList = mList;
         mContext = context;
         mMotionListener = motionListener;
     }
 
-    public void setData(ArrayList<HashMap<String, String>> librarys) {
+    public void setData(ArrayList<SeafileLibrary> librarys) {
         mList = librarys;
     }
 
@@ -71,10 +72,9 @@ public class SeafileAdapter extends BaseAdapter {
             convertView.setOnTouchListener(mMotionListener);
         }
         viewHolder = (ViewHolder) convertView.getTag();
-        viewHolder.name.setText(mList.get(position).get(SeafileAccount.LIBRARY_NAME));
+        viewHolder.name.setText(mList.get(position).libraryName);
         viewHolder.name.setTag(position);
-        int isSync = Integer.parseInt(
-                               (String) mList.get(position).get(SeafileAccount.LIBRARY_ISSYNC));
+        int isSync = mList.get(position).isSync;
         if (isSync == SeafileUtils.SYNC) {
             viewHolder.state.setImageResource(R.drawable.sync);
         } else {

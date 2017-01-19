@@ -15,6 +15,7 @@ import com.openthos.filemanager.BaseFragment;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.adapter.SeafileAdapter;
 import com.openthos.filemanager.bean.SeafileAccount;
+import com.openthos.filemanager.bean.SeafileLibrary;
 import com.openthos.filemanager.component.SeafileDialog;
 import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.system.FileInfo;
@@ -34,7 +35,7 @@ public class SeafileFragment extends BaseFragment {
 
     private GridView mGvCloud;
     private SeafileAdapter mAdapter;
-    private ArrayList<HashMap<String, String>> mList;
+    private ArrayList<SeafileLibrary> mList;
     private Timer mTimer;
     private GridViewOnGenericMotionListener mMotionListener;
     public Fragment mCurFragment;
@@ -74,7 +75,7 @@ public class SeafileFragment extends BaseFragment {
         mGvCloud.setOnTouchListener(mMotionListener);
     }
 
-    public ArrayList<HashMap<String, String>> getList() {
+    public ArrayList<SeafileLibrary> getList() {
         return mList;
     }
 
@@ -82,7 +83,7 @@ public class SeafileFragment extends BaseFragment {
         return mAdapter;
     }
 
-    public void setData(ArrayList<HashMap<String, String>> librarys) {
+    public void setData(ArrayList<SeafileLibrary> librarys) {
         if (librarys.size() > 0) {
             mTimer.schedule(new LiftLimitTask(SeafileUtils.SEAFILE_DATA_PATH_REAlLY),
                     DELAY_TIME, SLEEP_TIME);
@@ -137,7 +138,7 @@ public class SeafileFragment extends BaseFragment {
                             }
                             enter("hello", SeafileUtils.SEAFILE_DATA_PATH_REAlLY
                                     + mMainActivity.mAccount.mFile.getAbsolutePath()
-                                    + "/" + mList.get(pos).get(SeafileAccount.LIBRARY_NAME));
+                                    + "/" + mList.get(pos).libraryName);
                         } else {
                             mPos = pos;
                             mCurrentTime = System.currentTimeMillis();
@@ -166,8 +167,8 @@ public class SeafileFragment extends BaseFragment {
         }
     }
 
-    private void showItemDialog(MotionEvent motionEvent, HashMap<String, String> map, int pos) {
-        SeafileDialog seafileDialog = new SeafileDialog(mMainActivity, true, map, pos);
+    private void showItemDialog(MotionEvent motionEvent, SeafileLibrary library, int pos) {
+        SeafileDialog seafileDialog = new SeafileDialog(mMainActivity, true, library, pos);
         seafileDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         seafileDialog.showDialog((int) motionEvent.getRawX(), (int) motionEvent.getRawY());
     }

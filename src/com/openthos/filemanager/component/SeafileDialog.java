@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.bean.SeafileAccount;
+import com.openthos.filemanager.bean.SeafileLibrary;
 import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.system.TextInputDialog;
 import com.openthos.filemanager.utils.SeafileUtils;
@@ -34,10 +35,10 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
     private int mDialogWidth;
     private int mDialogHeight;
     private boolean mIsItem;
-    private HashMap<String, String> mLibrary;
+    private SeafileLibrary mLibrary;
     private int mPos;
 
-    public SeafileDialog(Context context, boolean isItem, HashMap<String, String> library, int pos) {
+    public SeafileDialog(Context context, boolean isItem, SeafileLibrary library, int pos) {
         super(context);
         mMainActivity = (MainActivity) context;
         mIsItem = isItem;
@@ -94,8 +95,8 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
                             public boolean onFinish(final String text) {
                                 for (int i = 0;
                                               i < mMainActivity.mAccount.mLibrarys.size(); i++) {
-                                    if (mMainActivity.mAccount.mLibrarys.get(i).get(
-                                                       SeafileAccount.LIBRARY_NAME).equals(text)) {
+                                    if (mMainActivity.mAccount.mLibrarys.get(i)
+                                                                       .libraryName.equals(text)) {
                                         new AlertDialog.Builder(mMainActivity)
                                                 .setMessage(mMainActivity.getString(
                                                                        R.string.fail_name_illegal))
@@ -119,10 +120,10 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
                 break;
             case R.id.cloud_sync:
                 mMainActivity.mConsole.updateSync(mMainActivity.mAccount.mUserId,
-                        mLibrary.get(SeafileAccount.LIBRARY_ID),
-                        mLibrary.get(SeafileAccount.LIBRARY_NAME),
+                        mLibrary.libraryId,
+                        mLibrary.libraryName,
                         SeafileUtils.SYNC);
-                mLibrary.put(SeafileAccount.LIBRARY_ISSYNC, SeafileUtils.SYNC + "");
+                mLibrary.isSync = SeafileUtils.SYNC;
                 new Thread() {
                     @Override
                     public void run() {
@@ -133,10 +134,10 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
                 break;
             case R.id.cloud_desync:
                 mMainActivity.mConsole.updateSync(mMainActivity.mAccount.mUserId,
-                        mLibrary.get(SeafileAccount.LIBRARY_ID),
-                        mLibrary.get(SeafileAccount.LIBRARY_NAME),
+                        mLibrary.libraryId,
+                        mLibrary.libraryName,
                         SeafileUtils.UNSYNC);
-                mLibrary.put(SeafileAccount.LIBRARY_ISSYNC, SeafileUtils.UNSYNC + "");
+                mLibrary.isSync = SeafileUtils.UNSYNC;
                 new Thread() {
                     @Override
                     public void run() {
@@ -153,11 +154,11 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
         String id = SeafileUtils.create(text);
         int isSync = mMainActivity.mConsole.insertLibrary(
                                                       mMainActivity.mAccount.mUserId, id, text);
-        HashMap<String, String> map = new HashMap<String, String>();
-        map.put(SeafileAccount.LIBRARY_ID, id);
-        map.put(SeafileAccount.LIBRARY_NAME, text);
-        map.put(SeafileAccount.LIBRARY_ISSYNC, isSync + "");
-        mMainActivity.mAccount.mLibrarys.add(map);
+        SeafileLibrary seafileLibrary = new SeafileLibrary();
+        seafileLibrary.libraryId = id;
+        seafileLibrary.libraryName = text;
+        seafileLibrary.isSync = isSync;
+        mMainActivity.mAccount.mLibrarys.add(seafileLibrary);
         MainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
         if (isSync == SeafileUtils.SYNC) {
             SeafileUtils.sync(id, new File(mMainActivity.mAccount.mFile, text)
@@ -166,16 +167,15 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
     }
 
     private void sync() {
-        SeafileUtils.sync((String) mLibrary.get(SeafileAccount.LIBRARY_ID),
-                         new File(mMainActivity.mAccount.mFile,
-                             (String) mLibrary.get(SeafileAccount.LIBRARY_NAME)).getAbsolutePath());
+        SeafileUtils.sync((String) mLibrary.libraryId, new File(mMainActivity.mAccount.mFile,
+                                                 mLibrary.libraryName).getAbsolutePath());
         mMainActivity.mAccount.mLibrarys.set(mPos, mLibrary);
         mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
     }
 
     private void desync() {
         SeafileUtils.desync(new File(mMainActivity.mAccount.mFile,
-                     (String) mLibrary.get(SeafileAccount.LIBRARY_NAME)).getAbsolutePath());
+                                                 mLibrary.libraryName).getAbsolutePath());
         mMainActivity.mAccount.mLibrarys.set(mPos, mLibrary);
         mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
     }
