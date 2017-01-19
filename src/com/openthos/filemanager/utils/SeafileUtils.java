@@ -83,7 +83,7 @@ public class SeafileUtils {
     }
 
     public static void init() {
-        File seafile = new File(SEAFILE_COMMAND_PROOT_BASE);
+        File seafile = new File("/data/sea/proot.sh");
         if (!seafile.exists()){
             exec(new String[]{"su", "-c", "rm -r /data/sea"});
             exec(new String[]{"tar", "xvf", SEAFILE_PATH, "-C", "/data"});
