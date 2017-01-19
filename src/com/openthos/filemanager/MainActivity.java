@@ -1026,8 +1026,11 @@ public class MainActivity extends BaseActivity
         if (fragment instanceof SystemSpaceFragment) {
             SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) fragment;
             systemSpaceFragment.setPath(path);
-            systemSpaceFragment.getAdapter().getSelectFileInfoList().clear();
-            systemSpaceFragment.getFileViewInteractionHub().clearSelection();
+            FileListAdapter adapter = systemSpaceFragment.getAdapter();
+            if (adapter != null) {
+                adapter.getSelectFileInfoList().clear();
+                systemSpaceFragment.getFileViewInteractionHub().clearSelection();
+            }
         }
         setSelectedBackground(id);
         mEt_nivagation.setText(path);
