@@ -245,4 +245,5 @@
     <string name="operation_delete_permanent">永久删除</string>
     <string name="bind_openthosid">OpenthosID不存在，请绑定OpenthosID</string>
     <string name="init_seafile">系统正启动Seafile中</string>
+    <string name="fail_seafile_name">创建文件夹失败，因为已包含同名文件夹 </string>
 </resources>

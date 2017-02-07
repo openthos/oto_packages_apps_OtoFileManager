@@ -242,6 +242,7 @@
     <string name="bind_openthosid">OpenthosID is not exists, please bind OpenthosID</string>
     <string name="init_seafile">System is initializing seafile services</string>
     <string name="dialog_decompress_text">"%1$s" is already exists at Desktop, whether to decompress (which will cover the duplicate file)?</string>
+    <string name="fail_seafile_name">Create directory failed, because this is contains the same name directory.</string>
     <string-array name="file_type_array">
         <item>.doc</item>
         <item>.xls</item>

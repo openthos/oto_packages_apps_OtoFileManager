@@ -99,7 +99,7 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
                                                                        .libraryName.equals(text)) {
                                         new AlertDialog.Builder(mMainActivity)
                                                 .setMessage(mMainActivity.getString(
-                                                                       R.string.fail_name_illegal))
+                                                                       R.string.fail_seafile_name))
                                                 .setPositiveButton(
                                                             R.string.confirm, null).create().show();
                                         return false;
