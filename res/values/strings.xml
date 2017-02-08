@@ -143,6 +143,9 @@
     <string name="text_disk_storage">Disk Storage</string>
     <string name="text_mobile_device">Mobile Device</string>
     <string name="text_removable_disk">Movable Disk</string>
+    <string name="text_removable_disk1">Movable Disk1</string>
+    <string name="text_removable_disk2">Movable Disk2</string>
+    <string name="text_removable_disk3">Movable Disk3</string>
     <string name="text_cloud_services">Cloud Service</string>
     <string name="text_cloud_disk">Cloud Storage</string>
     <string name="text_device_storage">Devices Storage: 1.22G</string>

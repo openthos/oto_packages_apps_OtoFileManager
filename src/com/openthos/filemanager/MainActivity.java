@@ -99,7 +99,9 @@ public class MainActivity extends BaseActivity
     private TextView mTv_video;
     private TextView mTv_computer;
     private TextView mTv_picture;
-    private TextView mTv_storage;
+    private TextView mTv_storage_one;
+    private TextView mTv_storage_two;
+    private TextView mTv_storage_three;
     private TextView mTv_document;
     private TextView mTv_download;
     private TextView mTv_recycle;
@@ -112,8 +114,12 @@ public class MainActivity extends BaseActivity
     private EditText mEt_nivagation;
     private EditText mEt_search_view;
     private ImageView mIv_search_view;
-    private TextView mTv_pop_up;
-    private RelativeLayout mRl_usb;
+    private TextView mTv_pop_up_one;
+    private TextView mTv_pop_up_two;
+    private TextView mTv_pop_up_three;
+    private RelativeLayout mRl_usb_one;
+    private RelativeLayout mRl_usb_two;
+    private RelativeLayout mRl_usb_three;
 
     private FragmentManager mManager = getSupportFragmentManager();
     private PopWinShare mPopWinShare;
@@ -127,7 +133,9 @@ public class MainActivity extends BaseActivity
     private OnlineNeighborFragment mOnlineNeighborFragment;
     private SeafileFragment mSeafileFragment;
     private UsbConnectReceiver mReceiver;
-    private String[] mUsbs;
+    private String[] mUsb0;
+    private String[] mUsb1;
+    private String[] mUsb2;
     private boolean mIsMutiSelect;
     private SharedPreferences mSharedPreferences;
     private Editor mEditor;
@@ -149,6 +157,7 @@ public class MainActivity extends BaseActivity
     public SeafileUtils.SeafileSQLConsole mConsole;
     public CustomFileObserver mCustomFileObserver;
     private SeafileThread mSeafileThread;
+    private String mUsbPath;
 
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -240,7 +249,9 @@ public class MainActivity extends BaseActivity
         mTv_document = (TextView) findViewById(R.id.tv_document);
         mTv_download = (TextView) findViewById(R.id.tv_download);
         mTv_recycle = (TextView) findViewById(R.id.tv_recycle);
-        mTv_storage = (TextView) findViewById(R.id.tv_storage);
+        mTv_storage_one = (TextView) findViewById(R.id.tv_storage_one);
+        mTv_storage_two = (TextView) findViewById(R.id.tv_storage_two);
+        mTv_storage_three = (TextView) findViewById(R.id.tv_storage_three);
         mTv_cloud_service = (TextView) findViewById(R.id.tv_cloud_service);
         mTv_net_service = (TextView) findViewById(R.id.tv_net_service);
         mIv_list_view = (ImageView) findViewById(R.id.iv_list_view);
@@ -250,8 +261,12 @@ public class MainActivity extends BaseActivity
         mEt_nivagation = (EditText) findViewById(R.id.et_nivagation);
         mIv_search_view = (ImageView) findViewById(R.id.iv_search);
         mEt_search_view = (EditText) findViewById(R.id.search_view);
-        mTv_pop_up = (TextView) findViewById(R.id.tv_pop_up);
-        mRl_usb = (RelativeLayout) findViewById(R.id.rl_usb);
+        mTv_pop_up_one = (TextView) findViewById(R.id.tv_pop_up_one);
+        mTv_pop_up_two = (TextView) findViewById(R.id.tv_pop_up_two);
+        mTv_pop_up_three = (TextView) findViewById(R.id.tv_pop_up_three);
+        mRl_usb_one = (RelativeLayout) findViewById(R.id.rl_usb_one);
+        mRl_usb_two = (RelativeLayout) findViewById(R.id.rl_usb_two);
+        mRl_usb_three = (RelativeLayout) findViewById(R.id.rl_usb_three);
         mIv_grid_view.setSelected(true);
 
         File file = new File(Constants.DOCUMENT_PATH);
@@ -271,10 +286,10 @@ public class MainActivity extends BaseActivity
         mHashMap.put(Constants.ONLINENEIGHBORFRAGMENT_TAG, R.id.tv_net_service);
         mHashMap.put(Constants.CLOUDSERVICEFRAGMENT_TAG, R.id.tv_cloud_service);
         mHashMap.put(Constants.DETAILFRAGMENT_TAG, R.id.tv_picture);
-        mHashMap.put(Constants.SYSTEMSPACEFRAGMENT_TAG, R.id.tv_storage);
-        mHashMap.put(Constants.ADDRESSFRAGMENT_TAG, R.id.tv_storage);
+        mHashMap.put(Constants.SYSTEMSPACEFRAGMENT_TAG, R.id.tv_storage_one);
+        mHashMap.put(Constants.ADDRESSFRAGMENT_TAG, R.id.tv_storage_one);
         mHashMap.put(Constants.SYSTEM_SPACE_FRAGMENT_TAG, R.id.tv_computer);
-        mHashMap.put(Constants.USBFRAGMENT_TAG,R.id.tv_storage);
+        mHashMap.put(Constants.USBFRAGMENT_TAG,R.id.tv_storage_one);
         mCopyInfoDialog = CopyInfoDialog.getInstance(MainActivity.this);
         mHandler = new Handler() {
             @Override
@@ -302,8 +317,26 @@ public class MainActivity extends BaseActivity
                         case 2:
                             initUsb(0);
                             break;
-                        case Constants.USB_READY:
-                            mRl_usb.setVisibility(View.VISIBLE);
+                        case Constants.USB1_READY:
+                            mRl_usb_one.setVisibility(View.VISIBLE);
+                            if (mProgressDialog != null) {
+                                mProgressDialog.dismiss();
+                            }
+                            if (TextUtils.isEmpty(getCurPath()) ) {
+                                mTv_computer.performClick();
+                            }
+                            break;
+                        case Constants.USB2_READY:
+                            mRl_usb_two.setVisibility(View.VISIBLE);
+                            if (mProgressDialog != null) {
+                                mProgressDialog.dismiss();
+                            }
+                            if (TextUtils.isEmpty(getCurPath()) ) {
+                                mTv_computer.performClick();
+                            }
+                            break;
+                        case Constants.USB3_READY:
+                            mRl_usb_three.setVisibility(View.VISIBLE);
                             if (mProgressDialog != null) {
                                 mProgressDialog.dismiss();
                             }
@@ -340,28 +373,43 @@ public class MainActivity extends BaseActivity
                             ((IFileInteractionListener) getVisibleFragment())
                                     .onRefreshFileList((String) msg.obj, getFileSortHelper());
                             break;
-                        case Constants.SUCCESS_SYNC:
-                            mRl_usb.setVisibility(View.GONE);
-                            if (TextUtils.isEmpty(getCurPath())
-                                    || (getCurPath() != null
-                                        && getCurPath().startsWith(
-                                            Constants.PERMISS_DIR_STORAGE_USB))) {
-                                mManager.beginTransaction().remove(mSdStorageFragment).commit();
-                                mManager.beginTransaction().hide(mCurFragment).commit();
-                                mSdStorageFragment = new SdStorageFragment(mManager,
-                                                          USB_DEVICE_DETACHED, MainActivity.this);
-                                setSelectedBackground(R.id.tv_computer);
-                                mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment)
-                                        .show(mSdStorageFragment).commit();
-                                mCurFragment = mSdStorageFragment;
+                        case Constants.SUCCESS_SYNC_ONE:
+                            if (Util.execUsb(new String[]{"df"}).size() != 1) {
+                                mSdStorageFragment.hideMountSpaceOne();
+                                if (getCurPath() != null && getCurPath().equals(mUsb0[0])) {
+                                    showSdSFragmentAfterInstallUSB();
+                                }
                             } else {
-                                BaseFragment visibleFragment = (BaseFragment) getVisibleFragment();
-                                mManager.beginTransaction().remove(mSdStorageFragment).commit();
-                                mSdStorageFragment = new SdStorageFragment(mManager,
-                                                          USB_DEVICE_DETACHED, MainActivity.this);
-                                mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment)
-                                        .hide(mSdStorageFragment).commit();
-                                mSdStorageFragment.mCurFragment =  visibleFragment;
+                                removeMobileDevice();
+                            }
+                            mRl_usb_one.setVisibility(View.GONE);
+                            if (mPopUpProgressDialog != null) {
+                                mPopUpProgressDialog.dismiss();
+                            }
+                            break;
+                        case Constants.SUCCESS_SYNC_TWO:
+                            mRl_usb_two.setVisibility(View.GONE);
+                            if (Util.execUsb(new String[]{"df"}).size() != 1) {
+                                mSdStorageFragment.hideMountSpaceTwo();
+                                if (getCurPath() != null && getCurPath().equals(mUsb1[0])) {
+                                    showSdSFragmentAfterInstallUSB();
+                                }
+                            } else {
+                                removeMobileDevice();
+                            }
+                            if (mPopUpProgressDialog != null) {
+                                mPopUpProgressDialog.dismiss();
+                            }
+                            break;
+                        case Constants.SUCCESS_SYNC_THREE:
+                            mRl_usb_three.setVisibility(View.GONE);
+                            if (Util.execUsb(new String[]{"df"}).size() != 1) {
+                                mSdStorageFragment.hideMountSpaceThree();
+                                if (getCurPath() != null && getCurPath().equals(mUsb2[0])) {
+                                    showSdSFragmentAfterInstallUSB();
+                                }
+                            } else {
+                                removeMobileDevice();
                             }
                             if (mPopUpProgressDialog != null) {
                                 mPopUpProgressDialog.dismiss();
@@ -383,17 +431,68 @@ public class MainActivity extends BaseActivity
         };
     }
 
+    private void showSdSFragmentAfterInstallUSB() {
+        mManager.beginTransaction().remove(mCurFragment).show(mSdStorageFragment).commit();
+        mCurFragment = mSdStorageFragment;
+    }
+
+    private void removeMobileDevice() {
+        if (TextUtils.isEmpty(getCurPath())
+                || (getCurPath() != null
+                     && getCurPath().startsWith(Constants.PERMISS_DIR_STORAGE_USB))) {
+            mManager.beginTransaction().remove(mSdStorageFragment).commit();
+            mManager.beginTransaction().hide(mCurFragment).commit();
+            mSdStorageFragment = new SdStorageFragment(mManager,
+                    USB_DEVICE_DETACHED, MainActivity.this);
+            setSelectedBackground(R.id.tv_computer);
+            mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment)
+                    .show(mSdStorageFragment).commit();
+            mCurFragment = mSdStorageFragment;
+        } else {
+            BaseFragment visibleFragment = (BaseFragment) getVisibleFragment();
+            mManager.beginTransaction().remove(mSdStorageFragment).commit();
+            mSdStorageFragment = new SdStorageFragment(mManager,
+                    USB_DEVICE_DETACHED, MainActivity.this);
+            mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment)
+                    .hide(mSdStorageFragment).commit();
+            mSdStorageFragment.mCurFragment = visibleFragment;
+        }
+    }
+
     private void initUsb(int flags) {
         String[] cmd = new String[]{"df"};
-        mUsbs = Util.execUsb(cmd);
-        if (mUsbs != null && mUsbs.length > 0 && flags != 0 && flags != 1) {
-            sendMsg(2);
+        ArrayList<String[]> list = Util.execUsb(cmd);
+        if (list != null && list.size() >= 1) {
+            mUsb0 = list.get(0);
+            if (mUsb0 != null && mUsb0.length > 0 && flags != 0 && flags != 1) {
+                sendMsg(2);
+            }
+            if (list.size() >= 2) {
+                mUsb1 = list.get(1);
+                if (mUsb1 != null && mUsb1.length > 0 && flags != 0 && flags != 1) {
+                    sendMsg(2);
+                }
+                if (list.size() >= 3) {
+                    mUsb2 = list.get(2);
+                    if (mUsb2 != null && mUsb2.length > 0 && flags != 0 && flags != 1) {
+                        sendMsg(2);
+                    }
+                }
+            }
         }
         if (flags == UsbConnectReceiver.USB_STATE_ON || flags == 2) {
          // T.showShort(MainActivity.this, getResources().getString(R.string.USB_device_connected));
          // mRl_usb.setVisibility(View.VISIBLE);
-            mTv_storage.setOnClickListener(MainActivity.this);
-            mTv_pop_up.setOnClickListener(this);
+            mTv_storage_one.setOnClickListener(MainActivity.this);
+            mTv_pop_up_one.setOnClickListener(this);
+            if (list.size() >= 2) {
+                mTv_storage_two.setOnClickListener(MainActivity.this);
+                mTv_pop_up_two.setOnClickListener(this);
+                if (list.size() >= 3) {
+                    mTv_storage_three.setOnClickListener(MainActivity.this);
+                    mTv_pop_up_three.setOnClickListener(this);
+                }
+            }
             if (TextUtils.isEmpty(getCurPath()) ) {
                 mManager.beginTransaction().remove(mSdStorageFragment).commit();
                 mManager.beginTransaction().hide(mCurFragment).commit();
@@ -424,16 +523,15 @@ public class MainActivity extends BaseActivity
             mProgressDialog.show();
           //  mCurFragment = mSdStorageFragment;
         } else if (flags == UsbConnectReceiver.USB_STATE_OFF) {
-            mTv_pop_up.performClick();
-         //   mRl_usb.setVisibility(View.GONE);
-         //   mManager.beginTransaction().remove(mSdStorageFragment).commit();
-         //   mManager.beginTransaction().hide(mCurFragment).commit();
-         //   mSdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_DETACHED,
-         //                                             MainActivity.this);
-         //   setSelectedBackground(R.id.tv_computer);
-           // mManager.beginTransaction().remove(mSdStorageFragment).commit();
-         //   mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment).commit();
-         //   mCurFragment = mSdStorageFragment;
+            if (!TextUtils.isEmpty(mUsbPath)) {
+                if (mUsb0 != null && mUsbPath.equals(mUsb0[0])) {
+                    mTv_pop_up_one.performClick();
+                } else if (mUsb1 != null && mUsbPath.equals(mUsb1[0])) {
+                    mTv_pop_up_two.performClick();
+                } else if (mUsb2 != null && mUsbPath.equals(mUsb2[0])) {
+                    mTv_pop_up_three.performClick();
+                }
+            }
         }
     }
 
@@ -544,7 +642,9 @@ public class MainActivity extends BaseActivity
         mIv_back.setOnClickListener(this);
         mIv_setting.setOnClickListener(this);
         mTv_computer.performClick();
-        mTv_storage.setOnTouchListener(this);
+        mTv_storage_one.setOnTouchListener(this);
+        mTv_storage_two.setOnTouchListener(this);
+        mTv_storage_three.setOnTouchListener(this);
 //        search_view.addTextChangedListener(new EditTextChangeListener(mManager,
 //                                                                        MainActivity.this));
         mSearchOnKeyListener = new SearchOnKeyListener(mManager,
@@ -668,6 +768,8 @@ public class MainActivity extends BaseActivity
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            String dataString = intent.getDataString();
+            mUsbPath = dataString.substring(7, dataString.length());
             if (action.equals(Intent.ACTION_MEDIA_MOUNTED) ||
                     intent.getAction().equals(Intent.ACTION_MEDIA_CHECKING)) {
                 sendMsg(USB_STATE_ON);
@@ -934,27 +1036,47 @@ public class MainActivity extends BaseActivity
                     mSdStorageFragment.setSelectedCardBg(Constants.RETURN_TO_WHITE);
                 }
                 break;
-            case R.id.tv_storage:
-                setSelectedBackground(R.id.tv_storage);
+            case R.id.tv_storage_one:
+                setSelectedBackground(R.id.tv_storage_one);
                 if (mCurFragment != null) {
                     mManager.beginTransaction().hide(mCurFragment).commit();
                 }
-                if (mUsbStorageFragment == null) {
-                    mUsbStorageFragment = new SystemSpaceFragment(
-                                          Constants.USB_SPACE_FRAGMENT, mUsbs[0], null, null, true);
-                    mManager.beginTransaction().add(R.id.fl_mian, mUsbStorageFragment,
-                                                   Constants.USBFRAGMENT_TAG).commit();
-                } else {
-                    mManager.beginTransaction().show(mUsbStorageFragment).commit();
-                }
-                setCurPath(Constants.STORAGE_USB0);
+                mUsbStorageFragment = new SystemSpaceFragment(
+                                      Constants.USB_SPACE_FRAGMENT, mUsb0[0], null, null, false);
+                mManager.beginTransaction().add(R.id.fl_mian, mUsbStorageFragment,
+                                               Constants.USBFRAGMENT_TAG).commit();
                 mCurFragment = mUsbStorageFragment;
                 break;
-            case R.id.tv_pop_up:
-                uninstallUSB();
+            case R.id.tv_storage_two:
+                setSelectedBackground(R.id.tv_storage_two);
+                if (mCurFragment != null) {
+                    mManager.beginTransaction().hide(mCurFragment).commit();
+                }
+                mUsbStorageFragment = new SystemSpaceFragment(
+                        Constants.USB_SPACE_FRAGMENT, mUsb1[0], null, null, false);
+                mManager.beginTransaction().add(R.id.fl_mian, mUsbStorageFragment,
+                        Constants.USBFRAGMENT_TAG).commit();
+                mCurFragment = mUsbStorageFragment;
                 break;
-            case R.id.tv_net_service:
-                setFileInfo(R.id.tv_net_service, "", mOnlineNeighborFragment);
+            case R.id.tv_storage_three:
+                setSelectedBackground(R.id.tv_storage_three);
+                if (mCurFragment != null) {
+                    mManager.beginTransaction().hide(mCurFragment).commit();
+                }
+                mUsbStorageFragment = new SystemSpaceFragment(
+                        Constants.USB_SPACE_FRAGMENT, mUsb2[0], null, null, false);
+                mManager.beginTransaction().add(R.id.fl_mian, mUsbStorageFragment,
+                        Constants.USBFRAGMENT_TAG).commit();
+                mCurFragment = mUsbStorageFragment;
+                break;
+            case R.id.tv_pop_up_one:
+                uninstallUSB(Constants.SUCCESS_SYNC_ONE);
+                break;
+            case R.id.tv_pop_up_two:
+                uninstallUSB(Constants.SUCCESS_SYNC_TWO);
+                break;
+            case R.id.tv_pop_up_three:
+                uninstallUSB(Constants.SUCCESS_SYNC_THREE);
                 break;
             case R.id.tv_cloud_service:
                 setFileInfo(R.id.tv_cloud_service, "", mSeafileFragment);
@@ -994,7 +1116,7 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    public void uninstallUSB() {
+    public void uninstallUSB(final int tag) {
         if (mPopUpProgressDialog == null) {
             mPopUpProgressDialog = new ProgressDialog(this);
         }
@@ -1017,7 +1139,7 @@ public class MainActivity extends BaseActivity
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                MainActivity.mHandler.sendEmptyMessage(Constants.SUCCESS_SYNC);
+                MainActivity.mHandler.sendEmptyMessage(tag);
             }
         }.start();
     }
@@ -1054,7 +1176,9 @@ public class MainActivity extends BaseActivity
                 mTv_video.setSelected(false);
                 mTv_computer.setSelected(true);
                 mTv_picture.setSelected(false);
-                mTv_storage.setSelected(false);
+                mTv_storage_one.setSelected(false);
+                mTv_storage_two.setSelected(false);
+                mTv_storage_three.setSelected(false);
                 mTv_net_service.setSelected(false);
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
@@ -1067,7 +1191,9 @@ public class MainActivity extends BaseActivity
                 mTv_video.setSelected(false);
                 mTv_computer.setSelected(false);
                 mTv_picture.setSelected(false);
-                mTv_storage.setSelected(false);
+                mTv_storage_one.setSelected(false);
+                mTv_storage_two.setSelected(false);
+                mTv_storage_three.setSelected(false);
                 mTv_net_service.setSelected(false);
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
@@ -1080,7 +1206,9 @@ public class MainActivity extends BaseActivity
                 mTv_video.setSelected(false);
                 mTv_computer.setSelected(false);
                 mTv_picture.setSelected(false);
-                mTv_storage.setSelected(false);
+                mTv_storage_one.setSelected(false);
+                mTv_storage_two.setSelected(false);
+                mTv_storage_three.setSelected(false);
                 mTv_net_service.setSelected(false);
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
@@ -1093,7 +1221,9 @@ public class MainActivity extends BaseActivity
                 mTv_video.setSelected(true);
                 mTv_computer.setSelected(false);
                 mTv_picture.setSelected(false);
-                mTv_storage.setSelected(false);
+                mTv_storage_one.setSelected(false);
+                mTv_storage_two.setSelected(false);
+                mTv_storage_three.setSelected(false);
                 mTv_net_service.setSelected(false);
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
@@ -1106,7 +1236,9 @@ public class MainActivity extends BaseActivity
                 mTv_video.setSelected(false);
                 mTv_computer.setSelected(false);
                 mTv_picture.setSelected(true);
-                mTv_storage.setSelected(false);
+                mTv_storage_one.setSelected(false);
+                mTv_storage_two.setSelected(false);
+                mTv_storage_three.setSelected(false);
                 mTv_net_service.setSelected(false);
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
@@ -1119,7 +1251,9 @@ public class MainActivity extends BaseActivity
                 mTv_video.setSelected(false);
                 mTv_computer.setSelected(false);
                 mTv_picture.setSelected(false);
-                mTv_storage.setSelected(false);
+                mTv_storage_one.setSelected(false);
+                mTv_storage_two.setSelected(false);
+                mTv_storage_three.setSelected(false);
                 mTv_net_service.setSelected(false);
                 mTv_document.setSelected(true);
                 mTv_download.setSelected(false);
@@ -1132,7 +1266,9 @@ public class MainActivity extends BaseActivity
                 mTv_video.setSelected(false);
                 mTv_computer.setSelected(false);
                 mTv_picture.setSelected(false);
-                mTv_storage.setSelected(false);
+                mTv_storage_one.setSelected(false);
+                mTv_storage_two.setSelected(false);
+                mTv_storage_three.setSelected(false);
                 mTv_net_service.setSelected(false);
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(true);
@@ -1145,20 +1281,54 @@ public class MainActivity extends BaseActivity
                 mTv_video.setSelected(false);
                 mTv_computer.setSelected(false);
                 mTv_picture.setSelected(false);
-                mTv_storage.setSelected(false);
+                mTv_storage_one.setSelected(false);
+                mTv_storage_two.setSelected(false);
+                mTv_storage_three.setSelected(false);
                 mTv_net_service.setSelected(false);
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
                 mTv_recycle.setSelected(true);
                 mTv_cloud_service.setSelected(false);
                 break;
-            case R.id.tv_storage:
+            case R.id.tv_storage_one:
                 mTv_music.setSelected(false);
                 mTv_desk.setSelected(false);
                 mTv_video.setSelected(false);
                 mTv_computer.setSelected(false);
                 mTv_picture.setSelected(false);
-                mTv_storage.setSelected(true);
+                mTv_storage_one.setSelected(true);
+                mTv_storage_two.setSelected(false);
+                mTv_storage_three.setSelected(false);
+                mTv_net_service.setSelected(false);
+                mTv_document.setSelected(false);
+                mTv_download.setSelected(false);
+                mTv_recycle.setSelected(false);
+                mTv_cloud_service.setSelected(false);
+                break;
+            case R.id.tv_storage_two:
+                mTv_music.setSelected(false);
+                mTv_desk.setSelected(false);
+                mTv_video.setSelected(false);
+                mTv_computer.setSelected(false);
+                mTv_picture.setSelected(false);
+                mTv_storage_one.setSelected(false);
+                mTv_storage_two.setSelected(true);
+                mTv_storage_three.setSelected(false);
+                mTv_net_service.setSelected(false);
+                mTv_document.setSelected(false);
+                mTv_download.setSelected(false);
+                mTv_recycle.setSelected(false);
+                mTv_cloud_service.setSelected(false);
+                break;
+            case R.id.tv_storage_three:
+                mTv_music.setSelected(false);
+                mTv_desk.setSelected(false);
+                mTv_video.setSelected(false);
+                mTv_computer.setSelected(false);
+                mTv_picture.setSelected(false);
+                mTv_storage_one.setSelected(false);
+                mTv_storage_two.setSelected(false);
+                mTv_storage_three.setSelected(true);
                 mTv_net_service.setSelected(false);
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
@@ -1171,7 +1341,9 @@ public class MainActivity extends BaseActivity
                 mTv_video.setSelected(false);
                 mTv_computer.setSelected(false);
                 mTv_picture.setSelected(false);
-                mTv_storage.setSelected(false);
+                mTv_storage_one.setSelected(false);
+                mTv_storage_two.setSelected(false);
+                mTv_storage_three.setSelected(false);
                 mTv_net_service.setSelected(true);
                 mTv_document.setSelected(false);
                 mTv_download.setSelected(false);
@@ -1184,7 +1356,9 @@ public class MainActivity extends BaseActivity
                 mTv_video.setSelected(false);
                 mTv_computer.setSelected(false);
                 mTv_picture.setSelected(false);
-                mTv_storage.setSelected(false);
+                mTv_storage_one.setSelected(false);
+                mTv_storage_two.setSelected(false);
+                mTv_storage_three.setSelected(false);
                 mTv_cloud_service.setSelected(true);
                 mTv_net_service.setSelected(false);
                 mTv_document.setSelected(false);
@@ -1235,7 +1409,7 @@ public class MainActivity extends BaseActivity
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     menu_tag);
             mPopWinShare.setFocusable(true);
-            mPopWinShare.showAsDropDown(mTv_storage, USB_POPWINDOW_X, USB_POPWINDOW_Y);
+            mPopWinShare.showAsDropDown(mTv_storage_one, USB_POPWINDOW_X, USB_POPWINDOW_Y);
         }
         mPopWinShare.update();
         mPopWinShare.getContentView().setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -1584,16 +1758,16 @@ public class MainActivity extends BaseActivity
             DismissPopwindow();
             switch (view.getId()) {
                 case R.id.pop_usb_view:
-                    uninstallUSB();
+                    uninstallUSB(1);
                     Intent intent = new Intent();
                     intent.setAction("com.switchmenu");
                     intent.putExtra("pop_menu", "view_or_dismiss");
                     sendBroadcast(intent);
                     break;
                 case R.id.pop_usb_info:
-                    if (mUsbs[0] != null && new File(mUsbs[0]).exists()) {
+                    if (mUsb0[0] != null && new File(mUsb0[0]).exists()) {
                         UsbPropertyDialog usbPropertyDialog =
-                            new UsbPropertyDialog(MainActivity.this, mUsbs);
+                            new UsbPropertyDialog(MainActivity.this, mUsb0);
                         usbPropertyDialog.showDialog();
                     }
                     break;

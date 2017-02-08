@@ -47,6 +47,7 @@ public class SdStorageFragment extends BaseFragment {
     private RelativeLayout mRl_android_service;
     private RelativeLayout mRl_mount_space_one;
     private RelativeLayout mRl_mount_space_two;
+    private RelativeLayout mRl_mount_space_three;
     private RelativeLayout mRl_personal_space;
     private TextView tv_system_total;
     private TextView tv_system_avail;
@@ -54,16 +55,24 @@ public class SdStorageFragment extends BaseFragment {
     private TextView tv_sd_total;
     private TextView tv_sd_avail;
     private ProgressBar pb_sd;
-    private TextView tv_usb_total;
-    private TextView tv_usb_avail;
-    private ProgressBar pb_usb;
+    private TextView tv_usb_total_one;
+    private TextView tv_usb_avail_one;
+    private ProgressBar pb_usb_one;
+    private TextView tv_usb_total_two;
+    private TextView tv_usb_avail_two;
+    private ProgressBar pb_usb_two;
+    private TextView tv_usb_total_three;
+    private TextView tv_usb_avail_three;
+    private ProgressBar pb_usb_three;
     private ProgressBar pb_service;
 
     public BaseFragment mCurFragment;
 //    FragmentmManager mManager = getFragmentmManager();
     private long lastBackTime = 0;
     private ArrayList<File> mountUsb = null;
-    private String mountPath;
+    private String mountPathOne;
+    private String mountPathTwo;
+    private String mountPathThree;
     private long currentBackTime;
     private String mountDiskPath = null;
 //    private Context context;
@@ -94,6 +103,7 @@ public class SdStorageFragment extends BaseFragment {
         mRl_android_service = (RelativeLayout) rootView.findViewById(R.id.rl_android_service);
         mRl_mount_space_one = (RelativeLayout) rootView.findViewById(R.id.rl_mount_space_one);
         mRl_mount_space_two = (RelativeLayout) rootView.findViewById(R.id.rl_mount_space_two);
+        mRl_mount_space_three = (RelativeLayout) rootView.findViewById(R.id.rl_mount_space_three);
         mRl_personal_space = (RelativeLayout) rootView.findViewById(R.id.rl_personal_space);
         mLlMobileDevice = (LinearLayout) rootView.findViewById(R.id.ll_mobile_device);
 
@@ -101,13 +111,31 @@ public class SdStorageFragment extends BaseFragment {
         tv_system_avail = (TextView) rootView.findViewById(R.id.tv_system_avail);
         tv_sd_total = (TextView) rootView.findViewById(R.id.tv_sd_total);
         tv_sd_avail = (TextView) rootView.findViewById(R.id.tv_sd_avail);
-        tv_usb_total = (TextView) rootView.findViewById(R.id.tv_usb_total);
-        tv_usb_avail = (TextView) rootView.findViewById(R.id.tv_usb_avail);
+        tv_usb_total_one = (TextView) rootView.findViewById(R.id.tv_usb_total_one);
+        tv_usb_avail_one = (TextView) rootView.findViewById(R.id.tv_usb_avail_one);
+        tv_usb_total_two = (TextView) rootView.findViewById(R.id.tv_usb_total_two);
+        tv_usb_avail_two = (TextView) rootView.findViewById(R.id.tv_usb_avail_two);
+        tv_usb_total_three = (TextView) rootView.findViewById(R.id.tv_usb_total_three);
+        tv_usb_avail_three = (TextView) rootView.findViewById(R.id.tv_usb_avail_three);
 
         pb_system = (ProgressBar) rootView.findViewById(R.id.pb_system);
         pb_sd = (ProgressBar) rootView.findViewById(R.id.pb_sd);
-        pb_usb = (ProgressBar) rootView.findViewById(R.id.pb_usb);
+        pb_usb_one = (ProgressBar) rootView.findViewById(R.id.pb_usb_one);
+        pb_usb_two = (ProgressBar) rootView.findViewById(R.id.pb_usb_two);
+        pb_usb_three = (ProgressBar) rootView.findViewById(R.id.pb_usb_three);
         pb_service = (ProgressBar) rootView.findViewById(R.id.pb_service);
+    }
+
+    public void hideMountSpaceOne() {
+        mRl_mount_space_one.setVisibility(View.GONE);
+    }
+
+    public void hideMountSpaceTwo() {
+        mRl_mount_space_two.setVisibility(View.GONE);
+    }
+
+    public void hideMountSpaceThree() {
+        mRl_mount_space_three.setVisibility(View.GONE);
     }
 
     private void setVolumSize() {
@@ -165,21 +193,47 @@ public class SdStorageFragment extends BaseFragment {
         setVolumSize();
         if (usbDeviceIsAttached != null && usbDeviceIsAttached.equals("usb_device_attached")) {
             String[] cmd = {"df"};
-            String[] usbs = Util.execUsb(cmd);
-            if (usbs != null && usbs.length > 0) {
-                showMountDevices(usbs);
-                mLlMobileDevice.setVisibility(View.VISIBLE);
-                mRl_mount_space_one.setVisibility(View.VISIBLE);
-                mRl_mount_space_one.setOnGenericMotionListener
-                                   (new MouseRelativeOnGenericMotionListener());
-                T.showShort(mMainActivity, getResources()
-                            .getString(R.string.USB_device_connected));
-                mMainActivity.mHandler.sendEmptyMessage(Constants.USB_READY);
+            ArrayList<String[]> list = Util.execUsb(cmd);
+            if (list.size() >= 1) {
+                String[] usb1 = list.get(0);
+                mountPathOne = usb1[0];
+                if (usb1 != null && usb1.length > 0) {
+                    showMountDevices(usb1, 1);
+                    mLlMobileDevice.setVisibility(View.VISIBLE);
+                    mRl_mount_space_one.setVisibility(View.VISIBLE);
+                    mRl_mount_space_one.setOnGenericMotionListener
+                            (new MouseRelativeOnGenericMotionListener());
+                    mMainActivity.mHandler.sendEmptyMessage(Constants.USB1_READY);
+                    if (list.size() >= 2) {
+                        String[] usb2 = list.get(1);
+                        mountPathTwo = usb2[0];
+                        if (usb2 != null && usb2.length > 0) {
+                            showMountDevices(usb2, 2);
+                            mRl_mount_space_two.setVisibility(View.VISIBLE);
+                            mRl_mount_space_two.setOnGenericMotionListener
+                                    (new MouseRelativeOnGenericMotionListener());
+                            mMainActivity.mHandler.sendEmptyMessage(Constants.USB2_READY);
+                            if (list.size() >= 3) {
+                                String[] usb3 = list.get(2);
+                                mountPathThree = usb3[0];
+                                if (usb3 != null && usb3.length > 0) {
+                                    showMountDevices(usb3, 3);
+                                    mRl_mount_space_three.setVisibility(View.VISIBLE);
+                                    mRl_mount_space_three.setOnGenericMotionListener
+                                            (new MouseRelativeOnGenericMotionListener());
+                                    mMainActivity.mHandler.sendEmptyMessage(Constants.USB3_READY);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         } else if (usbDeviceIsAttached != null
                    && usbDeviceIsAttached.equals("usb_device_detached")) {
             mLlMobileDevice.setVisibility(View.GONE);
             mRl_mount_space_one.setVisibility(View.GONE);
+            mRl_mount_space_two.setVisibility(View.GONE);
+            mRl_mount_space_three.setVisibility(View.GONE);
             T.showShort(mMainActivity, getResources().getString(R.string.USB_device_disconnected));
         }
     }
@@ -215,14 +269,39 @@ public class SdStorageFragment extends BaseFragment {
         }
     }
 
-    private void showMountDevices(String[] usbs) {
-        mountPath = usbs[0];
-        tv_usb_total.setText(usbs[1]);
-        tv_usb_avail.setText(usbs[3]);
-        int max = (int) Double.parseDouble(usbs[1].substring(0, 3)) * 10;
-        int avail = (int) Double.parseDouble(usbs[3].substring(0, 3)) * 10;
-        pb_usb.setMax(max);
-        pb_usb.setProgress(max - avail);
+    private void showMountDevices(String[] usbs, int flag) {
+        switch (flag) {
+            case 1:
+                tv_usb_total_one.setText(usbs[1]);
+                tv_usb_avail_one.setText(usbs[3]);
+                int maxOne = (int) (Double.parseDouble(usbs[1].substring(0, 3)) * 100);
+                int availOne = (int) (Double.parseDouble(usbs[3].substring(0, 3)) * 100);
+                int progressOne = maxOne - availOne >= 0?
+                                  maxOne - availOne : maxOne -  (availOne / 1024);
+                pb_usb_one.setMax(maxOne);
+                pb_usb_one.setProgress(progressOne);
+                break;
+            case 2:
+                tv_usb_total_two.setText(usbs[1]);
+                tv_usb_avail_two.setText(usbs[3]);
+                int maxTwo = (int) (Double.parseDouble(usbs[1].substring(0, 3)) * 100);
+                int availTwo = (int) (Double.parseDouble(usbs[3].substring(0, 3)) * 100);
+                int progressTwo = maxTwo - availTwo >= 0?
+                                  maxTwo - availTwo : maxTwo -  (availTwo / 1024);
+                pb_usb_two.setMax(maxTwo);
+                pb_usb_two.setProgress(progressTwo);
+                break;
+            case 3:
+                tv_usb_total_three.setText(usbs[1]);
+                tv_usb_avail_three.setText(usbs[3]);
+                int maxThree = (int) (Double.parseDouble(usbs[1].substring(0, 3)) * 100);
+                int availThree = (int) (Double.parseDouble(usbs[3].substring(0, 3)) * 100);
+                int progressThree = maxThree - availThree >= 0?
+                                    maxThree - availThree : maxThree - (availThree / 1024);
+                pb_usb_three.setMax(maxThree);
+                pb_usb_three.setProgress(progressThree);
+                break;
+        }
     }
 
     public void primaryClick(View view) {
@@ -232,10 +311,20 @@ public class SdStorageFragment extends BaseFragment {
                 setDiskClickInfo(R.id.rl_android_system, Constants.SYSTEM_SPACE_FRAGMENT, null);
                 break;
             case R.id.rl_sd_space:
-                setDiskClickInfo(R.id.rl_sd_space, Constants.SD_SPACE_FRAGMENT, Constants.SD_PATH);
+                setDiskClickInfo(R.id.rl_sd_space, Constants.SD_SPACE_FRAGMENT,
+                                 Constants.SD_PATH);
                 break;
             case R.id.rl_mount_space_one:
-                setDiskClickInfo(R.id.rl_mount_space_one, Constants.USB_SPACE_FRAGMENT, mountPath);
+                setDiskClickInfo(R.id.rl_mount_space_one, Constants.USB_SPACE_FRAGMENT,
+                                 mountPathOne);
+                break;
+            case R.id.rl_mount_space_two:
+                setDiskClickInfo(R.id.rl_mount_space_two, Constants.USB_SPACE_FRAGMENT,
+                                 mountPathTwo);
+                break;
+            case R.id.rl_mount_space_three:
+                setDiskClickInfo(R.id.rl_mount_space_three, Constants.USB_SPACE_FRAGMENT,
+                                 mountPathThree);
                 break;
             case R.id.rl_android_service:
                 setDiskClickInfo(R.id.rl_android_service, Constants.YUN_SPACE_FRAGMENT, null);
@@ -278,7 +367,11 @@ public class SdStorageFragment extends BaseFragment {
     public void enter() {
         super.enter();
         if (mCurId == R.id.rl_mount_space_one) {
-            enter(Constants.USB_SPACE_FRAGMENT, mountPath);
+            enter(Constants.USB_SPACE_FRAGMENT, mountPathOne);
+        } else if (mCurId == R.id.rl_mount_space_two) {
+            enter(Constants.USB_SPACE_FRAGMENT, mountPathTwo);
+        } else if (mCurId == R.id.rl_mount_space_three) {
+            enter(Constants.USB_SPACE_FRAGMENT, mountPathThree);
         }
     }
 
@@ -316,6 +409,8 @@ public class SdStorageFragment extends BaseFragment {
                 mRl_android_system.setSelected(true);
                 mRl_sd_space.setSelected(false);
                 mRl_mount_space_one.setSelected(false);
+                mRl_mount_space_two.setSelected(false);
+                mRl_mount_space_three.setSelected(false);
                 mRl_android_service.setSelected(false);
                 mRl_personal_space.setSelected(false);
                 break;
@@ -323,6 +418,8 @@ public class SdStorageFragment extends BaseFragment {
                 mRl_android_system.setSelected(false);
                 mRl_sd_space.setSelected(true);
                 mRl_mount_space_one.setSelected(false);
+                mRl_mount_space_two.setSelected(false);
+                mRl_mount_space_three.setSelected(false);
                 mRl_android_service.setSelected(false);
                 mRl_personal_space.setSelected(false);
                 break;
@@ -330,6 +427,26 @@ public class SdStorageFragment extends BaseFragment {
                 mRl_android_system.setSelected(false);
                 mRl_sd_space.setSelected(false);
                 mRl_mount_space_one.setSelected(true);
+                mRl_mount_space_two.setSelected(false);
+                mRl_mount_space_three.setSelected(false);
+                mRl_android_service.setSelected(false);
+                mRl_personal_space.setSelected(false);
+                break;
+            case R.id.rl_mount_space_two:
+                mRl_android_system.setSelected(false);
+                mRl_sd_space.setSelected(false);
+                mRl_mount_space_one.setSelected(false);
+                mRl_mount_space_two.setSelected(true);
+                mRl_mount_space_three.setSelected(false);
+                mRl_android_service.setSelected(false);
+                mRl_personal_space.setSelected(false);
+                break;
+            case R.id.rl_mount_space_three:
+                mRl_android_system.setSelected(false);
+                mRl_sd_space.setSelected(false);
+                mRl_mount_space_one.setSelected(false);
+                mRl_mount_space_two.setSelected(false);
+                mRl_mount_space_three.setSelected(true);
                 mRl_android_service.setSelected(false);
                 mRl_personal_space.setSelected(false);
                 break;
@@ -337,6 +454,8 @@ public class SdStorageFragment extends BaseFragment {
                 mRl_android_system.setSelected(false);
                 mRl_sd_space.setSelected(false);
                 mRl_mount_space_one.setSelected(false);
+                mRl_mount_space_two.setSelected(false);
+                mRl_mount_space_three.setSelected(false);
                 mRl_android_service.setSelected(true);
                 mRl_personal_space.setSelected(false);
                 break;
@@ -344,6 +463,8 @@ public class SdStorageFragment extends BaseFragment {
                 mRl_android_system.setSelected(false);
                 mRl_sd_space.setSelected(false);
                 mRl_mount_space_one.setSelected(false);
+                mRl_mount_space_two.setSelected(false);
+                mRl_mount_space_three.setSelected(false);
                 mRl_android_service.setSelected(false);
                 mRl_personal_space.setSelected(true);
                 break;
@@ -352,6 +473,8 @@ public class SdStorageFragment extends BaseFragment {
                     mRl_android_system.setSelected(false);
                     mRl_sd_space.setSelected(false);
                     mRl_mount_space_one.setSelected(false);
+                    mRl_mount_space_two.setSelected(false);
+                    mRl_mount_space_three.setSelected(false);
                     mRl_android_service.setSelected(false);
                     mRl_personal_space.setSelected(false);
                 }

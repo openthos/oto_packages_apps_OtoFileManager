@@ -72,7 +72,9 @@ public abstract class Constants {
     public static final int MENU_SHOWHIDE = 117;
     public static final int MENU_COPY_PATH = 118;
     public static final int OPERATION_UP_LEVEL = 3;
-    public static final int USB_READY = 5;
+    public static final int USB1_READY = 99;
+    public static final int USB2_READY = 98;
+    public static final int USB3_READY = 97;
     public static final int SEAFILE_DATA_OK = 6;
 
     public static final int BAR_Y = 25;
@@ -98,8 +100,9 @@ public abstract class Constants {
     public static final int INDEX_TIME_BEGIN = 8;
     public static final int INDEX_TIME_END = 27;
     public static final int INDEX_7Z_FILENAME = 53;
-    public static final int SUCCESS_SYNC = 11;
-
+    public static final int SUCCESS_SYNC_ONE = 11;
+    public static final int SUCCESS_SYNC_TWO = 12;
+    public static final int SUCCESS_SYNC_THREE = 13;
     public static final int COMPRESSIBLE = 0;
     public static final int DECOMPRESSIBLE = 1;
     public static final int COMPRESSIBLE_DECOMPRESSIBLE = 2;

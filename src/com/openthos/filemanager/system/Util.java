@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,7 +38,8 @@ import java.util.HashSet;
 public class Util {
     private static final String LOG_TAG = "Util";
 
-    public static String[] execUsb(String[] args) {
+    public static ArrayList<String[]> execUsb(String[] args) {
+        ArrayList<String[]> list = new ArrayList<>();
         String []strs = null;
         Process process = null;
         BufferedReader buff = null;
@@ -48,6 +50,7 @@ public class Util {
             while ((line = buff.readLine()) != null) {
                 if (line.startsWith("/storage/usb")){
                     strs = line.split("\\s+");
+                    list.add(strs);
                 }
             }
         } catch (Exception e) {
@@ -64,7 +67,7 @@ public class Util {
                 process.destroy();
             }
         }
-        return strs;
+        return list;
     }
 
     public static String[] execDisk(String[] args) {

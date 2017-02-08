@@ -123,7 +123,7 @@ public class DiskDialog extends Dialog {
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             String content = (String) view.getTag();
             if (mContext.getString(R.string.umount).equals(content)) {
-                mMainActivity.uninstallUSB();
+                mMainActivity.uninstallUSB(1);
             }
         }
     }

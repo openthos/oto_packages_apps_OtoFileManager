@@ -144,6 +144,9 @@
     <string name="text_disk_storage">磁盘存储</string>
     <string name="text_mobile_device">移动设备</string>
     <string name="text_removable_disk">可移动磁盘</string>
+    <string name="text_removable_disk1">可移动磁盘1</string>
+    <string name="text_removable_disk2">可移动磁盘2</string>
+    <string name="text_removable_disk3">可移动磁盘3</string>
     <string name="text_cloud_services">云服务</string>
     <string name="text_cloud_disk">云盘</string>
     <string name="text_device_storage">设备存储：1.22G</string>
