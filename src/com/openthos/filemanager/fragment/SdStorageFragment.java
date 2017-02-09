@@ -339,14 +339,18 @@ public class SdStorageFragment extends BaseFragment {
     }
 
     public void secondaryClick(View view, MotionEvent event) {
+        primaryClick(view);
         switch (view.getId()) {
             case R.id.rl_mount_space_one:
-                showDiskDialog(view, event, true, R.id.rl_mount_space_one);
+                showDiskDialog(view, event, true);
+                break;
+            default:
+                showDiskDialog(view, event,false);
                 break;
         }
     }
 
-    private void showDiskDialog(View view, MotionEvent event, boolean isUSB, int id) {
+    private void showDiskDialog(View view, MotionEvent event, boolean isUSB) {
         DiskDialog diskDialog = new DiskDialog(context, isUSB, view);
         diskDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         diskDialog.showDialog((int) event.getRawX(), (int) event.getRawY());

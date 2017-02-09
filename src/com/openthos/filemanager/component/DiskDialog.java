@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.system.Constants;
+import com.openthos.filemanager.fragment.SdStorageFragment;
 import java.util.ArrayList;
 import static android.R.color.holo_purple;
 import static android.R.color.transparent;
@@ -62,7 +63,8 @@ public class DiskDialog extends Dialog {
         };
 
         String[] uDiskMeun = new String[] {
-                mContext.getString(R.string.umount)
+                mContext.getString(R.string.umount),
+                mContext.getString(R.string.operation_open)
         };
 
         mData = new ArrayList();
@@ -105,8 +107,10 @@ public class DiskDialog extends Dialog {
             view = View.inflate(mContext, R.layout.dialog_base_item ,null);
             view.setOnHoverListener(new MenuItemHoverListener());
             TextView mTvDialogItem = (TextView) view.findViewById(R.id.dialog_base_item);
+            TextView mTvDialogItemUsb = (TextView) view.findViewById(R.id.dialog_base_itemUsb);
             String content = mData.get(i).toString();
             mTvDialogItem.setText(content);
+            mTvDialogItemUsb.setText(content);
             view.setTag(content);
             return view;
         }
@@ -124,7 +128,10 @@ public class DiskDialog extends Dialog {
             String content = (String) view.getTag();
             if (mContext.getString(R.string.umount).equals(content)) {
                 mMainActivity.uninstallUSB(1);
+            } else if (mContext.getString(R.string.operation_open).equals(content)) {
+                ((SdStorageFragment)(((MainActivity)mContext).getVisibleFragment())).enter();
             }
+            dismiss();
         }
     }
 

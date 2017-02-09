@@ -5,4 +5,7 @@
     <TextView
         android:id="@+id/dialog_base_item"
         style="@style/textDialog" />
+    <TextView
+        android:id="@+id/dialog_base_itemUsb"
+        style="@style/textDialog" />
 </LinearLayout>
