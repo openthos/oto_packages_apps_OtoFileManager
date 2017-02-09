@@ -37,6 +37,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FileViewInteractionHub implements FileOperationHelper.IOperationProgressListener {
+    private static final int FILE_NAME_LEGAL = 0;
+    private static final int FILE_NAME_NULL = 1;
+    private static final int FILE_NAME_ILLEGAL = 2;
+    private static final int FILE_NAME_WARNING = 3;
+    private String[] mNameStart = {"+", "-", "."};
+    private String[] mNameBody = {"@", "#", "$", "^", "&", "*", "(", ")", "[", "]", " ", "\t"};
     private static final String LOG_TAG = "FileViewInteractionHub";
     private IFileInteractionListener mFileViewListener;
     public static Map<String,Integer> saveMulti = new HashMap<>();
@@ -54,6 +60,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     private boolean mIsDirectory = false;
     private boolean mIsProtected = true;
     private int mCompressFileState;
+    private boolean mConfirm;
 
     public enum Mode {
         View, Pick
@@ -326,12 +333,40 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         dialog.show();
     }
 
-    private boolean doCreateFolder(String text) {
-        if (TextUtils.isEmpty(text)) {
-            clearSelection();
-            return false;
-        }
+    private boolean doCreateFolder(final String text) {
+        switch (isValidFileName(text)) {
+            case FILE_NAME_LEGAL:
+                return createFolder(text);
+            case FILE_NAME_NULL:
+                failDialog().setMessage(R.string.file_name_not_null).create().show();
+                return false;
+            case FILE_NAME_ILLEGAL:
+                failDialog().setMessage(R.string.file_name_illegal).create().show();
+                return false;
+            case FILE_NAME_WARNING:
+                DialogInterface.OnClickListener okClick = new DialogInterface.OnClickListener() {
 
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mConfirm = createFolder(text);
+                    }
+                };
+                DialogInterface.OnClickListener cancelClick =
+                    new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mConfirm = false;
+                    }
+                };
+                warnDialog(okClick, cancelClick).setMessage(R.string.file_name_warning)
+                                                .create().show();
+                break;
+        }
+        return mConfirm;
+    }
+
+    private boolean createFolder(String text) {
         if (mFileOperationHelper.CreateFolder(mCurrentPath, text)) {
             mFileViewListener.addSingleFile(Util.GetFileInfo(Util.makePath(mCurrentPath, text)));
             if ("list".equals(LocalCache.getViewTag())) {
@@ -342,8 +377,8 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             clearSelection();
         } else {
             new AlertDialog.Builder(mContext)
-                           .setMessage(mContext.getString(R.string.fail_to_create_folder))
-                           .setPositiveButton(R.string.confirm, null).create().show();
+                    .setMessage(mContext.getString(R.string.fail_to_create_folder))
+                    .setPositiveButton(R.string.confirm, null).create().show();
             clearSelection();
             return false;
         }
@@ -351,17 +386,54 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         return true;
     }
 
-    private boolean doCreateFile(String text) {
-        if (TextUtils.isEmpty(text)) {
-            clearSelection();
-            return false;
+    private AlertDialog.Builder failDialog() {
+        AlertDialog.Builder failDialog = new AlertDialog.Builder(mContext)
+                .setPositiveButton(R.string.confirm, null);
+        return failDialog;
+    }
+
+    private AlertDialog.Builder warnDialog(DialogInterface.OnClickListener okClick,
+                                           DialogInterface.OnClickListener cancelClick) {
+        AlertDialog.Builder warnDialog = new AlertDialog.Builder(mContext)
+                .setPositiveButton(R.string.confirm,okClick)
+                .setNegativeButton(R.string.cancel, cancelClick);
+        return warnDialog;
+    }
+
+    private boolean doCreateFile(final String text) {
+        switch (isValidFileName(text)) {
+            case FILE_NAME_LEGAL:
+                return createFile(text);
+            case FILE_NAME_NULL:
+                failDialog().setMessage(R.string.file_name_not_null).create().show();
+                return false;
+            case FILE_NAME_ILLEGAL:
+                failDialog().setMessage(R.string.file_name_illegal).create().show();
+                return false;
+            case FILE_NAME_WARNING:
+                DialogInterface.OnClickListener okClick = new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mConfirm = createFile(text);
+                    }
+                };
+                DialogInterface.OnClickListener cancelClick =
+                    new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mConfirm = false;
+                    }
+                };
+                warnDialog(okClick, cancelClick).setMessage(R.string.file_name_warning)
+                                                .create().show();
+                break;
         }
-        if (!isValidFileName(text)) {
-            new AlertDialog.Builder(mContext)
-                           .setMessage(mContext.getString(R.string.fail_name_illegal))
-                           .setPositiveButton(R.string.confirm, null).create().show();
-            return false;
-        }
+        return mConfirm;
+    }
+
+    private boolean createFile(String text) {
         if (mFileOperationHelper.CreateFile(mCurrentPath, text)) {
             mFileViewListener.addSingleFile(Util.GetFileInfo(Util.makePath(mCurrentPath, text)));
             if ("list".equals(LocalCache.getViewTag())) {
@@ -512,13 +584,40 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         dialog.show();
     }
 
-    private boolean doRename(final FileInfo f, String text) {
-        if (!f.IsDir && !isValidFileName(text)) {
-            new AlertDialog.Builder(mContext)
-                           .setMessage(mContext.getString(R.string.fail_name_illegal))
-                           .setPositiveButton(R.string.confirm, null).create().show();
-            return false;
+    private boolean doRename(final FileInfo f, final String text) {
+        switch (isValidFileName(text)) {
+            case FILE_NAME_LEGAL:
+                return rename(f, text);
+            case FILE_NAME_NULL:
+                failDialog().setMessage(R.string.file_name_not_null).create().show();
+                return false;
+            case FILE_NAME_ILLEGAL:
+                failDialog().setMessage(R.string.file_name_illegal).create().show();
+                return false;
+            case FILE_NAME_WARNING:
+                DialogInterface.OnClickListener okClick = new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mConfirm = rename(f, text);
+                    }
+                };
+                DialogInterface.OnClickListener cancelClick =
+                    new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mConfirm = false;
+                    }
+                };
+                warnDialog(okClick, cancelClick).setMessage(R.string.file_name_warning)
+                                                .create().show();
+                break;
         }
+        return mConfirm;
+    }
+
+    private boolean rename(FileInfo f, String text) {
         String newPath = Util.makePath(Util.getPathFromFilepath(f.filePath), text);
         if (f.filePath.equals(newPath)) {
             return true;
@@ -528,20 +627,32 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             mFileViewListener.onDataChanged();
         } else {
             new AlertDialog.Builder(mContext)
-                           .setMessage(mContext.getString(R.string.fail_to_rename))
-                           .setPositiveButton(R.string.confirm, null).create().show();
+                    .setMessage(mContext.getString(R.string.fail_to_rename))
+                    .setPositiveButton(R.string.confirm, null).create().show();
             return false;
         }
         refreshFileList();
         return true;
     }
 
-    private boolean isValidFileName(String fileName) {
-        if (fileName == null) {
-            return false;
+    private int isValidFileName(String fileName) {
+        if (TextUtils.isEmpty(fileName)) {
+            return FILE_NAME_NULL;
         } else {
-            return fileName.matches("[^\\s\\\\/:\\*\\?\\\"<>\\|](\\x20|" +
-                                    "[^\\s\\\\/:\\*\\?\\\"<>\\|])*[^\\s\\\\/:\\*\\?\\\"<>\\|\\.]$");
+            if (fileName.indexOf("/") != -1) {
+                return FILE_NAME_ILLEGAL;
+            }
+            for (int i = 0; i < mNameStart.length; i++) {
+                if (fileName.startsWith(mNameStart[i])) {
+                    return FILE_NAME_WARNING;
+                }
+            }
+            for (int i = 0; i < mNameBody.length; i++) {
+                if (fileName.indexOf(mNameBody[i]) != -1) {
+                    return FILE_NAME_WARNING;
+                }
+            }
+            return FILE_NAME_LEGAL;
         }
     }
 

@@ -238,7 +238,7 @@
     <string name="no_app_open_with">没有可以打开此文件的应用。\n请前往应用商店下载。</string>
     <string name="can_not_search">当前路径下不能进行搜索。</string>
     <string name="remove_usb_device">卸载USB设备</string>
-    <string name="fail_name_illegal">文件名含有不合法的字符。</string>
+    <string name="file_name_illegal">文件名含有非法字符 /</string>
     <string name="dialog_delete_yes">是</string>
     <string name="dialog_delete_no">否</string>
     <string name="dialog_decompress_text">桌面已存在"%1$s"，是否继续解压缩（将会覆盖重名文件）？</string>
@@ -249,4 +249,6 @@
     <string name="bind_openthosid">OpenthosID不存在，请绑定OpenthosID</string>
     <string name="init_seafile">系统正启动Seafile中</string>
     <string name="fail_seafile_name">创建文件夹失败，因为已包含同名文件夹 </string>
+    <string name="file_name_not_null">文件名不能为空。</string>
+    <string name="file_name_warning">提示：\n请避免文件名以以下字符开头： + － .\n请避免文件名含有以下字符： @ # $ ^ &amp; * ( ) [ ] Space Tab\n\n确认使用此文件名 ?</string>
 </resources>
