@@ -1685,7 +1685,6 @@ public class MainActivity extends BaseActivity
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mPersonalSpaceFragment);
         fragmentTransaction.commit();
-        mPersonalSpaceFragment.setItemBackGround(Constants.RETURN_TO_WHITE);
         mEt_nivagation.setText("SDCard");
         setSelectedBackground(R.id.tv_computer);
         mCurFragment = mPersonalSpaceFragment;

@@ -1,5 +1,6 @@
 package com.openthos.filemanager.fragment;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.MotionEvent;
@@ -8,6 +9,8 @@ import android.widget.LinearLayout;
 
 import com.openthos.filemanager.BaseFragment;
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.adapter.PersonalAdapter;
+import com.openthos.filemanager.drag.DragGridView;
 import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.system.FileInfo;
 import com.openthos.filemanager.system.FileViewInteractionHub;
@@ -15,79 +18,66 @@ import com.openthos.filemanager.utils.T;
 
 import java.util.ArrayList;
 import java.io.File;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PersonalSpaceFragment extends BaseFragment {
-    private LinearLayout mLlVideos;
-    private LinearLayout mLlPictures;
-    private LinearLayout mLlDocument;
-    private LinearLayout mLlDownload;
-    private LinearLayout mLlMusic;
-    private LinearLayout mLlRecycle;
-    private LinearLayout mLlQqImage;
-    private LinearLayout mLlQqFile;
-    private LinearLayout mLlWeixin;
-    private LinearLayout mLlBaiduPan;
+    private DragGridView mPersonalGrid;
+    private List<String> mPersonalList;
+    private PersonalAdapter mPersonalAdaper;
+    private LinkedHashMap<String, String> mPathMap;
+    private Context mContext;
     private long mCurrentBackTime;
     private double mLastBackTime;
     public Fragment mCurFragment;
+    private GridViewOnGenericMotionListener mMotionListener;
     ArrayList<FileInfo> mFileInfoArrayList = null;
     FileViewInteractionHub.CopyOrMove mCopyOrMove = null;
 
     @Override
     protected void initData() {
-        HashMap<String, LinearLayout> layoutMap = new HashMap<>();
-        layoutMap.put(Constants.QQ_IMAGE_PATH, mLlQqImage);
-        layoutMap.put(Constants.QQ_FILE_PATH, mLlQqFile);
-        layoutMap.put(Constants.WEIXIN_IMG_PATH, mLlWeixin);
-        layoutMap.put(Constants.BAIDU_PAN_PATH, mLlBaiduPan);
-        Iterator iterator = layoutMap.entrySet().iterator();
+        mContext = getActivity();
+        mPersonalList = new ArrayList<>();
+        mMotionListener = new GridViewOnGenericMotionListener();
+        mPathMap = new LinkedHashMap<>();
+        mPathMap.put(getString(R.string.video), Constants.VIDEOS_PATH);
+        mPathMap.put(getString(R.string.picture), Constants.PICTURES_PATH);
+        mPathMap.put(getString(R.string.docement), Constants.DOCUMENT_PATH);
+        mPathMap.put(getString(R.string.downloads), Constants.DOWNLOAD_PATH);
+        mPathMap.put(getString(R.string.music), Constants.MUSIC_PATH);
+        mPathMap.put(getString(R.string.qq_image), Constants.QQ_IMAGE_PATH);
+        mPathMap.put(getString(R.string.qq_file), Constants.QQ_FILE_PATH);
+        mPathMap.put(getString(R.string.winxin), Constants.WEIXIN_IMG_PATH);
+        mPathMap.put(getString(R.string.baidu_disk), Constants.BAIDU_PAN_PATH);
+        Iterator iterator = mPathMap.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry entry = (Map.Entry) iterator.next();
-            String path = (String) entry.getKey();
+            String path = (String) entry.getValue();
             File file = new File(path);
             if (file.exists()) {
-                ((LinearLayout)entry.getValue()).setVisibility(View.VISIBLE);
-            } else {
-                ((LinearLayout)entry.getValue()).setVisibility(View.GONE);
+                mPersonalList.add((String) entry.getKey());
             }
         }
+        mPersonalAdaper = new PersonalAdapter(mContext, mPersonalList, mMotionListener);
+        mPersonalGrid.setAdapter(mPersonalAdaper);
     }
 
     @Override
     protected void initListener() {
-        mLlVideos.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
-        mLlPictures.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
-        mLlDocument.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
-        mLlDownload.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
-        mLlMusic.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
-        mLlRecycle.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
-        mLlQqImage.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
-        mLlQqFile.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
-        mLlWeixin.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
-        mLlBaiduPan.setOnGenericMotionListener(new MouseLinearOnGenericMotionListener());
+        mPersonalGrid.setOnGenericMotionListener(mMotionListener);
     }
-
 
     @Override
     protected void initView() {
-        mLlVideos = (LinearLayout) rootView.findViewById(R.id.ll_personal_videos);
-        mLlPictures = (LinearLayout) rootView.findViewById(R.id.ll_personal_pictures);
-        mLlDocument = (LinearLayout) rootView.findViewById(R.id.ll_personal_document);
-        mLlDownload = (LinearLayout) rootView.findViewById(R.id.ll_personal_downloads);
-        mLlMusic = (LinearLayout) rootView.findViewById(R.id.ll_personal_music);
-        mLlRecycle = (LinearLayout) rootView.findViewById(R.id.ll_personal_recycle);
-        mLlQqImage = (LinearLayout) rootView.findViewById(R.id.ll_personal_qq_image);
-        mLlQqFile = (LinearLayout) rootView.findViewById(R.id.ll_personal_qq_file);
-        mLlWeixin = (LinearLayout) rootView.findViewById(R.id.ll_personal_weixin);
-        mLlBaiduPan = (LinearLayout) rootView.findViewById(R.id.ll_personal_baidudisk);
+        mPersonalGrid = (DragGridView) rootView.findViewById(R.id.personal_fragment_grid);
     }
 
     @Override
     public int getLayoutId() {
-        return R.layout.personal_grid_fragment;
+        return R.layout.personal_fragments_layout;
+
     }
 
     @Override
@@ -110,12 +100,28 @@ public class PersonalSpaceFragment extends BaseFragment {
         }
     }
 
-    private class MouseLinearOnGenericMotionListener implements View.OnGenericMotionListener {
+    public class GridViewOnGenericMotionListener implements View.OnGenericMotionListener {
+        List<Integer> integerList;
         @Override
         public boolean onGenericMotion(View v, MotionEvent event) {
+            integerList = mPersonalAdaper.getSelectFileInfoList();
             switch (event.getButtonState()) {
                 case MotionEvent.BUTTON_PRIMARY:
-                    primaryClick(v);
+                    if (v.getTag() instanceof PersonalAdapter.ViewHolder) {
+                        int pos = (int) ((PersonalAdapter.ViewHolder) v.getTag()).name.getTag();
+                        if (integerList.contains(pos)) {
+                            integerList.clear();
+                        }else {
+                            integerList.clear();
+                            integerList.add(pos);
+                        }
+                        mCurrentBackTime = System.currentTimeMillis();
+                        setDiskClickInfo(Constants.LEFT_FAVORITES, pos);
+                        mPersonalAdaper.notifyDataSetChanged();
+                    } else {
+                        integerList.clear();
+                    }
+                    mPersonalAdaper.notifyDataSetChanged();
                     break;
                 case MotionEvent.BUTTON_SECONDARY:
                     break;
@@ -130,63 +136,13 @@ public class PersonalSpaceFragment extends BaseFragment {
         }
     }
 
-    public void primaryClick(View view) {
-        mCurrentBackTime = System.currentTimeMillis();
-        switch (view.getId()) {
-            case R.id.ll_personal_videos:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.VIDEOS_PATH,
-                                                           R.id.ll_personal_videos);
-                break;
-            case R.id.ll_personal_pictures:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.PICTURES_PATH,
-                                                           R.id.ll_personal_pictures);
-                break;
-            case R.id.ll_personal_document:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.DOCUMENT_PATH,
-                                                           R.id.ll_personal_document);
-                break;
-            case R.id.ll_personal_downloads:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.DOWNLOAD_PATH,
-                                                           R.id.ll_personal_downloads);
-                break;
-            case R.id.ll_personal_music:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.MUSIC_PATH,
-                                                           R.id.ll_personal_music);
-                break;
-            case R.id.ll_personal_recycle:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.RECYCLE_PATH,
-                                                           R.id.ll_personal_recycle);
-                break;
-            case R.id.ll_personal_qq_image:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.QQ_IMAGE_PATH,
-                                                           R.id.ll_personal_qq_image);
-                break;
-            case R.id.ll_personal_qq_file:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.QQ_FILE_PATH,
-                                                           R.id.ll_personal_qq_file);
-                break;
-            case R.id.ll_personal_weixin:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.WEIXIN_IMG_PATH,
-                                                           R.id.ll_personal_weixin);
-                break;
-            case R.id.ll_personal_baidudisk:
-                setDiskClickInfo(Constants.LEFT_FAVORITES, Constants.BAIDU_PAN_PATH,
-                                                           R.id.ll_personal_baidudisk);
-                break;
-            default:
-                setItemBackGround(Constants.RETURN_TO_WHITE);
-                break;
-        }
-    }
-
-    private void setDiskClickInfo(String tag, String path, int id) {
+    private void setDiskClickInfo(String tag, int id) {
         if (mCurrentBackTime - mLastBackTime > Constants.DOUBLE_CLICK_INTERVAL_TIME
                 || id != mCurId) {
-            setItemBackGround(id);
             mCurId = id;
             mLastBackTime = mCurrentBackTime;
         } else {
-            enter(tag, path);
+            enter(tag, mPathMap.get(mPersonalList.get(id)));
         }
     }
 
@@ -205,143 +161,5 @@ public class PersonalSpaceFragment extends BaseFragment {
         transaction.hide(mMainActivity.mCurFragment);
         transaction.add(R.id.fl_mian, mCurFragment, Constants.PERSONALSYSTEMSPACE_TAG).commit();
         mMainActivity.mCurFragment = mCurFragment;
-        mCurId = Constants.RETURN_TO_WHITE;
-    }
-
-    public void setItemBackGround(int id) {
-        switch (id) {
-            case  R.id.ll_personal_videos:
-                mLlVideos.setSelected(true);
-                mLlPictures.setSelected(false);
-                mLlDocument.setSelected(false);
-                mLlDownload.setSelected(false);
-                mLlMusic.setSelected(false);
-                mLlRecycle.setSelected(false);
-                mLlQqImage.setSelected(false);
-                mLlQqFile.setSelected(false);
-                mLlWeixin.setSelected(false);
-                mLlBaiduPan.setSelected(false);
-            break;
-            case  R.id.ll_personal_pictures:
-                mLlVideos.setSelected(false);
-                mLlPictures.setSelected(true);
-                mLlDocument.setSelected(false);
-                mLlDownload.setSelected(false);
-                mLlMusic.setSelected(false);
-                mLlRecycle.setSelected(false);
-                mLlQqImage.setSelected(false);
-                mLlQqFile.setSelected(false);
-                mLlWeixin.setSelected(false);
-                mLlBaiduPan.setSelected(false);
-            break;
-            case  R.id.ll_personal_document:
-                mLlVideos.setSelected(false);
-                mLlPictures.setSelected(false);
-                mLlDocument.setSelected(true);
-                mLlDownload.setSelected(false);
-                mLlMusic.setSelected(false);
-                mLlRecycle.setSelected(false);
-                mLlQqImage.setSelected(false);
-                mLlQqFile.setSelected(false);
-                mLlWeixin.setSelected(false);
-                mLlBaiduPan.setSelected(false);
-            break;
-            case  R.id.ll_personal_downloads:
-                mLlVideos.setSelected(false);
-                mLlPictures.setSelected(false);
-                mLlDocument.setSelected(false);
-                mLlDownload.setSelected(true);
-                mLlMusic.setSelected(false);
-                mLlRecycle.setSelected(false);
-                mLlQqImage.setSelected(false);
-                mLlQqFile.setSelected(false);
-                mLlWeixin.setSelected(false);
-                mLlBaiduPan.setSelected(false);
-            break;
-            case R.id.ll_personal_music :
-                mLlVideos.setSelected(false);
-                mLlPictures.setSelected(false);
-                mLlDocument.setSelected(false);
-                mLlDownload.setSelected(false);
-                mLlMusic.setSelected(true);
-                mLlRecycle.setSelected(false);
-                mLlQqImage.setSelected(false);
-                mLlQqFile.setSelected(false);
-                mLlWeixin.setSelected(false);
-                mLlBaiduPan.setSelected(false);
-            break;
-            case R.id.ll_personal_recycle :
-                mLlVideos.setSelected(false);
-                mLlPictures.setSelected(false);
-                mLlDocument.setSelected(false);
-                mLlDownload.setSelected(false);
-                mLlMusic.setSelected(false);
-                mLlRecycle.setSelected(true);
-                mLlQqImage.setSelected(false);
-                mLlQqFile.setSelected(false);
-                mLlWeixin.setSelected(false);
-                mLlBaiduPan.setSelected(false);
-                break;
-            case  R.id.ll_personal_qq_image:
-                mLlVideos.setSelected(false);
-                mLlPictures.setSelected(false);
-                mLlDocument.setSelected(false);
-                mLlDownload.setSelected(false);
-                mLlMusic.setSelected(false);
-                mLlRecycle.setSelected(false);
-                mLlQqImage.setSelected(true);
-                mLlQqFile.setSelected(false);
-                mLlWeixin.setSelected(false);
-                mLlBaiduPan.setSelected(false);
-            break;
-            case  R.id.ll_personal_qq_file:
-                mLlVideos.setSelected(false);
-                mLlPictures.setSelected(false);
-                mLlDocument.setSelected(false);
-                mLlDownload.setSelected(false);
-                mLlMusic.setSelected(false);
-                mLlRecycle.setSelected(false);
-                mLlQqImage.setSelected(false);
-                mLlQqFile.setSelected(true);
-                mLlWeixin.setSelected(false);
-                mLlBaiduPan.setSelected(false);
-            break;
-            case  R.id.ll_personal_weixin:
-                mLlVideos.setSelected(false);
-                mLlPictures.setSelected(false);
-                mLlDocument.setSelected(false);
-                mLlDownload.setSelected(false);
-                mLlMusic.setSelected(false);
-                mLlRecycle.setSelected(false);
-                mLlQqImage.setSelected(false);
-                mLlQqFile.setSelected(false);
-                mLlWeixin.setSelected(true);
-                mLlBaiduPan.setSelected(false);
-                break;
-            case  R.id.ll_personal_baidudisk:
-                mLlVideos.setSelected(false);
-                mLlPictures.setSelected(false);
-                mLlDocument.setSelected(false);
-                mLlDownload.setSelected(false);
-                mLlMusic.setSelected(false);
-                mLlRecycle.setSelected(false);
-                mLlQqImage.setSelected(false);
-                mLlQqFile.setSelected(false);
-                mLlWeixin.setSelected(false);
-                mLlBaiduPan.setSelected(true);
-                break;
-            case  Constants.RETURN_TO_WHITE:
-                mLlVideos.setSelected(false);
-                mLlPictures.setSelected(false);
-                mLlDocument.setSelected(false);
-                mLlDownload.setSelected(false);
-                mLlMusic.setSelected(false);
-                mLlRecycle.setSelected(false);
-                mLlQqImage.setSelected(false);
-                mLlQqFile.setSelected(false);
-                mLlWeixin.setSelected(false);
-                mLlBaiduPan.setSelected(false);
-                break;
-        }
     }
 }

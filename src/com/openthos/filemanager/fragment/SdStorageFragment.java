@@ -396,7 +396,6 @@ public class SdStorageFragment extends BaseFragment {
         if (Constants.PERSONAL_TAG.equals(tag)) {
             mMainActivity.setNavigationPath("SDCard");
             transaction.show(mMainActivity.mPersonalSpaceFragment).commit();
-            mMainActivity.mPersonalSpaceFragment.setItemBackGround(Constants.RETURN_TO_WHITE);
             mCurFragment = mMainActivity.mPersonalSpaceFragment;
         } else {
             mCurFragment = new SystemSpaceFragment(tag, path,
