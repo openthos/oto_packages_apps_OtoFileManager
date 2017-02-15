@@ -5,8 +5,6 @@
     android:id="@+id/file_browse_frame"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
     android:orientation="vertical">
 
     <FrameLayout
@@ -28,8 +26,12 @@
             android:id="@+id/file_path_grid"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
-            android:verticalSpacing="10dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:stretchMode="columnWidth"
+            android:horizontalSpacing="0dp"
+            android:paddingTop="10dp"
+            android:verticalSpacing="0dp"
             android:visibility="gone"
             android:numColumns="8"
             android:scrollbars="none" />

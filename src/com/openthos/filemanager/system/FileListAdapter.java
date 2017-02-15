@@ -10,6 +10,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.drag.DragGridView;
+import com.openthos.filemanager.drag.DragListView;
 import com.openthos.filemanager.fragment.SearchFragment;
 import com.openthos.filemanager.fragment.SystemSpaceFragment;
 import com.openthos.filemanager.utils.LocalCache;
@@ -26,9 +28,13 @@ public class FileListAdapter extends BaseAdapter {
     private List<FileInfo> fileInfoList;
     private List<Integer> selectFileInfoListIndex = new ArrayList<>();
     private SystemSpaceFragment.GridViewOnGenericMotionListener mMotionListener;
+    private int mLeft, mTop, mWidth, mHeight, mSpace, mNumColumns;
+    private int mColumnWidth = 167;
+    private View mView;
+
     public FileListAdapter(Context context, int resource,
                            List<FileInfo> objects, FileViewInteractionHub f,
-                           FileIconHelper fileIcon,
+                           FileIconHelper fileIcon, View view,
                            SystemSpaceFragment.GridViewOnGenericMotionListener motionListener) {
         fileInfoList = objects;
         layoutId = resource;
@@ -36,6 +42,7 @@ public class FileListAdapter extends BaseAdapter {
         mFileViewInteractionHub = f;
         mFileIcon = fileIcon;
         mContext = context;
+        mView = view;
         mMotionListener = motionListener;
     }
 
@@ -74,11 +81,28 @@ public class FileListAdapter extends BaseAdapter {
             viewHolder = new ViewHolder(convertView);
             convertView.setTag(viewHolder);
             convertView.setOnTouchListener(mMotionListener);
+            if (mView instanceof DragGridView) {
+                DragGridView gridView = (DragGridView) mView;
+                mLeft = gridView.getPaddingLeft();
+                mTop = gridView.getPaddingTop();
+                //mColumnWidth = gridView.getColumnWidth();
+                mNumColumns = gridView.getNumColumns();
+            }
+            //mWidth = convertView.getWidth();
+            //mHeight = convertView.getHeight();
+            mWidth = 135;
+            mHeight = 130;
+            mSpace = mColumnWidth - mWidth;
         }
         viewHolder = (ViewHolder) convertView.getTag();
         viewHolder.name.setTag(position);
 
-        final FileInfo lFileInfo = fileInfoList.get(position);
+        FileInfo lFileInfo = fileInfoList.get(position);
+        lFileInfo.left = mLeft + (position % mNumColumns) * (mSpace + mWidth);
+        lFileInfo.top = mTop + (position / mNumColumns) * mHeight;
+        lFileInfo.right = mLeft + mWidth + (position % mNumColumns) * (mSpace + mWidth);
+        lFileInfo.bottom = mTop + mHeight + (position / mNumColumns) * mHeight;
+
         FileListItem.setupFileListItemInfo(mContext, convertView, position, lFileInfo,
                 mFileIcon, mFileViewInteractionHub);
         LinearLayout background = (LinearLayout)convertView;

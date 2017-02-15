@@ -19,6 +19,7 @@ import android.widget.FrameLayout;
 import com.openthos.filemanager.BaseFragment;
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.component.FrameSelectView;
 import com.openthos.filemanager.drag.DragGridView;
 import com.openthos.filemanager.drag.DragListView;
 import com.openthos.filemanager.system.Constants;
@@ -115,6 +116,9 @@ public class SystemSpaceFragment extends BaseFragment implements
         }
     };
     private GridViewOnGenericMotionListener mMotionListener;
+    private FrameSelectView mFrameSelectView;
+    private List<FileInfo> fileInfoList;
+    private List<FileInfo> mFileListInfo;
 
     private void selectorMenuId(String tag) {
         if (mFileViewInteractionHub.getSelectedFileList() != null) {
@@ -191,7 +195,11 @@ public class SystemSpaceFragment extends BaseFragment implements
     }
 
     protected void initView() {
+        mActivity = getActivity();
+        mMainActivity = (MainActivity) getActivity();
         mFragmentSysFl = (FrameLayout) rootView.findViewById(R.id.fragment_sys_fl);
+        mFrameSelectView = new FrameSelectView(mMainActivity);
+        mFragmentSysFl.addView(mFrameSelectView);
         mEmptyView = rootView.findViewById(R.id.empty_view);
         mSdCardReady = Util.isSDCardReady();
         mNoSdView = rootView.findViewById(R.id.sd_not_available_page);
@@ -210,8 +218,6 @@ public class SystemSpaceFragment extends BaseFragment implements
     }
 
     protected void initData() {
-        mActivity = getActivity();
-        mMainActivity = (MainActivity) getActivity();
         mFileCagetoryHelper = new FileCategoryHelper(mActivity);
         mFileViewInteractionHub = new FileViewInteractionHub(this);
         mMotionListener = new GridViewOnGenericMotionListener();
@@ -221,11 +227,11 @@ public class SystemSpaceFragment extends BaseFragment implements
         if ("list".equals(LocalCache.getViewTag())) {
             mAdapter = new FileListAdapter(mActivity, R.layout.file_browser_item_list,
                                            mFileNameList, mFileViewInteractionHub,
-                                           mFileIconHelper, mMotionListener);
+                                           mFileIconHelper, file_path_list,mMotionListener);
         } else if ("grid".equals(LocalCache.getViewTag())) {
             mAdapter = new FileListAdapter(mActivity, R.layout.file_browser_item_grid,
                                            mFileNameList, mFileViewInteractionHub,
-                                           mFileIconHelper, mMotionListener);
+                                           mFileIconHelper, file_path_grid, mMotionListener);
         }
 
         boolean baseSd = intent.getBooleanExtra(Constants.KEY_BASE_SD,
@@ -268,6 +274,7 @@ public class SystemSpaceFragment extends BaseFragment implements
         initReciever();
         updateUI();
         setHasOptionsMenu(true);
+        mFileListInfo = mAdapter.getFileInfoList();
     }
 
     @Override
@@ -325,13 +332,18 @@ public class SystemSpaceFragment extends BaseFragment implements
     public class GridViewOnGenericMotionListener implements View.OnTouchListener {
         private boolean mIsShowDialog = false;
         private boolean mIsItem = false;
-        List<Integer> integerList;
+        private List<Integer> integerList;
+        private float mDownX, mDownY, mMoveX, mMoveY;
+        private boolean isMove;
+        private List<Integer> list = new ArrayList<>();
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             integerList = mAdapter.getSelectFileInfoList();
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
+                    mDownX = motionEvent.getX();
+                    mDownY = motionEvent.getY();
                     if (view.getTag() instanceof FileListAdapter.ViewHolder) {
                         if (motionEvent.getButtonState() == MotionEvent.BUTTON_SECONDARY) {
                             mIsShowDialog = true;
@@ -368,7 +380,38 @@ public class SystemSpaceFragment extends BaseFragment implements
                         }
                     }
                     break;
+                case MotionEvent.ACTION_MOVE:
+                    isMove = true;
+                    mFrameSelectView.setVisibility(View.VISIBLE);
+                    mMoveX = motionEvent.getX();
+                    mMoveY = motionEvent.getY();
+                    mFrameSelectView.setPositionCoordinate(mDownX < mMoveX? mDownX : mMoveX,
+                            mDownY < mMoveY? mDownY : mMoveY,
+                            mDownX > mMoveX? mDownX : mMoveX, mDownY > mMoveY? mDownY : mMoveY);
+                    mFrameSelectView.invalidate();
+                    int i;
+                    FileInfo info;
+                    for (i = 0; i < mFileListInfo.size(); i++) {
+                        info = mFileListInfo.get(i);
+                        if (frameSelectionJudge(info, mDownX, mDownY, mMoveX, mMoveY)) {
+                            info.Selected = true;
+                            if (!integerList.contains(i)) {
+                                integerList.add(i);
+                            }
+                        } else {
+                            if (integerList.contains(i)) {
+                                integerList.remove(new Integer(i));
+                            }
+                        }
+                    }
+                    if (!(list.containsAll(integerList) && list.size() == integerList.size())) {
+                        mAdapter.notifyDataSetChanged();
+                    }
+                    list.clear();
+                    list.addAll(integerList);
+                    break;
                 case MotionEvent.ACTION_UP:
+                    mFrameSelectView.setVisibility(View.INVISIBLE);
                     FileInfo fileInfo = null;
                     if (mPos != -1) {
                          fileInfo = mAdapter.getFileInfoList().get(mPos);
@@ -392,6 +435,24 @@ public class SystemSpaceFragment extends BaseFragment implements
                     } else {
                         integerList.clear();
                         mFileViewInteractionHub.clearSelection();
+                    }
+                    float upX = motionEvent.getX();
+                    float upY = motionEvent.getY();
+                    if (isMove) {
+                        isMove = false;
+                        for (i = 0; i < mFileListInfo.size(); i++) {
+                            info = mFileListInfo.get(i);
+                            if (frameSelectionJudge(info, mDownX, mDownY, upX, upY)) {
+                                info.Selected = true;
+                                if (!integerList.contains(i)) {
+                                    integerList.add(i);
+                                    mFileViewInteractionHub.addDialogSelectedItem(info);
+                                } else {
+                                    integerList.remove(new Integer(i));
+                                    mFileViewInteractionHub.removeDialogSelectedItem(info);
+                                }
+                            }
+                        }
                     }
                     mAdapter.notifyDataSetChanged();
                     mouseRightTag = "mouse";
@@ -419,6 +480,20 @@ public class SystemSpaceFragment extends BaseFragment implements
             }
             return false;
         }
+    }
+
+    private boolean frameSelectionJudge(FileInfo info, float downX, float downY,
+                                                       float toX, float toY) {
+        return (((info.left >= Math.min(downX, toX) && info.left <= Math.max(downX, toX))
+              || (info.right >= Math.min(downX, toX) && info.right <= Math.max(downX, toX)))
+              && ((info.top >= Math.min(downY, toY) && info.top <= Math.max(downY, toY))
+              || (info.bottom >= Math.min(downY, toY) && info.bottom <= Math.max(downY, toY))))
+              || (((info.left <= Math.min(downX, toX) && info.right >= Math.max(downX, toX))
+              && ((info.top >= Math.min(downY, toY) && info.top <= Math.max(downY, toY))
+              || (info.bottom >= Math.min(downY, toY) && info.bottom <= Math.max(downY, toY))))
+              || ((info.top <= Math.min(downY, toY) && info.bottom >= Math.max(downY, toY))
+              && ((info.left >= Math.min(downX, toX) && info.left <= Math.max(downX, toX))
+              || (info.right >= Math.min(downX, toX) && info.right <= Math.max(downX, toX)))));
     }
 
     private void operatorData() {
