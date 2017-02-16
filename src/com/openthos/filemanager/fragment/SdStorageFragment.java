@@ -127,15 +127,21 @@ public class SdStorageFragment extends BaseFragment {
     }
 
     public void hideMountSpaceOne() {
-        mRl_mount_space_one.setVisibility(View.GONE);
+        if (mRl_mount_space_one != null) {
+            mRl_mount_space_one.setVisibility(View.GONE);
+        }
     }
 
     public void hideMountSpaceTwo() {
-        mRl_mount_space_two.setVisibility(View.GONE);
+        if (mRl_mount_space_two != null) {
+            mRl_mount_space_two.setVisibility(View.GONE);
+        }
     }
 
     public void hideMountSpaceThree() {
-        mRl_mount_space_three.setVisibility(View.GONE);
+        if (mRl_mount_space_three != null) {
+            mRl_mount_space_three.setVisibility(View.GONE);
+        }
     }
 
     private void setVolumSize() {
@@ -213,17 +219,17 @@ public class SdStorageFragment extends BaseFragment {
                             mRl_mount_space_two.setOnGenericMotionListener
                                     (new MouseRelativeOnGenericMotionListener());
                             mMainActivity.mHandler.sendEmptyMessage(Constants.USB2_READY);
-                            if (list.size() >= 3) {
-                                String[] usb3 = list.get(2);
-                                mountPathThree = usb3[0];
-                                if (usb3 != null && usb3.length > 0) {
-                                    showMountDevices(usb3, 3);
-                                    mRl_mount_space_three.setVisibility(View.VISIBLE);
-                                    mRl_mount_space_three.setOnGenericMotionListener
-                                            (new MouseRelativeOnGenericMotionListener());
-                                    mMainActivity.mHandler.sendEmptyMessage(Constants.USB3_READY);
-                                }
-                            }
+                           // if (list.size() >= 3) {
+                           //     String[] usb3 = list.get(2);
+                           //     mountPathThree = usb3[0];
+                           //     if (usb3 != null && usb3.length > 0) {
+                           //         showMountDevices(usb3, 3);
+                           //         mRl_mount_space_three.setVisibility(View.VISIBLE);
+                           //         mRl_mount_space_three.setOnGenericMotionListener
+                           //                 (new MouseRelativeOnGenericMotionListener());
+                           //         mMainActivity.mHandler.sendEmptyMessage(Constants.USB3_READY);
+                           //     }
+                           // }
                         }
                     }
                 }
@@ -344,6 +350,13 @@ public class SdStorageFragment extends BaseFragment {
             case R.id.rl_mount_space_one:
                 showDiskDialog(view, event, true);
                 break;
+            case R.id.rl_mount_space_two:
+                showDiskDialog(view, event, true);
+                break;
+            case R.id.rl_mount_space_three:
+                showDiskDialog(view, event, true);
+                break;
+
             default:
                 showDiskDialog(view, event,false);
                 break;
@@ -376,6 +389,22 @@ public class SdStorageFragment extends BaseFragment {
             enter(Constants.USB_SPACE_FRAGMENT, mountPathTwo);
         } else if (mCurId == R.id.rl_mount_space_three) {
             enter(Constants.USB_SPACE_FRAGMENT, mountPathThree);
+        }
+    }
+
+   public void uninstallUSB() {
+        switch (mCurId) {
+            case R.id.rl_mount_space_one:
+                mMainActivity.uninstallUSB(Constants.USB_ONE);
+                break;
+            case R.id.rl_mount_space_two:
+                mMainActivity.uninstallUSB(Constants.USB_TWO);
+                break;
+            case R.id.rl_mount_space_three:
+                mMainActivity.uninstallUSB(Constants.USB_THREE);
+                break;
+            default:
+                break;
         }
     }
 

@@ -37,7 +37,7 @@ LOCAL_PROTOC_OPTIMIZE_TYPE := nano
 
 LOCAL_PROTOC_FLAGS := --proto_path=$(LOCAL_PATH)/protos/
 
-LOCAL_SDK_VERSION := current
+#LOCAL_SDK_VERSION := current
 
 LOCAL_PACKAGE_NAME := OtoFileManager
 #LOCAL_CERTIFICATE := shared

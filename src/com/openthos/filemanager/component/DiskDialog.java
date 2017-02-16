@@ -127,9 +127,10 @@ public class DiskDialog extends Dialog {
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             String content = (String) view.getTag();
             if (mContext.getString(R.string.umount).equals(content)) {
-                mMainActivity.uninstallUSB(1);
+                ((SdStorageFragment) (((MainActivity)
+                                               mContext).getVisibleFragment())).uninstallUSB();
             } else if (mContext.getString(R.string.operation_open).equals(content)) {
-                ((SdStorageFragment)(((MainActivity)mContext).getVisibleFragment())).enter();
+                ((SdStorageFragment) (((MainActivity) mContext).getVisibleFragment())).enter();
             }
             dismiss();
         }
