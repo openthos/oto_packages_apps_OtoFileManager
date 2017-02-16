@@ -31,7 +31,7 @@
             android:stretchMode="columnWidth"
             android:horizontalSpacing="0dp"
             android:paddingTop="10dp"
-            android:verticalSpacing="0dp"
+            android:verticalSpacing="20dp"
             android:visibility="gone"
             android:numColumns="8"
             android:scrollbars="none" />

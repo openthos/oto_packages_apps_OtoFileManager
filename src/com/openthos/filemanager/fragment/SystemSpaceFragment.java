@@ -227,11 +227,11 @@ public class SystemSpaceFragment extends BaseFragment implements
         if ("list".equals(LocalCache.getViewTag())) {
             mAdapter = new FileListAdapter(mActivity, R.layout.file_browser_item_list,
                                            mFileNameList, mFileViewInteractionHub,
-                                           mFileIconHelper, file_path_list,mMotionListener);
+                                           mFileIconHelper, mMotionListener);
         } else if ("grid".equals(LocalCache.getViewTag())) {
             mAdapter = new FileListAdapter(mActivity, R.layout.file_browser_item_grid,
                                            mFileNameList, mFileViewInteractionHub,
-                                           mFileIconHelper, file_path_grid, mMotionListener);
+                                           mFileIconHelper, mMotionListener);
         }
 
         boolean baseSd = intent.getBooleanExtra(Constants.KEY_BASE_SD,
@@ -336,9 +336,16 @@ public class SystemSpaceFragment extends BaseFragment implements
         private float mDownX, mDownY, mMoveX, mMoveY;
         private boolean isMove;
         private List<Integer> list = new ArrayList<>();
+        private boolean isFirstTouch = true;
+        private boolean hehe;
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
+            if (isFirstTouch) {
+                calculateFileLocation();
+                isFirstTouch = false;
+            }
+
             integerList = mAdapter.getSelectFileInfoList();
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -965,5 +972,20 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     public boolean getSortTag(Enum sort) {
         return mSortMap.get(sort);
+    }
+
+    public void calculateFileLocation() {
+        int[] gridViewParams = file_path_grid.getParams();
+        int[] itemParams = mAdapter.getParams();
+        for (int i = 0; i < mFileListInfo.size(); i++) {
+            mFileListInfo.get(i).left = gridViewParams[0]
+                    + (i % gridViewParams[4]) * (gridViewParams[2]);
+            mFileListInfo.get(i).top = gridViewParams[1] + (i / gridViewParams[4])
+                    * (itemParams[1] + gridViewParams[3]);
+            mFileListInfo.get(i).right = gridViewParams[0] + itemParams[0]
+                    + (i % gridViewParams[4]) * (gridViewParams[2]);
+            mFileListInfo.get(i).bottom = gridViewParams[1] + itemParams[1]
+                    + (i / gridViewParams[4]) * (itemParams[1] + gridViewParams[3]);
+        }
     }
 }

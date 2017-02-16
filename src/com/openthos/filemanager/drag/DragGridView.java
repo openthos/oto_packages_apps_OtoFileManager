@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.os.Handler;
@@ -39,12 +40,13 @@ public class DragGridView extends GridView {
     private int mPoint2ItemLeft;
     private int mOffset2Top;
     private int mOffset2Left;
-    private int mStatusHeight;
+    public int mStatusHeight;
     private int mDownScrollBorder;
     private int mUpScrollBorder;
     private static final int speed = 80;
     private OnChanageListener onChanageListener;
     private int tempPosition;
+    private int mPaddingLeft, mPaddingTop, mColumnWidth, mVerticalSpace, mNumColumns;
 
     public DragGridView(Context context) {
         this(context, null);
@@ -243,5 +245,24 @@ public class DragGridView extends GridView {
 
     public boolean isBlankArea() {
         return mIsBlankArea;
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        setParams(getPaddingLeft(), getPaddingTop(),
+                  getColumnWidth(), getVerticalSpacing(), getNumColumns());
+     }
+
+    private void setParams(int left, int top, int width, int space, int numColumns) {
+        mPaddingLeft = left;
+        mPaddingTop = top;
+        mColumnWidth = width;
+        mVerticalSpace = space;
+        mNumColumns = numColumns;
+    }
+
+    public int[] getParams() {
+        return new int[] {mPaddingLeft, mPaddingTop, mColumnWidth, mVerticalSpace, mNumColumns};
     }
 }
