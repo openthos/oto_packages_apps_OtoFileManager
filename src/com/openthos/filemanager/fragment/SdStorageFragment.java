@@ -64,7 +64,6 @@ public class SdStorageFragment extends BaseFragment {
     private TextView tv_usb_total_three;
     private TextView tv_usb_avail_three;
     private ProgressBar pb_usb_three;
-    private ProgressBar pb_service;
 
     public BaseFragment mCurFragment;
 //    FragmentmManager mManager = getFragmentmManager();
@@ -123,7 +122,6 @@ public class SdStorageFragment extends BaseFragment {
         pb_usb_one = (ProgressBar) rootView.findViewById(R.id.pb_usb_one);
         pb_usb_two = (ProgressBar) rootView.findViewById(R.id.pb_usb_two);
         pb_usb_three = (ProgressBar) rootView.findViewById(R.id.pb_usb_three);
-        pb_service = (ProgressBar) rootView.findViewById(R.id.pb_service);
     }
 
     public void hideMountSpaceOne() {
