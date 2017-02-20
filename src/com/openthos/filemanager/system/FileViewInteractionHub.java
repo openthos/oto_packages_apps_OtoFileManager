@@ -42,7 +42,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     private static final int FILE_NAME_ILLEGAL = 2;
     private static final int FILE_NAME_WARNING = 3;
     private String[] mNameStart = {"+", "-", "."};
-    private String[] mNameBody = {"@", "#", "$", "^", "&", "*", "(", ")", "[", "]", " ", "\t"};
+    private String[] mNameBody = {"@", "#", "$", "^", "&", "*", "(", ")", "[", "]"};
     private static final String LOG_TAG = "FileViewInteractionHub";
     private IFileInteractionListener mFileViewListener;
     public static Map<String,Integer> saveMulti = new HashMap<>();
