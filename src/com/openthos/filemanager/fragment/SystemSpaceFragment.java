@@ -347,6 +347,7 @@ public class SystemSpaceFragment extends BaseFragment implements
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
+            mMainActivity.clearNivagateFocus();
             integerList = mAdapter.getSelectFileInfoList();
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:

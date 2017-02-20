@@ -1009,6 +1009,7 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onClick(View view) {
+        clearNivagateFocus();
         switch (view.getId()) {
             case R.id.tv_desk:
                 setFileInfo(R.id.tv_desk, Constants.DESKTOP_PATH, mDeskFragment);
@@ -1807,6 +1808,7 @@ public class MainActivity extends BaseActivity
         }
         @Override
         public void onClick(View view) {
+            clearNivagateFocus();
             DismissPopwindow();
             switch (view.getId()) {
                 case R.id.pop_usb_view:
@@ -1829,6 +1831,7 @@ public class MainActivity extends BaseActivity
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
+        clearNivagateFocus();
         if (motionEvent.getButtonState() == MotionEvent.BUTTON_SECONDARY) {
             switch (view.getId()) {
                case R.id.tv_storage_one:
@@ -1894,5 +1897,10 @@ public class MainActivity extends BaseActivity
             mCustomFileObserver = new CustomFileObserver(path);
             mCustomFileObserver.startWatching();
         }
+    }
+
+    public void clearNivagateFocus(){
+        mEt_search_view.clearFocus();
+        mEt_nivagation.clearFocus();
     }
 }

@@ -104,6 +104,7 @@ public class PersonalSpaceFragment extends BaseFragment {
         List<Integer> integerList;
         @Override
         public boolean onGenericMotion(View v, MotionEvent event) {
+            mMainActivity.clearNivagateFocus();
             integerList = mPersonalAdaper.getSelectFileInfoList();
             switch (event.getButtonState()) {
                 case MotionEvent.BUTTON_PRIMARY:

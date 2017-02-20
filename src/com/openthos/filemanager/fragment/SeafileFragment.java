@@ -118,6 +118,7 @@ public class SeafileFragment extends BaseFragment {
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
+            mMainActivity.clearNivagateFocus();
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     if (view.getTag() instanceof SeafileAdapter.ViewHolder) {

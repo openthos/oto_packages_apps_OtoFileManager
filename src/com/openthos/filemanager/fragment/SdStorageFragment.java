@@ -258,9 +258,11 @@ public class SdStorageFragment extends BaseFragment {
         public boolean onGenericMotion(View v, MotionEvent event) {
             switch (event.getButtonState()) {
                 case MotionEvent.BUTTON_PRIMARY:
+                    mMainActivity.clearNivagateFocus();
                     primaryClick(v);
                     break;
                 case MotionEvent.BUTTON_SECONDARY:
+                    mMainActivity.clearNivagateFocus();
                     secondaryClick(v, event);
                     break;
                 case MotionEvent.BUTTON_TERTIARY:
