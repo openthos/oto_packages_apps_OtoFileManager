@@ -354,12 +354,17 @@ public class SystemSpaceFragment extends BaseFragment implements
                     calculateFileLocation();
                     mDownX = motionEvent.getX();
                     mDownY = motionEvent.getY();
-                    if (view.getTag() instanceof FileListAdapter.ViewHolder) {
+                    if (view.getTag() instanceof FileListAdapter.ViewHolder
+                            || view.getId() == R.id.file_name) {
                         if (motionEvent.getButtonState() == MotionEvent.BUTTON_SECONDARY) {
                             mIsShowDialog = true;
                             mIsItem = true;
                         }
-                        mPos = (int) ((FileListAdapter.ViewHolder) view.getTag()).name.getTag();
+                        if (view.getId() == R.id.file_name) {
+                            mPos = (int) view.getTag();
+                        } else {
+                            mPos = (int) ((FileListAdapter.ViewHolder) view.getTag()).name.getTag();
+                        }
                         if (motionEvent.getButtonState() == MotionEvent.BUTTON_PRIMARY) {
                             mouseRightTag = "button_primary";
                         }
@@ -646,6 +651,8 @@ public class SystemSpaceFragment extends BaseFragment implements
                 }
             });
         }
+        mAdapter.getSelectFileInfoList().clear();
+        mAdapter.notifyDataSetChanged();
         return true;
     }
 

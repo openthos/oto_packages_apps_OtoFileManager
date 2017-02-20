@@ -467,7 +467,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 
     public void onOperationCopy(ArrayList<FileInfo> files) {
         mFileOperationHelper.Copy(files);
-//        clearSelection();
 //        showConfirmOperationBar(true);
 //        View confirmButton = mConfirmOperationBar.findViewById(R.id.button_moving_confirm);
 //        confirmButton.setEnabled(false);
@@ -567,7 +566,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             return;
 
         final FileInfo f = getSelectedFileList().get(0);
-        clearSelection();
 
         TextInputDialog dialog = new TextInputDialog(mContext,
                                      mContext.getString(R.string.operation_rename),
@@ -727,7 +725,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        clearSelection();
                     }
                 }).create();
         dialog.setCancelable(false);
@@ -755,7 +752,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        clearSelection();
                     }
                 }).create();
         dialog.setCancelable(false);
@@ -833,7 +829,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         //dialog.show();
         PropertyDialog propertyDialog = new PropertyDialog(mContext, file.filePath);
         propertyDialog.showDialog();
-        clearSelection();
     }
 
     public void onOperationButtonConfirm() {
@@ -861,7 +856,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         }
         CompressDialog compressDialog = new CompressDialog(mContext, file.filePath);
         compressDialog.showDialog();
-        clearSelection();
     }
 
     public void onOperationDecompress() {
@@ -920,7 +914,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         if (isSelectingFiles()) {
             mSelectFilesCallback.selected(null);
             mSelectFilesCallback = null;
-            clearSelection();
         } else if (mFileOperationHelper.isMoveState()) {
             // refresh to show previously selected hidden files
             mFileOperationHelper.EndMove(null);

@@ -83,6 +83,7 @@ public class FileListAdapter extends BaseAdapter {
         }
         viewHolder = (ViewHolder) convertView.getTag();
         viewHolder.name.setTag(position);
+        viewHolder.name.setOnTouchListener(mMotionListener);
 
         FileInfo lFileInfo = fileInfoList.get(position);
 

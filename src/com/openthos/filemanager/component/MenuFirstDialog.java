@@ -245,7 +245,6 @@ public class MenuFirstDialog extends Dialog {
                 mFileViewInteractionHub.onOperationDecompress();
             }
             if (!TextUtils.isEmpty(content)) {
-                mFileViewInteractionHub.clearSelection();
                 mFileViewInteractionHub.dismissContextDialog();
             }
         }
