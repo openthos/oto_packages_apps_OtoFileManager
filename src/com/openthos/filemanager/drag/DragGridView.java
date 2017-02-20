@@ -40,7 +40,7 @@ public class DragGridView extends GridView {
     private int mPoint2ItemLeft;
     private int mOffset2Top;
     private int mOffset2Left;
-    private int mStatusHeight;
+    public int mStatusHeight;
     private int mDownScrollBorder;
     private int mUpScrollBorder;
     private static final int speed = 80;

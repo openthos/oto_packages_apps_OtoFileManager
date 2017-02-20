@@ -119,13 +119,6 @@ public class SystemSpaceFragment extends BaseFragment implements
     private FrameSelectView mFrameSelectView;
     private List<FileInfo> fileInfoList;
     private List<FileInfo> mFileListInfo;
-    private int GRID_LEFT_POS = 0;
-    private int GRID_TOP_POS = 1;
-    private int GRID_WIDTH_POS = 2;
-    private int GRID_SPACE_POS = 3;
-    private int GRID_NUMCOLUMNS_POS = 4;
-    private int ADAPTER_WIDTH_POS = 0;
-    private int ADAPTER_HEIGHT_POS = 1;
 
     private void selectorMenuId(String tag) {
         if (mFileViewInteractionHub.getSelectedFileList() != null) {
@@ -343,14 +336,19 @@ public class SystemSpaceFragment extends BaseFragment implements
         private float mDownX, mDownY, mMoveX, mMoveY;
         private boolean isMove;
         private List<Integer> list = new ArrayList<>();
-        private FileInfo info;
+        private boolean isFirstTouch = true;
+        private boolean hehe;
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
+            if (isFirstTouch) {
+                calculateFileLocation();
+                isFirstTouch = false;
+            }
+
             integerList = mAdapter.getSelectFileInfoList();
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    calculateFileLocation();
                     mDownX = motionEvent.getX();
                     mDownY = motionEvent.getY();
                     if (view.getTag() instanceof FileListAdapter.ViewHolder) {
@@ -390,32 +388,34 @@ public class SystemSpaceFragment extends BaseFragment implements
                     }
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    if (motionEvent.getButtonState() == MotionEvent.BUTTON_SECONDARY) {
-                        return false;
-                    } else {
-                        isMove = true;
-                        mFrameSelectView.setVisibility(View.VISIBLE);
-                        mMoveX = motionEvent.getX();
-                        mMoveY = motionEvent.getY();
-                        mFrameSelectView.setPositionCoordinate(mDownX < mMoveX? mDownX : mMoveX,
-                                mDownY < mMoveY? mDownY : mMoveY,
-                                mDownX > mMoveX? mDownX : mMoveX, mDownY > mMoveY? mDownY : mMoveY);
-                        mFrameSelectView.invalidate();
-                        int i;
-                        integerList.clear();
-                        for (i = 0; i < mFileListInfo.size(); i++) {
-                            info = mFileListInfo.get(i);
-                            if (frameSelectionJudge(info, mDownX, mDownY, mMoveX, mMoveY)) {
-                                info.Selected = true;
+                    isMove = true;
+                    mFrameSelectView.setVisibility(View.VISIBLE);
+                    mMoveX = motionEvent.getX();
+                    mMoveY = motionEvent.getY();
+                    mFrameSelectView.setPositionCoordinate(mDownX < mMoveX? mDownX : mMoveX,
+                            mDownY < mMoveY? mDownY : mMoveY,
+                            mDownX > mMoveX? mDownX : mMoveX, mDownY > mMoveY? mDownY : mMoveY);
+                    mFrameSelectView.invalidate();
+                    int i;
+                    FileInfo info;
+                    for (i = 0; i < mFileListInfo.size(); i++) {
+                        info = mFileListInfo.get(i);
+                        if (frameSelectionJudge(info, mDownX, mDownY, mMoveX, mMoveY)) {
+                            info.Selected = true;
+                            if (!integerList.contains(i)) {
                                 integerList.add(i);
                             }
+                        } else {
+                            if (integerList.contains(i)) {
+                                integerList.remove(new Integer(i));
+                            }
                         }
-                        if (!(list.containsAll(integerList) && list.size() == integerList.size())) {
-                            mAdapter.notifyDataSetChanged();
-                        }
-                        list.clear();
-                        list.addAll(integerList);
                     }
+                    if (!(list.containsAll(integerList) && list.size() == integerList.size())) {
+                        mAdapter.notifyDataSetChanged();
+                    }
+                    list.clear();
+                    list.addAll(integerList);
                     break;
                 case MotionEvent.ACTION_UP:
                     mFrameSelectView.setVisibility(View.INVISIBLE);
@@ -447,8 +447,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                     float upY = motionEvent.getY();
                     if (isMove) {
                         isMove = false;
-                        FileInfo info;
-                        for (int i = 0; i < mFileListInfo.size(); i++) {
+                        for (i = 0; i < mFileListInfo.size(); i++) {
                             info = mFileListInfo.get(i);
                             if (frameSelectionJudge(info, mDownX, mDownY, upX, upY)) {
                                 info.Selected = true;
@@ -979,17 +978,14 @@ public class SystemSpaceFragment extends BaseFragment implements
         int[] gridViewParams = file_path_grid.getParams();
         int[] itemParams = mAdapter.getParams();
         for (int i = 0; i < mFileListInfo.size(); i++) {
-            mFileListInfo.get(i).left = gridViewParams[GRID_LEFT_POS]
-                    + (i % gridViewParams[GRID_NUMCOLUMNS_POS]) * (gridViewParams[GRID_WIDTH_POS]);
-            mFileListInfo.get(i).top = gridViewParams[GRID_TOP_POS]
-                    + (i / gridViewParams[GRID_NUMCOLUMNS_POS])
-                    * (itemParams[ADAPTER_HEIGHT_POS] + gridViewParams[GRID_SPACE_POS]);
-            mFileListInfo.get(i).right = gridViewParams[GRID_LEFT_POS]
-                    + itemParams[ADAPTER_WIDTH_POS]
-                    + (i % gridViewParams[GRID_NUMCOLUMNS_POS]) * (gridViewParams[GRID_WIDTH_POS]);
-            mFileListInfo.get(i).bottom = gridViewParams[GRID_TOP_POS]
-                    + itemParams[ADAPTER_HEIGHT_POS] + (i / gridViewParams[GRID_NUMCOLUMNS_POS])
-                    * (itemParams[ADAPTER_HEIGHT_POS] + gridViewParams[GRID_SPACE_POS]);
+            mFileListInfo.get(i).left = gridViewParams[0]
+                    + (i % gridViewParams[4]) * (gridViewParams[2]);
+            mFileListInfo.get(i).top = gridViewParams[1] + (i / gridViewParams[4])
+                    * (itemParams[1] + gridViewParams[3]);
+            mFileListInfo.get(i).right = gridViewParams[0] + itemParams[0]
+                    + (i % gridViewParams[4]) * (gridViewParams[2]);
+            mFileListInfo.get(i).bottom = gridViewParams[1] + itemParams[1]
+                    + (i / gridViewParams[4]) * (itemParams[1] + gridViewParams[3]);
         }
     }
 }
