@@ -25,6 +25,7 @@ import com.openthos.filemanager.utils.SeafileUtils;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 public class SeafileDialog extends Dialog implements View.OnClickListener {
     private MainActivity mMainActivity;
@@ -104,6 +105,14 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
                                                             R.string.confirm, null).create().show();
                                         return false;
                                     }
+                                }
+                                if (!Pattern.compile("[0-9a-zA-Z ]+").matcher(text).matches()) {
+                                    new AlertDialog.Builder(mMainActivity)
+                                            .setMessage(mMainActivity.getString(
+                                                               R.string.fail_seafile_name_by_error))
+                                            .setPositiveButton(
+                                                        R.string.confirm, null).create().show();
+                                    return false;
                                 }
                                 new Thread() {
                                     @Override
