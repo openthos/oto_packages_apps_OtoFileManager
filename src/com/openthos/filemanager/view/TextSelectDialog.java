@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.content.pm.ApplicationInfo;
 
 import com.openthos.filemanager.R;
 
@@ -71,6 +72,7 @@ public class TextSelectDialog extends Dialog implements View.OnClickListener {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(Intent.ACTION_VIEW);
         intent.setDataAndType(Uri.fromFile(new File(filePath)), selectType);
+        intent.putExtra(ApplicationInfo.PACKAGENAME_TAG, ApplicationInfo.APPNAME_OTO_LAUNCHER);
         context.startActivity(intent);
     }
 

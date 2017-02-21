@@ -537,6 +537,7 @@ public class SystemSpaceFragment extends BaseFragment implements
     public void onDestroyView() {
         super.onDestroyView();
         mActivity.unregisterReceiver(mReceiver);
+        mAdapter.dispose();
     }
 
     public boolean onBack() {

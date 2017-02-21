@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.ImageView;
 
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.drag.DragGridView;
@@ -15,6 +16,7 @@ import com.openthos.filemanager.drag.DragListView;
 import com.openthos.filemanager.fragment.SearchFragment;
 import com.openthos.filemanager.fragment.SystemSpaceFragment;
 import com.openthos.filemanager.utils.LocalCache;
+import com.openthos.filemanager.utils.IconHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +31,7 @@ public class FileListAdapter extends BaseAdapter {
     private List<Integer> selectFileInfoListIndex = new ArrayList<>();
     private SystemSpaceFragment.GridViewOnGenericMotionListener mMotionListener;
     private int mWidth, mHeight;
+    private IconHolder mIconHolder;
 
     public FileListAdapter(Context context, int resource,
                            List<FileInfo> objects, FileViewInteractionHub f,
@@ -41,6 +44,11 @@ public class FileListAdapter extends BaseAdapter {
         mFileIcon = fileIcon;
         mContext = context;
         mMotionListener = motionListener;
+        initIconHolder();
+    }
+
+    private void initIconHolder() {
+        mIconHolder = IconHolder.getIconHolder(mContext);
     }
 
     public List<FileInfo> getFileInfoList() {
@@ -86,9 +94,8 @@ public class FileListAdapter extends BaseAdapter {
         viewHolder.name.setOnTouchListener(mMotionListener);
 
         FileInfo lFileInfo = fileInfoList.get(position);
-
         FileListItem.setupFileListItemInfo(mContext, convertView, position, lFileInfo,
-                mFileIcon, mFileViewInteractionHub);
+                                           mIconHolder, mFileViewInteractionHub);
         LinearLayout background = (LinearLayout)convertView;
         background.setBackgroundResource(selectFileInfoListIndex.contains(position) ?
                                          R.drawable.list_item_bg_shape : R.color.white);
@@ -100,8 +107,10 @@ public class FileListAdapter extends BaseAdapter {
 
     public static class ViewHolder {
         public TextView name;
+        public ImageView icon;
         public ViewHolder(View view) {
             name = (TextView) view.findViewById(R.id.file_name);
+            icon = (ImageView) view.findViewById(R.id.file_image);
         }
     }
 
@@ -112,5 +121,12 @@ public class FileListAdapter extends BaseAdapter {
 
     public int[] getParams() {
         return new int[] {mWidth, mHeight};
+    }
+
+    public void dispose() {
+        if (mIconHolder != null) {
+            mIconHolder.cleanup();
+            mIconHolder = null;
+        }
     }
 }

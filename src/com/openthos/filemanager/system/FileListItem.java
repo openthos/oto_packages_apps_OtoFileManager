@@ -6,10 +6,11 @@ import android.widget.ImageView;
 
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.utils.LocalCache;
+import com.openthos.filemanager.utils.IconHolder;
 
 public class FileListItem {
     public static void setupFileListItemInfo(Context context, View view, int position,
-                                             FileInfo fileInfo, FileIconHelper fileIcon,
+                                             FileInfo fileInfo, IconHolder iconHolder,
                                              FileViewInteractionHub fileViewInteractionHub) {
         // if in moving mode, show selected file always
         if (fileViewInteractionHub.isMoveState()) {
@@ -73,7 +74,7 @@ public class FileListItem {
                     lFileImage.setImageResource(R.mipmap.folder);
                     leftPadding.setVisibility(View.GONE);
                 } else {
-                    fileIcon.setIcon(fileInfo, lFileImage, lFileImageFrame);
+                    iconHolder.loadDrawable(lFileImage, fileInfo.filePath);
                 }
             }
         } else {
@@ -83,7 +84,8 @@ public class FileListItem {
                 lFileImageFrame.setVisibility(View.GONE);
                 lFileImage.setImageResource(R.mipmap.folder);
             } else {
-                fileIcon.setIcon(fileInfo, lFileImage, lFileImageFrame);
+                lFileImageFrame.setVisibility(View.GONE);
+                iconHolder.loadDrawable(lFileImage, fileInfo.filePath);
             }
         }
     }
