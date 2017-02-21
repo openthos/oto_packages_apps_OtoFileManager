@@ -35,14 +35,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class FileViewInteractionHub implements FileOperationHelper.IOperationProgressListener {
     private static final int FILE_NAME_LEGAL = 0;
     private static final int FILE_NAME_NULL = 1;
     private static final int FILE_NAME_ILLEGAL = 2;
     private static final int FILE_NAME_WARNING = 3;
-    private String[] mNameStart = {"+", "-", "."};
-    private String[] mNameBody = {"@", "#", "$", "^", "&", "*", "(", ")", "[", "]"};
     private static final String LOG_TAG = "FileViewInteractionHub";
     private IFileInteractionListener mFileViewListener;
     public static Map<String,Integer> saveMulti = new HashMap<>();
@@ -640,15 +639,8 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             if (fileName.indexOf("/") != -1) {
                 return FILE_NAME_ILLEGAL;
             }
-            for (int i = 0; i < mNameStart.length; i++) {
-                if (fileName.startsWith(mNameStart[i])) {
-                    return FILE_NAME_WARNING;
-                }
-            }
-            for (int i = 0; i < mNameBody.length; i++) {
-                if (fileName.indexOf(mNameBody[i]) != -1) {
-                    return FILE_NAME_WARNING;
-                }
+            if (Pattern.compile("[^(@#$^&*\\(\\)\\[\\])]{1,}|[+-.]*").matcher(fileName).matches()) {
+                return FILE_NAME_WARNING;
             }
             return FILE_NAME_LEGAL;
         }
