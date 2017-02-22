@@ -639,7 +639,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             if (fileName.indexOf("/") != -1) {
                 return FILE_NAME_ILLEGAL;
             }
-            if (Pattern.compile("[^(@#$^&*\\(\\)\\[\\])]{1,}|[+-.]*").matcher(fileName).matches()) {
+            if (!Pattern.compile("[^@#\\$\\^&*\\(\\)\\[\\]]*").matcher(fileName).matches()) {
                 return FILE_NAME_WARNING;
             }
             return FILE_NAME_LEGAL;
