@@ -161,6 +161,7 @@ public class MainActivity extends BaseActivity
     public SeafileAccount mAccount;
     public SeafileUtils.SeafileSQLConsole mConsole;
     public CustomFileObserver mCustomFileObserver;
+    private InitSeafileThread mInitSeafileThread;
     private SeafileThread mSeafileThread;
     private String mUsbPath;
     private ExecutorService mUsbSingleExecutor;
@@ -169,12 +170,21 @@ public class MainActivity extends BaseActivity
         return R.layout.activity_main;
     }
 
-    private class SeafileThread extends Thread {
+    private class InitSeafileThread extends Thread {
         @Override
         public void run() {
             super.run();
             SeafileUtils.init();
             SeafileUtils.start();
+            mSeafileThread = new SeafileThread();
+            mSeafileThread.start();
+        }
+    }
+
+    private class SeafileThread extends Thread {
+        @Override
+        public void run() {
+            super.run();
             ContentResolver mResolver = MainActivity.this.getContentResolver();
             Uri uriQuery = Uri.parse(Constants.OPENTHOS_URI);
             Cursor cursor = mResolver.query(uriQuery, null, null, null, null);
@@ -237,12 +247,16 @@ public class MainActivity extends BaseActivity
     }
 
     public boolean isInitSeafile() {
+        return mInitSeafileThread.isAlive();
+    }
+
+    public boolean isSeafile() {
         return mSeafileThread.isAlive();
     }
 
     protected void initView() {
-        mSeafileThread = new SeafileThread();
-        mSeafileThread.start();
+        mInitSeafileThread = new InitSeafileThread();
+        mInitSeafileThread.start();
         mSharedPreferences = getSharedPreferences(VIEW_TAG, Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
         String viewTag = mSharedPreferences.getString(VIEW_TAG, VIEW_TAG_GRID);

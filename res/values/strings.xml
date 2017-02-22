@@ -244,6 +244,7 @@
     <string name="umount">Umount</string>
     <string name="bind_openthosid">OpenthosID is not exists, please bind OpenthosID</string>
     <string name="init_seafile">System is initializing seafile services</string>
+    <string name="init_seafile_data">System is initializing seafile\'s data from Internet</string>
     <string name="dialog_decompress_text">"%1$s" is already exists at Desktop, whether to decompress (which will cover the duplicate file)?</string>
     <string name="fail_seafile_name">Create directory failed, because this is contains the same name directory.</string>
     <string name="fail_seafile_name_by_error">File name only be composed of numbers, letters or spaces.</string>

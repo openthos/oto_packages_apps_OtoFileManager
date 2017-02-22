@@ -55,17 +55,6 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
         initLisener();
     }
 
-    private void initLisener() {
-        if (!SeafileUtils.isExistsAccount()){
-            return;
-        }
-        mTvCreate.setOnClickListener(this);
-        if (mIsItem) {
-            mTvSync.setOnClickListener(this);
-            mTvDesync.setOnClickListener(this);
-        }
-    }
-
     private void initView() {
         mTvCreate = (TextView) findViewById(R.id.cloud_create);
         mTvSync = (TextView) findViewById(R.id.cloud_sync);
@@ -74,13 +63,26 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
             mTvSync.setTextColor(Color.LTGRAY);
             mTvDesync.setTextColor(Color.LTGRAY);
         }
-        if (!SeafileUtils.isExistsAccount()){
+        if (!SeafileUtils.isExistsAccount() || mMainActivity.isInitSeafile()
+                                                                     || mMainActivity.isSeafile()){
             mTvCreate.setTextColor(Color.LTGRAY);
         }
         mLinearLayout = (LinearLayout) findViewById(R.id.cloud_ll);
         mLinearLayout.measure(0, 0);
         mDialogWidth = mLinearLayout.getMeasuredWidth();
         mDialogHeight = mLinearLayout.getMeasuredHeight();
+    }
+
+    private void initLisener() {
+        if (!SeafileUtils.isExistsAccount() || mMainActivity.isInitSeafile()
+                                                                 || mMainActivity.isSeafile()){
+            return;
+        }
+        mTvCreate.setOnClickListener(this);
+        if (mIsItem) {
+            mTvSync.setOnClickListener(this);
+            mTvDesync.setOnClickListener(this);
+        }
     }
 
     @Override
@@ -216,6 +218,9 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
         } else if (!SeafileUtils.isExistsAccount()) {
            Toast.makeText(mMainActivity,
                                      mMainActivity.getString(R.string.bind_openthosid), 0).show();
+        } else if (mMainActivity.isSeafile()) {
+           Toast.makeText(mMainActivity,
+                                     mMainActivity.getString(R.string.init_seafile_data), 0).show();
         }
     }
 }
