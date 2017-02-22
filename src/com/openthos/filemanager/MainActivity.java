@@ -243,7 +243,7 @@ public class MainActivity extends BaseActivity
     protected void initView() {
         mSeafileThread = new SeafileThread();
         mSeafileThread.start();
-        mSharedPreferences = getSharedPreferences("view", Context.MODE_PRIVATE);
+        mSharedPreferences = getSharedPreferences(VIEW_TAG, Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
         String viewTag = mSharedPreferences.getString(VIEW_TAG, VIEW_TAG_GRID);
         LocalCache.getInstance(MainActivity.this).setViewTag(viewTag);
@@ -273,8 +273,13 @@ public class MainActivity extends BaseActivity
         mRl_usb_one = (RelativeLayout) findViewById(R.id.rl_usb_one);
         mRl_usb_two = (RelativeLayout) findViewById(R.id.rl_usb_two);
         mRl_usb_three = (RelativeLayout) findViewById(R.id.rl_usb_three);
-        mIv_grid_view.setSelected(true);
-
+        if (LocalCache.getViewTag() != null && "list".equals(LocalCache.getViewTag())) {
+             mIv_grid_view.setSelected(false);
+             mIv_list_view.setSelected(true);
+        } else {
+             mIv_grid_view.setSelected(true);
+             mIv_list_view.setSelected(false);
+        }
         File file = new File(Constants.DOCUMENT_PATH);
         if (!file.exists() && !file.isDirectory()) {
             file.mkdir();
@@ -1107,10 +1112,7 @@ public class MainActivity extends BaseActivity
             case R.id.iv_grid_view:
                 mIv_grid_view.setSelected(true);
                 mIv_list_view.setSelected(false);
-                if (!VIEW_TAG_GRID.equals(LocalCache.getViewTag())
-                    || VIEW_TAG_GRID.equals(LocalCache.getViewTag())) {
-                    LocalCache.setViewTag(VIEW_TAG_GRID);
-                }
+                LocalCache.setViewTag(VIEW_TAG_GRID);
                 sendBroadcastMessage(IV_SWITCH_VIEW, VIEW_TAG_GRID, false);
                 mEditor.putString(VIEW_TAG, VIEW_TAG_GRID);
                 mEditor.commit();
@@ -1118,10 +1120,7 @@ public class MainActivity extends BaseActivity
             case R.id.iv_list_view:
                 mIv_grid_view.setSelected(false);
                 mIv_list_view.setSelected(true);
-                if (!VIEW_TAG_LIST.equals(LocalCache.getViewTag())
-                    || VIEW_TAG_LIST.equals(LocalCache.getViewTag())) {
-                    LocalCache.setViewTag(VIEW_TAG_LIST);
-                }
+                LocalCache.setViewTag(VIEW_TAG_LIST);
                 sendBroadcastMessage(IV_SWITCH_VIEW, VIEW_TAG_LIST, false);
                 mEditor.putString(VIEW_TAG, VIEW_TAG_LIST);
                 mEditor.commit();

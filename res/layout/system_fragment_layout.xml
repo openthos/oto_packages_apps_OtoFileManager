@@ -15,11 +15,10 @@
         <com.openthos.filemanager.drag.DragListView
             android:id="@+id/file_path_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:headerDividersEnabled="true"
-            android:footerDividersEnabled="true"
+            android:layout_height="match_parent"
+            android:padding="10dp"
             android:fastScrollEnabled="true"
+            android:scrollbars="none"
             android:visibility="gone"/>
 
         <com.openthos.filemanager.drag.DragGridView

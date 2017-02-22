@@ -9,7 +9,7 @@ import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.utils.IconHolder;
 
 public class FileListItem {
-    public static void setupFileListItemInfo(Context context, View view, int position,
+    public static void setupFileListItemInfo(Context context, View view,
                                              FileInfo fileInfo, IconHolder iconHolder,
                                              FileViewInteractionHub fileViewInteractionHub) {
         // if in moving mode, show selected file always
@@ -35,56 +35,32 @@ public class FileListItem {
 //        }
 
         ImageView lFileImage = (ImageView) view.findViewById(R.id.file_image);
-        ImageView lFileImageFrame = (ImageView) view.findViewById(R.id.file_image_frame);
-        View leftPadding = view.findViewById(R.id.left_padding);
         if ("list".equals(LocalCache.getViewTag())) {
-            if (position == 0) {
-                Util.setText(view, R.id.file_name,
-                             context.getResources().getString(R.string.file_title_name),
-                             context.getResources().getColor(R.color.file_title_color));
-                Util.setText(view, R.id.file_count,
-                             context.getResources().getString(R.string.file_title_type),
-                             context.getResources().getColor(R.color.file_title_color));
-                Util.setText(view, R.id.modified_time,
-                             context.getResources().getString(R.string.file_title_modified),
-                             context.getResources().getColor(R.color.file_title_color));
-                Util.setText(view, R.id.file_size,
-                             context.getResources().getString(R.string.file_title_size),
-                             context.getResources().getColor(R.color.file_title_color));
-                lFileImageFrame.setVisibility(View.GONE);
-                lFileImage.setVisibility(View.GONE);
-                leftPadding.setVisibility(View.VISIBLE);
+            Util.setText(view, R.id.file_name, fileInfo.fileName,
+                         context.getResources().getColor(R.color.file_name_color));
+            Util.setText(view, R.id.file_count, (fileInfo.IsDir ?
+                         context.getResources().getString(R.string.file_type_folder) :
+                         context.getResources().getString(R.string.file_type_file)),
+                         context.getResources().getColor(R.color.file_name_color));
+            Util.setText(view, R.id.modified_time,
+                         Util.formatDateString(context, fileInfo.ModifiedDate),
+                         context.getResources().getColor(R.color.file_name_color));
+            Util.setText(view, R.id.file_size,
+                         fileInfo.IsDir ? String.valueOf(fileInfo.Count) :
+                         Util.convertStorage(fileInfo.fileSize),
+                         context.getResources().getColor(R.color.file_name_color));
+            lFileImage.setVisibility(View.VISIBLE);
+            if (fileInfo.IsDir) {
+                lFileImage.setImageResource(R.mipmap.folder);
             } else {
-                Util.setText(view, R.id.file_name, fileInfo.fileName,
-                             context.getResources().getColor(R.color.file_name_color));
-                Util.setText(view, R.id.file_count, (fileInfo.IsDir ?
-                             context.getResources().getString(R.string.file_type_folder) :
-                             context.getResources().getString(R.string.file_type_file)),
-                             context.getResources().getColor(R.color.file_name_color));
-                Util.setText(view, R.id.modified_time,
-                             Util.formatDateString(context, fileInfo.ModifiedDate),
-                             context.getResources().getColor(R.color.file_name_color));
-                Util.setText(view, R.id.file_size,
-                             fileInfo.IsDir ? String.valueOf(fileInfo.Count) :
-                             Util.convertStorage(fileInfo.fileSize),
-                             context.getResources().getColor(R.color.file_name_color));
-                lFileImage.setVisibility(View.VISIBLE);
-                if (fileInfo.IsDir) {
-                    lFileImageFrame.setVisibility(View.GONE);
-                    lFileImage.setImageResource(R.mipmap.folder);
-                    leftPadding.setVisibility(View.GONE);
-                } else {
-                    iconHolder.loadDrawable(lFileImage, fileInfo.filePath);
-                }
+                iconHolder.loadDrawable(lFileImage, fileInfo.filePath);
             }
         } else {
             Util.setText(view, R.id.file_name, fileInfo.fileName,
                          context.getResources().getColor(R.color.file_name_color));
             if (fileInfo.IsDir) {
-                lFileImageFrame.setVisibility(View.GONE);
                 lFileImage.setImageResource(R.mipmap.folder);
             } else {
-                lFileImageFrame.setVisibility(View.GONE);
                 iconHolder.loadDrawable(lFileImage, fileInfo.filePath);
             }
         }

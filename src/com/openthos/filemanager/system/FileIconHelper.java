@@ -166,12 +166,11 @@ public class FileIconHelper implements FileIconLoader.IconLoadFinishListener {
         }
     }
 
-    public void setIcon(FileInfo fileInfo, ImageView fileImage, ImageView fileImageFrame) {
+    public void setIcon(FileInfo fileInfo, ImageView fileImage) {
         String filePath = fileInfo.filePath;
         long fileId = fileInfo.dbId;
         String extFromFilename = Util.getExtFromFilename(filePath);
         FileCategoryHelper.FileCategory fc = FileCategoryHelper.getCategoryFromPath(filePath);
-        fileImageFrame.setVisibility(View.GONE);
 
         boolean set;
         int id = getFileIcon(extFromFilename);
@@ -194,12 +193,9 @@ public class FileIconHelper implements FileIconLoader.IconLoadFinishListener {
                 break;
             case Video:
                 set = mIconLoader.loadIcon(fileImage, filePath, fileId, fc);
-                if (set)
-                    fileImageFrame.setVisibility(View.VISIBLE);
-                else {
+                if (!set) {
                     fileImage.setImageResource(fc == FileCategoryHelper.FileCategory.Picture ?
                               R.drawable.file_icon_picture : R.mipmap.video_default_icon);
-                    imageFrames.put(fileImage, fileImageFrame);
                     set = true;
                 }
                 break;

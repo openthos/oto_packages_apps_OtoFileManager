@@ -102,7 +102,7 @@ public class DragListView extends ListView {
             case MotionEvent.ACTION_MOVE:
                 int moveX = (int)ev.getX();
                 int moveY = (int) ev.getY();
-                if(!isTouchInItem(mStartDragItemView, moveX, moveY)){
+                if(mStartDragItemView != null && !isTouchInItem(mStartDragItemView, moveX, moveY)){
                     mHandler.removeCallbacks(mLongClickRunnable);
                 }
                 break;

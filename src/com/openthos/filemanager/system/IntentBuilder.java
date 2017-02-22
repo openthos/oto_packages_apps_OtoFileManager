@@ -83,7 +83,9 @@ public class IntentBuilder {
 
             TextSelectDialog dialog = new TextSelectDialog(context, R.style.menu_dialog,filePath);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.showTextDialog((int) event.getX(), (int) event.getY(),180,140);
+            if (event != null) {
+                dialog.showTextDialog((int) event.getX(), (int) event.getY(),180,140);
+            }
         }
     }
 

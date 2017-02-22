@@ -29,14 +29,14 @@ public class FileListAdapter extends BaseAdapter {
     private int layoutId;
     private List<FileInfo> fileInfoList;
     private List<Integer> selectFileInfoListIndex = new ArrayList<>();
-    private SystemSpaceFragment.GridViewOnGenericMotionListener mMotionListener;
+    private View.OnTouchListener mMotionListener;
     private int mWidth, mHeight;
     private IconHolder mIconHolder;
 
     public FileListAdapter(Context context, int resource,
                            List<FileInfo> objects, FileViewInteractionHub f,
                            FileIconHelper fileIcon,
-                           SystemSpaceFragment.GridViewOnGenericMotionListener motionListener) {
+                           View.OnTouchListener motionListener) {
         fileInfoList = objects;
         layoutId = resource;
         mInflater = LayoutInflater.from(context);
@@ -94,7 +94,7 @@ public class FileListAdapter extends BaseAdapter {
         viewHolder.name.setOnTouchListener(mMotionListener);
 
         FileInfo lFileInfo = fileInfoList.get(position);
-        FileListItem.setupFileListItemInfo(mContext, convertView, position, lFileInfo,
+        FileListItem.setupFileListItemInfo(mContext, convertView, lFileInfo,
                                            mIconHolder, mFileViewInteractionHub);
         LinearLayout background = (LinearLayout)convertView;
         background.setBackgroundResource(selectFileInfoListIndex.contains(position) ?

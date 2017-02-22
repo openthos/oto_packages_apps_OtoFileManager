@@ -30,33 +30,6 @@
                 android:padding="5dp"
                 android:src="@mipmap/folder" />
 
-            <ImageView
-                android:id="@+id/file_image_frame"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/image_icon_bg"
-                android:gravity="center"
-                android:padding="10dp"
-                android:visibility="gone" />
-
-            <!--<RelativeLayout-->
-                <!--android:id="@+id/rl_checkbox"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:gravity="center"-->
-                <!--android:visibility="gone">-->
-                <!--<ImageView-->
-                    <!--android:id="@+id/file_checkbox"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_marginLeft="3dp"-->
-                    <!--android:layout_marginTop="5dp"-->
-                    <!--android:background="@mipmap/btn_check_on_holo_light"-->
-                    <!--android:gravity="center" />-->
-            <!--</RelativeLayout>-->
-
         </FrameLayout>
     </RelativeLayout>
 
