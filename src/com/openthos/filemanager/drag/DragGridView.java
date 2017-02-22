@@ -265,4 +265,14 @@ public class DragGridView extends GridView {
     public int[] getParams() {
         return new int[] {mPaddingLeft, mPaddingTop, mColumnWidth, mVerticalSpace, mNumColumns};
     }
+
+    public int getVerticalScrollDistance() {
+        // get the first childView that displayed in current view
+        View childView = getChildAt(0);
+        if (childView == null) {
+            return 0;
+        }
+        return mPaddingTop - childView.getTop() + (getFirstVisiblePosition() / mNumColumns)
+                * (childView.getHeight() + mVerticalSpace);
+    }
 }
