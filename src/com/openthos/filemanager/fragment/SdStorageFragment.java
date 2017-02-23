@@ -358,8 +358,10 @@ public class SdStorageFragment extends BaseFragment {
             case R.id.rl_mount_space_three:
                 showDiskDialog(view, event, true);
                 break;
-
-            default:
+            case R.id.rl_personal_space:
+            case R.id.rl_android_system:
+            case R.id.rl_sd_space:
+            case R.id.rl_android_service:
                 showDiskDialog(view, event,false);
                 break;
         }

@@ -49,7 +49,7 @@ public class SeafileUtils {
     public static final int SYNC = 1;
     public static final String SEAFILE_DATA = "seeafile_data";
     public static final String SETTING_SEAFILE_PATH = "/data/sea/data/sdcard/cloudFolder";
-    public static final String SETTING_SEAFILE_PROOT_PATH = "sdcard/cloudFolder";
+    public static final String SETTING_SEAFILE_PROOT_PATH = "/sdcard/cloudFolder";
     public static final String SETTING_SEAFILE_NAME = "cloudFolder";
 
     public static String getUserAccount() {

@@ -23,7 +23,8 @@ import java.util.ArrayList;
 import static android.R.color.holo_purple;
 import static android.R.color.transparent;
 
-public class DiskDialog extends Dialog {
+public class DiskDialog extends Dialog
+                               implements ListView.OnItemClickListener, View.OnHoverListener{
     private Context mContext;
     private boolean mIsUSB;
     private View mView;
@@ -76,7 +77,7 @@ public class DiskDialog extends Dialog {
     }
 
     protected void initListener() {
-        mListView.setOnItemClickListener(new MenuItemClickListener(mContext));
+        mListView.setOnItemClickListener(this);
     }
 
     public  void prepareData(String[] sArr) {
@@ -105,7 +106,7 @@ public class DiskDialog extends Dialog {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             view = View.inflate(mContext, R.layout.dialog_base_item ,null);
-            view.setOnHoverListener(new MenuItemHoverListener());
+            view.setOnHoverListener(DiskDialog.this);
             TextView mTvDialogItem = (TextView) view.findViewById(R.id.dialog_base_item);
             TextView mTvDialogItemUsb = (TextView) view.findViewById(R.id.dialog_base_itemUsb);
             String content = mData.get(i).toString();
@@ -116,41 +117,30 @@ public class DiskDialog extends Dialog {
         }
     }
 
-    class MenuItemClickListener implements ListView.OnItemClickListener {
-        private Context mContext;
-        public MenuItemClickListener(Context context) {
-            super();
-            mContext = context;
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        String content = (String) view.getTag();
+        if (mContext.getString(R.string.umount).equals(content)) {
+            ((SdStorageFragment) (((MainActivity)
+                                           mContext).getVisibleFragment())).uninstallUSB();
+        } else if (mContext.getString(R.string.operation_open).equals(content)) {
+            ((SdStorageFragment) (((MainActivity) mContext).getVisibleFragment())).enter();
         }
-
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            String content = (String) view.getTag();
-            if (mContext.getString(R.string.umount).equals(content)) {
-                ((SdStorageFragment) (((MainActivity)
-                                               mContext).getVisibleFragment())).uninstallUSB();
-            } else if (mContext.getString(R.string.operation_open).equals(content)) {
-                ((SdStorageFragment) (((MainActivity) mContext).getVisibleFragment())).enter();
-            }
-            dismiss();
-        }
+        dismiss();
     }
 
-    class MenuItemHoverListener implements View.OnHoverListener {
-
-        @Override
-        public boolean onHover(View view, MotionEvent motionEvent) {
-            int action = motionEvent.getAction();
-            switch (action) {
-                case MotionEvent.ACTION_HOVER_ENTER:
-                    view.setBackgroundColor(mContext.getResources().getColor(holo_purple));
-                    break;
-                case MotionEvent.ACTION_HOVER_EXIT:
-                    view.setBackgroundColor(mContext.getResources().getColor(transparent));
-                    break;
-            }
-            return false;
+    @Override
+    public boolean onHover(View view, MotionEvent motionEvent) {
+        int action = motionEvent.getAction();
+        switch (action) {
+            case MotionEvent.ACTION_HOVER_ENTER:
+                view.setBackgroundColor(mContext.getResources().getColor(holo_purple));
+                break;
+            case MotionEvent.ACTION_HOVER_EXIT:
+                view.setBackgroundColor(mContext.getResources().getColor(transparent));
+                break;
         }
+        return false;
     }
 
     public void showDialog(int x, int y) {

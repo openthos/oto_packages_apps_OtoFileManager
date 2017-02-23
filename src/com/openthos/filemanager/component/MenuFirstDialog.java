@@ -29,7 +29,8 @@ import java.util.ArrayList;
 import static android.R.color.holo_purple;
 import static android.R.color.transparent;
 
-public class MenuFirstDialog extends Dialog {
+public class MenuFirstDialog extends Dialog
+                             implements View.OnHoverListener, ListView.OnItemClickListener{
     private Context mContext;
     private MainActivity mMainActivity;
     private FileViewInteractionHub mFileViewInteractionHub;
@@ -114,7 +115,7 @@ public class MenuFirstDialog extends Dialog {
     }
 
     protected void initListener() {
-        mListView.setOnItemClickListener(new MenuItemClickListener(mContext));
+        mListView.setOnItemClickListener(this);
     }
 
     public  void prepareData(String[] sArr) {
@@ -182,7 +183,7 @@ public class MenuFirstDialog extends Dialog {
                 }
             }
             if (isSetHoverListener) {
-                view.setOnHoverListener(new MenuItemHoverListener());
+                view.setOnHoverListener(MenuFirstDialog.this);
                 view.setTag(content);
             } else {
                 view.setTag("");
@@ -191,80 +192,66 @@ public class MenuFirstDialog extends Dialog {
         }
     }
 
-    class MenuItemClickListener implements ListView.OnItemClickListener {
-        private Context mContext;
-        public MenuItemClickListener(Context context) {
-            super();
-            mContext = context;
-        }
-
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            String content = (String) view.getTag();
-            if (mContext.getString(R.string.operation_open).equals(content)) {
-                mFileViewInteractionHub.onOperationOpen(mMotionEvent);
-            } else if (mContext.getString(R.string.operation_open_with).equals(content)) {
-                showOpenWith();
-            } else if (mContext.getString(R.string.operation_copy).equals(content)) {
-                isCopy = true;
-                mMainActivity.copy();
-            } else if (mContext.getString(R.string.operation_paste).equals(content)) {
-                if (isCopy) {
-                    mMainActivity.paste();
-                }
-            } else if (mContext.getString(R.string.operation_rename).equals(content)) {
-                mFileViewInteractionHub.onOperationRename();
-            } else if (mContext.getString(R.string.operation_delete).equals(content)) {
-                mFileViewInteractionHub.onOperationDelete();
-            } else if (mContext.getString(R.string.operation_move).equals(content)) {
-                isCopy = true;
-                mMainActivity.cut();
-            } else if (mContext.getString(R.string.operation_send).equals(content)) {
-                mFileViewInteractionHub.onOperationSend();
-            } else if (mContext.getString(R.string.menu_item_sort).equals(content)) {
-                mFileViewInteractionHub.dismissContextDialog();
-                menuSecondDialog = new MenuSecondDialog(
-                        mContext, R.style.menu_dialog,mFileViewInteractionHub);
-                menuSecondDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                menuSecondDialog.showSecondDialog(newX,newY,210,160);
-            } else if (mContext.getString(R.string.operation_copy_path).equals(content)) {
-                mFileViewInteractionHub.onOperationCopyPath();
-            } else if (mContext.getString(R.string.operation_info).equals(content)) {
-                mFileViewInteractionHub.onOperationInfo();
-            } else if (mContext.getString(R.string.operation_create_folder).equals(content)) {
-                mFileViewInteractionHub.onOperationCreateFolder();
-            } else if (mContext.getString(R.string.operation_create_file).equals(content)) {
-                mFileViewInteractionHub.onOperationCreateFile();
-            } else if (mContext.getString(R.string.operation_show_sys).equals(content)) {
-                mFileViewInteractionHub.onOperationShowSysFiles();
-            } else if (mContext.getString(R.string.operation_delete_permanent).equals(content)) {
-                mFileViewInteractionHub.onOperationDeleteDirect();
-            } else if (mContext.getString(R.string.operation_compress).equals(content)) {
-                mFileViewInteractionHub.onOperationCompress();
-            } else if (mContext.getString(R.string.operation_decompress).equals(content)) {
-                mFileViewInteractionHub.onOperationDecompress();
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        String content = (String) view.getTag();
+        if (mContext.getString(R.string.operation_open).equals(content)) {
+            mFileViewInteractionHub.onOperationOpen(mMotionEvent);
+        } else if (mContext.getString(R.string.operation_open_with).equals(content)) {
+            showOpenWith();
+        } else if (mContext.getString(R.string.operation_copy).equals(content)) {
+            isCopy = true;
+            mMainActivity.copy();
+        } else if (mContext.getString(R.string.operation_paste).equals(content)) {
+            if (isCopy) {
+                mMainActivity.paste();
             }
-            if (!TextUtils.isEmpty(content)) {
-                mFileViewInteractionHub.dismissContextDialog();
-            }
+        } else if (mContext.getString(R.string.operation_rename).equals(content)) {
+            mFileViewInteractionHub.onOperationRename();
+        } else if (mContext.getString(R.string.operation_delete).equals(content)) {
+            mFileViewInteractionHub.onOperationDelete();
+        } else if (mContext.getString(R.string.operation_move).equals(content)) {
+            isCopy = true;
+            mMainActivity.cut();
+        } else if (mContext.getString(R.string.operation_send).equals(content)) {
+            mFileViewInteractionHub.onOperationSend();
+        } else if (mContext.getString(R.string.menu_item_sort).equals(content)) {
+            menuSecondDialog = new MenuSecondDialog(
+                    mContext, R.style.menu_dialog,mFileViewInteractionHub);
+            menuSecondDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            menuSecondDialog.showSecondDialog(newX,newY,210,160);
+        } else if (mContext.getString(R.string.operation_copy_path).equals(content)) {
+            mFileViewInteractionHub.onOperationCopyPath();
+        } else if (mContext.getString(R.string.operation_info).equals(content)) {
+            mFileViewInteractionHub.onOperationInfo();
+        } else if (mContext.getString(R.string.operation_create_folder).equals(content)) {
+            mFileViewInteractionHub.onOperationCreateFolder();
+        } else if (mContext.getString(R.string.operation_create_file).equals(content)) {
+            mFileViewInteractionHub.onOperationCreateFile();
+        } else if (mContext.getString(R.string.operation_show_sys).equals(content)) {
+            mFileViewInteractionHub.onOperationShowSysFiles();
+        } else if (mContext.getString(R.string.operation_delete_permanent).equals(content)) {
+            mFileViewInteractionHub.onOperationDeleteDirect();
+        } else if (mContext.getString(R.string.operation_compress).equals(content)) {
+            mFileViewInteractionHub.onOperationCompress();
+        } else if (mContext.getString(R.string.operation_decompress).equals(content)) {
+            mFileViewInteractionHub.onOperationDecompress();
         }
+        dismiss();
     }
 
-    class MenuItemHoverListener implements View.OnHoverListener {
-
-        @Override
-        public boolean onHover(View view, MotionEvent motionEvent) {
-            int action = motionEvent.getAction();
-            switch (action) {
-                case MotionEvent.ACTION_HOVER_ENTER:
-                    view.setBackgroundColor(mContext.getResources().getColor(holo_purple));
-                    break;
-                case MotionEvent.ACTION_HOVER_EXIT:
-                    view.setBackgroundColor(mContext.getResources().getColor(transparent));
-                    break;
-            }
-            return false;
+    @Override
+    public boolean onHover(View view, MotionEvent motionEvent) {
+        int action = motionEvent.getAction();
+        switch (action) {
+            case MotionEvent.ACTION_HOVER_ENTER:
+                view.setBackgroundColor(mContext.getResources().getColor(holo_purple));
+                break;
+            case MotionEvent.ACTION_HOVER_EXIT:
+                view.setBackgroundColor(mContext.getResources().getColor(transparent));
+                break;
         }
+        return false;
     }
 
     private void showOpenWith() {
