@@ -182,6 +182,8 @@ public class MainActivity extends BaseActivity
     }
 
     private class SeafileThread extends Thread {
+        private boolean isExistsSetting = false;
+        private String id = "";
         @Override
         public void run() {
             super.run();
@@ -222,6 +224,11 @@ public class MainActivity extends BaseActivity
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     seafileLibrary.libraryId = jsonObject.getString("id");
                     seafileLibrary.libraryName =jsonObject.getString("name");
+                    if (seafileLibrary.libraryName.equals(SeafileUtils.SETTING_SEAFILE_NAME)) {
+                        isExistsSetting = true;
+                        id = seafileLibrary.libraryId;
+                        continue;
+                    }
                     mAccount.mLibrarys.add(seafileLibrary);
                 }
                 getSharedPreferences(SeafileUtils.SEAFILE_DATA, Context.MODE_PRIVATE).edit()
@@ -243,6 +250,14 @@ public class MainActivity extends BaseActivity
                 }
                 MainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
             }
+            File settingSeafile = new File(SeafileUtils.SETTING_SEAFILE_PATH);
+            if (!settingSeafile.exists()) {
+                settingSeafile.mkdirs();
+            }
+            if (!isExistsSetting) {
+                id = SeafileUtils.create(SeafileUtils.SETTING_SEAFILE_NAME);
+            }
+            SeafileUtils.sync(id, SeafileUtils.SETTING_SEAFILE_PROOT_PATH);
         }
     }
 
