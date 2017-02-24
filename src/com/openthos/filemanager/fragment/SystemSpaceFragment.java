@@ -432,8 +432,8 @@ public class SystemSpaceFragment extends BaseFragment implements
                         mDownY = motionEvent.getY();
                         if (motionEvent.getButtonState() == MotionEvent.BUTTON_SECONDARY) {
                             mIsShowDialog = true;
-                            mIsItem = false;
                         }
+                        mIsItem = false;
                     }
                     break;
                 case MotionEvent.ACTION_MOVE:
@@ -442,7 +442,6 @@ public class SystemSpaceFragment extends BaseFragment implements
                     }
                     if (mDownX != -1 && !mIsItem) {
                         isMove = true;
-                        mFrameSelectView.setVisibility(View.VISIBLE);
                         mMoveX = motionEvent.getX();
                         mMoveY = motionEvent.getY();
                         mFrameSelectView.setPositionCoordinate(mDownX < mMoveX? mDownX : mMoveX,
@@ -466,7 +465,8 @@ public class SystemSpaceFragment extends BaseFragment implements
                     }
                     return true;
                 case MotionEvent.ACTION_UP:
-                    mFrameSelectView.setVisibility(View.INVISIBLE);
+                    mFrameSelectView.setPositionCoordinate(-1, -1, -1, -1);
+                    mFrameSelectView.invalidate();
                     FileInfo fileInfo = null;
                     if (mPos != -1) {
                          fileInfo = mAdapter.getFileInfoList().get(mPos);
