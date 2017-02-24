@@ -105,37 +105,6 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
             case R.id.rl_personal_space:
                 enter(Constants.PERSONAL_TAG, null);
                 break;
-            case R.id.ll_personal_videos:
-                enter(Constants.LEFT_FAVORITES, Constants.VIDEOS_PATH);
-                break;
-            case R.id.ll_personal_pictures:
-                enter(Constants.LEFT_FAVORITES, Constants.PICTURES_PATH);
-                break;
-            case R.id.ll_personal_document:
-                enter(Constants.LEFT_FAVORITES, Constants.DOCUMENT_PATH);
-                break;
-            case R.id.ll_personal_downloads:
-                enter(Constants.LEFT_FAVORITES, Constants.DOWNLOAD_PATH);
-                break;
-            case R.id.ll_personal_music:
-                enter(Constants.LEFT_FAVORITES, Constants.MUSIC_PATH);
-                break;
-            case R.id.ll_personal_recycle:
-                enter(Constants.LEFT_FAVORITES, Constants.RECYCLE_PATH);
-                break;
-            case R.id.ll_personal_qq_image:
-                enter(Constants.LEFT_FAVORITES, Constants.QQ_IMAGE_PATH);
-                break;
-            case R.id.ll_personal_qq_file:
-                enter(Constants.LEFT_FAVORITES, Constants.QQ_FILE_PATH);
-                break;
-            case R.id.ll_personal_weixin:
-                enter(Constants.LEFT_FAVORITES, Constants.WEIXIN_IMG_PATH);
-                break;
-            case R.id.ll_personal_baidudisk:
-                enter(Constants.LEFT_FAVORITES, Constants.BAIDU_PAN_PATH);
-                break;
-
         }
     }
 

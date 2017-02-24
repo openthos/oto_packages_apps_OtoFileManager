@@ -312,4 +312,8 @@
         <item>@string/menu_item_sort</item>
         <item>@string/operation_show_sys</item>
     </string-array>
+    <string-array name="personal_folder_menu">
+        <item>@string/operation_open</item>
+        <item>@string/operation_copy_path</item>
+    </string-array>
 </resources>

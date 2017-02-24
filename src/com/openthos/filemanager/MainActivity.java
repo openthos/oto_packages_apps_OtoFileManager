@@ -414,6 +414,11 @@ public class MainActivity extends BaseActivity
                             ((IFileInteractionListener) getVisibleFragment())
                                     .onRefreshFileList((String) msg.obj, getFileSortHelper());
                             break;
+                        case Constants.REFRESH_PERSONAL:
+                            if (getVisibleFragment() instanceof PersonalSpaceFragment) {
+                                mPersonalSpaceFragment.checkFolder();
+                                break;
+                            }
                         case Constants.USB_ONE:
                             if (Util.execUsb(new String[]{"df"}).size() != 1) {
                                 mSdStorageFragment.hideMountSpaceOne();
@@ -918,11 +923,14 @@ public class MainActivity extends BaseActivity
             ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.onOperationRename();
         }
         if (keyCode == KeyEvent.KEYCODE_F5) {
-            if (isCopyByHot()) {
+            if (getVisibleFragment() instanceof PersonalSpaceFragment) {
+                mHandler.sendEmptyMessage(Constants.REFRESH_PERSONAL);
+            } else if (isCopyByHot()) {
                 return false;
-            }
-            mHandler.sendMessage(Message.obtain(mHandler, Constants.ONLY_REFRESH,
+            } else {
+                mHandler.sendMessage(Message.obtain(mHandler, Constants.ONLY_REFRESH,
                   ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.getCurrentPath()));
+            }
         }
         if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
             if (mEt_nivagation.isFocused() || mEt_search_view.isFocused()) {
@@ -1811,6 +1819,11 @@ public class MainActivity extends BaseActivity
             } else {
                 if (mCurFragment instanceof SystemSpaceFragment) {
                     mEt_nivagation.setText(displayPath);
+                    displayPath = displayPath.replaceAll(getString(R.string.sd_folder),
+                                      Constants.PERMISS_DIR_STORAGE_EMULATED_0);
+                    if (Constants.RECYCLE_PATH.equals(displayPath)) {
+                        setSelectedBackground(R.id.tv_recycle);
+                    }
                 }else {
                     mEt_nivagation.setText(null);
                 }

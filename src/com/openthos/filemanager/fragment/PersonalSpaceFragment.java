@@ -6,6 +6,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.view.Window;
+import android.content.ClipboardManager;
 
 import com.openthos.filemanager.BaseFragment;
 import com.openthos.filemanager.R;
@@ -15,6 +17,7 @@ import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.system.FileInfo;
 import com.openthos.filemanager.system.FileViewInteractionHub;
 import com.openthos.filemanager.utils.T;
+import com.openthos.filemanager.component.PersonalMenuDialog;
 
 import java.util.ArrayList;
 import java.io.File;
@@ -35,6 +38,7 @@ public class PersonalSpaceFragment extends BaseFragment {
     private GridViewOnGenericMotionListener mMotionListener;
     ArrayList<FileInfo> mFileInfoArrayList = null;
     FileViewInteractionHub.CopyOrMove mCopyOrMove = null;
+    private PersonalMenuDialog mPersonalDialog;
 
     @Override
     protected void initData() {
@@ -42,11 +46,27 @@ public class PersonalSpaceFragment extends BaseFragment {
         mPersonalList = new ArrayList<>();
         mMotionListener = new GridViewOnGenericMotionListener();
         mPathMap = new LinkedHashMap<>();
+        mPersonalAdaper = new PersonalAdapter(mContext, mPersonalList, mMotionListener);
+        mPersonalGrid.setAdapter(mPersonalAdaper);
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            checkFolder();
+        }
+    }
+
+    public void checkFolder() {
+        mPersonalList.clear();
+        mPathMap.put(getString(R.string.desk), Constants.DESKTOP_PATH);
+        mPathMap.put(getString(R.string.music), Constants.MUSIC_PATH);
         mPathMap.put(getString(R.string.video), Constants.VIDEOS_PATH);
         mPathMap.put(getString(R.string.picture), Constants.PICTURES_PATH);
         mPathMap.put(getString(R.string.docement), Constants.DOCUMENT_PATH);
         mPathMap.put(getString(R.string.downloads), Constants.DOWNLOAD_PATH);
-        mPathMap.put(getString(R.string.music), Constants.MUSIC_PATH);
+        mPathMap.put(getString(R.string.recycle), Constants.RECYCLE_PATH);
         mPathMap.put(getString(R.string.qq_image), Constants.QQ_IMAGE_PATH);
         mPathMap.put(getString(R.string.qq_file), Constants.QQ_FILE_PATH);
         mPathMap.put(getString(R.string.winxin), Constants.WEIXIN_IMG_PATH);
@@ -62,6 +82,7 @@ public class PersonalSpaceFragment extends BaseFragment {
         }
         mPersonalAdaper = new PersonalAdapter(mContext, mPersonalList, mMotionListener);
         mPersonalGrid.setAdapter(mPersonalAdaper);
+        mPersonalAdaper.notifyDataSetChanged();
     }
 
     @Override
@@ -110,9 +131,7 @@ public class PersonalSpaceFragment extends BaseFragment {
                 case MotionEvent.BUTTON_PRIMARY:
                     if (v.getTag() instanceof PersonalAdapter.ViewHolder) {
                         int pos = (int) ((PersonalAdapter.ViewHolder) v.getTag()).name.getTag();
-                        if (integerList.contains(pos)) {
-                            integerList.clear();
-                        }else {
+                        if (!integerList.contains(pos)) {
                             integerList.clear();
                             integerList.add(pos);
                         }
@@ -125,6 +144,21 @@ public class PersonalSpaceFragment extends BaseFragment {
                     mPersonalAdaper.notifyDataSetChanged();
                     break;
                 case MotionEvent.BUTTON_SECONDARY:
+                    if (v.getTag() instanceof PersonalAdapter.ViewHolder) {
+                        int pos = (int) ((PersonalAdapter.ViewHolder) v.getTag()).name.getTag();
+                        if (!integerList.contains(pos)) {
+                            integerList.clear();
+                            integerList.add(pos);
+                        }
+                        mCurId = pos;
+                        mPersonalDialog = new PersonalMenuDialog(mContext, false);
+                    } else {
+                        mPersonalDialog = new PersonalMenuDialog(mContext, true);
+                        integerList.clear();
+                    }
+                    mPersonalDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    mPersonalDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
+                    mPersonalAdaper.notifyDataSetChanged();
                     break;
                 case MotionEvent.BUTTON_TERTIARY:
                     break;
@@ -162,5 +196,15 @@ public class PersonalSpaceFragment extends BaseFragment {
         transaction.hide(mMainActivity.mCurFragment);
         transaction.add(R.id.fl_mian, mCurFragment, Constants.PERSONALSYSTEMSPACE_TAG).commit();
         mMainActivity.mCurFragment = mCurFragment;
+    }
+
+    @Override
+    public void enter() {
+        enter(Constants.LEFT_FAVORITES, mPathMap.get(mPersonalList.get(mCurId)));
+    }
+
+    public void copyPath() {
+        (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE)
+                                             .setText(mPathMap.get(mPersonalList.get(mCurId)));
     }
 }

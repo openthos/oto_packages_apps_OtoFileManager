@@ -53,13 +53,13 @@
         <TextView
             android:id="@+id/tv_download"
             style="@style/textSet"
-            android:drawableLeft="@drawable/left_picture_selector"
+            android:drawableLeft="@drawable/left_download_selector"
             android:text="@string/downloads" />
 
         <TextView
             android:id="@+id/tv_recycle"
             style="@style/textSet"
-            android:drawableLeft="@drawable/left_picture_selector"
+            android:drawableLeft="@drawable/left_recycle_selector"
             android:text="@string/recycle" />
 
         <TextView
