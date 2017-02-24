@@ -93,7 +93,10 @@ public class MenuFirstDialog extends Dialog
             }
         } else {
             if (mFileViewInteractionHub.isProtected()) {
-                if (mFileViewInteractionHub.isDirectory()) {
+                if (mFileViewInteractionHub.isMultiChosen()) {
+                    prepareData(mContext.getResources()
+                            .getStringArray(R.array.protected_multi_chosen_menu));
+                } else if (mFileViewInteractionHub.isDirectory()) {
                     prepareData(mContext.getResources()
                                             .getStringArray(R.array.protected_folder_menu));
                 } else {
@@ -101,7 +104,10 @@ public class MenuFirstDialog extends Dialog
                                             .getStringArray(R.array.protected_file_menu));
                 }
             } else {
-                if (mFileViewInteractionHub.isDirectory()) {
+                if (mFileViewInteractionHub.isMultiChosen()) {
+                    prepareData(mContext.getResources()
+                            .getStringArray(R.array.common_multi_chosen_menu));
+                } else if (mFileViewInteractionHub.isDirectory()) {
                     prepareData(mContext.getResources()
                                             .getStringArray(R.array.common_folder_menu));
                 } else {

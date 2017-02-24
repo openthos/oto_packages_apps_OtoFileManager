@@ -253,4 +253,5 @@
     <string name="file_name_not_null">文件名不能为空。</string>
     <string name="file_name_warning">提示：\n请避免文件名含有以下字符：@ # $ ^ &amp; * ( ) [ ]\n\n确认使用此文件名？</string>
     <string name="fail_seafile_name_by_error">文件名只支持数字，字母或空格</string>
+    <string name="hint_no_permission">没有操作权限</string>
 </resources>

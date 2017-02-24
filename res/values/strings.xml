@@ -250,6 +250,7 @@
     <string name="fail_seafile_name_by_error">File name only be composed of numbers, letters or spaces.</string>
     <string name="file_name_not_null">File name must not be null.</string>
     <string name="file_name_warning">Warning:\nAvoid containing these chractors: @ # $ ^ &amp; * ( ) [ ].\nDo you determine use this file name?</string>
+    <string name="hint_no_permission">You have no operating authority!</string>
     <string-array name="file_type_array">
         <item>.doc</item>
         <item>.xls</item>
@@ -291,6 +292,15 @@
         <item>@string/operation_open</item>
         <item>@string/operation_open_with</item>
         <item>@string/operation_info</item>
+    </string-array>
+    <string-array name="common_multi_chosen_menu">
+        <item>@string/operation_copy</item>
+        <item>@string/operation_move</item>
+        <item>@string/operation_delete</item>
+        <item>@string/operation_delete_permanent</item>
+    </string-array>
+    <string-array name="protected_multi_chosen_menu">
+        <item>@string/hint_no_permission</item>
     </string-array>
     <string-array name="common_blank_menu">
         <item>@string/operation_paste</item>

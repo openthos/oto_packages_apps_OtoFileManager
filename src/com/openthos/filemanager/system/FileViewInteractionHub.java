@@ -198,6 +198,10 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         return mCheckedFileNameList.size() > 0;
     }
 
+    public boolean isMultiChosen() {
+        return mCheckedFileNameList.size() > 1;
+    }
+
     public boolean isMoveState() {
         return mFileOperationHelper.isMoveState() || mFileOperationHelper.canPaste();
     }
