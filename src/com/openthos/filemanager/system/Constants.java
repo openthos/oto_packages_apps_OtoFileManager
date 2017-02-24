@@ -569,6 +569,7 @@ public abstract class Constants {
 
     public static final String SUFFIX_TAR = ".tar";
     public static final String SUFFIX_ZIP = ".zip";
+    public static final String SUFFIX_RAR = ".rar";
     public static final String SUFFIX_TAR_GZIP = ".gz";
     public static final String SUFFIX_TAR_BZIP2 = ".bz2";
 }

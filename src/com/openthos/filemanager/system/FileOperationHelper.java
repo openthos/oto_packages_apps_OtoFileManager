@@ -610,9 +610,15 @@ public class FileOperationHelper {
     public static void decompress(String path) {
         File f = new File(path);
         BufferedReader in = null;
+        Process pro;
         try {
-            Process pro = Runtime.getRuntime().exec(new String[]{"/system/bin/7za", "x",
-                                                       path, "-o" + f.getParent(), "-bb3", "-y"});
+            if (path.toLowerCase().endsWith(Constants.SUFFIX_RAR)) {
+                pro = Runtime.getRuntime().exec(new String[]{"/system/bin/unrar", "x", "-y", path},
+                        null, new File(f.getParent()));
+            } else {
+                pro = Runtime.getRuntime().exec(new String[]{"/system/bin/7za", "x",
+                                                        path, "-o" + f.getParent(), "-bb3", "-y"});
+            }
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_SHOW);
             String line;
@@ -642,27 +648,38 @@ public class FileOperationHelper {
         Process pro;
         BufferedReader in = null;
         boolean isPrint = false;
+        boolean isRar = file.toLowerCase().endsWith(Constants.SUFFIX_RAR);
         ArrayList<String> fileList= new ArrayList<>();
         try {
-            pro = runtime.exec(new String[]{"/system/bin/7za", "l", file});
+            if (!isRar) {
+                pro = runtime.exec(new String[]{"/system/bin/7za", "l", file});
+            } else {
+                pro = runtime.exec(new String[]{"/system/bin/unrar", "v", file});
+            }
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
+            int row = 1;
             while ((line = in.readLine()) != null) {
                 if (isPrint) {
                     if (line.contains("-----")) {
                         isPrint = false;
                         continue;
                     }
-                    line = line.substring(Constants.INDEX_7Z_FILENAME);
-                    System.out.println(line);
-                    if (line.contains("/")) {
-                        line = line.replace(line.substring(line.indexOf("/")), "");
-                        if (!fileList.contains(line)) {
+                    if (!isRar) {
+                        line = line.substring(Constants.INDEX_7Z_FILENAME);
+                        System.out.println(line);
+                        if (line.contains("/")) {
+                            line = line.replace(line.substring(line.indexOf("/")), "");
+                            if (!fileList.contains(line)) {
+                                fileList.add(line);
+                            }
+                        } else {
                             fileList.add(line);
                         }
-                    } else {
-                        fileList.add(line);
+                    } else if (row % 2 != 0) {
+                        fileList.add(line.substring(1));
                     }
+                    row++;
                 }
                 if (line.contains("-----")) {
                     isPrint = true;

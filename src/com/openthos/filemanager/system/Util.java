@@ -121,6 +121,7 @@ public class Util {
                 case Constants.SUFFIX_TAR_BZIP2:
                 case Constants.SUFFIX_TAR_GZIP:
                 case Constants.SUFFIX_ZIP:
+                case Constants.SUFFIX_RAR:
                     return Constants.DECOMPRESSIBLE;
                 default:
                     return Constants.COMPRESSIBLE;
