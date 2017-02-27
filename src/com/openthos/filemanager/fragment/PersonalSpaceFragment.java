@@ -204,7 +204,7 @@ public class PersonalSpaceFragment extends BaseFragment {
     }
 
     public void copyPath() {
-        (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE)
+        ((ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE))
                                              .setText(mPathMap.get(mPersonalList.get(mCurId)));
     }
 }
