@@ -136,7 +136,7 @@ public class MainActivity extends BaseActivity
                                 mDocumentFragment, mDownloadFragment,
                                 mRecycleFragment;
     private OnlineNeighborFragment mOnlineNeighborFragment;
-    private SeafileFragment mSeafileFragment;
+    public SeafileFragment mSeafileFragment;
     private UsbConnectReceiver mReceiver;
     private String[] mUsb0;
     private String[] mUsb1;
@@ -183,6 +183,7 @@ public class MainActivity extends BaseActivity
 
     private class SeafileThread extends Thread {
         private boolean isExistsSetting = false;
+        private boolean isExistsFileManager = false;
         private String id = "";
         @Override
         public void run() {
@@ -219,22 +220,35 @@ public class MainActivity extends BaseActivity
                             Context.MODE_PRIVATE).getString(SeafileUtils.SEAFILE_DATA, "");
                 }
                 JSONArray jsonArray = new JSONArray(librarys);
+                JSONObject jsonObject = null;
                 for (int i = 0; i < jsonArray.length(); i++) {
                     SeafileLibrary seafileLibrary = new SeafileLibrary();
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    jsonObject = jsonArray.getJSONObject(i);
+                    seafileLibrary.libraryName = jsonObject.getString("name");
                     seafileLibrary.libraryId = jsonObject.getString("id");
-                    seafileLibrary.libraryName =jsonObject.getString("name");
                     if (seafileLibrary.libraryName.equals(SeafileUtils.SETTING_SEAFILE_NAME)) {
                         isExistsSetting = true;
                         id = seafileLibrary.libraryId;
                         continue;
                     }
+                    if (!seafileLibrary.libraryName.equals(SeafileUtils.FILEMANAGER_SEAFILE_NAME)) {
+                        continue;
+                    }
+                    isExistsFileManager = true;
+                    id = seafileLibrary.libraryId;
                     mAccount.mLibrarys.add(seafileLibrary);
                 }
                 getSharedPreferences(SeafileUtils.SEAFILE_DATA, Context.MODE_PRIVATE).edit()
                         .putString(SeafileUtils.SEAFILE_DATA, librarys).commit();
             } catch (JSONException e) {
                 e.printStackTrace();
+            }
+            if (!isExistsFileManager) {
+                SeafileLibrary seafileLibrary = new SeafileLibrary();
+                seafileLibrary.libraryName = SeafileUtils.FILEMANAGER_SEAFILE_NAME;
+                seafileLibrary.libraryId
+                                     = SeafileUtils.create(SeafileUtils.FILEMANAGER_SEAFILE_NAME);
+                mAccount.mLibrarys.add(seafileLibrary);
             }
             if (mAccount.mLibrarys.size() > 0) {
                 for (SeafileLibrary seafileLibrary : mAccount.mLibrarys) {

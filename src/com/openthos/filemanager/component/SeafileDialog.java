@@ -74,6 +74,7 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
     }
 
     private void initLisener() {
+        mTvCreate.setVisibility(View.GONE);
         if (!SeafileUtils.isExistsAccount() || mMainActivity.isInitSeafile()
                                                                  || mMainActivity.isSeafile()){
             return;

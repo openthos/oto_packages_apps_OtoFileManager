@@ -428,6 +428,10 @@ public class SdStorageFragment extends BaseFragment {
             mMainActivity.setNavigationPath("SDCard");
             transaction.show(mMainActivity.mPersonalSpaceFragment).commit();
             mCurFragment = mMainActivity.mPersonalSpaceFragment;
+        } else if (Constants.YUN_SPACE_FRAGMENT.equals(tag)) {
+            mMainActivity.setNavigationPath("CLOUD");
+            transaction.show(mMainActivity.mSeafileFragment).commit();
+            mCurFragment = mMainActivity.mSeafileFragment;
         } else {
             mCurFragment = new SystemSpaceFragment(tag, path,
                                                    mFileInfoArrayList, copyOrMove, false);

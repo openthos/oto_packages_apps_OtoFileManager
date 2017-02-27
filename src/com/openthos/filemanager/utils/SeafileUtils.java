@@ -51,6 +51,7 @@ public class SeafileUtils {
     public static final String SETTING_SEAFILE_PATH = "/data/sea/data/sdcard/cloudFolder";
     public static final String SETTING_SEAFILE_PROOT_PATH = "/sdcard/cloudFolder";
     public static final String SETTING_SEAFILE_NAME = "cloudFolder";
+    public static final String FILEMANAGER_SEAFILE_NAME = "DATA";
 
     public static String getUserAccount() {
         return "-u " + mUserId + " -p " + mUserPassword;
