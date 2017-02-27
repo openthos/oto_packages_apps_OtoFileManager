@@ -372,11 +372,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     private boolean createFolder(String text) {
         if (mFileOperationHelper.CreateFolder(mCurrentPath, text)) {
             mFileViewListener.addSingleFile(Util.GetFileInfo(Util.makePath(mCurrentPath, text)));
-            if ("list".equals(LocalCache.getViewTag())) {
-                mFileListView.setSelection(mFileListView.getCount() - 1);
-            } else if ("grid".equals(LocalCache.getViewTag())) {
-                mFileGridView.setSelection(mFileGridView.getCount() - 1);
-            }
             clearSelection();
         } else {
             new AlertDialog.Builder(mContext)
@@ -439,11 +434,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     private boolean createFile(String text) {
         if (mFileOperationHelper.CreateFile(mCurrentPath, text)) {
             mFileViewListener.addSingleFile(Util.GetFileInfo(Util.makePath(mCurrentPath, text)));
-            if ("list".equals(LocalCache.getViewTag())) {
-                mFileListView.setSelection(mFileListView.getCount() - 1);
-            } else if ("grid".equals(LocalCache.getViewTag())) {
-                mFileGridView.setSelection(mFileGridView.getCount() - 1);
-            }
             clearSelection();
         } else {
             new AlertDialog.Builder(mContext)

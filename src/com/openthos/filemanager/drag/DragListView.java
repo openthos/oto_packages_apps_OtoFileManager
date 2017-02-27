@@ -3,6 +3,7 @@ package com.openthos.filemanager.drag;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.os.Handler;
@@ -43,6 +44,7 @@ public class DragListView extends ListView {
     private static final int speed = 80;
     private OnChanageListener onChanageListener;
     private int tempPosition;
+    private int mPaddingLeft, mPaddingTop, mColumnWidth;
 
     public DragListView(Context context) {
         this(context, null);
@@ -237,5 +239,31 @@ public class DragListView extends ListView {
 
     public boolean isBlankArea() {
         return mIsBlankArea;
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        setParams(getPaddingLeft(), getPaddingTop(), getWidth());
+     }
+
+    private void setParams(int left, int top, int width) {
+        mPaddingLeft = left;
+        mPaddingTop = top;
+        mColumnWidth = width;
+    }
+
+    public int[] getParams() {
+        return new int[] {mPaddingLeft, mPaddingTop, mColumnWidth};
+    }
+
+    public int getVerticalScrollDistance() {
+        // get the first childView that displayed in current view
+        View childView = getChildAt(0);
+        if (childView == null) {
+            return 0;
+        }
+        return mPaddingTop - childView.getTop() + getFirstVisiblePosition()
+                * (childView.getHeight());
     }
 }

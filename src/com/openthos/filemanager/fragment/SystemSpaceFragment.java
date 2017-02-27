@@ -117,8 +117,7 @@ public class SystemSpaceFragment extends BaseFragment implements
             }
         }
     };
-    private GridViewOnGenericMotionListener mGridMotionListener;
-    private ListViewOnGenericMotionListener mListMotionListener;
+    private ViewOnGenericMotionListener mViewMotionListener;
     private FrameSelectView mFrameSelectView;
     private List<FileInfo> fileInfoList;
     private List<FileInfo> mFileListInfo;
@@ -129,6 +128,8 @@ public class SystemSpaceFragment extends BaseFragment implements
     private int GRID_NUMCOLUMNS_POS = 4;
     private int ADAPTER_WIDTH_POS = 0;
     private int ADAPTER_HEIGHT_POS = 1;
+    private int mLastClickId;
+    private long mLastClickTime = 0;
 
     private void selectorMenuId(String tag) {
         if (mFileViewInteractionHub.getSelectedFileList() != null) {
@@ -233,22 +234,19 @@ public class SystemSpaceFragment extends BaseFragment implements
         Intent intent = getActivity().getIntent();
         //TODO  delete
         mFileIconHelper = new FileIconHelper(mActivity);
-        mGridMotionListener = new GridViewOnGenericMotionListener();
-        mListMotionListener = new ListViewOnGenericMotionListener();
+        mViewMotionListener = new ViewOnGenericMotionListener();
         if ("list".equals(LocalCache.getViewTag())) {
             addHeadView(mActivity);
             mAdapter = new FileListAdapter(mActivity, R.layout.file_browser_item_list,
                                            mFileNameList, mFileViewInteractionHub,
-                                           mFileIconHelper, mListMotionListener);
+                                           mFileIconHelper, mViewMotionListener);
         } else if ("grid".equals(LocalCache.getViewTag())) {
             mAdapter = new FileListAdapter(mActivity, R.layout.file_browser_item_grid,
                                            mFileNameList, mFileViewInteractionHub,
-                                           mFileIconHelper, mGridMotionListener);
+                                           mFileIconHelper, mViewMotionListener);
         }
         boolean baseSd = intent.getBooleanExtra(Constants.KEY_BASE_SD,
                          !FileManagerPreferenceActivity.isReadRoot(mActivity));
-        Log.i(TAG, "baseSd = " + baseSd);
-
         String rootDir = intent.getStringExtra(ROOT_DIRECTORY);
         if (!TextUtils.isEmpty(rootDir)) {
             if (baseSd && sdDir.startsWith(rootDir)) {
@@ -288,15 +286,15 @@ public class SystemSpaceFragment extends BaseFragment implements
     }
 
     private void switchMode() {
-     if ("list".equals(LocalCache.getViewTag())) {
+        if ("list".equals(LocalCache.getViewTag())) {
             addHeadView(mActivity);
             mAdapter = new FileListAdapter(mActivity, R.layout.file_browser_item_list,
                                            mFileNameList, mFileViewInteractionHub,
-                                           mFileIconHelper, mListMotionListener);
+                                           mFileIconHelper, mViewMotionListener);
         } else if ("grid".equals(LocalCache.getViewTag())) {
             mAdapter = new FileListAdapter(mActivity, R.layout.file_browser_item_grid,
                                            mFileNameList, mFileViewInteractionHub,
-                                           mFileIconHelper, mGridMotionListener);
+                                           mFileIconHelper, mViewMotionListener);
         }
         operatorData();
     }
@@ -325,57 +323,11 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     @Override
     protected void initListener() {
-        //mFragmentSysFl.setOnGenericMotionListener(new MouseGridOnGenericMotionListener());
-        file_path_grid.setOnTouchListener(mGridMotionListener);
-        file_path_list.setOnTouchListener(mListMotionListener);
-        /*file_path_list.setOnDragChangeListener(new DragListView.OnChanageListener() {
-            @Override
-            public void onChange(int from, int to) {
-                FileInfo fileInfo = mFileViewInteractionHub.getItem(to);
-                if (from != -1 && to != -1 && fileInfo.IsDir) {
-                    mFileViewInteractionHub.addDragSelectedItem(from);
-                    mFileViewInteractionHub.onOperationMove();
-                    mFileViewInteractionHub.onOperationDragConfirm(fileInfo.filePath);
-                    L.e("from____________to", from + "______________" + to);
-                }
-            }
-        });
-        file_path_list.setOnGenericMotionListener(new MouseListOnGenericMotionListener());
-
-        file_path_grid.setOnDragChangeListener(new DragGridView.OnChanageListener() {
-            @Override
-            public void onChange(int from, int to) {
-                FileInfo fileInfo = mFileViewInteractionHub.getItem(to);
-                if (from != -1 && to != -1 && fileInfo.IsDir) {
-                    mFileViewInteractionHub.addDragSelectedItem(from);
-                    mFileViewInteractionHub.onOperationMove();
-                    mFileViewInteractionHub.onOperationDragConfirm(fileInfo.filePath);
-                    L.e("from____________to", from + "______________" + to);
-                }
-            }
-        });
-        file_path_grid.setOnGenericMotionListener(new MouseGridOnGenericMotionListener());
-        file_path_grid.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_UP:
-                        if (isShow==true && isDialogShow == false) {
-                            isShow = false;
-                            isDialogShow = true;
-                            mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub,
-                                                                       event);
-                            if (mAdapter.getSelectFileInfoList().size() != 0) {
-                                mAdapter.notifyDataSetChanged();
-                            }
-                        }
-                }
-                return false;
-            }
-        });*/
+        file_path_grid.setOnTouchListener(mViewMotionListener);
+        file_path_list.setOnTouchListener(mViewMotionListener);
     }
 
-    public class GridViewOnGenericMotionListener implements View.OnTouchListener {
+    public class ViewOnGenericMotionListener implements View.OnTouchListener {
         private boolean mIsShowDialog = false;
         private boolean mIsItem = false;
         private List<Integer> integerList = new ArrayList<>();
@@ -391,7 +343,11 @@ public class SystemSpaceFragment extends BaseFragment implements
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     integerList = mAdapter.getSelectFileInfoList();
-                    calculateFileLocation(file_path_grid.getVerticalScrollDistance());
+                    if ("grid".equals(LocalCache.getViewTag())) {
+                        calculateFileGridLocation(file_path_grid.getVerticalScrollDistance());
+                    } else {
+                        calculateFileListLocation(file_path_list.getVerticalScrollDistance());
+                    }
                     if (view.getTag() instanceof FileListAdapter.ViewHolder
                             || view.getId() == R.id.file_name) {
                             mDownX = -1;
@@ -533,103 +489,6 @@ public class SystemSpaceFragment extends BaseFragment implements
                         mIsShowDialog = false;
                     }
                     mDownX = -1;
-            }
-            return false;
-        }
-    }
-
-    public class ListViewOnGenericMotionListener implements View.OnTouchListener {
-        private boolean mIsShowDialog = false;
-        private boolean mIsItem = false;
-        private List<Integer> integerList;
-        private FileInfo fileInfo;
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            switch (motionEvent.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    integerList = mAdapter.getSelectFileInfoList();
-                    if (view.getTag() instanceof FileListAdapter.ViewHolder) {
-                        if (motionEvent.getButtonState() == MotionEvent.BUTTON_SECONDARY) {
-                            mIsShowDialog = true;
-                            mIsItem = true;
-                        }
-                        mPos = (int) ((FileListAdapter.ViewHolder) view.getTag()).name.getTag();
-                        if (motionEvent.getButtonState() == MotionEvent.BUTTON_PRIMARY) {
-                            mouseRightTag = "button_primary";
-                        }
-                        if (motionEvent.getButtonState() == MotionEvent.BUTTON_SECONDARY) {
-                            mouseRightTag = "button_secondary";
-                        }
-                        fileInfo = mAdapter.getFileInfoList().get(mPos);
-                        if (!isCtrlPress && "button_primary".equals(mouseRightTag)
-                                && mLastClickId == mPos
-                                && (Math.abs(System.currentTimeMillis() - mLastClickTime)
-                                < Constants.DOUBLE_CLICK_INTERVAL_TIME)) {
-                            mFileViewInteractionHub.onListItemClick(mPos,
-                                    Constants.DOUBLE_TAG, motionEvent, fileInfo);
-                            mPos = -1;
-                            mLastClickId = -1;
-                            integerList.clear();
-                            mFileViewInteractionHub.clearSelection();
-                        } else {
-                            mLastClickTime = System.currentTimeMillis();
-                            mLastClickId = mPos;
-                        }
-                        return true;
-                    } else {
-                        mPos = -1;
-                        if (motionEvent.getButtonState() == MotionEvent.BUTTON_SECONDARY) {
-                            mIsShowDialog = true;
-                            mIsItem = false;
-                        }
-                    }
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    break;
-                case MotionEvent.ACTION_UP:
-                    if (mPos != -1) {
-                        fileInfo = mAdapter.getFileInfoList().get(mPos);
-                        fileInfo.Selected = true;
-                        if (isCtrlPress) {
-                            if (!integerList.contains(mPos)) {
-                                integerList.add(mPos);
-                                mFileViewInteractionHub.addDialogSelectedItem(fileInfo);
-                            } else {
-                                integerList.remove(new Integer(mPos));
-                                mFileViewInteractionHub.removeDialogSelectedItem(fileInfo);
-                            }
-                        } else if (mouseRightTag != "button_secondary"
-                                || !integerList.contains(mPos)) {
-                            integerList.clear();
-                            integerList.add(mPos);
-                            mFileViewInteractionHub.clearSelection();
-                            mFileViewInteractionHub.addDialogSelectedItem(fileInfo);
-                        }
-                    } else {
-                        integerList.clear();
-                        mFileViewInteractionHub.clearSelection();
-                    }
-                    mAdapter.notifyDataSetChanged();
-                    mouseRightTag = "mouse";
-
-                    if (mIsShowDialog == true) {
-                        int compressFileState = Constants.COMPRESSIBLE;
-                        if (mIsItem) {
-                            if (fileInfo != null) {
-                                File file = new File(fileInfo.filePath);
-                                compressFileState = Util.getCompressFileState(fileInfo.filePath);
-                                mFileViewInteractionHub.setIsDirectory(file.isDirectory());
-                            }
-                            mFileViewInteractionHub.setIsBlank(false);
-                        } else {
-                            mFileViewInteractionHub.setIsBlank(true);
-                            mFileViewInteractionHub.setIsDirectory(true);
-                        }
-                        mFileViewInteractionHub.setCompressFileState(compressFileState);
-                        mFileViewInteractionHub.showContextDialog(mFileViewInteractionHub,
-                                motionEvent);
-                        mIsShowDialog = false;
-                    }
             }
             return false;
         }
@@ -967,129 +826,6 @@ public class SystemSpaceFragment extends BaseFragment implements
         return mFileViewInteractionHub.getCurCopyOrMoveMode();
     }
 
-    private int mLastClickId;
-    private long mLastClickTime = 0;
-
-    public class OnitemClickListener implements AdapterView.OnItemClickListener {
-        MotionEvent motionEvent;
-        public OnitemClickListener(MotionEvent event) {
-            motionEvent = event;
-        }
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            file_path_grid.setIsBlankArea(false);
-            FileInfo fileInfo = mAdapter.getFileInfoList().get(position);
-            fileInfo.Selected = true;
-            List<Integer> integerList = mAdapter.getSelectFileInfoList();
-            if (isCtrlPress) {
-                if (integerList.contains(position)) {
-                    integerList.remove(new Integer(position));
-                    mFileViewInteractionHub.removeDialogSelectedItem(fileInfo);
-                } else {
-                    integerList.add(position);
-                    mFileViewInteractionHub.addDialogSelectedItem(fileInfo);
-                }
-            } else {
-                if ("button_primary".equals(mouseRightTag) && mLastClickId == position
-                        && (Math.abs(System.currentTimeMillis() - mLastClickTime)
-                            < Constants.DOUBLE_CLICK_INTERVAL_TIME)) {
-                    mFileViewInteractionHub.onListItemClick(position,
-                                            Constants.DOUBLE_TAG, motionEvent, fileInfo);
-                    integerList.clear();
-                    mFileViewInteractionHub.clearSelection();
-                } else if (mouseRightTag.equals("button_secondary") && isDialogShow == false) {
-//                    mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub,
-//                                                               motionEvent);
-                    mouseRightTag = "mouse";
-                    isDialogShow = true;
-                } else {
-                    mLastClickTime = System.currentTimeMillis();
-                    mLastClickId = position;
-                    integerList.clear();
-                    mFileViewInteractionHub.clearSelection();
-                    integerList.add(position);
-                    mFileViewInteractionHub.addDialogSelectedItem(fileInfo);
-                    mouseRightTag = "mouse";
-                }
-            }
-            mAdapter.notifyDataSetChanged();
-        }
-    }
-
-    private class MouseGridOnGenericMotionListener implements View.OnGenericMotionListener {
-        @Override
-        public boolean onGenericMotion(View v, MotionEvent event) {
-            switch (event.getButtonState()) {
-                case MotionEvent.BUTTON_PRIMARY:
-                    mouseRightTag = "button_primary";
-                    file_path_grid.setOnItemClickListener(new OnitemClickListener(event));
-                    if (!isCtrlPress) {
-                        mAdapter.getSelectFileInfoList().clear();
-                        mFileViewInteractionHub.clearSelection();
-                        mAdapter.notifyDataSetChanged();
-                    }
-                    if (file_path_grid.isBlankArea() == false) {
-                        return true;
-                    }
-                    file_path_grid.setIsBlankArea(true);
-                    break;
-                case MotionEvent.BUTTON_SECONDARY:
-                    isDialogShow = false;
-                    mouseRightTag = "button_secondary";
-                    file_path_grid.setOnItemClickListener(new OnitemClickListener(event));
-                    isShow =true;
-//                    mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub, event);
-                    break;
-                case MotionEvent.BUTTON_TERTIARY:
-                    file_path_grid.setOnItemClickListener(new OnitemClickListener(event));
-                    break;
-                case MotionEvent.ACTION_SCROLL:
-                    mFileViewInteractionHub.MouseScrollAction(event);
-                    break;
-                case MotionEvent.ACTION_HOVER_ENTER:
-                    L.d("ACTION_HOVER_ENTER");
-                    break;
-            }
-            return false;
-        }
-    }
-    private class MouseListOnGenericMotionListener implements View.OnGenericMotionListener {
-        @Override
-        public boolean onGenericMotion(View v, MotionEvent event) {
-            switch (event.getButtonState()) {
-                case MotionEvent.BUTTON_PRIMARY:
-                    mouseRightTag = "button_primary";
-                    file_path_list.setOnItemClickListener(new OnitemClickListener(event));
-                    if (!isCtrlPress) {
-                        mAdapter.getSelectFileInfoList().clear();
-                        mFileViewInteractionHub.clearSelection();
-                        mAdapter.notifyDataSetChanged();
-                    }
-                    if (file_path_list.isBlankArea() == false) {
-                        return true;
-                    }
-                    file_path_list.setIsBlankArea(true);
-                    break;
-                case MotionEvent.BUTTON_SECONDARY:
-                    mouseRightTag = "button_secondary";
-                    file_path_list.setOnItemClickListener(new OnitemClickListener(event));
-//                    mFileViewInteractionHub.shownContextDialog(mFileViewInteractionHub, event);
-                    break;
-                case MotionEvent.BUTTON_TERTIARY:
-                    file_path_list.setOnItemClickListener(new OnitemClickListener(event));
-                    break;
-                case MotionEvent.ACTION_SCROLL:
-                    mFileViewInteractionHub.MouseScrollAction(event);
-                    break;
-                case MotionEvent.ACTION_HOVER_ENTER:
-                    L.d("ACTION_HOVER_ENTER");
-                    break;
-            }
-            return false;
-        }
-    }
-
     public String getCurrentPath() {
         return mFileViewInteractionHub.getCurrentPath();
     }
@@ -1123,7 +859,7 @@ public class SystemSpaceFragment extends BaseFragment implements
         return mSortMap.get(sort);
     }
 
-    public void calculateFileLocation(int fixY) {
+    public void calculateFileGridLocation(int fixY) {
         int[] gridViewParams = file_path_grid.getParams();
         int[] itemParams = mAdapter.getParams();
         for (int i = 0; i < mFileListInfo.size(); i++) {
@@ -1138,6 +874,21 @@ public class SystemSpaceFragment extends BaseFragment implements
             mFileListInfo.get(i).bottom = gridViewParams[GRID_TOP_POS]
                     + itemParams[ADAPTER_HEIGHT_POS] + (i / gridViewParams[GRID_NUMCOLUMNS_POS])
                     * (itemParams[ADAPTER_HEIGHT_POS] + gridViewParams[GRID_SPACE_POS]) - fixY;
+        }
+    }
+
+    public void calculateFileListLocation(int fixY) {
+        int[] listViewParams = file_path_list.getParams();
+        int[] itemParams = mAdapter.getParams();
+        for (int i = 0; i < mFileListInfo.size(); i++) {
+            mFileListInfo.get(i).left = listViewParams[GRID_LEFT_POS];
+            mFileListInfo.get(i).top = listViewParams[GRID_TOP_POS]
+                    + (i + 1)* itemParams[ADAPTER_HEIGHT_POS] - fixY;
+            mFileListInfo.get(i).right = listViewParams[GRID_WIDTH_POS]
+                    - listViewParams[GRID_LEFT_POS];
+            mFileListInfo.get(i).bottom = listViewParams[GRID_TOP_POS]
+                    + itemParams[ADAPTER_HEIGHT_POS]
+                    + (i + 1) * itemParams[ADAPTER_HEIGHT_POS] - fixY;
         }
     }
 }
