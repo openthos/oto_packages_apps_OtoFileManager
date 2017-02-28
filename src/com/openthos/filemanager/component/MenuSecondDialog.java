@@ -60,10 +60,11 @@ public class MenuSecondDialog extends Dialog implements View.OnClickListener {
     }
 
     public void showSecondDialog(int x, int y, int height, int width) {
-        show();
         Window dialogWindow = getWindow();
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
         dialogWindow.setGravity(Gravity.LEFT | Gravity.TOP);
+        lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
+        show();
         lp.width = width;
         lp.height = height;
         lp.x = x + 220;

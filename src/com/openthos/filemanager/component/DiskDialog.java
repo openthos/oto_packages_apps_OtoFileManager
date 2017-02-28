@@ -144,10 +144,11 @@ public class DiskDialog extends Dialog
     }
 
     public void showDialog(int x, int y) {
-        show();
         Window dialogWindow = getWindow();
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
         lp.dimAmount = 0.0f;
+        lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
+        show();
         dialogWindow.setGravity(Gravity.LEFT | Gravity.TOP);
         WindowManager m = ((Activity) mContext).getWindowManager();
         Display d = m.getDefaultDisplay();
