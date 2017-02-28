@@ -185,6 +185,7 @@ public class MainActivity extends BaseActivity
         private boolean isExistsSetting = false;
         private boolean isExistsFileManager = false;
         private String id = "";
+        private String settingId = "";
         @Override
         public void run() {
             super.run();
@@ -228,7 +229,7 @@ public class MainActivity extends BaseActivity
                     seafileLibrary.libraryId = jsonObject.getString("id");
                     if (seafileLibrary.libraryName.equals(SeafileUtils.SETTING_SEAFILE_NAME)) {
                         isExistsSetting = true;
-                        id = seafileLibrary.libraryId;
+                        settingId = seafileLibrary.libraryId;
                         continue;
                     }
                     if (!seafileLibrary.libraryName.equals(SeafileUtils.FILEMANAGER_SEAFILE_NAME)) {
@@ -269,9 +270,9 @@ public class MainActivity extends BaseActivity
                 settingSeafile.mkdirs();
             }
             if (!isExistsSetting) {
-                id = SeafileUtils.create(SeafileUtils.SETTING_SEAFILE_NAME);
+                settingId = SeafileUtils.create(SeafileUtils.SETTING_SEAFILE_NAME);
             }
-            SeafileUtils.sync(id, SeafileUtils.SETTING_SEAFILE_PROOT_PATH);
+            SeafileUtils.sync(settingId, SeafileUtils.SETTING_SEAFILE_PROOT_PATH);
         }
     }
 
