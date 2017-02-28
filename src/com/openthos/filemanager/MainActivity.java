@@ -724,11 +724,12 @@ public class MainActivity extends BaseActivity
         Intent intent = getIntent();
         String path = intent.getStringExtra(Intent.EXTRA_DESKTOP_PATH_TAG);
         if (path != null) {
-            mEt_nivagation.setText(path);
-            mEt_nivagation.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN,
-                                                         KeyEvent.KEYCODE_ENTER));
-            mEt_nivagation.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP,
-                                                         KeyEvent.KEYCODE_ENTER));
+            showSpaceFragment(path);
+            if (path.startsWith(Constants.DESKTOP_PATH)) {
+                setSelectedBackground(R.id.tv_desk);
+            } else if (path.startsWith(Constants.RECYCLE_PATH)) {
+                setSelectedBackground(R.id.tv_recycle);
+            }
         }
         setCurPath(path);
     }
@@ -747,7 +748,13 @@ public class MainActivity extends BaseActivity
                 case KeyEvent.KEYCODE_ENTER:
                 case KeyEvent.KEYCODE_NUMPAD_ENTER:
                     v.clearFocus();
-                    showSpaceFragment((TextView) v);
+                    String path = ((TextView) v).getText().toString();
+                    for (int i = 0; i < path.length(); i++) {
+                        if (path.charAt(i) != ' ') {
+                            showSpaceFragment(path.substring(i, path.length()));
+                            break;
+                        }
+                    }
                     return true;
                 case KeyEvent.KEYCODE_ESCAPE:
                     v.clearFocus();
@@ -757,25 +764,15 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    private void showSpaceFragment(TextView textView) {
+    private void showSpaceFragment(String path) {
         FragmentTransaction transaction = mManager.beginTransaction();
-        String path = textView.getText().toString().trim();
         if (TextUtils.isEmpty(path)) {
             return;
         }
-        int index = path.indexOf(Constants.SD_PATH);
-        if (path.startsWith(Constants.SD_PATH)) {
-            path = path.substring(index + 1);
-            index = path.indexOf(Constants.SD_PATH);
-        }
-        String str = index == -1 ? path : path.substring(0, index);
-        if (str.toLowerCase().equals(getResources().getString(R.string.address_sdcard))
-                || str.toLowerCase().equals(getResources().getString(R.string.address_sd))) {
-            if (index == -1) {
-                path = Util.getSdDirectory();
-            } else {
-                path = Util.getSdDirectory() + path.substring(index);
-            }
+        if (path.startsWith(getString(R.string.path_sd_eng))) {
+            path = path.replaceAll(getString(R.string.path_sd_eng), Util.getSdDirectory());
+        } else if (!path.startsWith(Constants.SD_PATH)) {
+            path = Constants.SD_PATH + path;
         }
         File file = new File(path);
         if (file.exists()) {
@@ -1257,7 +1254,6 @@ public class MainActivity extends BaseActivity
             }
         }
         setSelectedBackground(id);
-        mEt_nivagation.setText(path);
         setCurPath(path);
         FragmentTransaction transaction = mManager.beginTransaction();
         if (mCurFragment != null) {
@@ -1836,9 +1832,6 @@ public class MainActivity extends BaseActivity
                     mEt_nivagation.setText(displayPath);
                     displayPath = displayPath.replaceAll(getString(R.string.sd_folder),
                                       Constants.PERMISS_DIR_STORAGE_EMULATED_0);
-                    if (Constants.RECYCLE_PATH.equals(displayPath)) {
-                        setSelectedBackground(R.id.tv_recycle);
-                    }
                 }else {
                     mEt_nivagation.setText(null);
                 }

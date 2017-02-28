@@ -189,7 +189,7 @@
     <string name="file_title_size">Size</string>
     <string name="file_type_folder">Folder</string>
     <string name="file_type_file">File</string>
-    <string name="address_search_false">Invalid Address</string>
+    <string name="address_search_false">Please check the path.</string>
     <string name="downloads">Downloads</string>
     <string name="docement">Docement</string>
     <string name="recycle">Recycle</string>
@@ -251,6 +251,7 @@
     <string name="file_name_not_null">File name must not be null.</string>
     <string name="file_name_warning">Warning:\nAvoid containing these chractors: @ # $ ^ &amp; * ( ) [ ].\nDo you determine use this file name?</string>
     <string name="hint_no_permission">You have no operating authority!</string>
+    <string name="path_sd_eng">~</string>
     <string-array name="file_type_array">
         <item>.doc</item>
         <item>.xls</item>

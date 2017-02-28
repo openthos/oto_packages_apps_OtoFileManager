@@ -720,7 +720,7 @@ public class SystemSpaceFragment extends BaseFragment implements
     public String getDisplayPath(String path) {
         if (path.startsWith(this.sdDir)
             && !FileManagerPreferenceActivity.showRealPath(mActivity)) {
-            return getString(R.string.sd_folder) + path.substring(this.sdDir.length());
+            return getString(R.string.path_sd_eng) + path.substring(this.sdDir.length());
         } else {
             return path;
         }

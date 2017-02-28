@@ -55,7 +55,7 @@ public class PersonalAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         ViewHolder viewHolder;
         if (view == null)  {
-            view = mInflater.inflate(R.layout.file_browser_item_grid, viewGroup, false);
+            view = mInflater.inflate(R.layout.personal_item, viewGroup, false);
             viewHolder = new ViewHolder(view);
             view.setTag(viewHolder);
             view.setOnGenericMotionListener(mMotionListener);
