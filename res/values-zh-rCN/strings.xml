@@ -143,6 +143,7 @@
     <string name="text_available">可用：</string>
     <string name="text_disk_storage">磁盘存储</string>
     <string name="text_mobile_device">移动设备</string>
+    <string name="text_fast_access">快速访问</string>
     <string name="text_removable_disk">可移动磁盘</string>
     <string name="text_removable_disk1">可移动磁盘1</string>
     <string name="text_removable_disk2">可移动磁盘2</string>

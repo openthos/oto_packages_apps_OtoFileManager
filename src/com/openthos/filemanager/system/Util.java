@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.graphics.Color;
 
+import com.openthos.filemanager.R;
 import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.system.Constants;
 
@@ -547,6 +548,11 @@ public class Util {
                 }
             }
         }
+    }
+
+    public static String getUsbName(Context context, String path) {
+        return context.getResources().
+                getString(R.string.text_removable_disk) + path.replace("/storage/usb","");
     }
 
     public static String sZipFileMimeType = "application/zip";

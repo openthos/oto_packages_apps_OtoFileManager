@@ -78,67 +78,11 @@
             style="@style/textSet"
             android:drawableLeft="@drawable/left_computer_selector"
             android:text="@string/computer" />
-
-        <RelativeLayout
-            android:id="@+id/rl_usb_one"
+        <LinearLayout
+            android:id="@+id/ll_usb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone" >
-
-            <TextView
-                android:id="@+id/tv_storage_one"
-                style="@style/textSet"
-                android:drawableLeft="@drawable/left_usb_selector"
-                android:text="@string/text_removable_disk1" />
-
-            <TextView
-                android:id="@+id/tv_pop_up_one"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="16dp"
-                android:layout_alignParentRight="true"
-                android:background="@drawable/usb_pop_up_selector"/>
-
-        </RelativeLayout>
-        <RelativeLayout
-            android:id="@+id/rl_usb_two"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" >
-            <TextView
-                android:id="@+id/tv_storage_two"
-                style="@style/textSet"
-                android:drawableLeft="@drawable/left_usb_selector"
-                android:text="@string/text_removable_disk2" />
-            <TextView
-                android:id="@+id/tv_pop_up_two"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="16dp"
-                android:layout_alignParentRight="true"
-                android:background="@drawable/usb_pop_up_selector"/>
-        </RelativeLayout>
-        <RelativeLayout
-            android:id="@+id/rl_usb_three"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" >
-            <TextView
-                android:id="@+id/tv_storage_three"
-                style="@style/textSet"
-                android:drawableLeft="@drawable/left_usb_selector"
-                android:text="@string/text_removable_disk3" />
-            <TextView
-                android:id="@+id/tv_pop_up_three"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="16dp"
-                android:layout_alignParentRight="true"
-                android:background="@drawable/usb_pop_up_selector"/>
-        </RelativeLayout>
+            android:orientation="vertical" />
 
         <TextView
             android:id="@+id/left_net_up"

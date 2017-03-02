@@ -142,6 +142,7 @@
     <string name="text_available">Available: </string>
     <string name="text_disk_storage">Disk Storage</string>
     <string name="text_mobile_device">Mobile Device</string>
+    <string name="text_fast_access">Fast access</string>
     <string name="text_removable_disk">Movable Disk</string>
     <string name="text_removable_disk1">Movable Disk1</string>
     <string name="text_removable_disk2">Movable Disk2</string>
