@@ -6,6 +6,10 @@
     android:orientation="vertical"
     android:background="@drawable/list_item_bg_selector"
     android:id="@+id/ll_grid_item_bg"
+    android:nextFocusUp="@id/ll_grid_item_bg"
+    android:nextFocusLeft="@id/ll_grid_item_bg"
+    android:nextFocusRight="@id/ll_grid_item_bg"
+    android:nextFocusDown="@id/ll_grid_item_bg"
     android:padding="5dp">
 
     <RelativeLayout

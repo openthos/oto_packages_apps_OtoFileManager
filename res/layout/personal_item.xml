@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ll_grid_item_bg"
+    android:nextFocusUp="@id/ll_grid_item_bg"
+    android:nextFocusLeft="@id/ll_grid_item_bg"
+    android:nextFocusRight="@id/ll_grid_item_bg"
+    android:nextFocusDown="@id/ll_grid_item_bg"
     android:layout_width="135dp"
     android:layout_height="130dp"
     android:background="@drawable/list_item_bg_selector"

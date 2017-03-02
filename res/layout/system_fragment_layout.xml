@@ -19,6 +19,11 @@
             android:padding="10dp"
             android:fastScrollEnabled="true"
             android:scrollbars="none"
+            android:nextFocusUp="@id/file_path_list"
+            android:nextFocusLeft="@id/file_path_list"
+            android:nextFocusRight="@id/file_path_list"
+            android:nextFocusDown="@id/file_path_list"
+            android:listSelector="@android:color/transparent"
             android:visibility="gone"/>
 
         <com.openthos.filemanager.drag.DragGridView
@@ -33,6 +38,11 @@
             android:verticalSpacing="20dp"
             android:visibility="gone"
             android:numColumns="8"
+            android:nextFocusUp="@id/file_path_grid"
+            android:nextFocusLeft="@id/file_path_grid"
+            android:nextFocusRight="@id/file_path_grid"
+            android:nextFocusDown="@id/file_path_grid"
+            android:listSelector="@android:color/transparent"
             android:scrollbars="none" />
 
         <LinearLayout

@@ -3,6 +3,11 @@
     android:layout_width="@dimen/grid_item_width"
     android:layout_height="@dimen/grid_item_height"
     android:orientation="vertical"
+    android:id="@+id/item"
+    android:nextFocusUp="@id/item"
+    android:nextFocusLeft="@id/item"
+    android:nextFocusRight="@id/item"
+    android:nextFocusDown="@id/item"
     android:background="@drawable/list_item_bg_selector"
     android:padding="5dp">
 

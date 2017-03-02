@@ -865,6 +865,11 @@ public class MainActivity extends BaseActivity
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN
+             || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
+                     && !(mEt_nivagation.isFocused() || mEt_search_view.isFocused())) {
+             return true;
+        }
         if (keyCode == KeyEvent.KEYCODE_DEL && !mEt_search_view.hasFocus()
                                                                   && !mEt_nivagation.isFocused()) {
             onBackPressed();
