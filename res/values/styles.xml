@@ -206,6 +206,7 @@
         <item name="android:paddingBottom">8dp</item>
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingLeft">30dp</item>
+        <item name="android:singleLine">true</item>
     </style>
 
     <style name="textUsbSet">
@@ -218,6 +219,7 @@
         <item name="android:paddingBottom">8dp</item>
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingLeft">30dp</item>
+        <item name="android:singleLine">true</item>
     </style>
 
     <style name="menu_dialog" parent="@android:style/Theme.Dialog">
@@ -261,7 +263,7 @@
         <item name="android:layout_width">@dimen/home_item_length</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingBottom">5dp</item>
-        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:layout_marginRight">@dimen/home_pic_text</item>
         <item name="android:background">@drawable/sd_page_bg_selector</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:gravity">center_vertical</item>

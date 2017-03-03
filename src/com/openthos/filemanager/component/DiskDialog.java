@@ -64,8 +64,8 @@ public class DiskDialog extends Dialog
         };
 
         String[] uDiskMeun = new String[] {
-                mContext.getString(R.string.umount),
-                mContext.getString(R.string.operation_open)
+                mContext.getString(R.string.operation_open),
+                mContext.getString(R.string.umount)
         };
 
         mData = new ArrayList();
@@ -108,10 +108,8 @@ public class DiskDialog extends Dialog
             view = View.inflate(mContext, R.layout.dialog_base_item ,null);
             view.setOnHoverListener(DiskDialog.this);
             TextView mTvDialogItem = (TextView) view.findViewById(R.id.dialog_base_item);
-            TextView mTvDialogItemUsb = (TextView) view.findViewById(R.id.dialog_base_itemUsb);
             String content = mData.get(i).toString();
             mTvDialogItem.setText(content);
-            mTvDialogItemUsb.setText(content);
             view.setTag(content);
             return view;
         }

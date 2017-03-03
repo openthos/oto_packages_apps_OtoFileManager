@@ -18,6 +18,7 @@
             android:gravity="center"
             android:text="@string/tv_storage_page"
             android:textColor="@android:color/darker_gray"
+            android:singleLine="true"
             android:textSize="13sp" />
 
         <TextView
@@ -69,6 +70,7 @@
             android:layout_marginLeft="15dp"
             android:layout_marginTop="15dp"
             android:gravity="center"
+            android:singleLine="true"
             android:text="@string/left_local_up"
             android:textColor="@android:color/darker_gray"
             android:textSize="13sp" />
@@ -91,6 +93,7 @@
             android:layout_marginLeft="15dp"
             android:layout_marginTop="15dp"
             android:gravity="center"
+            android:singleLine="true"
             android:text="@string/left_net_up"
             android:textColor="@android:color/darker_gray"
             android:textSize="13sp" />

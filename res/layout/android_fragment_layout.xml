@@ -130,7 +130,7 @@
                 android:src="@mipmap/storage"/>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:orientation="vertical">
@@ -211,7 +211,7 @@
                 android:src="@mipmap/storage"/>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:orientation="vertical">

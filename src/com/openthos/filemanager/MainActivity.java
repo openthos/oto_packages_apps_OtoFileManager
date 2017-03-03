@@ -127,6 +127,8 @@ public class MainActivity extends BaseActivity
     public boolean mIsSdStorageFragment;
 
     public static Handler mHandler;
+    private HomeLeftOnTouchListener mHomeLeftOnTouchListener;
+    private HomeLeftOnHoverListener mHomeLeftOnHoverListener;
     private boolean mIsFirst = true;
     private HashMap<String, Integer> mHashMap;
     private SearchOnKeyListener mSearchOnKeyListener;
@@ -588,21 +590,17 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void initListener() {
-        mTv_desk.setOnClickListener(this);
-        mTv_music.setOnClickListener(this);
-        mTv_video.setOnClickListener(this);
-        mTv_computer.setOnClickListener(this);
-        mTv_picture.setOnClickListener(this);
-        mTv_document.setOnClickListener(this);
-        mTv_download.setOnClickListener(this);
-        mTv_recycle.setOnClickListener(this);
-        mTv_cloud_service.setOnClickListener(this);
-        mTv_net_service.setOnClickListener(this);
+        mHomeLeftOnTouchListener = new HomeLeftOnTouchListener();
+        mHomeLeftOnHoverListener = new HomeLeftOnHoverListener();
+        for (int i = 0; i < mLeftTexts.length; i++) {
+            mLeftTexts[i].setOnTouchListener(mHomeLeftOnTouchListener);
+            mLeftTexts[i].setOnHoverListener(mHomeLeftOnHoverListener);
+        }
         mIv_list_view.setOnClickListener(this);
         mIv_grid_view.setOnClickListener(this);
         mIv_back.setOnClickListener(this);
         mIv_setting.setOnClickListener(this);
-        mTv_computer.performClick();
+        clickComputer();
         mSearchOnKeyListener = new SearchOnKeyListener(mManager,
                                         mEt_search_view.getText(), MainActivity.this);
         mEt_search_view.setOnKeyListener(mSearchOnKeyListener);
@@ -964,51 +962,6 @@ public class MainActivity extends BaseActivity
     public void onClick(View view) {
         clearNivagateFocus();
         switch (view.getId()) {
-            case R.id.tv_desk:
-                setFileInfo(R.id.tv_desk, Constants.DESKTOP_PATH, mDeskFragment);
-                checkFolder(mDeskFragment);
-                break;
-            case R.id.tv_music:
-                setFileInfo(R.id.tv_music, Constants.MUSIC_PATH, mMusicFragment);
-                checkFolder(mMusicFragment);
-                break;
-            case R.id.tv_video:
-                setFileInfo(R.id.tv_video, Constants.VIDEOS_PATH, mVideoFragment);
-                checkFolder(mVideoFragment);
-                break;
-            case R.id.tv_picture:
-                setFileInfo(R.id.tv_picture, Constants.PICTURES_PATH, mPictrueFragment);
-                checkFolder(mPictrueFragment);
-                break;
-            case R.id.tv_document:
-                setFileInfo(R.id.tv_document, Constants.DOCUMENT_PATH, mDocumentFragment);
-                checkFolder(mDocumentFragment);
-                break;
-            case R.id.tv_download:
-                setFileInfo(R.id.tv_download, Constants.DOWNLOAD_PATH, mDownloadFragment);
-                checkFolder(mDownloadFragment);
-                break;
-            case R.id.tv_recycle:
-                setFileInfo(R.id.tv_recycle, Constants.RECYCLE_PATH, mRecycleFragment);
-                checkFolder(mRecycleFragment);
-                break;
-            case R.id.tv_computer:
-                mIsSdStorageFragment = true;
-                mEt_nivagation.setText(null);
-                Fragment fragment = mManager.findFragmentByTag(Constants.SYSTEMSPACEFRAGMENT_TAG);
-                if (fragment != null) {
-                    FragmentTransaction transaction = mManager.beginTransaction();
-                    transaction.remove(fragment).commit();
-                }
-
-                setFileInfo(R.id.tv_computer, "", mSdStorageFragment);
-                if (mSdStorageFragment != null) {
-                    mSdStorageFragment.setSelectedCardBg(Constants.RETURN_TO_WHITE);
-                }
-                break;
-            case R.id.tv_cloud_service:
-                setFileInfo(R.id.tv_cloud_service, "", mSeafileFragment);
-                break;
             case R.id.iv_back:
                 onBackPressed();
                 break;
@@ -1116,7 +1069,6 @@ public class MainActivity extends BaseActivity
 
 
     private void setSelectedBackground(int id) {
-        setUnselectAll();
         switch (id) {
             case R.id.tv_computer:
                 mTv_computer.setSelected(true);
@@ -1562,17 +1514,32 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    private void setUnselectAll() {
+    private void setSelectView(View view) {
         for (int i = 0; i < mLeftTexts.length; i++) {
-            mLeftTexts[i].setSelected(false);
+            if (mLeftTexts[i].isSelected()) {
+                if (mLeftTexts[i] == view) {
+                    return;
+                } else {
+                    mLeftTexts[i].setSelected(false);
+                    mLeftTexts[i].setBackground(getResources().getDrawable(R.drawable.left_bg_shape));
+                }
+            }
         }
-        if (ll_usb == null) {
-            return;
+        if (ll_usb != null) {
+            for (int i = 0; i < ll_usb.getChildCount(); i++) {
+                View childAt = ll_usb.getChildAt(i);
+                if (childAt.isSelected()) {
+                    if (childAt == view) {
+                        return;
+                    } else {
+                        childAt.setSelected(false);
+                        childAt.setBackground(getResources().getDrawable(R.drawable.left_bg_shape));
+                    }
+                }
+            }
         }
-        for (int i = 0; i < ll_usb.getChildCount(); i++) {
-            ll_usb.getChildAt(i).setSelected(false);
-            ll_usb.getChildAt(i).setBackground(getResources().getDrawable(R.drawable.left_bg_shape));
-        }
+        view.setSelected(true);
+        view.setBackground(getResources().getDrawable(android.R.color.holo_purple));
     }
 
     private View getUsbView(int position) {
@@ -1584,8 +1551,8 @@ public class MainActivity extends BaseActivity
         uninstall.setTag(usbPath);
         inflate.setTag(usbPath);
         uninstall.setOnClickListener(new UsbUninstallListener());
-        inflate.setOnTouchListener(new UsbOnTouchListener());
-        inflate.setOnHoverListener(new UsbHoverListener());
+        inflate.setOnTouchListener(mHomeLeftOnTouchListener);
+        inflate.setOnHoverListener(mHomeLeftOnHoverListener);
         return inflate;
     }
 
@@ -1662,7 +1629,7 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    private class UsbHoverListener implements View.OnHoverListener {
+    private class HomeLeftOnHoverListener implements View.OnHoverListener {
         @Override
         public boolean onHover(View view, MotionEvent motionEvent) {
             int action = motionEvent.getAction();
@@ -1680,32 +1647,83 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    private class UsbOnTouchListener implements View.OnTouchListener {
+    private void clickComputer() {
+        mIsSdStorageFragment = true;
+        mEt_nivagation.setText(null);
+        setSelectView(mTv_computer);
+        Fragment fragment = mManager.findFragmentByTag(Constants.SYSTEMSPACEFRAGMENT_TAG);
+        if (fragment != null) {
+            FragmentTransaction transaction = mManager.beginTransaction();
+            transaction.remove(fragment).commit();
+        }
+
+        setFileInfo(R.id.tv_computer, "", mSdStorageFragment);
+        if (mSdStorageFragment != null) {
+            mSdStorageFragment.setSelectedCardBg(Constants.RETURN_TO_WHITE);
+        }
+    }
+
+    private class HomeLeftOnTouchListener implements View.OnTouchListener {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                clearNivagateFocus();
-                if (!view.isSelected()) {
-                    setUnselectAll();
-                    view.setSelected(true);
-                    view.setBackground(getResources().getDrawable(android.R.color.holo_purple));
-                }
-                mUsbPath = (String) view.getTag();
-                switch (motionEvent.getButtonState()) {
-                    case MotionEvent.BUTTON_PRIMARY:
-                        if (mCurFragment != null) {
-                            mManager.beginTransaction().hide(mCurFragment).commit();
-                        }
-                        mUsbStorageFragment = new SystemSpaceFragment(
-                                Constants.USB_SPACE_FRAGMENT, mUsbPath, null, null, false);
-                        mManager.beginTransaction().add(R.id.fl_mian, mUsbStorageFragment,
-                                Constants.USBFRAGMENT_TAG).commit();
-                        mCurFragment = mUsbStorageFragment;
-                        break;
-                    case MotionEvent.BUTTON_SECONDARY:
+            clearNivagateFocus();
+            switch (motionEvent.getButtonState()) {
+                case MotionEvent.BUTTON_PRIMARY:
+                    setSelectView(view);
+                    switch (view.getId()) {
+                        case R.id.tv_desk:
+                            setFileInfo(R.id.tv_desk, Constants.DESKTOP_PATH, mDeskFragment);
+                            checkFolder(mDeskFragment);
+                            break;
+                        case R.id.tv_music:
+                            setFileInfo(R.id.tv_music, Constants.MUSIC_PATH, mMusicFragment);
+                            checkFolder(mMusicFragment);
+                            break;
+                        case R.id.tv_video:
+                            setFileInfo(R.id.tv_video, Constants.VIDEOS_PATH, mVideoFragment);
+                            checkFolder(mVideoFragment);
+                            break;
+                        case R.id.tv_picture:
+                            setFileInfo(R.id.tv_picture, Constants.PICTURES_PATH, mPictrueFragment);
+                            checkFolder(mPictrueFragment);
+                            break;
+                        case R.id.tv_document:
+                            setFileInfo(R.id.tv_document, Constants.DOCUMENT_PATH, mDocumentFragment);
+                            checkFolder(mDocumentFragment);
+                            break;
+                        case R.id.tv_download:
+                            setFileInfo(R.id.tv_download, Constants.DOWNLOAD_PATH, mDownloadFragment);
+                            checkFolder(mDownloadFragment);
+                            break;
+                        case R.id.tv_recycle:
+                            setFileInfo(R.id.tv_recycle, Constants.RECYCLE_PATH, mRecycleFragment);
+                            checkFolder(mRecycleFragment);
+                            break;
+                        case R.id.tv_computer:
+                            clickComputer();
+                            break;
+                        case R.id.tv_cloud_service:
+                            setFileInfo(R.id.tv_cloud_service, "", mSeafileFragment);
+                            break;
+                        default:
+                            mUsbPath = (String) view.getTag();
+                            if (mCurFragment != null) {
+                                mManager.beginTransaction().hide(mCurFragment).commit();
+                            }
+                            mUsbStorageFragment = new SystemSpaceFragment(
+                                    Constants.USB_SPACE_FRAGMENT, mUsbPath, null, null, false);
+                            mManager.beginTransaction().add(R.id.fl_mian, mUsbStorageFragment,
+                                    Constants.USBFRAGMENT_TAG).commit();
+                            mCurFragment = mUsbStorageFragment;
+                            break;
+                    }
+                    break;
+                case MotionEvent.BUTTON_SECONDARY:
+                    if (view.getTag() != null) {
+                        mUsbPath = (String) view.getTag();
                         showPopWindow(USB_POPWINDOW_TAG);
-                        break;
-                }
+                    }
+                    break;
             }
             return false;
         }
