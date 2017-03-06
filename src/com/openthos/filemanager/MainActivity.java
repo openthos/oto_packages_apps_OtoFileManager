@@ -1100,34 +1100,16 @@ public class MainActivity extends BaseActivity
     private void setSelectedBackground(int id) {
         switch (id) {
             case R.id.tv_computer:
-                mTv_computer.setSelected(true);
-                break;
             case R.id.tv_desk:
-                mTv_desk.setSelected(true);
-                break;
             case R.id.tv_music:
-                mTv_music.setSelected(true);
-                break;
             case R.id.tv_video:
-                mTv_video.setSelected(true);
-                break;
             case R.id.tv_picture:
-                mTv_picture.setSelected(true);
-                break;
             case R.id.tv_document:
-                mTv_document.setSelected(true);
-                break;
             case R.id.tv_download:
-                mTv_download.setSelected(true);
-                break;
             case R.id.tv_recycle:
-                mTv_recycle.setSelected(true);
-                break;
             case R.id.tv_net_service:
-                mTv_net_service.setSelected(true);
-                break;
             case R.id.tv_cloud_service:
-                mTv_cloud_service.setSelected(true);
+                setSelectView(findViewById(id));
                 break;
             default:
                 break;
@@ -1459,6 +1441,7 @@ public class MainActivity extends BaseActivity
         fragmentTransaction.hide(mCurFragment);
         fragmentTransaction.show(mSdStorageFragment);
         fragmentTransaction.commit();
+        setCurPath(null);
         mEt_nivagation.setText(null);
         setSelectedBackground(R.id.tv_computer);
         mSdStorageFragment.setSelectedCardBg(Constants.RETURN_TO_WHITE);
