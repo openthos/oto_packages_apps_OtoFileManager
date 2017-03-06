@@ -1,5 +1,9 @@
 package com.openthos.filemanager.system;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Message;
@@ -56,21 +60,21 @@ public class FileOperationHelper {
     public boolean CreateFile(String path, String name) {
         Log.v(LOG_TAG, "CreateFile >>> " + path);
         File dir = new File(Util.makePath(path, name));
-        if (!dir.exists()){
+        if (!dir.exists()) {
             String end = name.substring(name.lastIndexOf(".") + 1, name.length()).toLowerCase();
-                if (SUFFIX_TXT.equals(end)) {
-                    Util.exec(new String[]{"cp", "-i", "/data/create/ben.txt",
-                                            dir.getAbsolutePath()});
-                } else if (SUFFIX_DOC.equals(end)) {
-                    Util.exec(new String[]{"cp", "-i", "/data/create/wen.doc",
-                                            dir.getAbsolutePath()});
-                } else if (SUFFIX_XLS.equals(end)) {
-                    Util.exec(new String[]{"cp", "-i", "/data/create/biao.xls",
-                                            dir.getAbsolutePath()});
-                } else {
-                    Util.exec(new String[]{"cp", "-i", "/data/create/yan.ppt",
-                                            dir.getAbsolutePath()});
-                }
+            if (SUFFIX_TXT.equals(end)) {
+                Util.exec(new String[]{"cp", "-i", "/data/create/ben.txt",
+                                        dir.getAbsolutePath()});
+            } else if (SUFFIX_DOC.equals(end)) {
+                Util.exec(new String[]{"cp", "-i", "/data/create/wen.doc",
+                                        dir.getAbsolutePath()});
+            } else if (SUFFIX_XLS.equals(end)) {
+                Util.exec(new String[]{"cp", "-i", "/data/create/biao.xls",
+                                        dir.getAbsolutePath()});
+            } else {
+                Util.exec(new String[]{"cp", "-i", "/data/create/yan.ppt",
+                                        dir.getAbsolutePath()});
+            }
         } else {
             return false;
         }
@@ -133,7 +137,7 @@ public class FileOperationHelper {
     }
 
     public void clear() {
-        synchronized(mCurFileNameList) {
+        synchronized (mCurFileNameList) {
             mCurFileNameList.clear();
         }
     }
@@ -150,16 +154,16 @@ public class FileOperationHelper {
         asnycExecute(new Runnable() {
             @Override
             public void run() {
-                    for (FileInfo f : mCurFileNameList) {
-                        MoveFile(f, _path);
-                    }
-
-                    mOperationListener.onFileChanged(Environment
-                            .getExternalStorageDirectory()
-                            .getAbsolutePath());
-
-                    clear();
+                for (FileInfo f : mCurFileNameList) {
+                    MoveFile(f, _path);
                 }
+
+                mOperationListener.onFileChanged(Environment
+                        .getExternalStorageDirectory()
+                        .getAbsolutePath());
+
+                clear();
+            }
         });
 
         return true;
@@ -174,7 +178,7 @@ public class FileOperationHelper {
         new AsyncTask() {
             @Override
             protected Object doInBackground(Object... params) {
-                synchronized(mCurFileNameList) {
+                synchronized (mCurFileNameList) {
                     _r.run();
                 }
                 if (mOperationListener != null) {
@@ -187,7 +191,7 @@ public class FileOperationHelper {
     }
 
     public boolean isFileSelected(String path) {
-        synchronized(mCurFileNameList) {
+        synchronized (mCurFileNameList) {
             for (FileInfo f : mCurFileNameList) {
                 if (f.filePath.equalsIgnoreCase(path))
                     return true;
@@ -263,12 +267,17 @@ public class FileOperationHelper {
 
     private static void copyOrMoveFile(String command, String arg,
                                        String srcFile, String destDir, boolean isRefreah) {
+        copyOrMoveFile(command, arg, srcFile, destDir, isRefreah, false);
+    }
+
+    private static void copyOrMoveFile(String command, String arg, String srcFile,
+                                       String destDir, boolean isRefreah, boolean isRecycle) {
         Process pro;
         BufferedReader in = null;
+        File f = new File(destDir, new File(srcFile).getName());
+        File destFile = f;
+        File sourceFile = new File(srcFile);
         try {
-            File f = new File(destDir, new File(srcFile).getName());
-            File destFile = f;
-            File sourceFile = new File(srcFile);
             if (sourceFile.isDirectory()) {
                 if (f.exists()) {
                     for (int i = 2; ; i++) {
@@ -315,16 +324,16 @@ public class FileOperationHelper {
             }
             MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
             if (command.contains("cp")) {
-                if (destFile.getAbsolutePath().contains(Constants.DESKTOP_PATH)) {
+                if (destFile.getParent().equals(Constants.DESKTOP_PATH)) {
                     MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
                             Constants.DESKTOP_SHOW_FILE, destFile.getAbsolutePath()));
                 }
             } else if (command.contains("mv")) {
-                if (destFile.getAbsolutePath().contains(Constants.DESKTOP_PATH)) {
+                if (destFile.getParent().equals(Constants.DESKTOP_PATH)) {
                     MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
                             Constants.DESKTOP_SHOW_FILE, destFile.getAbsolutePath()));
                 }
-                if (sourceFile.getAbsolutePath().contains(Constants.DESKTOP_PATH)) {
+                if (sourceFile.getParent().equals(Constants.DESKTOP_PATH)) {
                     MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
                             Constants.DESKTOP_DELETE_FILE, sourceFile.getAbsolutePath()));
                 }
@@ -348,13 +357,26 @@ public class FileOperationHelper {
                     Message.obtain(MainActivity.mHandler, Constants.REFRESH,
                             new File(srcFile).getParent()));
         }
+        if (isRecycle) {
+            if (destFile.exists()) {
+                ContentValues contentValues = new ContentValues();
+                contentValues.put("source", new File(srcFile).getParent());
+                contentValues.put("filename", destFile.getName());
+                MainActivity.getResolver().insert(MainActivity.getUri(), contentValues);
+            }
+        } else if (srcFile.contains(RECYCLE_PATH1)
+                || srcFile.contains(RECYCLE_PATH2)
+                || srcFile.contains(RECYCLE_PATH3)) {
+            MainActivity.getResolver().delete(
+                    MainActivity.getUri(), "filename = \"" + sourceFile.getName() + "\"", null);
+        }
     }
 
     private void CopyFile(FileInfo f, String dest) {
         String command = "/system/bin/cp";
         String arg = "-v";
         File file = new File(f.filePath);
-        if (file.isDirectory()){
+        if (file.isDirectory()) {
             arg = "-rv";
         }
         copyOrMoveFile(command, arg, f.filePath, dest, true);
@@ -388,7 +410,7 @@ public class FileOperationHelper {
     }
 
     private void copyFileList(ArrayList<FileInfo> files) {
-        synchronized(mCurFileNameList) {
+        synchronized (mCurFileNameList) {
             mCurFileNameList.clear();
             for (FileInfo f : files) {
                 mCurFileNameList.add(f);
@@ -416,8 +438,7 @@ public class FileOperationHelper {
                     if (columns.length > 1) {
                         mount = mount.concat(columns[1] + "*");
                     }
-                }
-                else if (line.contains("fuse")) {
+                } else if (line.contains("fuse")) {
                     String columns[] = line.split(" ");
                     if (columns.length > 1) {
                         mount = mount.concat(columns[1] + "*");
@@ -457,12 +478,18 @@ public class FileOperationHelper {
     }
 
     public static boolean MoveFile(String sourcefile, String dest, boolean isRefreah) {
+        MoveFile(sourcefile, dest, isRefreah, false);
+        return false;
+    }
+
+    public static boolean MoveFile(String sourcefile, String dest,
+                                   boolean isRefreah, boolean isRecycle) {
         if (new File(sourcefile).getParent().equals(dest)) {
             return false;
         }
         String command = "/system/bin/mv";
         String arg = "-v";
-        copyOrMoveFile(command, arg, sourcefile, dest, isRefreah);
+        copyOrMoveFile(command, arg, sourcefile, dest, isRefreah, isRecycle);
         return false;
     }
 
@@ -482,7 +509,7 @@ public class FileOperationHelper {
                 delete(new File(path), false);
             } else {
                 //move to Recycle
-                MoveFile(path, RECYCLE_PATH1, false);
+                MoveFile(path, RECYCLE_PATH1, false, true);
             }
         }
     }
@@ -551,6 +578,17 @@ public class FileOperationHelper {
                 MainActivity.mHandler.sendMessage(
                         Message.obtain(MainActivity.mHandler, Constants.REFRESH, file.getParent()));
             }
+            if (file.getPath().equals(RECYCLE_PATH1)
+                    || file.getPath().equals(RECYCLE_PATH2)
+                    || file.getPath().equals(RECYCLE_PATH3)) {
+                MainActivity.getResolver().delete(MainActivity.getUri(), null, null);
+            } else if (file.getPath().contains(RECYCLE_PATH1)
+                    || file.getPath().contains(RECYCLE_PATH2)
+                    || file.getPath().contains(RECYCLE_PATH3)) {
+                MainActivity.getResolver().delete(
+                        MainActivity.getUri(), "filename = \"" + file.getName() + "\"", null);
+            }
+
         }
     }
 
@@ -643,13 +681,13 @@ public class FileOperationHelper {
         }
     }
 
-    public static String[] list(String file){
+    public static String[] list(String file) {
         Runtime runtime = Runtime.getRuntime();
         Process pro;
         BufferedReader in = null;
         boolean isPrint = false;
         boolean isRar = file.toLowerCase().endsWith(Constants.SUFFIX_RAR);
-        ArrayList<String> fileList= new ArrayList<>();
+        ArrayList<String> fileList = new ArrayList<>();
         try {
             if (!isRar) {
                 pro = runtime.exec(new String[]{"/system/bin/7za", "l", file});

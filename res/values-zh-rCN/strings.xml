@@ -255,4 +255,13 @@
     <string name="file_name_warning">提示：\n请避免文件名含有以下字符：@ # $ ^ &amp; * ( ) [ ]\n\n确认使用此文件名？</string>
     <string name="fail_seafile_name_by_error">文件名只支持数字，字母或空格</string>
     <string name="hint_no_permission">没有操作权限</string>
+    <string name="recycle_all_clean">全部清空</string>
+    <string name="recycle_all_restore">全部还原</string>
+    <string name="recycle_restore">还原</string>
+    <string name="recycle_delete">删除</string>
+    <string name="recycle_cut">剪切</string>
+    <string name="recycle_detail">详情</string>
+    <string name="fail_open_recycle">由于该目录是回收站，无法打开该文件</string>
+    <string name="confirm_limit">你确定要修改该文件的权限吗？\n由于系统的保护，可能会修改失败！</string>
+    <string name="dialog_count">计算中……</string>
 </resources>

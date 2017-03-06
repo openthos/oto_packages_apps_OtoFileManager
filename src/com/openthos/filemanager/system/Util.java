@@ -524,6 +524,9 @@ public class Util {
         }else {
             fileSizeString = df.format((double) fileSize / Constants.SIZE_TB) + "T";
         }
+        if (fileSizeString.equals(".00B")) {
+            fileSizeString = "0.00B";
+        }
         return fileSizeString;
     }
 

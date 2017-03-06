@@ -253,69 +253,13 @@
     <string name="file_name_warning">Warning:\nAvoid containing these chractors: @ # $ ^ &amp; * ( ) [ ].\nDo you determine use this file name?</string>
     <string name="hint_no_permission">You have no operating authority!</string>
     <string name="path_sd_eng">~</string>
-    <string-array name="file_type_array">
-        <item>.doc</item>
-        <item>.xls</item>
-        <item>.ppt</item>
-        <item>.txt</item>
-    </string-array>
-    <string-array name="common_folder_menu">
-        <item>@string/operation_open</item>
-        <item>@string/operation_copy</item>
-        <item>@string/operation_move</item>
-        <item>@string/operation_delete</item>
-        <item>@string/operation_delete_permanent</item>
-        <item>@string/operation_rename</item>
-        <item>@string/operation_send</item>
-        <item>@string/operation_copy_path</item>
-        <item>@string/operation_compress</item>
-        <item>@string/operation_decompress</item>
-        <item>@string/operation_info</item>
-    </string-array>
-    <string-array name="protected_folder_menu">
-        <item>@string/operation_open</item>
-        <item>@string/operation_info</item>
-    </string-array>
-    <string-array name="common_file_menu">
-        <item>@string/operation_open</item>
-        <item>@string/operation_open_with</item>
-        <item>@string/operation_copy</item>
-        <item>@string/operation_move</item>
-        <item>@string/operation_delete</item>
-        <item>@string/operation_delete_permanent</item>
-        <item>@string/operation_rename</item>
-        <item>@string/operation_send</item>
-        <item>@string/operation_copy_path</item>
-        <item>@string/operation_compress</item>
-        <item>@string/operation_decompress</item>
-        <item>@string/operation_info</item>
-    </string-array>
-    <string-array name="protected_file_menu">
-        <item>@string/operation_open</item>
-        <item>@string/operation_open_with</item>
-        <item>@string/operation_info</item>
-    </string-array>
-    <string-array name="common_multi_chosen_menu">
-        <item>@string/operation_copy</item>
-        <item>@string/operation_move</item>
-        <item>@string/operation_delete</item>
-        <item>@string/operation_delete_permanent</item>
-    </string-array>
-    <string-array name="protected_multi_chosen_menu">
-        <item>@string/hint_no_permission</item>
-    </string-array>
-    <string-array name="common_blank_menu">
-        <item>@string/operation_paste</item>
-        <item>@string/menu_item_sort</item>
-        <item>@string/operation_create_folder</item>
-        <item>@string/operation_create_file</item>
-        <item>@string/operation_show_sys</item>
-    </string-array><string-array name="protected_blank_menu">
-        <item>@string/menu_item_sort</item>
-        <item>@string/operation_show_sys</item>
-    </string-array>
-    <string-array name="personal_folder_menu">
-        <item>@string/operation_open</item>
-        <item>@string/operation_copy_path</item>
-    </string-array>
+    <string name="recycle_all_clean">All Clean</string>
+    <string name="recycle_all_restore">All Restore</string>
+    <string name="recycle_restore">Restore</string>
+    <string name="recycle_delete">Delete</string>
+    <string name="recycle_cut">Cut</string>
+    <string name="recycle_detail">Details</string>
+    <string name="fail_open_recycle">Could not open the file because in the Recycle</string>
+    <string name="confirm_limit">Are you sure you want to change the file permissions?\nSome files may not be modified because of system protection!</string>
+    <string name="dialog_count">In calculation……</string>
 </resources>

@@ -137,9 +137,7 @@ public class SeafileFragment extends BaseFragment {
                                 mCurrentTime = System.currentTimeMillis();
                                 return true;
                             }
-                            enter("hello", SeafileUtils.SEAFILE_DATA_PATH_REAlLY
-                                    + mMainActivity.mAccount.mFile.getAbsolutePath()
-                                    + "/" + mList.get(pos).libraryName);
+                            enter();
                         } else {
                             mPos = pos;
                             mCurrentTime = System.currentTimeMillis();
@@ -178,6 +176,14 @@ public class SeafileFragment extends BaseFragment {
         SeafileDialog seafileDialog = new SeafileDialog(mMainActivity, false, null, -1);
         seafileDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         seafileDialog.showDialog((int) motionEvent.getRawX(), (int) motionEvent.getRawY());
+    }
+
+    @Override
+    public void enter() {
+        super.enter();
+        enter("hello", SeafileUtils.SEAFILE_DATA_PATH_REAlLY
+                + mMainActivity.mAccount.mFile.getAbsolutePath()
+                + "/" + mList.get(mPos).libraryName);
     }
 
     @Override

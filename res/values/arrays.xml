@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="file_type_array">
+        <item>.doc</item>
+        <item>.xls</item>
+        <item>.ppt</item>
+        <item>.txt</item>
+    </string-array>
+    <string-array name="common_folder_menu">
+        <item>@string/operation_open</item>
+        <item>@string/operation_copy</item>
+        <item>@string/operation_move</item>
+        <item>@string/operation_delete</item>
+        <item>@string/operation_delete_permanent</item>
+        <item>@string/operation_rename</item>
+        <item>@string/operation_send</item>
+        <item>@string/operation_copy_path</item>
+        <item>@string/operation_compress</item>
+        <item>@string/operation_decompress</item>
+        <item>@string/operation_info</item>
+    </string-array>
+    <string-array name="protected_folder_menu">
+        <item>@string/operation_open</item>
+        <item>@string/operation_info</item>
+    </string-array>
+    <string-array name="common_file_menu">
+        <item>@string/operation_open</item>
+        <item>@string/operation_open_with</item>
+        <item>@string/operation_copy</item>
+        <item>@string/operation_move</item>
+        <item>@string/operation_delete</item>
+        <item>@string/operation_delete_permanent</item>
+        <item>@string/operation_rename</item>
+        <item>@string/operation_send</item>
+        <item>@string/operation_copy_path</item>
+        <item>@string/operation_compress</item>
+        <item>@string/operation_decompress</item>
+        <item>@string/operation_info</item>
+    </string-array>
+    <string-array name="protected_file_menu">
+        <item>@string/operation_open</item>
+        <item>@string/operation_open_with</item>
+        <item>@string/operation_info</item>
+    </string-array>
+    <string-array name="common_multi_chosen_menu">
+        <item>@string/operation_copy</item>
+        <item>@string/operation_move</item>
+        <item>@string/operation_delete</item>
+        <item>@string/operation_delete_permanent</item>
+    </string-array>
+    <string-array name="protected_multi_chosen_menu">
+        <item>@string/hint_no_permission</item>
+    </string-array>
+    <string-array name="common_blank_menu">
+        <item>@string/operation_paste</item>
+        <item>@string/menu_item_sort</item>
+        <item>@string/operation_create_folder</item>
+        <item>@string/operation_create_file</item>
+        <item>@string/operation_show_sys</item>
+    </string-array>
+    <string-array name="protected_blank_menu">
+        <item>@string/menu_item_sort</item>
+        <item>@string/operation_show_sys</item>
+    </string-array>
+    <string-array name="personal_folder_menu">
+        <item>@string/operation_open</item>
+        <item>@string/operation_copy_path</item>
+    </string-array>
+    <string-array name="recycle_blank">
+        <item>@string/recycle_all_clean</item>
+        <item>@string/recycle_all_restore</item>
+    </string-array>
+    <string-array name="recycle_single">
+        <item>@string/recycle_restore</item>
+        <item>@string/recycle_delete</item>
+        <item>@string/recycle_cut</item>
+        <item>@string/recycle_detail</item>
+    </string-array>
+    <string-array name="recycle_multi">
+        <item>@string/recycle_restore</item>
+        <item>@string/recycle_delete</item>
+        <item>@string/recycle_cut</item>
+    </string-array>
+</resources>

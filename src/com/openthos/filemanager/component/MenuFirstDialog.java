@@ -85,7 +85,15 @@ public class MenuFirstDialog extends Dialog
         }
 
         mData = new ArrayList();
-        if (mFileViewInteractionHub.isBlank()) {
+        if (mMainActivity.isRecycle()) {
+            if (mFileViewInteractionHub.isBlank()) {
+                prepareData(mContext.getResources().getStringArray(R.array.recycle_blank));
+            } else if (mFileViewInteractionHub.isMultiChosen()) {
+                prepareData(mContext.getResources().getStringArray(R.array.recycle_multi));
+            } else {
+                prepareData(mContext.getResources().getStringArray(R.array.recycle_single));
+            }
+        } else if (mFileViewInteractionHub.isBlank()) {
             if (mFileViewInteractionHub.isProtected()) {
                 prepareData(mContext.getResources().getStringArray(R.array.protected_blank_menu));
             } else {
@@ -124,7 +132,7 @@ public class MenuFirstDialog extends Dialog
         mListView.setOnItemClickListener(this);
     }
 
-    public  void prepareData(String[] sArr) {
+    public void prepareData(String[] sArr) {
         for (int i = 0; i < sArr.length; i++) {
             mData.add(sArr[i]);
         }
@@ -153,7 +161,7 @@ public class MenuFirstDialog extends Dialog
             TextView mTvDialogItem = (TextView) view.findViewById(R.id.dialog_base_item);
             String content = mData.get(i).toString();
             mTvDialogItem.setText(content);
-            boolean  isSetHoverListener = true;
+            boolean isSetHoverListener = true;
             if (content.equals(mContext.getString(R.string.operation_paste).toString())) {
                 if (isCopy) {
                     mTvDialogItem.setTextColor(Color.BLACK);
@@ -242,6 +250,18 @@ public class MenuFirstDialog extends Dialog
             mFileViewInteractionHub.onOperationCompress();
         } else if (mContext.getString(R.string.operation_decompress).equals(content)) {
             mFileViewInteractionHub.onOperationDecompress();
+        } else if (mContext.getString(R.string.recycle_all_clean).equals(content)) {
+            mFileViewInteractionHub.onOperationCleanRecycle();
+        } else if (mContext.getString(R.string.recycle_all_restore).equals(content)) {
+            mFileViewInteractionHub.onOperationRestore(true);
+        } else if (mContext.getString(R.string.recycle_restore).equals(content)) {
+            mFileViewInteractionHub.onOperationRestore(false);
+        } else if (mContext.getString(R.string.recycle_delete).equals(content)) {
+
+        } else if (mContext.getString(R.string.recycle_cut).equals(content)) {
+
+        } else if (mContext.getString(R.string.recycle_detail).equals(content)) {
+
         }
         dismiss();
     }

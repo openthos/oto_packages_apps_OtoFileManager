@@ -148,6 +148,10 @@ public class MainActivity extends BaseActivity
     private String mUsbPath;
     private ExecutorService mUsbSingleExecutor;
     private TextView[] mLeftTexts;
+    private static ContentResolver mContentResolver;
+    private static Uri mUri;
+    private static boolean mIsCtrlPress = false;
+    private static boolean mIsShiftPress = false;
 
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -566,6 +570,8 @@ public class MainActivity extends BaseActivity
     protected void initData() {
         initFragment();
         checkFolder(null);
+        mContentResolver = getContentResolver();
+        mUri = Uri.parse("content://com.openthos.filemanager/recycle");
     }
 
     private void checkFolder(Fragment fragment) {
@@ -746,6 +752,8 @@ public class MainActivity extends BaseActivity
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        mIsCtrlPress = event.isCtrlPressed();
+        mIsShiftPress = event.isShiftPressed();
         mIsMutiSelect = false;
         if (!mIsMutiSelect && !mIsFirst) {
             sendBroadcastMessage("is_ctrl_press", null, mIsMutiSelect);
@@ -765,6 +773,8 @@ public class MainActivity extends BaseActivity
                                                                   && !mEt_nivagation.isFocused()) {
             onBackPressed();
         }
+        mIsCtrlPress = event.isCtrlPressed();
+        mIsShiftPress = event.isShiftPressed();
         if (event.isCtrlPressed()) {
             mIsMutiSelect = true;
         }
@@ -781,14 +791,14 @@ public class MainActivity extends BaseActivity
         }
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_C) {
             sendBroadcastMessage("iv_menu", "pop_copy", false);
-            if (isCopyByHot()) {
+            if (isCopyByHot() || isRecycle()) {
                 return false;
             }
             copy();
         }
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_V) {
             sendBroadcastMessage("iv_menu", "pop_paste", false);
-            if (isCopyByHot()) {
+            if (isCopyByHot() || isRecycle()) {
                 return false;
             }
             paste();
@@ -825,7 +835,7 @@ public class MainActivity extends BaseActivity
             ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.onOperationDeleteDirect();
         }
         if (keyCode == KeyEvent.KEYCODE_F2) {
-            if (isCopyByHot()) {
+            if (isCopyByHot() || isRecycle()) {
                 return false;
             }
             ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.onOperationRename();
@@ -844,6 +854,11 @@ public class MainActivity extends BaseActivity
             if (mEt_nivagation.isFocused() || mEt_search_view.isFocused()) {
                 return false;
             }
+            if (isRecycle()) {
+                Toast.makeText(this, getString(R.string.fail_open_recycle),
+                                                                  Toast.LENGTH_SHORT).show();
+                return false;
+            }
             if (getVisibleFragment() instanceof BaseFragment) {
                 ((BaseFragment) getVisibleFragment()).enter();
             }
@@ -855,7 +870,18 @@ public class MainActivity extends BaseActivity
         return getVisibleFragment() instanceof PersonalSpaceFragment
                 || getVisibleFragment() instanceof SdStorageFragment
                 || getVisibleFragment() instanceof OnlineNeighborFragment
+                || getVisibleFragment() instanceof SeafileFragment
                 || mEt_nivagation.isFocused() || mEt_search_view.isFocused();
+    }
+
+    public boolean isRecycle() {
+        return (getVisibleFragment() instanceof SystemSpaceFragment)
+                && (((SystemSpaceFragment) getVisibleFragment()).getCurrentPath()
+                             .startsWith(FileOperationHelper.RECYCLE_PATH1)
+                || ((SystemSpaceFragment) getVisibleFragment()).getCurrentPath()
+                             .startsWith(FileOperationHelper.RECYCLE_PATH2)
+                || ((SystemSpaceFragment) getVisibleFragment()).getCurrentPath()
+                             .startsWith(FileOperationHelper.RECYCLE_PATH3));
     }
 
     public void cut() {
@@ -879,6 +905,9 @@ public class MainActivity extends BaseActivity
             sourcePath =
                (String) ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE)).getText();
         } catch (ClassCastException e) {
+            sourcePath = "";
+        }
+        if (sourcePath == null) {
             sourcePath = "";
         }
         String[] srcCopyPaths = sourcePath.split(Intent.EXTRA_FILE_HEADER);
@@ -1727,5 +1756,21 @@ public class MainActivity extends BaseActivity
             }
             return false;
         }
+    }
+
+    public static ContentResolver getResolver() {
+        return mContentResolver;
+    }
+
+    public static Uri getUri() {
+        return mUri;
+    }
+
+    public static boolean getCtrlState() {
+        return mIsCtrlPress;
+    }
+
+    public static boolean getShiftState() {
+        return mIsShiftPress;
     }
 }

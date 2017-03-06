@@ -26,19 +26,19 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".MainActivity"
             android:configChanges="locale|layoutDirection" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
 
         <activity
+            android:name="com.openthos.filemanager.system.FileManagerPreferenceActivity"
             android:label="@string/menu_setting"
             android:launchMode="singleTop"
-            android:name="com.openthos.filemanager.system.FileManagerPreferenceActivity"
             android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
         </activity>
 
@@ -68,6 +68,10 @@
             </intent-filter>
         </activity>
 
+        <provider
+            android:authorities="com.openthos.filemanager"
+            android:name=".sql.RecycleConentProvider"
+            android:exported="true"
+            android:enabled="true"/>
     </application>
-
 </manifest>
