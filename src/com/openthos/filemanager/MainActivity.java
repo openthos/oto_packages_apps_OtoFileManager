@@ -1585,7 +1585,8 @@ public class MainActivity extends BaseActivity
 
         @Override
         public void onEvent(int event, String path) {
-            switch (event) {
+            final int action = event & FileObserver.ALL_EVENTS;
+            switch (action) {
                 case FileObserver.CREATE:
                 case FileObserver.DELETE:
                 case FileObserver.MOVED_FROM:
@@ -1614,10 +1615,10 @@ public class MainActivity extends BaseActivity
 
         @Override
         public void afterTextChanged(Editable editable) {
-            String sdfolder = getResources().getString(R.string.sd_folder);
+            String sdfolder = getResources().getString(R.string.path_sd_eng);
             String path = editable.toString();
-            if (path.contains(sdfolder)) {
-                path = path.replace(sdfolder + "/", Constants.ROOT_PATH);
+            if (path.startsWith(sdfolder)) {
+                path = Constants.ROOT_PATH + path.substring(1, path.length());
             }
             if (mCustomFileObserver != null) {
                 mCustomFileObserver.stopWatching();
