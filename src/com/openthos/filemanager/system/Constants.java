@@ -583,6 +583,9 @@ public abstract class Constants {
     public static final int DESKTOP_SHOW_FILE = 0x1009;
     public static final int DESKTOP_DELETE_FILE = 0x1010;
     public static final int REFRESH_PERSONAL = 0x1011;
+    public static final int DELETE_INFO_SHOW = 0x1012;
+    public static final int COMPRESS_INFO_SHOW = 0x1013;
+    public static final int DECOMPRESS_INFO_SHOW = 0x1014;
 
     public static final String SUFFIX_TAR = ".tar";
     public static final String SUFFIX_ZIP = ".zip";

@@ -31,6 +31,8 @@ public class CopyInfoDialog extends Dialog {
     private TextView mTextMessage;
     private TextView mTextTitle;
     private static CopyInfoDialog dialog = null;
+    private GifView mGif;
+    private int mRawId;
 
     public CopyInfoDialog(Activity context) {
         super(context);
@@ -51,12 +53,18 @@ public class CopyInfoDialog extends Dialog {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         View v = View.inflate(mContext, R.layout.dialog_copy_info, null);
         setContentView(v);
-        getWindow().setBackgroundDrawable(mContext.getResources().getDrawable(R.color.transparent));
         mTextMessage = (TextView) v.findViewById(R.id.text_message);
         mTextTitle = (TextView) v.findViewById(R.id.text_title);
+        mGif = (GifView) v.findViewById(R.id.gif);
     }
 
-    public void showDialog() {
+    public void showDialog(int rawId) {
+        mRawId = rawId;
+        if (mGif == null) {
+            mGif = (GifView) View.inflate(mContext, R.layout.dialog_copy_info, null)
+                                     .findViewById(R.id.gif);
+        }
+        mGif.setMovieResource(mRawId);
         Window dialogWindow = getWindow();
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
         lp.dimAmount = 0.0f;
@@ -67,6 +75,11 @@ public class CopyInfoDialog extends Dialog {
     }
 
     public void changeMsg(final String s) {
+        if (mGif == null) {
+            mGif = (GifView) View.inflate(mContext, R.layout.dialog_copy_info, null)
+                                     .findViewById(R.id.gif);
+        }
+        mGif.setMovieResource(mRawId);
         if ("main".equals(Thread.currentThread().getName())) {
             mTextMessage.setText(s);
         } else {
@@ -80,6 +93,11 @@ public class CopyInfoDialog extends Dialog {
     }
 
     public void changeTitle(final String s) {
+        if (mGif == null) {
+            mGif = (GifView) View.inflate(mContext, R.layout.dialog_copy_info, null)
+                                     .findViewById(R.id.gif);
+        }
+        mGif.setMovieResource(mRawId);
         mTextTitle.setText(s);
     }
 }

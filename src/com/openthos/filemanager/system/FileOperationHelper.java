@@ -311,7 +311,9 @@ public class FileOperationHelper {
                     destFile.getAbsolutePath()});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
-            MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_SHOW);
+            MainActivity.mHandler.sendEmptyMessage(srcFile.equals(RECYCLE_PATH1)
+                || srcFile.equals(RECYCLE_PATH2) || srcFile.equals(RECYCLE_PATH3)?
+                    Constants.DELETE_INFO_SHOW : Constants.COPY_INFO_SHOW);
             int i = 0;
             while ((line = in.readLine()) != null) {
                 if (i == 0) {
@@ -500,15 +502,18 @@ public class FileOperationHelper {
                     || path.equals(RECYCLE_PATH2)
                     || path.equals(RECYCLE_PATH3)) {
                 //clean Recycle
+                MainActivity.mHandler.sendEmptyMessage(Constants.DELETE_INFO_SHOW);
                 delete(new File(path), true);
             } else if (path.contains(RECYCLE_PATH1)
                     || path.contains(RECYCLE_PATH2)
                     || path.contains(RECYCLE_PATH3)
                     || (path.split("/").length > 3 && path.startsWith("/storage/usb"))) {
                 //delete file
+                MainActivity.mHandler.sendEmptyMessage(Constants.DELETE_INFO_SHOW);
                 delete(new File(path), false);
             } else {
                 //move to Recycle
+                MainActivity.mHandler.sendEmptyMessage(Constants.DELETE_INFO_SHOW);
                 MoveFile(path, RECYCLE_PATH1, false, true);
             }
         }
@@ -544,7 +549,7 @@ public class FileOperationHelper {
                 pro = Runtime.getRuntime().exec(new String[]{command, arg, file.getAbsolutePath()});
                 in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
                 String line;
-                MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_SHOW);
+                MainActivity.mHandler.sendEmptyMessage(Constants.DELETE_INFO_SHOW);
                 int i = 0;
                 while ((line = in.readLine()) != null) {
                     if (i == 0) {
@@ -621,7 +626,7 @@ public class FileOperationHelper {
             Process pro = Runtime.getRuntime().exec(
                     new String[]{"/system/bin/7za", "a", tarPath, arg, path, "-bb3", "-y"});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
-            MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_SHOW);
+            MainActivity.mHandler.sendEmptyMessage(Constants.COMPRESS_INFO_SHOW);
             String line;
             while ((line = in.readLine()) != null) {
                 MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
@@ -658,7 +663,7 @@ public class FileOperationHelper {
                                                         path, "-o" + f.getParent(), "-bb3", "-y"});
             }
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
-            MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_SHOW);
+            MainActivity.mHandler.sendEmptyMessage(Constants.DECOMPRESS_INFO_SHOW);
             String line;
             while ((line = in.readLine()) != null) {
                 MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,

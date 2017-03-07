@@ -378,7 +378,22 @@ public class MainActivity extends BaseActivity
                             paste();
                             break;
                         case Constants.COPY_INFO_SHOW:
-                            mCopyInfoDialog.showDialog();
+                            mCopyInfoDialog.showDialog(R.raw.paste);
+                            mCopyInfoDialog.changeTitle(MainActivity.this.getResources()
+                                                                    .getString(R.string.copy_info));
+                            break;
+                        case Constants.DELETE_INFO_SHOW:
+                            mCopyInfoDialog.showDialog(R.raw.delete);
+                            mCopyInfoDialog.changeTitle(MainActivity.this.getResources()
+                                                                    .getString(R.string.copy_info));
+                            break;
+                        case Constants.COMPRESS_INFO_SHOW:
+                            mCopyInfoDialog.showDialog(R.raw.compress);
+                            mCopyInfoDialog.changeTitle(MainActivity.this.getResources()
+                                                                    .getString(R.string.copy_info));
+                            break;
+                        case Constants.DECOMPRESS_INFO_SHOW:
+                            mCopyInfoDialog.showDialog(R.raw.decompress);
                             mCopyInfoDialog.changeTitle(MainActivity.this.getResources()
                                                                     .getString(R.string.copy_info));
                             break;
