@@ -628,9 +628,15 @@ public class FileOperationHelper {
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             MainActivity.mHandler.sendEmptyMessage(Constants.COMPRESS_INFO_SHOW);
             String line;
+            int i = 0;
             while ((line = in.readLine()) != null) {
-                MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
+                if (i == 0) {
+                    MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
                             Constants.COPY_INFO, line));
+                    i = 10;
+                } else {
+                    i--;
+                }
             }
             MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
             MainActivity.mHandler.sendMessage(
@@ -665,9 +671,15 @@ public class FileOperationHelper {
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             MainActivity.mHandler.sendEmptyMessage(Constants.DECOMPRESS_INFO_SHOW);
             String line;
+            int i = 0;
             while ((line = in.readLine()) != null) {
-                MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
+                if (i == 0) {
+                    MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
                             Constants.COPY_INFO, line));
+                    i = 10;
+                } else {
+                    i--;
+                }
             }
             MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
             MainActivity.mHandler.sendMessage(
