@@ -48,3 +48,10 @@ LOCAL_PROGUARD_FLAG_FILES := proguard.flags
 include $(BUILD_PACKAGE)
 
 include $(CLEAR_VARS)
+LOCAL_MODULE_TAGS := optional
+
+LOCAL_SRC_FILES := sea.tar.bz
+LOCAL_MODULE := sea.tar.bz
+LOCAL_MODULE_CLASS := ETC
+LOCAL_MODULE_PATH := $(TARGET_OUT)
+include $(BUILD_PREBUILT)
