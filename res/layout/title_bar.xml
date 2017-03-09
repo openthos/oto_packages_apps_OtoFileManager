@@ -57,19 +57,39 @@
                 android:paddingTop="2dp"
                 android:src="@drawable/list_view_selector" />
         </RelativeLayout>
-        <EditText
-            android:id="@+id/et_nivagation"
+
+        <RelativeLayout
+            android:id="@+id/ll_address"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginBottom="2dp"
-            android:layout_marginLeft="-16dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginTop="2dp"
             android:layout_weight="8"
-            android:background="@drawable/edit_bg_shape"
-            android:hint="@string/text_file_path"
-            android:singleLine="true"
-            android:paddingLeft="8dp" />
+            android:layout_marginLeft="-16dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="2dp">
+
+
+            <com.openthos.filemanager.component.HorizontalListView
+                android:id="@+id/lv_address"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:background="@color/top_search_bg_color"
+                android:visibility="gone">
+            </com.openthos.filemanager.component.HorizontalListView>
+
+
+            <EditText
+                android:id="@+id/et_nivagation"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toRightOf="@id/lv_address"
+                android:background="@drawable/edit_bg_shape"
+                android:hint="@string/text_file_path"
+                android:paddingLeft="8dp"
+                android:singleLine="true"/>
+        </RelativeLayout>
+
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"

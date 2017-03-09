@@ -759,7 +759,7 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     @Override
     public String getDisplayPath(String path) {
-        if (path.startsWith(this.sdDir)
+        if (path != null && path.startsWith(this.sdDir)
             && !FileManagerPreferenceActivity.showRealPath(mActivity)) {
             return getString(R.string.path_sd_eng) + path.substring(this.sdDir.length());
         } else {

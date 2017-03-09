@@ -57,6 +57,8 @@ import com.openthos.filemanager.system.FileOperationHelper;
 import com.openthos.filemanager.fragment.SeafileFragment;
 import com.openthos.filemanager.utils.SeafileUtils;
 import com.openthos.filemanager.component.UsbPropertyDialog;
+import com.openthos.filemanager.adapter.PathAdapter;
+import com.openthos.filemanager.component.HorizontalListView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -152,6 +154,13 @@ public class MainActivity extends BaseActivity
     private static Uri mUri;
     private static boolean mIsCtrlPress = false;
     private static boolean mIsShiftPress = false;
+
+    private HorizontalListView mAddressListView;
+    private String[] mPath;
+    private String mClickPath;
+    private List<String> mPathList;
+    private PathAdapter mPathAdapter;
+    private AddressOnTouchListener mAddressTouchListener;
 
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -296,6 +305,7 @@ public class MainActivity extends BaseActivity
         mIv_search_view = (ImageView) findViewById(R.id.iv_search);
         mEt_search_view = (EditText) findViewById(R.id.search_view);
         ll_usb = (LinearLayout) findViewById(R.id.ll_usb);
+        mAddressListView = (HorizontalListView) findViewById(R.id.lv_address);
         mLeftTexts = new TextView[]{mTv_music, mTv_desk, mTv_video, mTv_computer, mTv_picture,
                 mTv_net_service, mTv_document, mTv_download, mTv_recycle, mTv_cloud_service};
         if (LocalCache.getViewTag() != null && "list".equals(LocalCache.getViewTag())) {
@@ -504,7 +514,7 @@ public class MainActivity extends BaseActivity
                 if (getCurPath() != null && getCurPath().equals(mUsbPath)) {
                     showSdSFragmentAfterInstallUSB();
                     setCurPath(null);
-                    mEt_nivagation.setText(getCurPath());
+                    setNavigationPath(getCurPath());
                 }
                 T.showShort(this, getResources().getString(R.string.USB_device_disconnected));
                 break;
@@ -587,6 +597,10 @@ public class MainActivity extends BaseActivity
         checkFolder(null);
         mContentResolver = getContentResolver();
         mUri = Uri.parse("content://com.openthos.filemanager/recycle");
+        mPathList = new ArrayList<>();
+        mAddressTouchListener = new AddressOnTouchListener();
+        mPathAdapter = new PathAdapter(this, mPathList, mAddressTouchListener);
+        mAddressListView.setAdapter(mPathAdapter);
     }
 
     private void checkFolder(Fragment fragment) {
@@ -631,6 +645,8 @@ public class MainActivity extends BaseActivity
         mEt_nivagation.setOnClickListener(nivagationOnClickLinstener);
         mEt_nivagation.setOnKeyListener(nivagationOnKeyLinstener);
         mEt_nivagation.addTextChangedListener(new TextChangeListener());
+        mEt_nivagation.setOnFocusChangeListener(new AddressOnFocusChangeListener());
+        mAddressListView.setOnTouchListener(mAddressTouchListener);
         initUsb(Constants.USB_INIT);
         mCurFragment = mSdStorageFragment;
         Intent intent = getIntent();
@@ -1098,7 +1114,7 @@ public class MainActivity extends BaseActivity
             }
         }
         setSelectedBackground(id);
-        mEt_nivagation.setText(path);
+        setNavigationPath(path);
         setCurPath(path);
         FragmentTransaction transaction = mManager.beginTransaction();
         if (mCurFragment != null) {
@@ -1196,7 +1212,7 @@ public class MainActivity extends BaseActivity
                 SystemSpaceFragment sdCurFrament = (SystemSpaceFragment) mCurFragment;
                 String currentPath = sdCurFrament.getCurrentPath();
                 setCurPath(currentPath);
-                mEt_nivagation.setText(currentPath);
+                setNavigationPath(currentPath);
                 if (mCurFragment.getTag() != null &&
                     mCurFragment.getTag().equals(Constants.PERSONALSYSTEMSPACE_TAG)) {
                     if (mPersonalSpaceFragment.canGoBack()) {
@@ -1366,7 +1382,7 @@ public class MainActivity extends BaseActivity
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mDeskFragment);
         fragmentTransaction.commit();
-        mEt_nivagation.setText(Constants.DESKTOP_PATH);
+        setNavigationPath(Constants.DESKTOP_PATH);
         setSelectedBackground(R.id.tv_desk);
         mCurFragment = mDeskFragment;
     }
@@ -1376,7 +1392,7 @@ public class MainActivity extends BaseActivity
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mMusicFragment);
         fragmentTransaction.commit();
-        mEt_nivagation.setText(Constants.MUSIC_PATH);
+        setNavigationPath(Constants.MUSIC_PATH);
         setSelectedBackground(R.id.tv_music);
         mCurFragment = mMusicFragment;
     }
@@ -1386,7 +1402,7 @@ public class MainActivity extends BaseActivity
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mVideoFragment);
         fragmentTransaction.commit();
-        mEt_nivagation.setText(Constants.VIDEOS_PATH);
+        setNavigationPath(Constants.VIDEOS_PATH);
         setSelectedBackground(R.id.tv_video);
         mCurFragment = mVideoFragment;
     }
@@ -1396,7 +1412,7 @@ public class MainActivity extends BaseActivity
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mPictrueFragment);
         fragmentTransaction.commit();
-        mEt_nivagation.setText(Constants.PICTURES_PATH);
+        setNavigationPath(Constants.PICTURES_PATH);
         setSelectedBackground(R.id.tv_picture);
         mCurFragment = mPictrueFragment;
     }
@@ -1406,7 +1422,7 @@ public class MainActivity extends BaseActivity
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mDocumentFragment);
         fragmentTransaction.commit();
-        mEt_nivagation.setText(Constants.DOCUMENT_PATH);
+        setNavigationPath(Constants.DOCUMENT_PATH);
         setSelectedBackground(R.id.tv_document);
         mCurFragment = mDocumentFragment;
     }
@@ -1416,7 +1432,7 @@ public class MainActivity extends BaseActivity
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mDownloadFragment);
         fragmentTransaction.commit();
-        mEt_nivagation.setText(Constants.DOWNLOAD_PATH);
+        setNavigationPath(Constants.DOWNLOAD_PATH);
         setSelectedBackground(R.id.tv_download);
         mCurFragment = mDownloadFragment;
     }
@@ -1426,7 +1442,7 @@ public class MainActivity extends BaseActivity
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mRecycleFragment);
         fragmentTransaction.commit();
-        mEt_nivagation.setText(Constants.RECYCLE_PATH);
+        setNavigationPath(Constants.RECYCLE_PATH);
         setSelectedBackground(R.id.tv_recycle);
         mCurFragment = mRecycleFragment;
     }
@@ -1436,7 +1452,7 @@ public class MainActivity extends BaseActivity
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mSeafileFragment);
         fragmentTransaction.commit();
-        mEt_nivagation.setText(getResources().getString(R.string.cloud));
+        setNavigationPath(getResources().getString(R.string.cloud));
         setSelectedBackground(R.id.tv_computer);
         mCurFragment = mSeafileFragment;
     }
@@ -1446,7 +1462,7 @@ public class MainActivity extends BaseActivity
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mPersonalSpaceFragment);
         fragmentTransaction.commit();
-        mEt_nivagation.setText("SDCard");
+        setNavigationPath(null);
         setSelectedBackground(R.id.tv_computer);
         mCurFragment = mPersonalSpaceFragment;
     }
@@ -1457,7 +1473,7 @@ public class MainActivity extends BaseActivity
         fragmentTransaction.show(mSdStorageFragment);
         fragmentTransaction.commit();
         setCurPath(null);
-        mEt_nivagation.setText(null);
+        setNavigationPath(null);
         setSelectedBackground(R.id.tv_computer);
         mSdStorageFragment.setSelectedCardBg(Constants.RETURN_TO_WHITE);
         mCurFragment = mSdStorageFragment;
@@ -1468,7 +1484,7 @@ public class MainActivity extends BaseActivity
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mSeafileFragment);
         fragmentTransaction.commit();
-        mEt_nivagation.setText("seafile");
+        setNavigationPath(null);
         setSelectedBackground(R.id.tv_cloud_service);
         mCurFragment = mSeafileFragment;
     }
@@ -1490,14 +1506,12 @@ public class MainActivity extends BaseActivity
     public void setNavigationBar(String displayPath) {
         if (displayPath != null) {
             if (mCurFragment == mSdStorageFragment && mSdStorageFragment.mCurFragment != null) {
-                mEt_nivagation.setText(displayPath);
+                setNavigationPath(displayPath);
             } else {
                 if (mCurFragment instanceof SystemSpaceFragment) {
-                    mEt_nivagation.setText(displayPath);
-                    displayPath = displayPath.replaceAll(getString(R.string.sd_folder),
-                                      Constants.PERMISS_DIR_STORAGE_EMULATED_0);
+                    setNavigationPath(displayPath);
                 }else {
-                    mEt_nivagation.setText(null);
+                    setNavigationPath(null);
                 }
             }
         }
@@ -1505,7 +1519,35 @@ public class MainActivity extends BaseActivity
 
     public void setNavigationPath(String displayPath) {
         mEt_nivagation.setText(displayPath);
+        mPath = null;
+        mPathList.clear();
+        if (displayPath == null || displayPath.equals("")) {
+            mAddressListView.setVisibility(View.GONE);
+            mEt_nivagation.setVisibility(View.VISIBLE);
+        } else {
+            updateAddressButton(displayPath);
+            mAddressListView.setVisibility(View.VISIBLE);
+            mEt_nivagation.setVisibility(View.GONE);
+        }
+        mPathAdapter.notifyDataSetChanged();
     }
+
+    private void updateAddressButton(String displayPath) {
+        if (displayPath.equals(Constants.SD_PATH)) {
+            mPath = new String[]{Constants.SD_PATH};
+            mPathList.add(Constants.SD_PATH);
+        } else {
+            mPath = displayPath.split(Constants.SD_PATH);
+            for (String s : mPath) {
+                mPathList.add(s);
+            }
+        }
+        if (!mPathList.get(0).equals(getString(R.string.path_sd_eng))) {
+            mPath[0] = Constants.SD_PATH;
+            mPathList.set(0, Constants.SD_PATH);
+        }
+    }
+
 
     public void setCurPath(String path) {
         mCurPath = path;
@@ -1677,7 +1719,7 @@ public class MainActivity extends BaseActivity
 
     private void clickComputer() {
         mIsSdStorageFragment = true;
-        mEt_nivagation.setText(null);
+        setNavigationPath(null);
         setSelectView(mTv_computer);
         Fragment fragment = mManager.findFragmentByTag(Constants.SYSTEMSPACEFRAGMENT_TAG);
         if (fragment != null) {
@@ -1754,6 +1796,55 @@ public class MainActivity extends BaseActivity
                     break;
             }
             return false;
+        }
+    }
+
+    public class AddressOnTouchListener implements View.OnTouchListener {
+
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                if (getVisibleFragment() != null
+                        && getVisibleFragment() instanceof SystemSpaceFragment
+                        && view.getTag() instanceof PathAdapter.ViewHolder) {
+                    int pos = (int) ((PathAdapter.ViewHolder) view.getTag()).path.getTag();
+                    if (pos == mPath.length - 1) {
+                        ((IFileInteractionListener) getVisibleFragment()).
+                            onRefreshFileList(mCurPath, getFileSortHelper());
+                    } else {
+                        mClickPath = "";
+                        for (int j = 0; j <= pos; j++) {
+                            if ((j == 0 && mPath[0].equals(Constants.SD_PATH)) || j == pos) {
+                                mClickPath += mPath[j];
+                            } else {
+                                mClickPath += mPath[j] + Constants.SD_PATH;
+                            }
+                        }
+                        mClickPath = mClickPath.replaceAll(
+                            getResources().getString(R.string.path_sd_eng), Util.getSdDirectory());
+                        ((SystemSpaceFragment) getVisibleFragment()).
+                            mFileViewInteractionHub.openSelectFolder(mClickPath);
+                    }
+                } else {
+                    mAddressListView.setVisibility(View.GONE);
+                    mEt_nivagation.setVisibility(View.VISIBLE);
+                    mEt_nivagation.requestFocus();
+                    mEt_nivagation.setSelection(mEt_nivagation.getText().length());
+                }
+            }
+            return true;
+        }
+    }
+
+    public class AddressOnFocusChangeListener implements View.OnFocusChangeListener {
+
+        @Override
+        public void onFocusChange(View view, boolean b) {
+            if (!view.hasFocus()) {
+                mEt_nivagation.setVisibility(View.GONE);
+                mAddressListView.setVisibility(View.VISIBLE);
+            }
+
         }
     }
 

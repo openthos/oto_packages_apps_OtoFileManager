@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.utils.IconHolder;
+import com.openthos.filemanager.system.FileCategoryHelper;
 
 public class FileListItem {
     public static void setupFileListItemInfo(Context context, View view,

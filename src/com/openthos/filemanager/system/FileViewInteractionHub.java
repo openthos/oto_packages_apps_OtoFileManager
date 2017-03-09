@@ -1023,12 +1023,16 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             }
         } else if (doubleTag != null && Constants.DOUBLE_TAG.equals(doubleTag)) {
 //            mCheckedFileNameList.remove(lFileInfo);  //
-            ((SystemSpaceFragment) mFileViewListener).getAdapter().getSelectFileInfoList().clear();
-            clearSelection();
-            mCurrentPath = getAbsoluteName(mCurrentPath, fileInfo.fileName);
-            refreshFileList();
-            mMainActivity.setCurPath(mCurrentPath);
+            openSelectFolder(getAbsoluteName(mCurrentPath, fileInfo.fileName));
         }
+    }
+
+    public void openSelectFolder(String filePath) {
+        ((SystemSpaceFragment) mFileViewListener).getAdapter().getSelectFileInfoList().clear();
+        clearSelection();
+        mCurrentPath = filePath;
+        refreshFileList();
+        mMainActivity.setCurPath(mCurrentPath);
     }
 
     public void onOperationOpen(MotionEvent event) {
