@@ -368,12 +368,17 @@ public class SystemSpaceFragment extends BaseFragment implements
                                 && mIsShowDialog != true && mLastClickId == mPos
                                 && (Math.abs(System.currentTimeMillis() - mLastClickTime)
                                 < Constants.DOUBLE_CLICK_INTERVAL_TIME)) {
-                            mFileViewInteractionHub.onListItemClick(mPos,
-                                    Constants.DOUBLE_TAG, motionEvent, fileInfo);
-                            mPos = -1;
-                            mLastClickId = -1;
-                            integerList.clear();
-                            mFileViewInteractionHub.clearSelection();
+                            if (isRecycle()) {
+                                Toast.makeText(mMainActivity, getString(R.string.fail_open_recycle),
+                                         Toast.LENGTH_SHORT).show();
+                            } else {
+                                mFileViewInteractionHub.onListItemClick(mPos,
+                                        Constants.DOUBLE_TAG, motionEvent, fileInfo);
+                                mPos = -1;
+                                mLastClickId = -1;
+                                integerList.clear();
+                                mFileViewInteractionHub.clearSelection();
+                            }
                         } else {
                             mLastClickTime = System.currentTimeMillis();
                             mLastClickId = mPos;
@@ -930,5 +935,11 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     public void clearSelect() {
         mShiftPos = -1;
+    }
+
+    public boolean isRecycle() {
+        return getCurrentPath().startsWith(FileOperationHelper.RECYCLE_PATH1)
+                 || getCurrentPath().startsWith(FileOperationHelper.RECYCLE_PATH2)
+                 || getCurrentPath().startsWith(FileOperationHelper.RECYCLE_PATH3);
     }
 }
