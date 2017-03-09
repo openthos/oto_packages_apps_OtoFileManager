@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.openthos.filemanager.MainActivity;
+import com.openthos.filemanager.BaseDialog;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.fragment.PersonalSpaceFragment;
 import com.openthos.filemanager.system.Constants;
@@ -32,7 +33,7 @@ import java.util.ArrayList;
 import static android.R.color.holo_purple;
 import static android.R.color.transparent;
 
-public class PersonalMenuDialog extends Dialog
+public class PersonalMenuDialog extends BaseDialog
                              implements View.OnHoverListener, ListView.OnItemClickListener{
     private int singleHeight = 40;
     private int fix = 20;

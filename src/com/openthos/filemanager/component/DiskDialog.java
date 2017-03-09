@@ -16,6 +16,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.openthos.filemanager.MainActivity;
+import com.openthos.filemanager.BaseDialog;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.fragment.SdStorageFragment;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 import static android.R.color.holo_purple;
 import static android.R.color.transparent;
 
-public class DiskDialog extends Dialog
+public class DiskDialog extends BaseDialog
                                implements ListView.OnItemClickListener, View.OnHoverListener{
     private Context mContext;
     private boolean mIsUSB;

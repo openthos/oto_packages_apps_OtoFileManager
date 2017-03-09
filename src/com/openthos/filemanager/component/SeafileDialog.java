@@ -16,18 +16,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.openthos.filemanager.MainActivity;
+import com.openthos.filemanager.BaseDialog;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.bean.SeafileAccount;
 import com.openthos.filemanager.bean.SeafileLibrary;
 import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.system.TextInputDialog;
 import com.openthos.filemanager.utils.SeafileUtils;
+import com.openthos.filemanager.utils.OperateUtils;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
-public class SeafileDialog extends Dialog implements View.OnClickListener {
+public class SeafileDialog extends BaseDialog implements View.OnClickListener {
     private MainActivity mMainActivity;
     private TextView mTvCreate;
     private TextView mTvSync;
@@ -101,20 +103,14 @@ public class SeafileDialog extends Dialog implements View.OnClickListener {
                                               i < mMainActivity.mAccount.mLibrarys.size(); i++) {
                                     if (mMainActivity.mAccount.mLibrarys.get(i)
                                                                        .libraryName.equals(text)) {
-                                        new AlertDialog.Builder(mMainActivity)
-                                                .setMessage(mMainActivity.getString(
-                                                                       R.string.fail_seafile_name))
-                                                .setPositiveButton(
-                                                            R.string.confirm, null).create().show();
+                                        OperateUtils.showConfirmAlertDialog(mMainActivity,
+                                                                         R.string.fail_seafile_name);
                                         return false;
                                     }
                                 }
                                 if (!Pattern.compile("[0-9a-zA-Z ]+").matcher(text).matches()) {
-                                    new AlertDialog.Builder(mMainActivity)
-                                            .setMessage(mMainActivity.getString(
-                                                               R.string.fail_seafile_name_by_error))
-                                            .setPositiveButton(
-                                                        R.string.confirm, null).create().show();
+                                    OperateUtils.showConfirmAlertDialog(mMainActivity,
+                                                                R.string.fail_seafile_name_by_error);
                                     return false;
                                 }
                                 new Thread() {

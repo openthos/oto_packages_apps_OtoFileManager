@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
+import android.view.KeyEvent;
 import android.widget.EditText;
 
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.MainActivity;
 
 public class TextInputDialog extends AlertDialog {
     private String mInputText;
@@ -64,5 +66,17 @@ public class TextInputDialog extends AlertDialog {
         setCanceledOnTouchOutside(false);
 
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        MainActivity.setState(event.isCtrlPressed(), event.isShiftPressed());
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        MainActivity.setState(event.isCtrlPressed(), event.isShiftPressed());
+        return super.onKeyUp(keyCode, event);
     }
 }

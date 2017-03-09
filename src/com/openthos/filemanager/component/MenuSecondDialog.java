@@ -11,11 +11,12 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.BaseDialog;
 import com.openthos.filemanager.system.FileSortHelper;
 import com.openthos.filemanager.system.FileViewInteractionHub;
 import com.openthos.filemanager.fragment.SystemSpaceFragment;
 
-public class MenuSecondDialog extends Dialog implements View.OnClickListener {
+public class MenuSecondDialog extends BaseDialog implements View.OnClickListener {
     private TextView dialog_sort_name;
     private TextView dialog_sort_size;
     private TextView dialog_sort_time;

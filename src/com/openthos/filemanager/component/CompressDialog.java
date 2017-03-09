@@ -12,6 +12,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.BaseDialog;
 import com.openthos.filemanager.system.CompressFormatType;
 import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.system.FileOperationHelper;
@@ -22,7 +23,7 @@ import java.io.IOException;
 /**
  * Created by xu on 2016/11/2.
  */
-public class CompressDialog extends Dialog {
+public class CompressDialog extends BaseDialog {
     private Context mContext;
     private String mPath;
     private CompressFormatType mFormatType = CompressFormatType.ZIP;

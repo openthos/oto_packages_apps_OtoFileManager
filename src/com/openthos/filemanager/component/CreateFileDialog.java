@@ -1,9 +1,10 @@
-package com.openthos.filemanager.system;
+package com.openthos.filemanager.component;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.graphics.drawable.BitmapDrawable;
@@ -16,6 +17,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.MainActivity;
 
 public class CreateFileDialog extends AlertDialog implements View.OnClickListener,
                                                 AdapterView.OnItemClickListener {
@@ -111,5 +113,17 @@ public class CreateFileDialog extends AlertDialog implements View.OnClickListene
         setCanceledOnTouchOutside(false);
 
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        MainActivity.setState(event.isCtrlPressed(), event.isShiftPressed());
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        MainActivity.setState(event.isCtrlPressed(), event.isShiftPressed());
+        return super.onKeyUp(keyCode, event);
     }
 }

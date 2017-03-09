@@ -23,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.BaseDialog;
 import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.system.FileInfo;
 import com.openthos.filemanager.system.FileViewInteractionHub;
@@ -31,7 +32,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OpenWithDialog extends Dialog implements AdapterView.OnItemClickListener {
+public class OpenWithDialog extends BaseDialog implements AdapterView.OnItemClickListener {
+
     private Context mContext;
     private ListView mListView;
     private TextView mTextView;

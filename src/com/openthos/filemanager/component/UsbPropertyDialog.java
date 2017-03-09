@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.BaseDialog;
 import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.system.Util;
 
@@ -21,7 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class UsbPropertyDialog extends Dialog {
+public class UsbPropertyDialog extends BaseDialog {
     private Context mContext;
     private String[] mUsbs;
 

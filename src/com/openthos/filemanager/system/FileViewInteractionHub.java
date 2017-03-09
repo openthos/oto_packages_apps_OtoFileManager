@@ -26,9 +26,11 @@ import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.component.MenuFirstDialog;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.component.CompressDialog;
+import com.openthos.filemanager.component.CreateFileDialog;
 import com.openthos.filemanager.component.PropertyDialog;
 import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
+import com.openthos.filemanager.utils.OperateUtils;
 import com.openthos.filemanager.utils.T;
 import com.openthos.filemanager.fragment.SystemSpaceFragment;
 
@@ -342,29 +344,27 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             case FILE_NAME_LEGAL:
                 return createFolder(text);
             case FILE_NAME_NULL:
-                failDialog().setMessage(R.string.file_name_not_null).create().show();
+                OperateUtils.showConfirmAlertDialog(mContext, R.string.file_name_not_null);
                 return false;
             case FILE_NAME_ILLEGAL:
-                failDialog().setMessage(R.string.file_name_illegal).create().show();
+                OperateUtils.showConfirmAlertDialog(mContext, R.string.file_name_illegal);
                 return false;
             case FILE_NAME_WARNING:
-                DialogInterface.OnClickListener okClick = new DialogInterface.OnClickListener() {
+                DialogInterface.OnClickListener ok = new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         mConfirm = createFolder(text);
                     }
                 };
-                DialogInterface.OnClickListener cancelClick =
-                    new DialogInterface.OnClickListener() {
+                DialogInterface.OnClickListener cancel = new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         mConfirm = false;
                     }
                 };
-                warnDialog(okClick, cancelClick).setMessage(R.string.file_name_warning)
-                                                .create().show();
+                OperateUtils.showChooseAlertDialog(mContext, R.string.file_name_warning, ok, cancel);
                 break;
         }
         return mConfirm;
@@ -375,9 +375,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             mFileViewListener.addSingleFile(Util.GetFileInfo(Util.makePath(mCurrentPath, text)));
             clearSelection();
         } else {
-            new AlertDialog.Builder(mContext)
-                    .setMessage(mContext.getString(R.string.fail_to_create_folder))
-                    .setPositiveButton(R.string.confirm, null).create().show();
+            OperateUtils.showConfirmAlertDialog(mContext, R.string.fail_to_create_folder);
             clearSelection();
             return false;
         }
@@ -385,48 +383,32 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         return true;
     }
 
-    private AlertDialog.Builder failDialog() {
-        AlertDialog.Builder failDialog = new AlertDialog.Builder(mContext)
-                .setPositiveButton(R.string.confirm, null);
-        return failDialog;
-    }
-
-    private AlertDialog.Builder warnDialog(DialogInterface.OnClickListener okClick,
-                                           DialogInterface.OnClickListener cancelClick) {
-        AlertDialog.Builder warnDialog = new AlertDialog.Builder(mContext)
-                .setPositiveButton(R.string.confirm, okClick)
-                .setNegativeButton(R.string.cancel, cancelClick);
-        return warnDialog;
-    }
-
     private boolean doCreateFile(final String text) {
         switch (isValidFileName(text)) {
             case FILE_NAME_LEGAL:
                 return createFile(text);
             case FILE_NAME_NULL:
-                failDialog().setMessage(R.string.file_name_not_null).create().show();
+                OperateUtils.showConfirmAlertDialog(mContext, R.string.file_name_not_null);
                 return false;
             case FILE_NAME_ILLEGAL:
-                failDialog().setMessage(R.string.file_name_illegal).create().show();
+                OperateUtils.showConfirmAlertDialog(mContext, R.string.file_name_illegal);
                 return false;
             case FILE_NAME_WARNING:
-                DialogInterface.OnClickListener okClick = new DialogInterface.OnClickListener() {
+                DialogInterface.OnClickListener ok = new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         mConfirm = createFile(text);
                     }
                 };
-                DialogInterface.OnClickListener cancelClick =
-                    new DialogInterface.OnClickListener() {
+                DialogInterface.OnClickListener cancel = new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         mConfirm = false;
                     }
                 };
-                warnDialog(okClick, cancelClick).setMessage(R.string.file_name_warning)
-                                                .create().show();
+                OperateUtils.showChooseAlertDialog(mContext, R.string.file_name_warning, ok, cancel);
                 break;
         }
         return mConfirm;
@@ -437,9 +419,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             mFileViewListener.addSingleFile(Util.GetFileInfo(Util.makePath(mCurrentPath, text)));
             clearSelection();
         } else {
-            new AlertDialog.Builder(mContext)
-                           .setMessage(mContext.getString(R.string.fail_to_create_folder))
-                           .setPositiveButton(R.string.confirm, null).create().show();
+            OperateUtils.showConfirmAlertDialog(mContext, R.string.fail_to_create_folder);
             clearSelection();
             return false;
         }
@@ -500,6 +480,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 
     public void refreshFileList() {
         clearSelection();
+        ((SystemSpaceFragment) mFileViewListener).clearSelect();
         updateNavigationPane();
         mFileViewListener.onRefreshFileList(mCurrentPath, mFileSortHelper);
 
@@ -532,10 +513,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         ArrayList<FileInfo> selectedFileList = getSelectedFileList();
         for (FileInfo f : selectedFileList) {
             if (f.IsDir) {
-                AlertDialog dialog = new AlertDialog.Builder(mContext)
-                                         .setMessage(R.string.error_info_cant_send_folder)
-                                         .setPositiveButton(R.string.confirm, null).create();
-                dialog.show();
+                OperateUtils.showConfirmAlertDialog(mContext, R.string.error_info_cant_send_folder);
                 return;
             }
         }
@@ -581,29 +559,28 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             case FILE_NAME_LEGAL:
                 return rename(f, text);
             case FILE_NAME_NULL:
-                failDialog().setMessage(R.string.file_name_not_null).create().show();
+                OperateUtils.showConfirmAlertDialog(mContext, R.string.file_name_not_null);
                 return false;
             case FILE_NAME_ILLEGAL:
-                failDialog().setMessage(R.string.file_name_illegal).create().show();
+                OperateUtils.showConfirmAlertDialog(mContext, R.string.file_name_illegal);
                 return false;
             case FILE_NAME_WARNING:
-                DialogInterface.OnClickListener okClick = new DialogInterface.OnClickListener() {
+                DialogInterface.OnClickListener ok = new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         mConfirm = rename(f, text);
                     }
                 };
-                DialogInterface.OnClickListener cancelClick =
-                    new DialogInterface.OnClickListener() {
+                DialogInterface.OnClickListener cancel = new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         mConfirm = false;
                     }
                 };
-                warnDialog(okClick, cancelClick).setMessage(R.string.file_name_warning)
-                                                .create().show();
+                OperateUtils.showChooseAlertDialog(
+                        mContext, R.string.file_name_warning, ok, cancel);
                 break;
         }
         return mConfirm;
@@ -618,9 +595,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             f.fileName = text;
             mFileViewListener.onDataChanged();
         } else {
-            new AlertDialog.Builder(mContext)
-                    .setMessage(mContext.getString(R.string.fail_to_rename))
-                    .setPositiveButton(R.string.confirm, null).create().show();
+            OperateUtils.showConfirmAlertDialog(mContext, R.string.fail_to_rename);
             return false;
         }
         refreshFileList();
@@ -788,6 +763,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
                     }
                 }).create();
         dialog.setCancelable(false);
+        dialog.setOnKeyListener(new OperateUtils.BaseKeyEvent());
         dialog.show();
     }
 
@@ -828,6 +804,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
                     }
                 }).create();
         dialog.setCancelable(false);
+        dialog.setOnKeyListener(new OperateUtils.BaseKeyEvent());
         dialog.show();
     }
 
@@ -943,31 +920,26 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         for (String s : files) {
             for (FileInfo info : ((SystemSpaceFragment) mFileViewListener).getAllFiles()) {
                 if (info.fileName.equals(s)) {
-                    new AlertDialog.Builder(mMainActivity)
-                         .setMessage(String.format(mMainActivity.getResources().getString(
-                                                            R.string.dialog_decompress_text), s))
-                         .setPositiveButton(mMainActivity.getResources().getString(
-                                                            R.string.dialog_delete_yes),
-                             new android.content.DialogInterface.OnClickListener() {
-                                 @Override
-                                 public void onClick(DialogInterface dialog, int which) {
-                                     new Thread(){
-                                         @Override
-                                         public void run() {
-                                             super.run();
-                                             FileOperationHelper.decompress(file.filePath);
-                                         }
-                                     }.start();
-                                 }
-                             })
-                         .setNegativeButton(mMainActivity.getResources().getString(
-                                                            R.string.dialog_delete_no),
-                             new android.content.DialogInterface.OnClickListener() {
-                                 @Override
-                                 public void onClick(DialogInterface dialog, int which) {
-                                     dialog.cancel();
-                                 }
-                             }).show();
+                    DialogInterface.OnClickListener ok = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            new Thread(){
+                                @Override
+                                public void run() {
+                                    super.run();
+                                    FileOperationHelper.decompress(file.filePath);
+                                }
+                            }.start();
+                        }
+                    };
+                    DialogInterface.OnClickListener cancel = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int i) {
+                            dialog.cancel();
+                        }
+                    };
+                    OperateUtils.showChooseAlertDialog(
+                            mContext, R.string.dialog_decompress_text, ok, cancel);
                     return;
                 }
             }

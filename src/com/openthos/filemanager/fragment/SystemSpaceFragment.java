@@ -132,6 +132,7 @@ public class SystemSpaceFragment extends BaseFragment implements
     private int ADAPTER_HEIGHT_POS = 1;
     private int mLastClickId;
     private long mLastClickTime = 0;
+    private int mShiftPos = -1;
 
     private void selectorMenuId(String tag) {
         if (mFileViewInteractionHub.getSelectedFileList() != null) {
@@ -338,7 +339,6 @@ public class SystemSpaceFragment extends BaseFragment implements
         private boolean isMove;
         private List<Integer> list = new ArrayList<>();
         private FileInfo info;
-        private int mShiftPos = -1;
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -687,6 +687,7 @@ public class SystemSpaceFragment extends BaseFragment implements
         }
         mAdapter.getSelectFileInfoList().clear();
         mAdapter.notifyDataSetChanged();
+        clearSelect();
         return true;
     }
 
@@ -925,5 +926,9 @@ public class SystemSpaceFragment extends BaseFragment implements
                     + itemParams[ADAPTER_HEIGHT_POS]
                     + (i + 1) * itemParams[ADAPTER_HEIGHT_POS] - fixY;
         }
+    }
+
+    public void clearSelect() {
+        mShiftPos = -1;
     }
 }

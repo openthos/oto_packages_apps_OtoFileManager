@@ -1,4 +1,4 @@
-package com.openthos.filemanager.system;
+package com.openthos.filemanager.view;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -10,6 +10,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.system.FileInfo;
+import com.openthos.filemanager.system.FileIconHelper;
+import com.openthos.filemanager.system.Util;
 
 import java.io.File;
 

@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.BaseDialog;
 import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.system.Util;
 
@@ -26,7 +27,7 @@ import java.io.InputStreamReader;
 /**
  * Created by xu on 2016/12/06.
  */
-public class CopyInfoDialog extends Dialog {
+public class CopyInfoDialog extends BaseDialog {
     private Activity mContext;
     private TextView mTextMessage;
     private TextView mTextTitle;

@@ -1772,4 +1772,9 @@ public class MainActivity extends BaseActivity
     public static boolean getShiftState() {
         return mIsShiftPress;
     }
+
+    public static void setState(boolean isCtrlPress, boolean isShiftPress) {
+        mIsCtrlPress = isCtrlPress;
+        mIsShiftPress = isShiftPress;
+    }
 }

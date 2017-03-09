@@ -17,6 +17,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.BaseDialog;
 import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.system.Util;
 import com.openthos.filemanager.utils.OperateUtils;
@@ -34,7 +35,7 @@ import java.util.TimeZone;
 /**
  * Created by xu on 2016/8/11.
  */
-public class PropertyDialog extends Dialog implements View.OnClickListener,
+public class PropertyDialog extends BaseDialog implements View.OnClickListener,
                                                CompoundButton.OnCheckedChangeListener {
     private Context mContext;
     private String mPath;
