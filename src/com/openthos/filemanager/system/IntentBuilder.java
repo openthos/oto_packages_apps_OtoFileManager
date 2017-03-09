@@ -11,7 +11,7 @@ import android.content.pm.ResolveInfo;
 import android.content.pm.ApplicationInfo;
 
 import com.openthos.filemanager.R;
-import com.openthos.filemanager.view.TextSelectDialog;
+import com.openthos.filemanager.component.TextSelectDialog;
 import com.openthos.filemanager.component.OpenWithDialog;
 
 import java.io.File;
@@ -84,7 +84,7 @@ public class IntentBuilder {
             TextSelectDialog dialog = new TextSelectDialog(context, R.style.menu_dialog,filePath);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             if (event != null) {
-                dialog.showTextDialog((int) event.getX(), (int) event.getY(),180,140);
+                dialog.showTextDialog((int) event.getRawX(), (int) event.getRawY());
             }
         }
     }

@@ -389,8 +389,8 @@ public class SystemSpaceFragment extends BaseFragment implements
                     }
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    if (mIsShowDialog == true || MainActivity.getCtrlState()
-                            || MainActivity.getShiftState()) {
+                    if ((mIsShowDialog == true || MainActivity.getCtrlState()
+                            || MainActivity.getShiftState()) && !isMove) {
                         return true;
                     }
                     if (mDownX != -1 && !mIsItem) {

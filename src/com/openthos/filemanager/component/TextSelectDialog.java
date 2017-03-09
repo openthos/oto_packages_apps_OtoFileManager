@@ -1,4 +1,4 @@
-package com.openthos.filemanager.view;
+package com.openthos.filemanager.component;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -76,16 +76,14 @@ public class TextSelectDialog extends Dialog implements View.OnClickListener {
         context.startActivity(intent);
     }
 
-    public void showTextDialog(int x, int y, int height, int width) {
+    public void showTextDialog(int x, int y) {
         show();
         Window dialogWindow = getWindow();
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
         dialogWindow.setGravity(Gravity.LEFT | Gravity.TOP);
-        lp.width = width;
-        lp.height = height;
-        lp.x = x+80;
-        lp.y = y;
-//        lp.alpha = 0.9f;
+        int dialogPadding = (int) context.getResources().getDimension(R.dimen.left_margrin_text);
+        lp.x = x + dialogPadding * 2;
+        lp.y = y + dialogPadding * 2;
         dialogWindow.setAttributes(lp);
     }
 }
