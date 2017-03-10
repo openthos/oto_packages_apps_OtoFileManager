@@ -78,8 +78,8 @@ public class MenuFirstDialog extends BaseDialog
             sourcePath = "";
         }
         if (!TextUtils.isEmpty(sourcePath)
-                && (sourcePath.startsWith(Intent.EXTRA_FILE_HEADER)
-                || sourcePath.startsWith(Intent.EXTRA_CROP_FILE_HEADER))) {
+                && (sourcePath.startsWith(Constants.EXTRA_FILE_HEADER)
+                || sourcePath.startsWith(Constants.EXTRA_CROP_FILE_HEADER))) {
             isCopy = true;
         } else {
             isCopy = false;

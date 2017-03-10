@@ -342,14 +342,14 @@ public class MainActivity extends BaseActivity
                     switch (msg.what) {
                         case Constants.DESKTOP_SHOW_FILE:
                             Intent showIntent = new Intent();
-                            showIntent.setAction(Intent.ACTION_DESKTOP_SHOW_FILE);
-                            showIntent.putExtra(Intent.EXTRA_DESKTOP_PATH_TAG, (String) msg.obj);
+                            showIntent.setAction(Constants.ACTION_DESKTOP_SHOW_FILE);
+                            showIntent.putExtra(Constants.PATH_TAG, (String) msg.obj);
                             MainActivity.this.sendBroadcast(showIntent);
                             break;
                         case Constants.DESKTOP_DELETE_FILE:
                             Intent deleteIntent = new Intent();
-                            deleteIntent.setAction(Intent.ACTION_DESKTOP_DELETE_FILE);
-                            deleteIntent.putExtra(Intent.EXTRA_DESKTOP_PATH_TAG, (String) msg.obj);
+                            deleteIntent.setAction(Constants.ACTION_DESKTOP_DELETE_FILE);
+                            deleteIntent.putExtra(Constants.PATH_TAG, (String) msg.obj);
                             MainActivity.this.sendBroadcast(deleteIntent);
                             break;
                         case Constants.USB_CHECKING:
@@ -650,7 +650,7 @@ public class MainActivity extends BaseActivity
         initUsb(Constants.USB_INIT);
         mCurFragment = mSdStorageFragment;
         Intent intent = getIntent();
-        String path = intent.getStringExtra(Intent.EXTRA_DESKTOP_PATH_TAG);
+        String path = intent.getStringExtra(Constants.PATH_TAG);
         if (path != null) {
             showSpaceFragment(path);
             if (path.startsWith(Constants.DESKTOP_PATH)) {
@@ -921,7 +921,7 @@ public class MainActivity extends BaseActivity
         StringBuffer stringBuffer = new StringBuffer();
         if (!list.isEmpty()) {
             for (int i = 0; i < list.size(); i++ ) {
-                stringBuffer.append(Intent.EXTRA_CROP_FILE_HEADER + list.get(i).filePath);
+                stringBuffer.append(Constants.EXTRA_CROP_FILE_HEADER + list.get(i).filePath);
             }
             ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE))
                     .setText(stringBuffer);
@@ -941,12 +941,12 @@ public class MainActivity extends BaseActivity
         if (sourcePath == null) {
             sourcePath = "";
         }
-        String[] srcCopyPaths = sourcePath.split(Intent.EXTRA_FILE_HEADER);
-        String[] srcCropPaths = sourcePath.split(Intent.EXTRA_CROP_FILE_HEADER);
-        if (!TextUtils.isEmpty(sourcePath) && sourcePath.startsWith(Intent.EXTRA_FILE_HEADER)) {
+        String[] srcCopyPaths = sourcePath.split(Constants.EXTRA_FILE_HEADER);
+        String[] srcCropPaths = sourcePath.split(Constants.EXTRA_CROP_FILE_HEADER);
+        if (!TextUtils.isEmpty(sourcePath) && sourcePath.startsWith(Constants.EXTRA_FILE_HEADER)) {
             new CopyThread(srcCopyPaths, destPath).start();
         } else if (!TextUtils.isEmpty(sourcePath)
-                                        && sourcePath.startsWith(Intent.EXTRA_CROP_FILE_HEADER)) {
+                                        && sourcePath.startsWith(Constants.EXTRA_CROP_FILE_HEADER)) {
             new CropThread(srcCropPaths, destPath).start();
         }
     }
@@ -960,7 +960,7 @@ public class MainActivity extends BaseActivity
             sourcePath = "";
         }
         if (!TextUtils.isEmpty(sourcePath)
-               && sourcePath.startsWith(Intent.EXTRA_CROP_FILE_HEADER)) {
+               && sourcePath.startsWith(Constants.EXTRA_CROP_FILE_HEADER)) {
             ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE)).setText("");
         }
     }
@@ -980,7 +980,7 @@ public class MainActivity extends BaseActivity
             super.run();
             for (int i = 1; i < mSrcCopyPaths.length; i++) {
                 FileOperationHelper.CopyFile(
-                        mSrcCopyPaths[i].replace(Intent.EXTRA_FILE_HEADER, ""), mDestPath);
+                        mSrcCopyPaths[i].replace(Constants.EXTRA_FILE_HEADER, ""), mDestPath);
             }
         }
     }
@@ -1000,7 +1000,7 @@ public class MainActivity extends BaseActivity
             super.run();
             for (int i = 1; i < mSrcCropPaths.length; i++) {
                 FileOperationHelper.MoveFile(
-                        mSrcCropPaths[i].replace(Intent.EXTRA_CROP_FILE_HEADER, ""), mDestPath, true);
+                        mSrcCropPaths[i].replace(Constants.EXTRA_CROP_FILE_HEADER, ""), mDestPath, true);
             }
         }
     }
@@ -1011,7 +1011,7 @@ public class MainActivity extends BaseActivity
         StringBuffer stringBuffer = new StringBuffer();
         if (!list.isEmpty()) {
             for (int i = 0; i < list.size(); i++ ) {
-                stringBuffer.append(Intent.EXTRA_FILE_HEADER + list.get(i).filePath);
+                stringBuffer.append(Constants.EXTRA_FILE_HEADER + list.get(i).filePath);
             }
             ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE))
                             .setText(stringBuffer);

@@ -129,8 +129,8 @@ public class MenuDialog extends Dialog implements View.OnClickListener {
         }
         if (hasPermission) {
             if (!TextUtils.isEmpty(sourcePath)
-                  && (sourcePath.startsWith(Intent.EXTRA_FILE_HEADER)
-                       || sourcePath.startsWith(Intent.EXTRA_CROP_FILE_HEADER))) {
+                  && (sourcePath.startsWith(Constants.EXTRA_FILE_HEADER)
+                       || sourcePath.startsWith(Constants.EXTRA_CROP_FILE_HEADER))) {
                 mDialogPaste.setTextColor(Color.BLACK);
                 mDialogPaste.setOnClickListener(this);
                 isCopy = false;

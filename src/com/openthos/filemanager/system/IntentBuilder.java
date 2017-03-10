@@ -36,8 +36,7 @@ public class IntentBuilder {
                 intents.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intents.setAction(Intent.ACTION_VIEW);
                 intents.setDataAndType(Uri.fromFile(new File(filePath)), type);
-                intents.putExtra(ApplicationInfo.PACKAGENAME_TAG,
-                                 ApplicationInfo.APPNAME_OTO_LAUNCHER);
+                intents.putExtra(Constants.PACKAGENAME_TAG, Constants.APPNAME_OTO_LAUNCHER);
                 context.startActivity(intents);
             } else {
                 OpenWithDialog openWithDialog = new OpenWithDialog(context, filePath);
