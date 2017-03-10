@@ -1,5 +1,6 @@
 package com.openthos.filemanager.fragment;
 
+import android.os.Build;
 import android.annotation.SuppressLint;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -90,6 +91,11 @@ public class SdStorageFragment extends BaseFragment {
         mUsbDevices = ((LinearLayout) rootView.findViewById(R.id.ll_usb_device));
         mLinearlayouts = new LinearLayout[]{
                 mAndroidService, mSdSpace, mAndroidSystem, mPersonalSpace};
+        if (Build.TYPE.equals("eng")) {
+            mSdSpace.setVisibility(View.VISIBLE);
+        } else {
+            mSdSpace.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void setVolumSize() {
