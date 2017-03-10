@@ -458,6 +458,20 @@ public class SystemSpaceFragment extends BaseFragment implements
                             mFileViewInteractionHub.setIsBlank(true);
                             mFileViewInteractionHub.setIsDirectory(true);
                         }
+                        ArrayList<FileInfo> selectedFile = mFileViewInteractionHub
+                                                                         .getSelectedFileList();
+                        if (selectedFile.size() != 0) {
+                           for (FileInfo info : selectedFile) {
+                               mFileViewInteractionHub.setIsProtected(false);
+                               if (!info.canWrite) {
+                                   mFileViewInteractionHub.setIsProtected(true);
+                                   break;
+                               }
+                           }
+                        } else {
+                            mFileViewInteractionHub.setIsProtected(
+                                !new File(mFileViewInteractionHub.getCurrentPath()).canWrite());
+                        }
                         mFileViewInteractionHub.setCompressFileState(compressFileState);
                         mFileViewInteractionHub.showContextDialog(mFileViewInteractionHub,
                                 motionEvent);

@@ -1179,16 +1179,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 
     public void showContextDialog(FileViewInteractionHub fileViewInteractionHub,
                                    MotionEvent event) {
-        if (mCurrentPath.startsWith(Constants.PERMISS_DIR_SDCARD)
-                || mCurrentPath.startsWith(Constants.PERMISS_DIR_STORAGE_SDCARD)
-                || mCurrentPath.startsWith(Constants.PERMISS_DIR_STORAGE_USB)
-                || mCurrentPath.startsWith(Constants.PERMISS_DIR_STORAGE_EMULATED_LEGACY)
-                || mCurrentPath.startsWith(Constants.PERMISS_DIR_SEAFILE)
-                || mCurrentPath.startsWith(Constants.PERMISS_DIR_STORAGE_EMULATED_0)) {
-            fileViewInteractionHub.setIsProtected(false);
-        } else {
-            fileViewInteractionHub.setIsProtected(true);
-        }
         menuFirstDialog = new MenuFirstDialog(mContext, fileViewInteractionHub, event);
         menuFirstDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         menuFirstDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
