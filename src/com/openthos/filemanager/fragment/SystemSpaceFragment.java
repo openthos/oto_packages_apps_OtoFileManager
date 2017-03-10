@@ -388,7 +388,6 @@ public class SystemSpaceFragment extends BaseFragment implements
                         if (!MainActivity.getCtrlState() && !MainActivity.getShiftState()) {
                             mDownX = motionEvent.getX();
                             mDownY = motionEvent.getY();
-                            mIsItem = false;
                         }
                         mPos = -1;
                     }
@@ -543,6 +542,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                     }
                     mAdapter.notifyDataSetChanged();
                     mDownX = -1;
+                    mIsItem = false;
             }
             return false;
         }
