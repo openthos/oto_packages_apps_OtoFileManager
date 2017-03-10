@@ -52,11 +52,6 @@ public class PathAdapter extends BaseAdapter {
             view.setOnTouchListener(mOnTouchListener);
         }
         holder = (ViewHolder) view.getTag();
-        if (mPathList.get(i) == "") {
-            view.setVisibility(View.GONE);
-        } else {
-            view.setVisibility(View.VISIBLE);
-        }
         holder.path.setTag(i);
         holder.path.setText(mPathList.get(i));
         int i1 = (int) holder.path.getPaint().measureText(holder.path.getText().toString());

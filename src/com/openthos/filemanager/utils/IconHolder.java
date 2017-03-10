@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import com.openthos.filemanager.system.FileCategoryHelper;
 import com.openthos.filemanager.system.FileIconHelper;
 import com.openthos.filemanager.system.Util;
+import com.openthos.filemanager.R;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -145,6 +146,7 @@ public class IconHolder {
                 mAppIcons.put(loadable.filePath, loadable.drawable);
             }
             view.setImageDrawable(loadable.drawable);
+            thumbnailBackground(view, loadable.filePath);
         }
     };
 
@@ -199,6 +201,7 @@ public class IconHolder {
     public void loadDrawable(ImageView iconView, String filePath) {
         if (mAppIcons.containsKey(filePath)) {
             iconView.setImageDrawable(mAppIcons.get(filePath));
+            thumbnailBackground(iconView, filePath);
             return;
         }
 
@@ -255,5 +258,19 @@ public class IconHolder {
         mRequests.clear();
         mAppIcons.clear();
         shutdownWorker();
+    }
+
+    private void thumbnailBackground(ImageView iconView, String filePath) {
+        FileCategoryHelper.FileCategory fc = FileCategoryHelper.getCategoryFromPath(filePath);
+        switch (fc) {
+            case Picture:
+            case Video:
+                iconView.setBackground(mContext.getResources().
+                                       getDrawable(R.drawable.thumbnail_shape));
+                break;
+            default:
+                iconView.setBackground(null);
+                break;
+        }
     }
 }

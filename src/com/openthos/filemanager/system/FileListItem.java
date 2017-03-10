@@ -59,6 +59,7 @@ public class FileListItem {
         } else {
             Util.setText(view, R.id.file_name, fileInfo.fileName,
                          context.getResources().getColor(R.color.file_name_color));
+            lFileImage.setBackground(null);
             if (fileInfo.IsDir) {
                 lFileImage.setImageResource(R.mipmap.folder);
             } else {
