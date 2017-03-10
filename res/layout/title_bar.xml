@@ -34,10 +34,8 @@
         android:focusableInTouchMode="true"
         android:orientation="horizontal">
         <RelativeLayout
-            android:layout_width="0dp"
+            android:layout_width="70dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="-18dp"
-            android:layout_weight="1.1"
             android:gravity="center">
             <ImageView
                 android:id="@+id/iv_grid_view"
@@ -63,7 +61,6 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="8"
-            android:layout_marginLeft="-16dp"
             android:layout_marginBottom="2dp"
             android:layout_marginRight="5dp"
             android:layout_marginTop="2dp">
