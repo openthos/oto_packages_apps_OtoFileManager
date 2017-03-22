@@ -502,15 +502,28 @@ public class MainActivity extends BaseActivity
                 break;
             case Constants.USB_EJECT:
                 if (mUsbPath != null) {
+			int position;
                     for (int i = 0; i < SdStorageFragment.usbLists.size(); i++) {
                         if (mUsbPath.equals(SdStorageFragment.usbLists.get(i)[0])) {
-                            int position = getUsbPosition(mUsbPath);
+                            position = getUsbPosition(mUsbPath);
                             ll_usb.removeViewAt(getUsbPosition(mUsbPath));
                             mSdStorageFragment.removeUsbView(position);
                             break;
                         }
                     }
+
+		    if(mUsbPath.indexOf("/storage/usb") != -1){
+			 for (int i = SdStorageFragment.usbLists.size() - 1; i >= 0; i--) {
+			    if ((SdStorageFragment.usbLists.get(i)[0]).indexOf(mUsbPath + "_") != -1) {
+			    	position = getUsbPosition(SdStorageFragment.usbLists.get(i)[0]);
+				ll_usb.removeViewAt(getUsbPosition(SdStorageFragment.usbLists.get(i)[0]));
+				mSdStorageFragment.removeUsbView(position);
+			    }
+			 }
+		    }
+
                 }
+
                 if (getCurPath() != null && getCurPath().equals(mUsbPath)) {
                     showSdSFragmentAfterInstallUSB();
                     setCurPath(null);
@@ -1052,6 +1065,10 @@ public class MainActivity extends BaseActivity
     }
 
     public void uninstallUSB(String usbPath) {
+	if(usbPath.indexOf("/storage/usb") != -1 && usbPath.indexOf("_") != -1){
+		usbPath = usbPath.substring(0,13);
+	}
+
         if (mPopUpProgressDialog == null) {
             mPopUpProgressDialog = new ProgressDialog(this);
         }
