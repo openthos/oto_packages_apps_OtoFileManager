@@ -1024,6 +1024,11 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         } else if (doubleTag != null && Constants.DOUBLE_TAG.equals(doubleTag)) {
 //            mCheckedFileNameList.remove(lFileInfo);  //
             openSelectFolder(getAbsoluteName(mCurrentPath, fileInfo.fileName));
+            mMainActivity.mUserOperationFragments.remove(
+                    mMainActivity.mUserOperationFragments.size() - 1);
+            mMainActivity.mUserOperationFragments.add(mMainActivity.mCurFragment);
+            mMainActivity.mIv_up.setImageDrawable(
+                    mMainActivity.getResources().getDrawable(R.mipmap.up_enable));
         }
     }
 

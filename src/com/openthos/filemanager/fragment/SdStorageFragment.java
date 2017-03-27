@@ -301,6 +301,11 @@ public class SdStorageFragment extends BaseFragment {
         }
         mMainActivity.mCurFragment = mCurFragment;
         mCurId = Constants.RETURN_TO_WHITE;
+        mMainActivity.mUserOperationFragments.add(mMainActivity.mCurFragment);
+        mMainActivity.mFragmentIndex++;
+        mMainActivity.mIv_back.setImageDrawable(
+                                        mMainActivity.getDrawable(R.mipmap.backward_enable));
+        mMainActivity.mIv_up.setImageDrawable(mMainActivity.getDrawable(R.mipmap.up_enable));
     }
 
     public void setSelectedCardBg(int id) {
@@ -351,7 +356,7 @@ public class SdStorageFragment extends BaseFragment {
         }
     }
 
-    private void setUnselectAll() {
+    public void setUnselectAll() {
         if (mLinearlayouts != null) {
             for (int i = 0; i < mLinearlayouts.length; i++) {
                 mLinearlayouts[i].setSelected(false);

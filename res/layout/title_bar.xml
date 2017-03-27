@@ -16,7 +16,21 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="15dp"
             android:background="@drawable/back_bg_selector"
-            android:src="@mipmap/back" />
+            android:src="@mipmap/backward_disable" />
+        <ImageButton
+            android:id="@+id/iv_forward"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="15dp"
+            android:background="@drawable/back_bg_selector"
+            android:src="@mipmap/forward_disable" />
+        <ImageButton
+            android:id="@+id/iv_up"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="15dp"
+            android:background="@drawable/back_bg_selector"
+            android:src="@mipmap/up_disable" />
         <ImageView
             android:id="@+id/iv_setting"
             android:layout_width="20dp"

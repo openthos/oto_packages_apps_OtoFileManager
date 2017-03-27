@@ -17,15 +17,10 @@ public abstract class Constants {
     public static final String DOWNLOADFRRAGMENT_TAG = "downloadfragment";
     public static final String RECYCLEFRAGMENT_TAG = "recyclefragment";
     public static final String SDSTORAGEFRAGMENT_TAG = "sdstoragefragment";
-    public static final String USBSTORAGEFRAGMENT_TAG = "usbstoragefragment";
-    public static final String ONLINENEIGHBORFRAGMENT_TAG = "onlineneighborfragment";
-    public static final String CLOUDSERVICEFRAGMENT_TAG = "cloudservicefragment";
     public static final String DETAILFRAGMENT_TAG = "detailfragment";
-    public static final String SYSTEMSPACEFRAGMENT_TAG = "systemspacefragment";
     public static final String SEARCHFRAGMENT_TAG = "searchfragment";
     public static final String ADDRESSFRAGMENT_TAG = "addressfragment";
     public static final long DOUBLE_CLICK_INTERVAL_TIME = 1000; // 1.0 second
-    public static final String SYSTEM_SPACE_FRAGMENT_TAG = "System_Space_Fragment_tag";
     public static final String USBFRAGMENT_TAG = "usbfragment_tag";
     public static final String PERSONALSYSTEMSPACE_TAG = "personalsystemspace_tag";
     public static final String SDSSYSTEMSPACE_TAG = "sdssystemspace_tag";
@@ -59,21 +54,10 @@ public abstract class Constants {
     public static final String QQ_FILE_PATH = Constants.ROOT_PATH + "Tencent/QQfile_recv";
     public static final String WEIXIN_IMG_PATH = Constants.ROOT_PATH + "Tencent/MicroMsg/WeiXin";
     public static final String BAIDU_PAN_PATH = Constants.ROOT_PATH + "BaiduNetdisk";
-    public static final String STORAGE_USB0 = "/storage/usb0";
     public static final String PERMISS_DIR_STORAGE_USB = "/storage/usb";
     public static final String PERMISS_DIR_SEAFILE = "/data/sea/data";
-    public static final String PERMISS_DIR_SDCARD = "/sdcard";
-    public static final String PERMISS_DIR_STORAGE_SDCARD = "/storage/sdcard";
-    public static final String PERMISS_DIR_STORAGE_EMULATED_LEGACY = "/storage/emulated/legacy";
-    public static final String PERMISS_DIR_STORAGE_EMULATED_0 = "/storage/emulated/0";
     // Menu id
-    public static final int MENU_NEW_FOLDER = 100;
-    public static final int MENU_NEW_FILE = 119;
-    public static final int MENU_COPY = 104;
-    public static final int MENU_PASTE = 105;
-    public static final int MENU_MOVE = 106;
     public static final int MENU_SHOWHIDE = 117;
-    public static final int MENU_COPY_PATH = 118;
     public static final int OPERATION_UP_LEVEL = 3;
     public static final int SEAFILE_DATA_OK = 6;
 
