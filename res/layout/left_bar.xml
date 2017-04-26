@@ -80,8 +80,26 @@
             style="@style/textSet"
             android:drawableLeft="@drawable/left_computer_selector"
             android:text="@string/computer" />
+
         <LinearLayout
             android:id="@+id/ll_usb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="@string/automount"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="13sp" />
+
+        <LinearLayout
+            android:id="@+id/ll_mount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" />

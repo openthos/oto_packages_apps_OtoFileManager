@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mount_grid"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:background="@drawable/sd_page_bg_selector"
     android:orientation="horizontal">
 
     <LinearLayout
-        android:id="@+id/usb_grid_ll"
+        android:id="@+id/mount_grid_ll"
         android:layout_width="@dimen/home_item_length"
         android:layout_height="wrap_content"
         android:background="@drawable/sd_page_bg_selector"
         android:gravity="center_vertical"
         android:orientation="horizontal"
+        android:paddingBottom="5dp"
         android:paddingLeft="@dimen/home_pic_text"
-        android:paddingTop="10dp"
-        android:paddingBottom="5dp">
+        android:paddingTop="10dp">
 
         <ImageView
-            android:id="@+id/usb_grid_icon"
+            android:id="@+id/mount_grid_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:src="@mipmap/usb_service"/>
+            android:src="@mipmap/storage" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,17 +31,16 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/usb_grid_name"
+                android:id="@+id/mount_grid_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:paddingLeft="@dimen/home_pic_text"
-                android:text="@string/text_removable_disk1"
                 android:textColor="@android:color/black"
-                android:textSize="16sp"/>
+                android:textSize="16sp" />
 
             <ProgressBar
-                android:id="@+id/usb_grid_pb"
+                android:id="@+id/mount_grid_pb"
                 style="@android:style/Widget.ProgressBar.Horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
@@ -47,7 +48,7 @@
                 android:layout_marginBottom="5dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="5dp"
-                android:progressDrawable="@drawable/my_progressbar"/>
+                android:progressDrawable="@drawable/my_progressbar" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -58,31 +59,31 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/text_size"
-                    android:textSize="13sp"/>
+                    android:textSize="13sp" />
 
                 <TextView
-                    android:id="@+id/usb_grid_total_size"
+                    android:id="@+id/mount_grid_total_size"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="13sp"/>
+                    android:textSize="13sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
                     android:text="@string/text_available"
-                    android:textSize="13sp"/>
+                    android:textSize="13sp" />
 
                 <TextView
-                    android:id="@+id/usb_grid_available_size"
+                    android:id="@+id/mount_grid_available_size"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="13sp"/>
+                    android:textSize="13sp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
     <View
         android:layout_width="@dimen/home_pic_text"
-        android:layout_height="1dp"/>
+        android:layout_height="1dp" />
 </LinearLayout>

@@ -264,4 +264,7 @@
     <string name="fail_open_recycle">由于该目录是回收站，无法打开该文件</string>
     <string name="confirm_limit">你确定要修改该文件的权限吗？\n由于系统的保护，可能会修改失败！</string>
     <string name="dialog_count">计算中……</string>
+    <string name="automount">本地磁盘</string>
+    <string name="automount_mount">挂载</string>
+    <string name="automount_umount">卸载</string>
 </resources>

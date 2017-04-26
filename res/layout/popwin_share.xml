@@ -71,4 +71,23 @@
             style="@style/wrap"
             android:text="@string/operation_info" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_mount"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/pop_mount"
+            style="@style/wrap"
+            android:text="@string/automount_mount" />
+
+        <TextView
+            android:id="@+id/pop_umount"
+            style="@style/wrap"
+            android:text="@string/automount_umount" />
+    </LinearLayout>
 </FrameLayout>

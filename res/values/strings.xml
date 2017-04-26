@@ -262,4 +262,7 @@
     <string name="fail_open_recycle">Could not open the file because in the Recycle</string>
     <string name="confirm_limit">Are you sure you want to change the file permissions?\nSome files may not be modified because of system protection!</string>
     <string name="dialog_count">In calculation……</string>
+    <string name="automount">Auto Mount</string>
+    <string name="automount_mount">Mount</string>
+    <string name="automount_umount">Umount</string>
 </resources>

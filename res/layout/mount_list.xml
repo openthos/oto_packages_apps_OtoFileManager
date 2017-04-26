@@ -1,23 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/usb"
+    android:id="@+id/mount"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/left_bar_backgroud" >
+    android:background="@drawable/left_bar_backgroud">
 
     <TextView
         android:id="@+id/usb_list_usb_name"
         style="@style/textUsbSet"
         android:drawableLeft="@drawable/left_usb_selector"
         android:text="@string/text_removable_disk1" />
-
-    <ImageView
-        android:id="@+id/usb_list_uninstall"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/usb_pop_up_selector" />
 
 </RelativeLayout>

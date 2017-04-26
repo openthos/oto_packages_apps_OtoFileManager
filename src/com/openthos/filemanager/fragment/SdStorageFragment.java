@@ -2,6 +2,7 @@ package com.openthos.filemanager.fragment;
 
 import android.os.Build;
 import android.annotation.SuppressLint;
+import android.os.StatFs;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -15,6 +16,7 @@ import android.widget.LinearLayout;
 import com.openthos.filemanager.BaseFragment;
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.bean.Volume;
 import com.openthos.filemanager.component.DiskDialog;
 import com.openthos.filemanager.system.FileInfo;
 import com.openthos.filemanager.system.FileViewInteractionHub;
@@ -52,9 +54,14 @@ public class SdStorageFragment extends BaseFragment {
     private LinearLayout mFragmentSds;
     private LinearLayout mLlMobileDevice;
     private LinearLayout mUsbDevices;
+    private LinearLayout mMountDevices;
+    private LinearLayout mLlMountDevice;
     private String mCurrentPath;
     private String mLastPath;
     private LinearLayout[] mLinearlayouts;
+    private ArrayList<Volume> mVolumes;
+    private MouseRelativeOnGenericMotionListener mTouchListener
+                                     = new MouseRelativeOnGenericMotionListener();
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public SdStorageFragment(FragmentManager mManager,
@@ -89,6 +96,8 @@ public class SdStorageFragment extends BaseFragment {
         mPbSystem = (ProgressBar) rootView.findViewById(R.id.pb_system);
         mPbSd = (ProgressBar) rootView.findViewById(R.id.pb_sd);
         mUsbDevices = ((LinearLayout) rootView.findViewById(R.id.ll_usb_device));
+        mMountDevices = ((LinearLayout) rootView.findViewById(R.id.ll_auto_mount_device));
+        mLlMountDevice = (LinearLayout) rootView.findViewById(R.id.ll_auto_mount);
         mLinearlayouts = new LinearLayout[]{
                 mAndroidService, mSdSpace, mAndroidSystem, mPersonalSpace};
         if (Build.TYPE.equals("eng")) {
@@ -169,16 +178,65 @@ public class SdStorageFragment extends BaseFragment {
             usbLists.clear();
             mUsbDevices.removeAllViews();
         }
+        mVolumes = mMainActivity.getVolumes();
+        initMountData();
+    }
+
+    public void initMountData() {
+        boolean isShow = false;
+        mMountDevices.removeAllViews();
+        for (Volume v : mVolumes) {
+            if (v.isMount()) {
+                isShow = true;
+                StatFs stat = new StatFs(v.getPath());
+                long blockSize = stat.getBlockSize();
+                long availableBlocks = stat.getAvailableBlocks();
+                long totalBlocks = stat.getBlockCount();
+                String[] s = new String[]{v.getBlock(),
+                                          Util.convertStorage(blockSize * availableBlocks),
+                                          Util.convertStorage(totalBlocks * blockSize)};
+                mMountDevices.addView(getMountView(s, v));
+            }
+        }
+        if (isShow) {
+            mMountDevices.setVisibility(View.VISIBLE);
+            mLlMountDevice.setVisibility(View.VISIBLE);
+
+        } else {
+            mMountDevices.setVisibility(View.GONE);
+            mLlMountDevice.setVisibility(View.GONE);
+        }
+    }
+
+    private View getMountView(String[] mountInfo, Volume v) {
+        View inflate = View.inflate(getActivity(), R.layout.mount_grid, null);
+        LinearLayout mountLayout = (LinearLayout) inflate.findViewById(R.id.mount_grid_ll);
+        ProgressBar diskResidue = (ProgressBar) inflate.findViewById(R.id.mount_grid_pb);
+        TextView usbName = (TextView) inflate.findViewById(R.id.mount_grid_name);
+        TextView totalSize = (TextView) inflate.findViewById(R.id.mount_grid_total_size);
+        TextView availSize = (TextView) inflate.findViewById(R.id.mount_grid_available_size);
+        totalSize.setText(mountInfo[2]);
+        availSize.setText(mountInfo[1]);
+        usbName.setText(mountInfo[0]);
+        int maxOne = (int) (Double.parseDouble(mountInfo[1].substring(0, 3)) * 100);
+        int availOne = (int) (Double.parseDouble(mountInfo[2].substring(0, 3)) * 100);
+        int progressOne = maxOne - availOne >= 0 ?
+                maxOne - availOne : maxOne - (availOne / 1024);
+        diskResidue.setMax(maxOne);
+        diskResidue.setProgress(progressOne);
+        inflate.setTag(v);
+        inflate.setOnGenericMotionListener(mTouchListener);
+        return inflate;
     }
 
     @Override
     protected void initListener() {
-        mFragmentSds.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
-        mAndroidSystem.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
-        mSdSpace.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
-        mAndroidService.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
-        mPersonalSpace.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
-        mUsbDevices.setOnGenericMotionListener(new MouseRelativeOnGenericMotionListener());
+        mFragmentSds.setOnGenericMotionListener(mTouchListener);
+        mAndroidSystem.setOnGenericMotionListener(mTouchListener);
+        mSdSpace.setOnGenericMotionListener(mTouchListener);
+        mAndroidService.setOnGenericMotionListener(mTouchListener);
+        mPersonalSpace.setOnGenericMotionListener(mTouchListener);
+        mUsbDevices.setOnGenericMotionListener(mTouchListener);
     }
 
     public class MouseRelativeOnGenericMotionListener implements View.OnGenericMotionListener {
@@ -223,6 +281,18 @@ public class SdStorageFragment extends BaseFragment {
             case R.id.rl_personal_space:
                 setDiskClickInfo(R.id.rl_personal_space, Constants.PERSONAL_TAG, null);
                 break;
+            case R.id.mount_grid:
+                setUnselectAll();
+                view.setSelected(true);
+                mCurId = view.getId();
+                currentBackTime = System.currentTimeMillis();
+                if (currentBackTime - lastBackTime > Constants.DOUBLE_CLICK_INTERVAL_TIME
+                        || mCurrentPath != mLastPath) {
+                    lastBackTime = currentBackTime;
+                } else {
+                    mMainActivity.enter((Volume)view.getTag());
+                }
+                break;
             default:
                 setSelectedCardBg(Constants.RETURN_TO_WHITE);
                 mCurId = -1;
@@ -236,6 +306,7 @@ public class SdStorageFragment extends BaseFragment {
         switch (view.getId()) {
             case R.id.ll_usb_device:
             case R.id.fragment_sds_ll:
+            case R.id.mount_grid:
                 break;
             default:
                 showDiskDialog(view, event, false);
@@ -263,6 +334,17 @@ public class SdStorageFragment extends BaseFragment {
     @Override
     public void enter() {
         super.enter();
+        switch (mCurId) {
+            case R.id.mount_grid:
+                for (int i = 0; i < mMountDevices.getChildCount(); i++) {
+                    if (mMountDevices.getChildAt(i).isSelected()) {
+                        Volume v = (Volume) mMountDevices.getChildAt(i).getTag();
+                        mMainActivity.enter(v);
+                        return;
+                    }
+                }
+                break;
+        }
         if (mCurrentPath != null && mCurId == -1) {
             enter(Constants.USB_SPACE_FRAGMENT, mCurrentPath);
         }
@@ -366,6 +448,9 @@ public class SdStorageFragment extends BaseFragment {
             for (int i = 0; i < mUsbDevices.getChildCount(); i++) {
                 ((View) mUsbDevices.getChildAt(i).getTag()).setSelected(false);
             }
+        }
+        for (int i = 0; i < mMountDevices.getChildCount(); i++) {
+            mMountDevices.getChildAt(i).setSelected(false);
         }
     }
 

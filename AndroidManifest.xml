@@ -19,6 +19,7 @@
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION"/>
     <permission android:name="android.permission.ACCESS_SUPERUSER"
         android:protectionLevel="dangerous" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:allowBackup="true"
@@ -67,6 +68,11 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+        <receiver android:name=".system.AutoMountReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
         <provider
             android:authorities="com.openthos.filemanager"

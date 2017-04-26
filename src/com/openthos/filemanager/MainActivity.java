@@ -36,6 +36,8 @@ import android.app.ProgressDialog;
 
 import com.openthos.filemanager.bean.SeafileAccount;
 import com.openthos.filemanager.bean.SeafileLibrary;
+import com.openthos.filemanager.bean.Disk;
+import com.openthos.filemanager.bean.Volume;
 import com.openthos.filemanager.component.CopyInfoDialog;
 import com.openthos.filemanager.component.PopOnClickLintener;
 import com.openthos.filemanager.component.PopWinShare;
@@ -92,6 +94,7 @@ public class MainActivity extends BaseActivity
     private static final String IV_SWITCH_VIEW = "iv_switch_view";
     private static final String SETTING_POPWINDOW_TAG = "iv_setting";
     private static final String USB_POPWINDOW_TAG = "iv_usb";
+    private static final String MOUNT_POPWINDOW_TAG = "MOUNT_POPWINDOW_TAG";
     private TextView mTv_desk;
     private TextView mTv_music;
     private TextView mTv_video;
@@ -112,6 +115,7 @@ public class MainActivity extends BaseActivity
     private EditText mEt_search_view;
     private ImageView mIv_search_view;
     private LinearLayout ll_usb;
+    private LinearLayout llMount;
 
     private FragmentManager mManager = getSupportFragmentManager();
     private PopWinShare mPopWinShare;
@@ -165,6 +169,9 @@ public class MainActivity extends BaseActivity
     private AddressOnTouchListener mAddressTouchListener;
     public List<Fragment> mUserOperationFragments;
     public int mFragmentIndex = -1;
+    private ArrayList<Volume> mVolumes = new ArrayList<>();
+    private ArrayList<Disk> disks = new ArrayList<>();
+    private HashMap<String, SystemSpaceFragment> mMountFragments = new HashMap<>();
 
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -311,6 +318,7 @@ public class MainActivity extends BaseActivity
         mIv_search_view = (ImageView) findViewById(R.id.iv_search);
         mEt_search_view = (EditText) findViewById(R.id.search_view);
         ll_usb = (LinearLayout) findViewById(R.id.ll_usb);
+        llMount = (LinearLayout) findViewById(R.id.ll_mount);
         mAddressListView = (HorizontalListView) findViewById(R.id.lv_address);
         mLeftTexts = new TextView[]{mTv_music, mTv_desk, mTv_video, mTv_computer, mTv_picture,
                 mTv_net_service, mTv_document, mTv_download, mTv_recycle, mTv_cloud_service};
@@ -621,6 +629,25 @@ public class MainActivity extends BaseActivity
         mAddressTouchListener = new AddressOnTouchListener();
         mPathAdapter = new PathAdapter(this, mPathList, mAddressTouchListener);
         mAddressListView.setAdapter(mPathAdapter);
+        getMountData();
+    }
+
+    private void getMountData() {
+        String data = getSharedPreferences("automount",Context.MODE_PRIVATE)
+                                                                      .getString("automount","[]");
+        try {
+            JSONArray array = new JSONArray(data);
+            for (int i = 0; i<array.length();i++){
+                JSONObject object = array.getJSONObject(i);
+                Volume v = new Volume();
+                v.setBlock(object.getString("block"));
+                v.setIsMount(object.getBoolean("ismount"));
+                v.setType(object.getString("type"));
+                mVolumes.add(v);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void checkFolder(Fragment fragment) {
@@ -681,6 +708,22 @@ public class MainActivity extends BaseActivity
             }
         }
         setCurPath(path);
+        int i = 0;
+        for (Volume v : mVolumes) {
+            View inflate = View.inflate(this, R.layout.mount_list, null);
+            TextView name = (TextView) inflate.findViewById(R.id.usb_list_usb_name);
+            name.setText(v.getBlock());
+            inflate.setOnHoverListener(mHomeLeftOnHoverListener);
+            inflate.setOnTouchListener(mHomeLeftOnTouchListener);
+            inflate.setTag(v);
+            mMountFragments.put(v.getBlock(), new SystemSpaceFragment(
+                    v.getBlock(), "/storage/disk" + i, null, null, true));
+            mManager.beginTransaction().add(R.id.fl_mian, mMountFragments.get(v.getBlock()),
+                    v.getBlock()).hide(mMountFragments.get(v.getBlock())).commit();
+            v.setPath("/storage/disk" + i);
+            i++;
+            llMount.addView(inflate);
+        }
     }
 
     class NivagationOnClickLinstener implements View.OnClickListener {
@@ -1296,6 +1339,24 @@ public class MainActivity extends BaseActivity
         });
     }
 
+    private void showPopWindow(Volume volume, View view) {
+        mPopWinShare = new PopWinShare(MainActivity.this, new MountListener(volume),
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                MOUNT_POPWINDOW_TAG);
+        mPopWinShare.setFocusable(true);
+        mPopWinShare.showAsDropDown(view, USB_POPWINDOW_X, USB_POPWINDOW_Y);
+        mPopWinShare.update();
+        mPopWinShare.getContentView().setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    mPopWinShare.dismiss();
+                }
+            }
+        });
+    }
+
     public void DismissPopwindow() {
         mPopWinShare.dismiss();
     }
@@ -1705,6 +1766,17 @@ public class MainActivity extends BaseActivity
                 }
             }
         }
+        for (int i = 0; i < llMount.getChildCount(); i++) {
+            View childAt = llMount.getChildAt(i);
+            if (childAt.isSelected()) {
+                if (childAt == view) {
+                    return;
+                } else {
+                    childAt.setSelected(false);
+                    childAt.setBackground(getResources().getDrawable(R.drawable.left_bg_shape));
+                }
+            }
+        }
         view.setSelected(true);
         view.setBackground(getResources().getDrawable(android.R.color.holo_purple));
     }
@@ -1864,7 +1936,7 @@ public class MainActivity extends BaseActivity
                         case R.id.tv_cloud_service:
                             setFileInfo(R.id.tv_cloud_service, "", mSeafileFragment);
                             break;
-                        default:
+                        case R.id.usb:
                             mUsbPath = (String) view.getTag();
                             if (mCurFragment != null) {
                                 mManager.beginTransaction().hide(mCurFragment).commit();
@@ -1874,14 +1946,27 @@ public class MainActivity extends BaseActivity
                             mManager.beginTransaction().add(R.id.fl_mian, mUsbStorageFragment,
                                     Constants.USBFRAGMENT_TAG).commit();
                             mCurFragment = mUsbStorageFragment;
-                            mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_enable));
+                            break;
+                        case R.id.mount:
+                            Volume v = (Volume) view.getTag();
+                            if (!v.isMount()) {
+                                mountVolume(v);
+                            }
+                            enter(v);
                             break;
                     }
                     break;
                 case MotionEvent.BUTTON_SECONDARY:
-                    if (view.getTag() != null) {
-                        mUsbPath = (String) view.getTag();
-                        showPopWindow(USB_POPWINDOW_TAG);
+                    switch (view.getId()) {
+                        case R.id.usb:
+                            if (view.getTag() != null) {
+                                mUsbPath = (String) view.getTag();
+                                showPopWindow(USB_POPWINDOW_TAG);
+                            }
+                            break;
+                        case R.id.mount:
+                            Volume v = (Volume) view.getTag();
+                            showPopWindow(v, view);
                     }
                     break;
             }
@@ -1957,5 +2042,81 @@ public class MainActivity extends BaseActivity
     public static void setState(boolean isCtrlPress, boolean isShiftPress) {
         mIsCtrlPress = isCtrlPress;
         mIsShiftPress = isShiftPress;
+    }
+
+    public ArrayList<Volume> getVolumes() {
+        return mVolumes;
+    }
+
+    private void mountVolume(Volume v) {
+        String arg = "";
+        String command = "";
+        if (v.getType().equals("vfat")) {
+            command = "mount ";
+            arg = "-t vfat ";
+        } else if (v.getType().equals("ext2")) {
+            command = "mount ";
+            arg = "-t ext2 ";
+        } else if (v.getType().equals("ext3")) {
+            command = "mount ";
+            arg = "-t ext3 ";
+        } else if (v.getType().equals("ext4")) {
+            command = "mount ";
+            arg = "-t ext4 ";
+        } else if (v.getType().equals("ntfs")) {
+            command = "ntfs-3g ";
+            arg = "";
+        }
+        Util.exec(new String[]{"su", "-c", command + arg + "-o rw "
+                                 + "/dev/block/" + v.getBlock() + " " + v.getPath()});
+        v.setIsMount(true);
+        mSdStorageFragment.initMountData();
+    }
+
+    private void umountVolume(Volume v) {
+        Util.exec(new String[]{"su", "-c", "umount " + v.getPath()});
+        v.setIsMount(false);
+        mSdStorageFragment.initMountData();
+    }
+
+    public void enter(Volume v) {
+        SystemSpaceFragment fragment = mMountFragments.get(v.getBlock());
+        fragment.setPath(v.getPath());
+        fragment.getFileViewInteractionHub().setRootPath(v.getPath());
+        FileListAdapter adapter = fragment.getAdapter();
+        if (adapter != null) {
+            adapter.getSelectFileInfoList().clear();
+            fragment.getFileViewInteractionHub().clearSelection();
+            fragment.onRefreshFileList(v.getPath(), getFileSortHelper());
+        }
+        setNavigationPath(v.getPath());
+        setCurPath(v.getPath());
+        if (mCurFragment != null) {
+            mManager.beginTransaction().hide(mCurFragment).commit();
+        }
+        mManager.beginTransaction().show(fragment).commit();
+        mCurFragment = fragment;
+    }
+
+    private class MountListener implements View.OnClickListener {
+        private Volume mVolume;
+
+        public MountListener(Volume volume) {
+            mVolume = volume;
+        }
+
+        @Override
+        public void onClick(View view) {
+            clearNivagateFocus();
+            DismissPopwindow();
+            switch (view.getId()) {
+                case R.id.pop_mount:
+                    mountVolume(mVolume);
+                    break;
+                case R.id.pop_umount:
+                    umountVolume(mVolume);
+                    break;
+            }
+        }
     }
 }
