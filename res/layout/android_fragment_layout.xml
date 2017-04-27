@@ -63,6 +63,7 @@
 
         <LinearLayout
             android:id="@+id/rl_android_service"
+            android:visibility="invisible"
             style="@style/homeItemLinear">
 
             <ImageView

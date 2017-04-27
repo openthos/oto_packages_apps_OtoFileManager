@@ -292,8 +292,8 @@ public class MainActivity extends BaseActivity
     }
 
     protected void initView() {
-        mInitSeafileThread = new InitSeafileThread();
-        mInitSeafileThread.start();
+        //mInitSeafileThread = new InitSeafileThread();
+        //mInitSeafileThread.start();
         mSharedPreferences = getSharedPreferences(VIEW_TAG, Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
         String viewTag = mSharedPreferences.getString(VIEW_TAG, VIEW_TAG_GRID);
