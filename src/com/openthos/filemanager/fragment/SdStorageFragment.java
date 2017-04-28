@@ -31,7 +31,6 @@ import java.util.List;
 
 public class SdStorageFragment extends BaseFragment {
     private static final String TAG = SdStorageFragment.class.getSimpleName();
-    public static List<String[]> usbLists = new ArrayList<>();
 
     ArrayList<FileInfo> mFileInfoArrayList = null;
     FileViewInteractionHub.CopyOrMove copyOrMove = null;
@@ -46,6 +45,7 @@ public class SdStorageFragment extends BaseFragment {
     private TextView mSdTotal;
     private TextView mSdAvail;
     private ProgressBar mPbSd;
+    private View mMountView;
 
     public BaseFragment mCurFragment;
     private long lastBackTime = 0;
@@ -60,13 +60,16 @@ public class SdStorageFragment extends BaseFragment {
     private String mLastPath;
     private LinearLayout[] mLinearlayouts;
     private ArrayList<Volume> mVolumes;
+    public ArrayList<String[]> mUsbLists;
     private MouseRelativeOnGenericMotionListener mTouchListener
                                      = new MouseRelativeOnGenericMotionListener();
 
     @SuppressLint({"NewApi", "ValidFragment"})
-    public SdStorageFragment(FragmentManager mManager,
-                             String usbDeviceIsAttached, MainActivity context) {
-        super(mManager, usbDeviceIsAttached, context);
+    public SdStorageFragment(FragmentManager manager,
+                             ArrayList<String[]> usbLists, MainActivity context) {
+        mManager = manager;
+        mUsbLists = usbLists;
+        super.context = context;
     }
 
     @SuppressLint({"NewApi", "ValidFragment"})
@@ -121,14 +124,7 @@ public class SdStorageFragment extends BaseFragment {
                             (Util.convertStorage(systemInfo.romMemory - systemInfo.avilMemory)
                                     .substring(0, 3)) * 10));
         }
-
-        String[] cmd = {"df"};
-        String[] usbs = Util.execDisk(cmd);
-        if (usbs != null && usbs.length > 0) {
-            showDiskInfo(usbs);
-        } else {
-            showSdcardInfo();
-        }
+        showSdcardInfo();
     }
 
     private void showDiskInfo(String[] usbs) {
@@ -160,26 +156,23 @@ public class SdStorageFragment extends BaseFragment {
 
     protected void initData() {
         setVolumSize();
-        if (usbDeviceIsAttached != null && usbDeviceIsAttached.equals("usb_device_attached")) {
-            String[] cmd = {"df"};
-            usbLists = Util.execUsb(cmd);
-            int size = usbLists.size();
-            if (size > 0) {
-                mLlMobileDevice.setVisibility(View.VISIBLE);
-                mMainActivity.mHandler.sendEmptyMessage(Constants.USB_READY);
-                mUsbDevices.removeAllViews();
-                for (int i = 0; i < usbLists.size(); i++) {
-                    mUsbDevices.addView(getUsbView(usbLists.get(i)));
-//                    mUsbDevices.addView(getPaddingView());
-                }
-            }
-        } else if (usbDeviceIsAttached != null
-                && usbDeviceIsAttached.equals("usb_device_detached")) {
-            usbLists.clear();
-            mUsbDevices.removeAllViews();
-        }
+        initUsbData();
         mVolumes = mMainActivity.getVolumes();
         initMountData();
+    }
+
+    private void initUsbData(){
+        String[] cmd = {"df"};
+        mUsbLists.clear();
+        mUsbLists.addAll(Util.execUsb(cmd));
+        if (mUsbLists.size() > 0) {
+            mLlMobileDevice.setVisibility(View.VISIBLE);
+            mMainActivity.mHandler.sendEmptyMessage(Constants.USB_READY);
+            mUsbDevices.removeAllViews();
+            for (int i = 0; i < mUsbLists.size(); i++) {
+                mUsbDevices.addView(getUsbView(mUsbLists.get(i)));
+            }
+        }
     }
 
     public void initMountData() {
@@ -242,7 +235,7 @@ public class SdStorageFragment extends BaseFragment {
     public class MouseRelativeOnGenericMotionListener implements View.OnGenericMotionListener {
         @Override
         public boolean onGenericMotion(View v, MotionEvent event) {
-            if (v.getId() != R.id.ll_usb_device){
+            if (v.getId() != R.id.ll_usb_device) {
                 mLastPath = null;
             }
             switch (event.getButtonState()) {
@@ -267,6 +260,9 @@ public class SdStorageFragment extends BaseFragment {
 
     public void primaryClick(View view) {
         currentBackTime = System.currentTimeMillis();
+        if (view.getId() != R.id.mount_grid){
+            mMountView = null;
+        }
         switch (view.getId()) {
             case R.id.rl_android_system:
                 setDiskClickInfo(R.id.rl_android_system, Constants.SYSTEM_SPACE_FRAGMENT, null);
@@ -287,11 +283,12 @@ public class SdStorageFragment extends BaseFragment {
                 mCurId = view.getId();
                 currentBackTime = System.currentTimeMillis();
                 if (currentBackTime - lastBackTime > Constants.DOUBLE_CLICK_INTERVAL_TIME
-                        || mCurrentPath != mLastPath) {
+                        || view != mMountView) {
                     lastBackTime = currentBackTime;
                 } else {
-                    mMainActivity.enter((Volume)view.getTag());
+                    mMainActivity.enter((Volume) view.getTag());
                 }
+                mMountView = view;
                 break;
             default:
                 setSelectedCardBg(Constants.RETURN_TO_WHITE);
@@ -346,7 +343,8 @@ public class SdStorageFragment extends BaseFragment {
                 break;
         }
         if (mCurrentPath != null && mCurId == -1) {
-            enter(Constants.USB_SPACE_FRAGMENT, mCurrentPath);
+            mMainActivity.enter(mCurrentPath);
+            mCurrentPath = null;
         }
     }
 
@@ -455,9 +453,9 @@ public class SdStorageFragment extends BaseFragment {
     }
 
     public void removeUsbView(int position) {
-        usbLists.remove(position);
+        mUsbLists.remove(position);
         mUsbDevices.removeViewAt(position);
-        if (usbLists.size() == 0) {
+        if (mUsbLists.size() == 0) {
             mLlMobileDevice.setVisibility(View.GONE);
         }
     }
@@ -499,7 +497,7 @@ public class SdStorageFragment extends BaseFragment {
                             || mCurrentPath != mLastPath) {
                         lastBackTime = currentBackTime;
                     } else {
-                        enter(Constants.USB_SPACE_FRAGMENT, mCurrentPath);
+                        mMainActivity.enter(mCurrentPath);
                     }
                     mLastPath = mCurrentPath;
                     break;

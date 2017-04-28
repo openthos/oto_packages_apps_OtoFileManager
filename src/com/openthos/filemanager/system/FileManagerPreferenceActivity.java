@@ -79,6 +79,8 @@ public class FileManagerPreferenceActivity extends PreferenceActivity
             primaryFolder = settings.getString(PRIMARY_FOLDER, directorPath);
         } else if (Constants.LEFT_FAVORITES.equals(sdOrSystem)) {
             primaryFolder = directorPath;
+        } else {
+            primaryFolder = directorPath;
         }
 
         if (TextUtils.isEmpty(primaryFolder)) { // setting primary folder = empty("")

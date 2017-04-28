@@ -86,8 +86,6 @@ public class MainActivity extends BaseActivity
     private static final int USB_POPWINDOW_Y = 10;
     private static final int ACTIVITY_MIN_COUNT_FOR_BACK = 3;
     private static final String USB_SPACE_FRAGMENT = "usb_space_fragment";
-    private static final String USB_DEVICE_ATTACHED = "usb_device_attached";
-    private static final String USB_DEVICE_DETACHED = "usb_device_detached";
     private static final String VIEW_TAG = "viewtag";
     private static final String VIEW_TAG_GRID = "grid";
     private static final String VIEW_TAG_LIST = "list";
@@ -172,6 +170,8 @@ public class MainActivity extends BaseActivity
     private ArrayList<Volume> mVolumes = new ArrayList<>();
     private ArrayList<Disk> disks = new ArrayList<>();
     private HashMap<String, SystemSpaceFragment> mMountFragments = new HashMap<>();
+    private ArrayList<String[]> mUsbLists = new ArrayList<>();
+    private HashMap<String, SystemSpaceFragment> mUsbFragments = new HashMap<>();
 
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -193,6 +193,7 @@ public class MainActivity extends BaseActivity
         private boolean isExistsFileManager = false;
         private String id = "";
         private String settingId = "";
+
         @Override
         public void run() {
             super.run();
@@ -379,7 +380,7 @@ public class MainActivity extends BaseActivity
                             break;
                         case Constants.USB_READY:
                             ll_usb.removeAllViews();
-                            for (int i = 0; i < SdStorageFragment.usbLists.size(); i++) {
+                            for (int i = 0; i < mUsbLists.size(); i++) {
                                 ll_usb.addView(getUsbView(i));
                             }
                             if (mProgressDialog != null) {
@@ -454,37 +455,14 @@ public class MainActivity extends BaseActivity
         mCurFragment = mSdStorageFragment;
     }
 
-    private void removeMobileDevice() {
-        if (TextUtils.isEmpty(getCurPath())
-                || (getCurPath() != null
-                     && getCurPath().startsWith(Constants.PERMISS_DIR_STORAGE_USB))) {
-            mManager.beginTransaction().remove(mSdStorageFragment).commit();
-            mManager.beginTransaction().hide(mCurFragment).commit();
-            mSdStorageFragment = new SdStorageFragment(mManager,
-                    USB_DEVICE_DETACHED, MainActivity.this);
-            setSelectedBackground(R.id.tv_computer);
-            mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment)
-                    .show(mSdStorageFragment).commit();
-            mCurFragment = mSdStorageFragment;
-        } else {
-            BaseFragment visibleFragment = (BaseFragment) getVisibleFragment();
-            mManager.beginTransaction().remove(mSdStorageFragment).commit();
-            mSdStorageFragment = new SdStorageFragment(mManager,
-                    USB_DEVICE_DETACHED, MainActivity.this);
-            mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment)
-                    .hide(mSdStorageFragment).commit();
-            mSdStorageFragment.mCurFragment = visibleFragment;
-        }
-    }
-
     private void initUsb(int flags) {
         switch (flags) {
             case Constants.USB_INIT:
                 if (TextUtils.isEmpty(getCurPath())) {
                     mManager.beginTransaction().remove(mSdStorageFragment).commit();
                     mManager.beginTransaction().hide(mCurFragment).commit();
-                    mSdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_ATTACHED,
-                            MainActivity.this);
+                    mSdStorageFragment = new SdStorageFragment(
+                            mManager, mUsbLists, MainActivity.this);
                     setSelectedBackground(R.id.tv_computer);
                     mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment,
                             Constants.SDSTORAGEFRAGMENT_TAG).show(mSdStorageFragment).commit();
@@ -492,8 +470,8 @@ public class MainActivity extends BaseActivity
                 } else {
                     BaseFragment visibleFragment = (BaseFragment) getVisibleFragment();
                     mManager.beginTransaction().remove(mSdStorageFragment).commit();
-                    mSdStorageFragment = new SdStorageFragment(mManager, USB_DEVICE_ATTACHED,
-                            MainActivity.this);
+                    mSdStorageFragment = new SdStorageFragment(
+                            mManager, mUsbLists, MainActivity.this);
                     mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment,
                             Constants.SDSTORAGEFRAGMENT_TAG).hide(mSdStorageFragment).commit();
                     mSdStorageFragment.mCurFragment = visibleFragment;
@@ -518,9 +496,9 @@ public class MainActivity extends BaseActivity
                 break;
             case Constants.USB_EJECT:
                 if (mUsbPath != null) {
-			int position;
-                    for (int i = 0; i < SdStorageFragment.usbLists.size(); i++) {
-                        if (mUsbPath.equals(SdStorageFragment.usbLists.get(i)[0])) {
+                    int position;
+                    for (int i = 0; i < mUsbLists.size(); i++) {
+                        if (mUsbPath.equals(mUsbLists.get(i)[0])) {
                             position = getUsbPosition(mUsbPath);
                             ll_usb.removeViewAt(getUsbPosition(mUsbPath));
                             mSdStorageFragment.removeUsbView(position);
@@ -528,15 +506,15 @@ public class MainActivity extends BaseActivity
                         }
                     }
 
-		    if(mUsbPath.indexOf("/storage/usb") != -1){
-			 for (int i = SdStorageFragment.usbLists.size() - 1; i >= 0; i--) {
-			    if ((SdStorageFragment.usbLists.get(i)[0]).indexOf(mUsbPath + "_") != -1) {
-			    	position = getUsbPosition(SdStorageFragment.usbLists.get(i)[0]);
-				ll_usb.removeViewAt(getUsbPosition(SdStorageFragment.usbLists.get(i)[0]));
-				mSdStorageFragment.removeUsbView(position);
-			    }
-			 }
-		    }
+                    if (mUsbPath.indexOf("/storage/usb") != -1) {
+                        for (int i = mUsbLists.size() - 1; i >= 0; i--) {
+                            if ((mUsbLists.get(i)[0]).indexOf(mUsbPath + "_") != -1) {
+                                position = getUsbPosition(mUsbLists.get(i)[0]);
+                                ll_usb.removeViewAt(getUsbPosition(mUsbLists.get(i)[0]));
+                                mSdStorageFragment.removeUsbView(position);
+                            }
+                        }
+                    }
 
                 }
 
@@ -561,7 +539,7 @@ public class MainActivity extends BaseActivity
         mReceiver = new UsbConnectReceiver(this);
         FragmentTransaction transaction = mManager.beginTransaction();
         if (mSdStorageFragment == null) {
-            mSdStorageFragment = new SdStorageFragment(mManager, null, MainActivity.this);
+            mSdStorageFragment = new SdStorageFragment(mManager, mUsbLists, MainActivity.this);
             transaction.add(R.id.fl_mian, mSdStorageFragment, Constants.SDSTORAGEFRAGMENT_TAG)
                     .hide(mSdStorageFragment);
         }
@@ -633,11 +611,11 @@ public class MainActivity extends BaseActivity
     }
 
     private void getMountData() {
-        String data = getSharedPreferences("automount",Context.MODE_PRIVATE)
-                                                                      .getString("automount","[]");
+        String data = getSharedPreferences("automount", Context.MODE_PRIVATE)
+                                                                      .getString("automount", "[]");
         try {
             JSONArray array = new JSONArray(data);
-            for (int i = 0; i<array.length();i++){
+            for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 Volume v = new Volume();
                 v.setBlock(object.getString("block"));
@@ -862,7 +840,7 @@ public class MainActivity extends BaseActivity
         if ((keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN
              || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
                      && !(mEt_nivagation.isFocused() || mEt_search_view.isFocused())) {
-             return true;
+            return true;
         }
         if (keyCode == KeyEvent.KEYCODE_DEL && !mEt_search_view.hasFocus()
                                                                   && !mEt_nivagation.isFocused()) {
@@ -984,7 +962,7 @@ public class MainActivity extends BaseActivity
                ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.getSelectedFileList();
         StringBuffer stringBuffer = new StringBuffer();
         if (!list.isEmpty()) {
-            for (int i = 0; i < list.size(); i++ ) {
+            for (int i = 0; i < list.size(); i++) {
                 stringBuffer.append(Constants.EXTRA_CROP_FILE_HEADER + list.get(i).filePath);
             }
             ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE))
@@ -1074,7 +1052,7 @@ public class MainActivity extends BaseActivity
                 ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.getSelectedFileList();
         StringBuffer stringBuffer = new StringBuffer();
         if (!list.isEmpty()) {
-            for (int i = 0; i < list.size(); i++ ) {
+            for (int i = 0; i < list.size(); i++) {
                 stringBuffer.append(Constants.EXTRA_FILE_HEADER + list.get(i).filePath);
             }
             ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE))
@@ -1182,9 +1160,9 @@ public class MainActivity extends BaseActivity
     }
 
     public void uninstallUSB(String usbPath) {
-	if(usbPath.indexOf("/storage/usb") != -1 && usbPath.indexOf("_") != -1){
-		usbPath = usbPath.substring(0,13);
-	}
+        if (usbPath.indexOf("/storage/usb") != -1 && usbPath.indexOf("_") != -1) {
+            usbPath = usbPath.substring(0, 13);
+        }
 
         if (mPopUpProgressDialog == null) {
             mPopUpProgressDialog = new ProgressDialog(this);
@@ -1669,7 +1647,7 @@ public class MainActivity extends BaseActivity
             } else {
                 if (mCurFragment instanceof SystemSpaceFragment) {
                     setNavigationPath(displayPath);
-                }else {
+                } else {
                     setNavigationPath(null);
                 }
             }
@@ -1731,7 +1709,7 @@ public class MainActivity extends BaseActivity
                     break;
                 case R.id.pop_usb_info:
                     int usbPosition = getUsbPosition(mUsbPath);
-                    String[] usbs = SdStorageFragment.usbLists.get(usbPosition);
+                    String[] usbs = mUsbLists.get(usbPosition);
                     if (usbs[0] != null && new File(usbs[0]).exists()) {
                         UsbPropertyDialog usbPropertyDialog =
                                 new UsbPropertyDialog(MainActivity.this, usbs);
@@ -1785,7 +1763,7 @@ public class MainActivity extends BaseActivity
         View inflate = View.inflate(this, R.layout.usb_list, null);
         TextView name = (TextView) inflate.findViewById(R.id.usb_list_usb_name);
         ImageView uninstall = (ImageView) inflate.findViewById(R.id.usb_list_uninstall);
-        String usbPath = SdStorageFragment.usbLists.get(position)[0];
+        String usbPath = mUsbLists.get(position)[0];
         name.setText(Util.getUsbName(this, usbPath));
         uninstall.setTag(usbPath);
         inflate.setTag(usbPath);
@@ -1796,7 +1774,7 @@ public class MainActivity extends BaseActivity
     }
 
     private int getUsbPosition(String path) {
-        for (int i = 0; i < SdStorageFragment.usbLists.size(); i++) {
+        for (int i = 0; i < mUsbLists.size(); i++) {
             String viewPath = (String) ll_usb.getChildAt(i).getTag();
             if (path.equals(viewPath)) {
                 return i;
@@ -1938,14 +1916,7 @@ public class MainActivity extends BaseActivity
                             break;
                         case R.id.usb:
                             mUsbPath = (String) view.getTag();
-                            if (mCurFragment != null) {
-                                mManager.beginTransaction().hide(mCurFragment).commit();
-                            }
-                            mUsbStorageFragment = new SystemSpaceFragment(
-                                    Constants.USB_SPACE_FRAGMENT, mUsbPath, null, null, false);
-                            mManager.beginTransaction().add(R.id.fl_mian, mUsbStorageFragment,
-                                    Constants.USBFRAGMENT_TAG).commit();
-                            mCurFragment = mUsbStorageFragment;
+                            enter(mUsbPath);
                             break;
                         case R.id.mount:
                             Volume v = (Volume) view.getTag();
@@ -2048,6 +2019,10 @@ public class MainActivity extends BaseActivity
         return mVolumes;
     }
 
+    public ArrayList<String[]> getUsbLists() {
+        return mUsbLists;
+    }
+
     private void mountVolume(Volume v) {
         String arg = "";
         String command = "";
@@ -2096,6 +2071,28 @@ public class MainActivity extends BaseActivity
         }
         mManager.beginTransaction().show(fragment).commit();
         mCurFragment = fragment;
+    }
+
+    public void enter(String usbPath){
+        mUsbStorageFragment = mUsbFragments.get(usbPath);
+        if (mUsbStorageFragment == null) {
+            mUsbStorageFragment = new SystemSpaceFragment(
+                    usbPath, usbPath, null, null, false);
+            mUsbFragments.put(usbPath, mUsbStorageFragment);
+        }
+        mUsbStorageFragment.setPath(usbPath);
+        setNavigationPath(usbPath);
+        setCurPath(usbPath);
+        if (mCurFragment != null) {
+            mManager.beginTransaction().hide(mCurFragment).commit();
+        }
+        if (!mUsbStorageFragment.isAdded()) {
+            mManager.beginTransaction().add(R.id.fl_mian,
+                    mUsbStorageFragment, usbPath).commit();
+        } else {
+            mManager.beginTransaction().show(mUsbStorageFragment).commit();
+        }
+        mCurFragment = mUsbStorageFragment;
     }
 
     private class MountListener implements View.OnClickListener {
