@@ -169,7 +169,8 @@ public class MainActivity extends BaseActivity
     public int mFragmentIndex = -1;
     private ArrayList<Volume> mVolumes = new ArrayList<>();
     private ArrayList<Disk> disks = new ArrayList<>();
-    private HashMap<String, SystemSpaceFragment> mMountFragments = new HashMap<>();
+    private HashMap<String, SystemSpaceFragment> mMountMap = new HashMap<>();
+    private List<SystemSpaceFragment> mDynamicFragments;
     private ArrayList<String[]> mUsbLists = new ArrayList<>();
     private HashMap<String, SystemSpaceFragment> mUsbFragments = new HashMap<>();
 
@@ -536,6 +537,7 @@ public class MainActivity extends BaseActivity
 
     private void initFragment() {
         mUserOperationFragments = new ArrayList<Fragment>();
+        mDynamicFragments = new ArrayList<>();
         mReceiver = new UsbConnectReceiver(this);
         FragmentTransaction transaction = mManager.beginTransaction();
         if (mSdStorageFragment == null) {
@@ -694,13 +696,15 @@ public class MainActivity extends BaseActivity
             inflate.setOnHoverListener(mHomeLeftOnHoverListener);
             inflate.setOnTouchListener(mHomeLeftOnTouchListener);
             inflate.setTag(v);
-            mMountFragments.put(v.getBlock(), new SystemSpaceFragment(
-                    v.getBlock(), "/storage/disk" + i, null, null, true));
-            mManager.beginTransaction().add(R.id.fl_mian, mMountFragments.get(v.getBlock()),
-                    v.getBlock()).hide(mMountFragments.get(v.getBlock())).commit();
+            SystemSpaceFragment mountFragment = new SystemSpaceFragment(
+                    v.getBlock(), "/storage/disk" + i, null, null, true);
+            mMountMap.put(v.getBlock(), mountFragment);
+            mManager.beginTransaction().add(R.id.fl_mian, mMountMap.get(v.getBlock()),
+                    v.getBlock()).hide(mMountMap.get(v.getBlock())).commit();
             v.setPath("/storage/disk" + i);
             i++;
             llMount.addView(inflate);
+            mDynamicFragments.add(mountFragment);
         }
     }
 
@@ -1260,6 +1264,21 @@ public class MainActivity extends BaseActivity
             case R.id.tv_cloud_service:
                 setSelectView(findViewById(id));
                 break;
+            case R.id.mount:
+                for (int i = 0; i < mDynamicFragments.size(); i++) {
+                    SystemSpaceFragment systemSpaceFragment = mDynamicFragments.get(i);
+                    if (mCurFragment == systemSpaceFragment) {
+                        setSelectView(llMount.getChildAt(i));
+                    }
+                }
+                break;
+            case R.id.usb:
+                for (int i = 0; i < ll_usb.getChildCount(); i++) {
+                    if (mCurFragment.getTag().equals(ll_usb.getChildAt(i).getTag())) {
+                        setSelectView(ll_usb.getChildAt(i));
+                    }
+                }
+                break;
             default:
                 break;
         }
@@ -1477,6 +1496,15 @@ public class MainActivity extends BaseActivity
                     SystemSpaceFragment addressFragment = (SystemSpaceFragment) mCurFragment;
                     if (addressFragment.canGoBack()) {
                         addressFragment.goBack();
+                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        mManager.popBackStack();
+                    } else {
+                        returnToRootDir();
+                    }
+                } else if (mCurFragment.getTag() != null) {
+                    SystemSpaceFragment dynamicfragment = (SystemSpaceFragment) mCurFragment;
+                    if (dynamicfragment.canGoBack()) {
+                        dynamicfragment.goBack();
                     } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
                         mManager.popBackStack();
                     } else {
@@ -2052,10 +2080,11 @@ public class MainActivity extends BaseActivity
         Util.exec(new String[]{"su", "-c", "umount " + v.getPath()});
         v.setIsMount(false);
         mSdStorageFragment.initMountData();
+        mUserOperationFragments.remove(mMountMap.get(v.getBlock()));
     }
 
     public void enter(Volume v) {
-        SystemSpaceFragment fragment = mMountFragments.get(v.getBlock());
+        SystemSpaceFragment fragment = mMountMap.get(v.getBlock());
         fragment.setPath(v.getPath());
         fragment.getFileViewInteractionHub().setRootPath(v.getPath());
         FileListAdapter adapter = fragment.getAdapter();
@@ -2071,9 +2100,15 @@ public class MainActivity extends BaseActivity
         }
         mManager.beginTransaction().show(fragment).commit();
         mCurFragment = fragment;
+        mUserOperationFragments.add(fragment);
+        mFragmentIndex++;
+        mHashMap.put(v.getBlock(), R.id.mount);
+        mIv_back.setImageDrawable(getDrawable(R.mipmap.backward_enable));
+        mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_enable));
+        setSelectedBackground(R.id.mount);
     }
 
-    public void enter(String usbPath){
+    public void enter(String usbPath) {
         mUsbStorageFragment = mUsbFragments.get(usbPath);
         if (mUsbStorageFragment == null) {
             mUsbStorageFragment = new SystemSpaceFragment(
@@ -2093,6 +2128,12 @@ public class MainActivity extends BaseActivity
             mManager.beginTransaction().show(mUsbStorageFragment).commit();
         }
         mCurFragment = mUsbStorageFragment;
+        mUserOperationFragments.add(mUsbStorageFragment);
+        mFragmentIndex++;
+        mHashMap.put(usbPath, R.id.usb);
+        mIv_back.setImageDrawable(getDrawable(R.mipmap.backward_enable));
+        mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_enable));
+        setSelectedBackground(R.id.mount);
     }
 
     private class MountListener implements View.OnClickListener {
