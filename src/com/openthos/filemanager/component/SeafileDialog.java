@@ -199,16 +199,8 @@ public class SeafileDialog extends BaseDialog implements View.OnClickListener {
         Display d = m.getDefaultDisplay();
         int dialogPadding = (int) mMainActivity.getResources().getDimension(
                                                                   R.dimen.left_margrin_text);
-        if (x > (d.getWidth() - mDialogWidth)) {
-            lp.x = x - mDialogWidth + dialogPadding;
-        } else {
-            lp.x = x + dialogPadding;
-        }
-        if (y > (d.getHeight() - mDialogHeight - Constants.BAR_Y)) {
-            lp.y = d.getHeight() - mDialogHeight - Constants.BAR_Y + dialogPadding;
-        } else {
-            lp.y = y + dialogPadding;
-        }
+        lp.x = x - dialogPadding;
+        lp.y = y - dialogPadding;
         dialogWindow.setAttributes(lp);
         if (mMainActivity.isInitSeafile()) {
            Toast.makeText(mMainActivity,

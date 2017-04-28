@@ -65,7 +65,7 @@ public abstract class Constants {
     public static final int OPERATION_UP_LEVEL = 3;
     public static final int SEAFILE_DATA_OK = 6;
 
-    public static final int BAR_Y = 25;
+    //public static final int BAR_Y = 25;
     public static final int RETURN_TO_WHITE = -2;
     public static final int LIMIT_LENGTH = 10;
     public static final int LIMIT_OWNER_READ = 1;

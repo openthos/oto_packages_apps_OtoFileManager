@@ -86,16 +86,8 @@ public class CloudDialog extends Dialog implements View.OnClickListener {
         WindowManager m = ((Activity)mContext ).getWindowManager();
         Display d = m.getDefaultDisplay();
         int dialogPadding = (int) mContext.getResources().getDimension(R.dimen.left_margrin_text);
-        if (x > (d.getWidth() - mDialogWidth)) {
-            lp.x = x - mDialogWidth + dialogPadding;
-        } else {
-            lp.x = x + dialogPadding;
-        }
-        if (y > (d.getHeight() - mDialogHeight - Constants.BAR_Y)) {
-            lp.y = d.getHeight() - mDialogHeight - Constants.BAR_Y + dialogPadding;
-        } else {
-            lp.y = y + dialogPadding;
-        }
+        lp.x = x - dialogPadding;
+        lp.y = y - dialogPadding;
         dialogWindow.setAttributes(lp);
     }
 }
