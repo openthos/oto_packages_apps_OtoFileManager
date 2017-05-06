@@ -6,14 +6,7 @@
 
     <LinearLayout
         android:id="@+id/usb_grid_ll"
-        android:layout_width="@dimen/home_item_length"
-        android:layout_height="wrap_content"
-        android:background="@drawable/sd_page_bg_selector"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="@dimen/home_pic_text"
-        android:paddingTop="10dp"
-        android:paddingBottom="5dp">
+        style="@style/homeItemLinear">
 
         <ImageView
             android:id="@+id/usb_grid_icon"

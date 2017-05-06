@@ -677,17 +677,6 @@ public class MainActivity extends BaseActivity
         mEt_nivagation.setOnFocusChangeListener(new AddressOnFocusChangeListener());
         mAddressListView.setOnTouchListener(mAddressTouchListener);
         initUsb(Constants.USB_INIT);
-        Intent intent = getIntent();
-        String path = intent.getStringExtra(Constants.PATH_TAG);
-        if (path != null) {
-            showSpaceFragment(path);
-            if (path.startsWith(Constants.DESKTOP_PATH)) {
-                setSelectedBackground(R.id.tv_desk);
-            } else if (path.startsWith(Constants.RECYCLE_PATH)) {
-                setSelectedBackground(R.id.tv_recycle);
-            }
-        }
-        setCurPath(path);
         int i = 0;
         for (Volume v : mVolumes) {
             View inflate = View.inflate(this, R.layout.mount_list, null);
@@ -706,6 +695,17 @@ public class MainActivity extends BaseActivity
             llMount.addView(inflate);
             mDynamicFragments.add(mountFragment);
         }
+        Intent intent = getIntent();
+        String path = intent.getStringExtra(Constants.PATH_TAG);
+        if (path != null) {
+            showSpaceFragment(path);
+            if (path.startsWith(Constants.DESKTOP_PATH)) {
+                setSelectedBackground(R.id.tv_desk);
+            } else if (path.startsWith(Constants.RECYCLE_PATH)) {
+                setSelectedBackground(R.id.tv_recycle);
+            }
+        }
+        setCurPath(path);
     }
 
     class NivagationOnClickLinstener implements View.OnClickListener {
