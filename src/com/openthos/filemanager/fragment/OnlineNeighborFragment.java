@@ -40,4 +40,8 @@ public class OnlineNeighborFragment extends BaseFragment{
     @Override
     protected void enter(String tag, String path) {
     }
+
+    @Override
+    public void processDirectionKey(int keyCode) {
+    }
 }

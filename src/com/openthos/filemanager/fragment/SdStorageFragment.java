@@ -510,4 +510,8 @@ public class SdStorageFragment extends BaseFragment {
             return false;
         }
     }
+
+    @Override
+    public void processDirectionKey(int keyCode) {
+    }
 }

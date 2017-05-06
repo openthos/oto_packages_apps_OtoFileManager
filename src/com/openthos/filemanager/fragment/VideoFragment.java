@@ -121,4 +121,8 @@ public class VideoFragment extends BaseFragment implements AdapterView.OnItemCli
     @Override
     protected void enter(String tag, String path) {
     }
+
+    @Override
+    public void processDirectionKey(int keyCode) {
+    }
 }

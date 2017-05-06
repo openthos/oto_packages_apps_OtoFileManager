@@ -844,6 +844,7 @@ public class MainActivity extends BaseActivity
         if ((keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN
              || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
                      && !(mEt_nivagation.isFocused() || mEt_search_view.isFocused())) {
+            ((BaseFragment) mCurFragment).processDirectionKey(keyCode);
             return true;
         }
         if (keyCode == KeyEvent.KEYCODE_DEL && !mEt_search_view.hasFocus()

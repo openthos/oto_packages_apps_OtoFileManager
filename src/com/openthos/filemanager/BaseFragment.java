@@ -114,4 +114,5 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
     protected abstract void initListener();
     protected abstract void initView();
     public abstract int getLayoutId();
+    public abstract void processDirectionKey(int keyCode);
 }

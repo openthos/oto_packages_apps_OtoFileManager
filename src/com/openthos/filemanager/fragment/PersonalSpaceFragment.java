@@ -3,6 +3,7 @@ package com.openthos.filemanager.fragment;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -39,6 +40,7 @@ public class PersonalSpaceFragment extends BaseFragment {
     ArrayList<FileInfo> mFileInfoArrayList = null;
     FileViewInteractionHub.CopyOrMove mCopyOrMove = null;
     private PersonalMenuDialog mPersonalDialog;
+    private int mPos;
 
     @Override
     protected void initData() {
@@ -130,13 +132,13 @@ public class PersonalSpaceFragment extends BaseFragment {
             switch (event.getButtonState()) {
                 case MotionEvent.BUTTON_PRIMARY:
                     if (v.getTag() instanceof PersonalAdapter.ViewHolder) {
-                        int pos = (int) ((PersonalAdapter.ViewHolder) v.getTag()).name.getTag();
-                        if (!integerList.contains(pos)) {
+                        mPos = (int) ((PersonalAdapter.ViewHolder) v.getTag()).name.getTag();
+                        if (!integerList.contains(mPos)) {
                             integerList.clear();
-                            integerList.add(pos);
+                            integerList.add(mPos);
                         }
                         mCurrentBackTime = System.currentTimeMillis();
-                        setDiskClickInfo(Constants.LEFT_FAVORITES, pos);
+                        setDiskClickInfo(Constants.LEFT_FAVORITES, mPos);
                         mPersonalAdaper.notifyDataSetChanged();
                     } else {
                         integerList.clear();
@@ -206,5 +208,28 @@ public class PersonalSpaceFragment extends BaseFragment {
     public void copyPath() {
         ((ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE))
                                              .setText(mPathMap.get(mPersonalList.get(mCurId)));
+    }
+
+    @Override
+    public void processDirectionKey(int keyCode) {
+        int numColumns = mPersonalGrid.getNumColumns();
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+                mPos = mPos > 0 ? mPos - 1 : mPos;
+                break;
+            case KeyEvent.KEYCODE_DPAD_UP:
+                mPos = mPos > numColumns - 1 ? mPos - numColumns : mPos;
+                break;
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                mPos = mPos < mPersonalList.size() - 1 ? mPos + 1 : mPos;
+                break;
+            case KeyEvent.KEYCODE_DPAD_DOWN:
+                mPos = mPos < mPersonalList.size() - numColumns ? mPos + numColumns : mPos;
+                break;
+        }
+        List<Integer> integerList = mPersonalAdaper.getSelectFileInfoList();
+        integerList.clear();
+        integerList.add(mPos);
+        mPersonalAdaper.notifyDataSetChanged();
     }
 }
