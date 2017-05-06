@@ -95,6 +95,8 @@ public abstract class Constants {
     public static final int USB_INIT = 19;
     public static final int USB_READY = 20;
 
+    public static final long LONG_PRESS_TIME = 500;
+
      /**
      *
      * getMIMEType: Get the MIME Types from the file name.

@@ -230,6 +230,30 @@ public class SdStorageFragment extends BaseFragment {
         mAndroidService.setOnGenericMotionListener(mTouchListener);
         mPersonalSpace.setOnGenericMotionListener(mTouchListener);
         mUsbDevices.setOnGenericMotionListener(mTouchListener);
+
+        SdOnTouchListener sdOnTouchListener = new SdOnTouchListener();
+        mAndroidSystem.setOnTouchListener(sdOnTouchListener);
+        mSdSpace.setOnTouchListener(sdOnTouchListener);
+        mAndroidService.setOnTouchListener(sdOnTouchListener);
+        mPersonalSpace.setOnTouchListener(sdOnTouchListener);
+    }
+
+    private class SdOnTouchListener implements View.OnTouchListener {
+        private long lastTime;
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            switch (motionEvent.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    lastTime = System.currentTimeMillis();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if (System.currentTimeMillis() - lastTime > Constants.LONG_PRESS_TIME) {
+                        secondaryClick(view, motionEvent);
+                    }
+                    break;
+            }
+            return true;
+        }
     }
 
     public class MouseRelativeOnGenericMotionListener implements View.OnGenericMotionListener {
@@ -483,12 +507,26 @@ public class SdStorageFragment extends BaseFragment {
     }
 
     private class UsbTouchListener implements View.OnTouchListener {
+        private long lastTime;
+
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             mCurId = -1;
             mCurrentPath = (String) view.getTag();
             mMainActivity.clearNivagateFocus();
             setUnselectAll();
+            switch (motionEvent.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    lastTime = System.currentTimeMillis();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if (System.currentTimeMillis() - lastTime > Constants.LONG_PRESS_TIME) {
+                        view.setSelected(true);
+                        mLastPath = null;
+                        showDiskDialog(view, motionEvent, true);
+                    }
+                    break;
+            }
             switch (motionEvent.getButtonState()) {
                 case MotionEvent.BUTTON_PRIMARY:
                     view.setSelected(true);

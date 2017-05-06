@@ -401,11 +401,13 @@ public class SystemSpaceFragment extends BaseFragment implements
         private boolean isMove;
         private List<Integer> list = new ArrayList<>();
         private FileInfo info;
+        private long lastTime;
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
+                    lastTime = System.currentTimeMillis();
                     mMainActivity.clearNivagateFocus();
                     integerList = mAdapter.getSelectFileInfoList();
                     if ("grid".equals(LocalCache.getViewTag())) {
@@ -490,6 +492,10 @@ public class SystemSpaceFragment extends BaseFragment implements
                     mFrameSelectView.setPositionCoordinate(-1, -1, -1, -1);
                     mFrameSelectView.invalidate();
                     FileInfo fileInfo = null;
+                    if (System.currentTimeMillis() - lastTime >= Constants.LONG_PRESS_TIME
+                                                                                     && !isMove) {
+                        mIsShowDialog = true;
+                    }
                     if (mIsShowDialog == true) {
                         int compressFileState = Constants.COMPRESSIBLE;
                         if (mPos != -1) {
