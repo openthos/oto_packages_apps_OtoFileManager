@@ -190,7 +190,7 @@ public class SystemSpaceFragment extends BaseFragment implements
     public SystemSpaceFragment(String sdSpaceFragment, String directPath,
                                ArrayList<FileInfo> fileInfoList,
                                FileViewInteractionHub.CopyOrMove mCopyOrMove, boolean isLeftItem) {
-        super(sdSpaceFragment,directPath,fileInfoList,mCopyOrMove);
+        super(sdSpaceFragment, directPath, fileInfoList, mCopyOrMove);
         mIsLeftItem = isLeftItem;
     }
 
@@ -365,7 +365,7 @@ public class SystemSpaceFragment extends BaseFragment implements
             int firstVisiblePos = file_path_grid.getFirstVisiblePosition();
             int lastVisiblePos = file_path_grid.getLastVisiblePosition();
             if (mPos < numColumns || (mPos <= size - 1 && mPos >= size - (size % numColumns))) {
-                if (size  > lastVisiblePos - firstVisiblePos + 1) {
+                if (size > lastVisiblePos - firstVisiblePos + 1) {
                     file_path_grid.setSelection(mPos);
                 } else {
                     file_path_grid.smoothScrollToPosition(mPos);
@@ -401,14 +401,20 @@ public class SystemSpaceFragment extends BaseFragment implements
         private boolean isMove;
         private List<Integer> list = new ArrayList<>();
         private FileInfo info;
-        private long lastTime;
+        private long lastTime = -1;
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    lastTime = System.currentTimeMillis();
                     mMainActivity.clearNivagateFocus();
+                    if (motionEvent.getButtonState() == MotionEvent.BUTTON_TERTIARY) {
+                        mMainActivity.onUp();
+                        lastTime = -1;
+                        return false;
+                    } else {
+                        lastTime = System.currentTimeMillis();
+                    }
                     integerList = mAdapter.getSelectFileInfoList();
                     if ("grid".equals(LocalCache.getViewTag())) {
                         calculateFileGridLocation(file_path_grid.getVerticalScrollDistance());
@@ -492,9 +498,10 @@ public class SystemSpaceFragment extends BaseFragment implements
                     mFrameSelectView.setPositionCoordinate(-1, -1, -1, -1);
                     mFrameSelectView.invalidate();
                     FileInfo fileInfo = null;
-                    if (System.currentTimeMillis() - lastTime >= Constants.LONG_PRESS_TIME
-                                                                                     && !isMove) {
+                    if (!isMove && lastTime != -1 &&
+                            System.currentTimeMillis() - lastTime >= Constants.LONG_PRESS_TIME) {
                         mIsShowDialog = true;
+                        lastTime = -1;
                     }
                     if (mIsShowDialog == true) {
                         int compressFileState = Constants.COMPRESSIBLE;
@@ -528,13 +535,13 @@ public class SystemSpaceFragment extends BaseFragment implements
                         ArrayList<FileInfo> selectedFile = mFileViewInteractionHub
                                                                          .getSelectedFileList();
                         if (selectedFile.size() != 0) {
-                           for (FileInfo info : selectedFile) {
-                               mFileViewInteractionHub.setIsProtected(false);
-                               if (!info.canWrite) {
-                                   mFileViewInteractionHub.setIsProtected(true);
-                                   break;
-                               }
-                           }
+                            for (FileInfo info : selectedFile) {
+                                mFileViewInteractionHub.setIsProtected(false);
+                                if (!info.canWrite) {
+                                    mFileViewInteractionHub.setIsProtected(true);
+                                    break;
+                                }
+                            }
                         } else {
                             mFileViewInteractionHub.setIsProtected(
                                 !new File(mFileViewInteractionHub.getCurrentPath()).canWrite());

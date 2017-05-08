@@ -163,6 +163,7 @@ public class PersonalSpaceFragment extends BaseFragment {
                     mPersonalAdaper.notifyDataSetChanged();
                     break;
                 case MotionEvent.BUTTON_TERTIARY:
+                    mMainActivity.onUp();
                     break;
                 case MotionEvent.ACTION_SCROLL:
                     break;

@@ -161,7 +161,7 @@ public class SdStorageFragment extends BaseFragment {
         initMountData();
     }
 
-    private void initUsbData(){
+    private void initUsbData() {
         String[] cmd = {"df"};
         mUsbLists.clear();
         mUsbLists.addAll(Util.execUsb(cmd));
@@ -240,14 +240,20 @@ public class SdStorageFragment extends BaseFragment {
 
     private class SdOnTouchListener implements View.OnTouchListener {
         private long lastTime;
+
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    lastTime = System.currentTimeMillis();
+                    if (motionEvent.getButtonState() == MotionEvent.BUTTON_PRIMARY) {
+                        lastTime = System.currentTimeMillis();
+                    } else {
+                        lastTime = -1;
+                    }
                     break;
                 case MotionEvent.ACTION_UP:
-                    if (System.currentTimeMillis() - lastTime > Constants.LONG_PRESS_TIME) {
+                    if (lastTime != -1 &&
+                            System.currentTimeMillis() - lastTime > Constants.LONG_PRESS_TIME) {
                         secondaryClick(view, motionEvent);
                     }
                     break;
@@ -284,7 +290,7 @@ public class SdStorageFragment extends BaseFragment {
 
     public void primaryClick(View view) {
         currentBackTime = System.currentTimeMillis();
-        if (view.getId() != R.id.mount_grid){
+        if (view.getId() != R.id.mount_grid) {
             mMountView = null;
         }
         switch (view.getId()) {
@@ -507,45 +513,49 @@ public class SdStorageFragment extends BaseFragment {
     }
 
     private class UsbTouchListener implements View.OnTouchListener {
-        private long lastTime;
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             mCurId = -1;
             mCurrentPath = (String) view.getTag();
             mMainActivity.clearNivagateFocus();
-            setUnselectAll();
+            if (!view.isSelected()) {
+                setUnselectAll();
+                view.setSelected(true);
+            }
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    lastTime = System.currentTimeMillis();
+                    switch (motionEvent.getButtonState()) {
+                        case MotionEvent.BUTTON_PRIMARY:
+                            currentBackTime = System.currentTimeMillis();
+                            if (currentBackTime - lastBackTime > Constants.DOUBLE_CLICK_INTERVAL_TIME
+                                    || mCurrentPath != mLastPath) {
+                                lastBackTime = currentBackTime;
+                            } else {
+                                mMainActivity.enter(mCurrentPath);
+                            }
+                            mLastPath = mCurrentPath;
+                            break;
+                        case MotionEvent.BUTTON_SECONDARY:
+                            lastBackTime = -1;
+                            mLastPath = null;
+                            showDiskDialog(view, motionEvent, true);
+                            break;
+                        default:
+                            lastBackTime = -1;
+                            break;
+                    }
                     break;
                 case MotionEvent.ACTION_UP:
-                    if (System.currentTimeMillis() - lastTime > Constants.LONG_PRESS_TIME) {
-                        view.setSelected(true);
+                    if (lastBackTime != -1 &&
+                            System.currentTimeMillis() - lastBackTime > Constants.LONG_PRESS_TIME) {
                         mLastPath = null;
                         showDiskDialog(view, motionEvent, true);
+                        lastBackTime = -1;
                     }
                     break;
             }
-            switch (motionEvent.getButtonState()) {
-                case MotionEvent.BUTTON_PRIMARY:
-                    view.setSelected(true);
-                    currentBackTime = System.currentTimeMillis();
-                    if (currentBackTime - lastBackTime > Constants.DOUBLE_CLICK_INTERVAL_TIME
-                            || mCurrentPath != mLastPath) {
-                        lastBackTime = currentBackTime;
-                    } else {
-                        mMainActivity.enter(mCurrentPath);
-                    }
-                    mLastPath = mCurrentPath;
-                    break;
-                case MotionEvent.BUTTON_SECONDARY:
-                    view.setSelected(true);
-                    mLastPath = null;
-                    showDiskDialog(view, motionEvent, true);
-                    break;
-            }
-            return false;
+            return true;
         }
     }
 
