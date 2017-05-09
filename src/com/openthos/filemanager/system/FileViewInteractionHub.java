@@ -904,8 +904,16 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         if (file == null) {
             return;
         }
-        CompressDialog compressDialog = new CompressDialog(mContext, file.filePath);
-        compressDialog.showDialog();
+        String path = "";
+        for (FileInfo info : getSelectedFileList()) {
+            path += Intent.EXTRA_DELETE_FILE_HEADER + info.filePath;
+        }
+        //CompressDialog compressDialog = new CompressDialog(mContext, file.filePath);
+        //compressDialog.showDialog();
+        Intent intent = new Intent(Constants.COMPRESS_FILES);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(Constants.COMPRESS_PATH_TAG, path);
+        mContext.startActivity(intent);
     }
 
     public void onOperationDecompress() {
@@ -916,7 +924,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         if (file == null) {
             return;
         }
-        String[] files = FileOperationHelper.list(file.filePath);
+        /*String[] files = FileOperationHelper.list(file.filePath);
         for (String s : files) {
             for (FileInfo info : ((SystemSpaceFragment) mFileViewListener).getAllFiles()) {
                 if (info.fileName.equals(s)) {
@@ -943,14 +951,18 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
                     return;
                 }
             }
-        }
-        new Thread() {
+        }*/
+        Intent intent = new Intent(Constants.DECOMPRESS_FILE);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(Constants.COMPRESS_PATH_TAG, file.filePath);
+        mContext.startActivity(intent);
+        /*new Thread() {
             @Override
             public void run() {
                 super.run();
                 FileOperationHelper.decompress(file.filePath);
             }
-        }.start();
+        }.start();*/
     }
 
     public void onOperationButtonCancel() {

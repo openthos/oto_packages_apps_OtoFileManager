@@ -47,6 +47,7 @@
         <item>@string/operation_move</item>
         <item>@string/operation_delete</item>
         <item>@string/operation_delete_permanent</item>
+        <item>@string/operation_compress</item>
     </string-array>
     <string-array name="protected_multi_chosen_menu">
         <item>@string/hint_no_permission</item>

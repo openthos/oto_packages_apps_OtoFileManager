@@ -56,6 +56,10 @@ public abstract class Constants {
     public static final String BAIDU_PAN_PATH = Constants.ROOT_PATH + "BaiduNetdisk";
     public static final String PERMISS_DIR_STORAGE_USB = "/storage/usb";
     public static final String PERMISS_DIR_SEAFILE = "/data/sea/data";
+
+    public static final String COMPRESS_FILES = "com.openthos.compress.compress";
+    public static final String DECOMPRESS_FILE = "com.openthos.compress.decompress";
+    public static final String COMPRESS_PATH_TAG = "paths";
     // Menu id
     public static final int MENU_SHOWHIDE = 117;
     public static final int OPERATION_UP_LEVEL = 3;
@@ -579,6 +583,7 @@ public abstract class Constants {
     public static final String SUFFIX_TAR = ".tar";
     public static final String SUFFIX_ZIP = ".zip";
     public static final String SUFFIX_RAR = ".rar";
+    public static final String SUFFIX_7z = ".7z";
     public static final String SUFFIX_TAR_GZIP = ".gz";
     public static final String SUFFIX_TAR_BZIP2 = ".bz2";
 
