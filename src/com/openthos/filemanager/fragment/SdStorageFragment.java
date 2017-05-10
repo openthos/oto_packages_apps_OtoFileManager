@@ -41,6 +41,7 @@ public class SdStorageFragment extends BaseFragment {
     private LinearLayout mPersonalSpace;
     private TextView mSystemTotal;
     private TextView mSystemAvail;
+    private LinearLayout mSdInfo;
     private ProgressBar mPbSystem;
     private TextView mSdTotal;
     private TextView mSdAvail;
@@ -95,7 +96,8 @@ public class SdStorageFragment extends BaseFragment {
         mSystemAvail = (TextView) rootView.findViewById(R.id.tv_system_avail);
         mSdTotal = (TextView) rootView.findViewById(R.id.tv_sd_total);
         mSdAvail = (TextView) rootView.findViewById(R.id.tv_sd_avail);
-
+        mSdInfo = (LinearLayout) rootView.findViewById(R.id.tv_sd_info);
+        mSdInfo.setVisibility(View.GONE);
         mPbSystem = (ProgressBar) rootView.findViewById(R.id.pb_system);
         mPbSd = (ProgressBar) rootView.findViewById(R.id.pb_sd);
         mUsbDevices = ((LinearLayout) rootView.findViewById(R.id.ll_usb_device));
@@ -112,17 +114,15 @@ public class SdStorageFragment extends BaseFragment {
 
     private void setVolumSize() {
         Util.SystemInfo systemInfo = Util.getRomMemory();
+        Util.SDCardInfo sdCardInfo = Util.getSDCardInfo();
         if (null != systemInfo) {
-            mSystemTotal.setText(Util.convertStorage(systemInfo.romMemory));
-            mSystemAvail.setText(Util.convertStorage(systemInfo.avilMemory));
-//            L.e("tv_system_total", Util.convertStorage(systemInfo.romMemory).substring(0, 3));
-//            L.e("tv_system_avail", Util.convertStorage(systemInfo.avilMemory).substring(0, 3));
-            mPbSystem.setMax((int) Double.parseDouble(Util.convertStorage(systemInfo.romMemory)
-                    .substring(0, 3)) * 10);
-            mPbSystem.setSecondaryProgress
-                    ((int) (Double.parseDouble
-                            (Util.convertStorage(systemInfo.romMemory - systemInfo.avilMemory)
-                                    .substring(0, 3)) * 10));
+            mSystemTotal.setText(Util.convertStorage(sdCardInfo.total));
+            mSystemAvail.setText(Util.convertStorage(sdCardInfo.free));
+            mPbSystem.setMax((int) Double.parseDouble
+                    (Util.convertStorage(sdCardInfo.total).substring(0, 3)) * 10);
+            mPbSystem.setProgress((int) (Double.parseDouble
+                    (Util.convertStorage(sdCardInfo.total - sdCardInfo.free)
+                            .substring(0, 3)) * 10));
         }
         showSdcardInfo();
     }
@@ -151,6 +151,9 @@ public class SdStorageFragment extends BaseFragment {
             mPbSd.setProgress((int) (Double.parseDouble
                     (Util.convertStorage(sdCardInfo.total - sdCardInfo.free)
                             .substring(0, 3)) * 10));
+            mSdTotal.setVisibility(View.GONE);
+            mSdAvail.setVisibility(View.GONE);
+            mPbSd.setVisibility(View.GONE);
         }
     }
 

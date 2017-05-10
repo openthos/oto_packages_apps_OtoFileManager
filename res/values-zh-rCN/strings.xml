@@ -31,7 +31,7 @@
     <string name="operation_hide_sys">隐藏点文件和隐藏文件</string>
     <string name="cancel">取消</string>
     <string name="no_file">没有文件</string>
-    <string name="tab_system_category">安卓系统</string>
+    <string name="tab_system_category">用户数据</string>
     <string name="tab_sd_category">磁盘存储</string>
     <string name="tab_usb_category">移动磁盘</string>
     <string name="tab_yun_category">云盘</string>
@@ -138,10 +138,10 @@
     <string name="left_local_up">本机</string>
     <string name="left_net_up">网络</string>
     <string name="text_local_storage">本机存储</string>
-    <string name="text_android">安卓系统</string>
+    <string name="text_android">用户数据</string>
     <string name="text_size">大小：</string>
     <string name="text_available">可用：</string>
-    <string name="text_disk_storage">磁盘存储</string>
+    <string name="text_disk_storage">我的计算机</string>
     <string name="text_mobile_device">移动设备</string>
     <string name="text_fast_access">快速访问</string>
     <string name="text_removable_disk">可移动磁盘</string>
