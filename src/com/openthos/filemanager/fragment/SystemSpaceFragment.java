@@ -363,7 +363,8 @@ public class SystemSpaceFragment extends BaseFragment implements
                 break;
             case KeyEvent.KEYCODE_DPAD_DOWN:
                 if (isGrid) {
-                    mPos = mPos < size - numColumns ? mPos + numColumns : mPos;
+                    mPos = mPos < size - numColumns ?
+                           mPos + numColumns : mPos < size - size % numColumns ? size - 1 : mPos;
                 } else {
                     mPos = mPos < size - 1? mPos + 1 : mPos;
                 }
