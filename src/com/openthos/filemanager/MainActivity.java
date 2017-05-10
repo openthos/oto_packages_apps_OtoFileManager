@@ -739,7 +739,6 @@ public class MainActivity extends BaseActivity
     }
 
     private void showSpaceFragment(String path) {
-        FragmentTransaction transaction = mManager.beginTransaction();
         if (TextUtils.isEmpty(path)) {
             return;
         }
@@ -750,14 +749,15 @@ public class MainActivity extends BaseActivity
         }
         File file = new File(path);
         if (file.exists()) {
+            FragmentTransaction transaction = mManager.beginTransaction();
             transaction.hide(mCurFragment);
             mAddressFragment = new SystemSpaceFragment(
                                    Constants.LEFT_FAVORITES, path, null, null, false);
             transaction.add(R.id.fl_mian, mAddressFragment, Constants.ADDRESSFRAGMENT_TAG);
             //transaction.show(mAddressFragment).addToBackStack(null).commit();
             transaction.show(mAddressFragment).commit();
-            mCurFragment = mAddressFragment;
             setFileInfo(R.id.et_nivagation, path, mAddressFragment);
+            mHashMap.put(Constants.ADDRESSFRAGMENT_TAG, R.id.tv_computer);
         } else {
             Toast.makeText(this, "" + getResources().getString(R.string.address_search_false),
                     Toast.LENGTH_SHORT).show();
@@ -1529,7 +1529,14 @@ public class MainActivity extends BaseActivity
                 return fragment;
             }
         }
-        return null;
+        String path = mEt_nivagation.getText().toString();
+        for (int i = 0; i < path.length(); i++) {
+            if (path.charAt(i) != ' ') {
+                showSpaceFragment(path.substring(i, path.length()));
+                break;
+            }
+        }
+        return getVisibleFragment();
     }
 
     private void returnToSearchFragment() {
