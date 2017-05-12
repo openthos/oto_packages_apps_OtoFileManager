@@ -2173,6 +2173,15 @@ public class MainActivity extends BaseActivity
                     usbPath, usbPath, null, null, false);
             mUsbFragments.put(usbPath, mUsbStorageFragment);
         }
+        if (mUsbStorageFragment.getFileViewInteractionHub() != null) {
+            mUsbStorageFragment.getFileViewInteractionHub().setRootPath(usbPath);
+            FileListAdapter adapter = mUsbStorageFragment.getAdapter();
+            if (adapter != null) {
+                adapter.getSelectFileInfoList().clear();
+                mUsbStorageFragment.getFileViewInteractionHub().clearSelection();
+                mUsbStorageFragment.onRefreshFileList(usbPath, getFileSortHelper());
+            }
+        }
         mUsbStorageFragment.setPath(usbPath);
         setNavigationPath(usbPath);
         setCurPath(usbPath);
