@@ -78,6 +78,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.android.internal.os.storage.ExternalStorageFormatter;
+import com.android.internal.os.storage.ExternalStorageMountter;
+import android.os.storage.StorageVolume;
+import android.os.RemoteException;
+
 public class MainActivity extends BaseActivity
                  implements View.OnClickListener {
     private static final int POPWINDOW_X = -15;
@@ -610,6 +615,16 @@ public class MainActivity extends BaseActivity
         mPathAdapter = new PathAdapter(this, mPathList, mAddressTouchListener);
         mAddressListView.setAdapter(mPathAdapter);
         getMountData();
+
+        try {
+        StorageVolume[] vols = getMountService().getVolumeList();
+        StorageVolume vol= null;
+        for (StorageVolume i : vols) {
+            android.util.Log.i("wwwwwww", i.toString());
+        }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     private void getMountData() {
@@ -1165,19 +1180,36 @@ public class MainActivity extends BaseActivity
     }
 
     public void uninstallUSB(String usbPath) {
-        if (usbPath.indexOf("/storage/usb") != -1 && usbPath.indexOf("_") != -1) {
-            usbPath = usbPath.substring(0, 13);
+        try {
+            Intent umountIntent = new Intent(ExternalStorageMountter.UMOUNT_ONLY);
+            umountIntent.setComponent(ExternalStorageMountter.COMPONENT_NAME);
+            StorageVolume[] vols = getMountService().getVolumeList();
+            StorageVolume vol= null;
+            for (StorageVolume i : vols) {
+                if (i.getPath().equals(mUsbPath)) {
+                    vol = i;
+                    break;
+                }
+            }
+            if (vol != null) {
+                umountIntent.putExtra(StorageVolume.EXTRA_STORAGE_VOLUME, vol);
+                startService(umountIntent);
+            }
+        } catch (RemoteException e) {
         }
+        //if (usbPath.indexOf("/storage/usb") != -1 && usbPath.indexOf("_") != -1) {
+        //    usbPath = usbPath.substring(0, 13);
+        //}
 
-        if (mPopUpProgressDialog == null) {
-            mPopUpProgressDialog = new ProgressDialog(this);
-        }
-        mPopUpProgressDialog.setMessage(getString(R.string.USB_umounting));
-        mPopUpProgressDialog.setIndeterminate(true);
-        mPopUpProgressDialog.setCancelable(true);
-        mPopUpProgressDialog.setCanceledOnTouchOutside(true);
-        mPopUpProgressDialog.show();
-        mUsbSingleExecutor.execute(new UninstallUsbThread(usbPath));
+        //if (mPopUpProgressDialog == null) {
+        //    mPopUpProgressDialog = new ProgressDialog(this);
+        //}
+        //mPopUpProgressDialog.setMessage(getString(R.string.USB_umounting));
+        //mPopUpProgressDialog.setIndeterminate(true);
+        //mPopUpProgressDialog.setCancelable(true);
+        //mPopUpProgressDialog.setCanceledOnTouchOutside(true);
+        //mPopUpProgressDialog.show();
+        //mUsbSingleExecutor.execute(new UninstallUsbThread(usbPath));
     }
 
     private class UninstallUsbThread implements Runnable {
@@ -1738,10 +1770,6 @@ public class MainActivity extends BaseActivity
             switch (view.getId()) {
                 case R.id.pop_usb_view:
                     uninstallUSB(mUsbPath);
-                    Intent intent = new Intent();
-                    intent.setAction("com.switchmenu");
-                    intent.putExtra("pop_menu", "view_or_dismiss");
-                    sendBroadcast(intent);
                     break;
                 case R.id.pop_usb_info:
                     int usbPosition = getUsbPosition(mUsbPath);
@@ -1752,7 +1780,29 @@ public class MainActivity extends BaseActivity
                         usbPropertyDialog.showDialog();
                     }
                     break;
+                case R.id.pop_usb_format:
+                    formatVolume();
             }
+        }
+    }
+
+    public void formatVolume(){
+        try {
+            Intent formatIntent = new Intent(ExternalStorageFormatter.FORMAT_ONLY);
+            formatIntent.setComponent(ExternalStorageFormatter.COMPONENT_NAME);
+            StorageVolume[] vols = getMountService().getVolumeList();
+            StorageVolume vol= null;
+            for (StorageVolume i : vols) {
+                if (i.getPath().equals(mUsbPath)) {
+                    vol = i;
+                    break;
+                }
+            }
+            if (vol != null) {
+                formatIntent.putExtra(StorageVolume.EXTRA_STORAGE_VOLUME, vol);
+                startService(formatIntent);
+            }
+        } catch (RemoteException e) {
         }
     }
 

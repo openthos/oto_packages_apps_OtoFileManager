@@ -42,7 +42,7 @@ public abstract class Constants {
     public static final String KEY_SHOW_CATEGORY = "key_show_category";
     public static final String INTENT_EXTRA_TAB = "TAB";
     public static final String ROOT_PATH = "/storage/emulated/0/";
-    public static final String SD_PATH = "/storage/";
+    public static final String SD_PATH = "/";
     public static final String DESKTOP_PATH = ROOT_PATH + "Desktop";
     public static final String MUSIC_PATH = ROOT_PATH + "Music";
     public static final String VIDEOS_PATH = ROOT_PATH + "Movies";

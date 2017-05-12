@@ -302,7 +302,7 @@ public class SdStorageFragment extends BaseFragment {
                 break;
             case R.id.rl_sd_space:
                 setDiskClickInfo(R.id.rl_sd_space, Constants.SD_SPACE_FRAGMENT,
-                                 Constants.SD_PATH);
+                                 Constants.SD_PATH+"storage/");
                 break;
             case R.id.rl_android_service:
                 setDiskClickInfo(R.id.rl_android_service, Constants.YUN_SPACE_FRAGMENT, null);

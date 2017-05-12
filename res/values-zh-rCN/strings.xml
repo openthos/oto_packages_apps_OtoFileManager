@@ -267,4 +267,5 @@
     <string name="automount">本地磁盘</string>
     <string name="automount_mount">挂载</string>
     <string name="automount_umount">卸载</string>
+    <string name="format_usb_device">格式化USB设备</string>
 </resources>

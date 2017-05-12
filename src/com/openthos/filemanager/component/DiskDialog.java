@@ -66,7 +66,8 @@ public class DiskDialog extends BaseDialog
 
         String[] uDiskMeun = new String[] {
                 mContext.getString(R.string.operation_open),
-                mContext.getString(R.string.umount)
+                mContext.getString(R.string.umount),
+                mContext.getString(R.string.format_usb_device)
         };
 
         mData = new ArrayList();
@@ -124,6 +125,8 @@ public class DiskDialog extends BaseDialog
                                            mContext).getVisibleFragment())).uninstallUSB();
         } else if (mContext.getString(R.string.operation_open).equals(content)) {
             ((SdStorageFragment) (((MainActivity) mContext).getVisibleFragment())).enter();
+        } else if (mContext.getString(R.string.format_usb_device).equals(content)) {
+            ((MainActivity) mContext).formatVolume();
         }
         dismiss();
     }
