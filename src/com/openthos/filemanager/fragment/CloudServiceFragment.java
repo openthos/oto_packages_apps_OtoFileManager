@@ -132,4 +132,8 @@ public class CloudServiceFragment extends BaseFragment implements AdapterView.On
     @Override
     public void processDirectionKey(int keyCode) {
     }
+
+    @Override
+    public void showMenu() {
+    }
 }

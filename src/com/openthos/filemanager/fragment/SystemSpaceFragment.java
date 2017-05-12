@@ -75,6 +75,14 @@ public class SystemSpaceFragment extends BaseFragment implements
     private boolean isShow = false;
     private boolean mIsLeftItem;
 
+    private boolean mIsShowDialog = false;
+    private boolean mIsItem = false;
+    private boolean mIsMove;
+    private MotionEvent mEvent;
+    private boolean mIsLongPress;
+    // Selected files list
+    private List<Integer> mIntegerList = new ArrayList<>();
+
     // memorize the scroll positions of previous paths
     private ArrayList<PathScrollPositionItem> mScrollPositionList = new ArrayList<>();
     private String mPreviousPath;
@@ -392,13 +400,61 @@ public class SystemSpaceFragment extends BaseFragment implements
         mAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void showMenu() {
+        FileInfo fileInfo = null;
+        int compressFileState = Constants.COMPRESSIBLE;
+        if (mPos != -1) {
+            mShiftPos = mPos;
+            fileInfo = mAdapter.getFileInfoList().get(mPos);
+            if (!mFileViewInteractionHub.getSelectedFileList().contains(fileInfo)) {
+                fileInfo.Selected = true;
+                mIntegerList.clear();
+                mFileViewInteractionHub.clearSelection();
+                mIntegerList.add(mPos);
+                mFileViewInteractionHub.addDialogSelectedItem(fileInfo);
+            }
+        } else {
+            mIntegerList.clear();
+            mFileViewInteractionHub.clearSelection();
+        }
+        if (mIsItem) {
+            boolean isDirectory = true;
+            if (fileInfo != null) {
+                File file = new File(fileInfo.filePath);
+                isDirectory = file.isDirectory() ? true : false;
+                compressFileState = Util.getCompressFileState(fileInfo.filePath);
+            }
+            mFileViewInteractionHub.setIsBlank(false);
+            mFileViewInteractionHub.setIsDirectory(isDirectory);
+        } else {
+            mFileViewInteractionHub.setIsBlank(true);
+            mFileViewInteractionHub.setIsDirectory(true);
+        }
+        ArrayList<FileInfo> selectedFile = mFileViewInteractionHub.getSelectedFileList();
+        if (selectedFile.size() != 0) {
+            for (FileInfo info : selectedFile) {
+                mFileViewInteractionHub.setIsProtected(false);
+                if (!info.canWrite) {
+                    mFileViewInteractionHub.setIsProtected(true);
+                    break;
+                }
+            }
+        } else {
+            mFileViewInteractionHub.setIsProtected(
+                !new File(mFileViewInteractionHub.getCurrentPath()).canWrite());
+        }
+        mFileViewInteractionHub.setCompressFileState(compressFileState);
+        mFileViewInteractionHub.showContextDialog(mFileViewInteractionHub, mEvent);
+        mIsMove = false;
+        mIsShowDialog = false;
+        mIsLongPress = true;
+        mAdapter.notifyDataSetChanged();
+    }
+
     public class ViewOnGenericMotionListener implements View.OnTouchListener {
-        private boolean mIsShowDialog = false;
-        private boolean mIsItem = false;
-        private List<Integer> integerList = new ArrayList<>();
         private float mDownX = -1;
         private float mDownY, mMoveX, mMoveY;
-        private boolean isMove;
         private List<Integer> list = new ArrayList<>();
         private FileInfo info;
         private long lastTime = -1;
@@ -408,6 +464,13 @@ public class SystemSpaceFragment extends BaseFragment implements
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     mMainActivity.clearNivagateFocus();
+                    mIntegerList = mAdapter.getSelectFileInfoList();
+                    mEvent = motionEvent;
+                    if (motionEvent.getButtonState() == MotionEvent.BUTTON_PRIMARY) {
+                        mMainActivity.mHandler.postDelayed(mMainActivity.mLongPressRunnable,
+                                                           Constants.LONG_PRESS_TIME);
+                        mIsLongPress = false;
+                    }
                     if (motionEvent.getButtonState() == MotionEvent.BUTTON_TERTIARY) {
                         mMainActivity.onUp();
                         lastTime = -1;
@@ -415,7 +478,6 @@ public class SystemSpaceFragment extends BaseFragment implements
                     } else {
                         lastTime = System.currentTimeMillis();
                     }
-                    integerList = mAdapter.getSelectFileInfoList();
                     if ("grid".equals(LocalCache.getViewTag())) {
                         calculateFileGridLocation(file_path_grid.getVerticalScrollDistance());
                     } else {
@@ -446,9 +508,11 @@ public class SystemSpaceFragment extends BaseFragment implements
                                         Constants.DOUBLE_TAG, motionEvent, fileInfo);
                                 mPos = -1;
                                 mLastClickId = -1;
-                                integerList.clear();
+                                mIntegerList.clear();
                                 mFileViewInteractionHub.clearSelection();
                             }
+                            mMainActivity.mHandler.removeCallbacks(
+                                 mMainActivity.mLongPressRunnable);
                         } else {
                             mLastClickTime = System.currentTimeMillis();
                             mLastClickId = mPos;
@@ -459,16 +523,21 @@ public class SystemSpaceFragment extends BaseFragment implements
                             mDownX = motionEvent.getX();
                             mDownY = motionEvent.getY();
                         }
+                        mIsItem = false;
                         mPos = -1;
                     }
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    if ((mIsShowDialog == true || MainActivity.getCtrlState()
-                            || MainActivity.getShiftState()) && !isMove) {
+                    if (!mIsLongPress) {
+                        mMainActivity.mHandler.removeCallbacks(mMainActivity.mLongPressRunnable);
+                        lastTime = -1;
+                    }
+                    if ((mIsShowDialog || mIsLongPress || MainActivity.getCtrlState()
+                            || MainActivity.getShiftState()) && !mIsMove) {
                         return true;
                     }
                     if (mDownX != -1 && !mIsItem) {
-                        isMove = true;
+                        mIsMove = true;
                         mMoveX = motionEvent.getX();
                         mMoveY = motionEvent.getY();
                         mFrameSelectView.setPositionCoordinate(
@@ -478,78 +547,32 @@ public class SystemSpaceFragment extends BaseFragment implements
                                 mDownY > mMoveY ? mDownY : mMoveY);
                         mFrameSelectView.invalidate();
                         int i;
-                        integerList.clear();
+                        mIntegerList.clear();
                         for (i = 0; i < mFileListInfo.size(); i++) {
                             info = mFileListInfo.get(i);
                             if (frameSelectionJudge(info, mDownX, mDownY, mMoveX, mMoveY)) {
                                 info.Selected = true;
-                                integerList.add(i);
+                                mIntegerList.add(i);
                             }
                         }
-                        if (!(list.containsAll(integerList)
-                                && list.size() == integerList.size())) {
+                        if (!(list.containsAll(mIntegerList)
+                                && list.size() == mIntegerList.size())) {
                             mAdapter.notifyDataSetChanged();
                         }
                         list.clear();
-                        list.addAll(integerList);
+                        list.addAll(mIntegerList);
                     }
                     return true;
                 case MotionEvent.ACTION_UP:
                     mFrameSelectView.setPositionCoordinate(-1, -1, -1, -1);
                     mFrameSelectView.invalidate();
                     FileInfo fileInfo = null;
-                    if (!isMove && lastTime != -1 &&
-                            System.currentTimeMillis() - lastTime >= Constants.LONG_PRESS_TIME) {
-                        mIsShowDialog = true;
+                    if (!mIsLongPress) {
+                        mMainActivity.mHandler.removeCallbacks(mMainActivity.mLongPressRunnable);
                         lastTime = -1;
                     }
-                    if (mIsShowDialog == true) {
-                        int compressFileState = Constants.COMPRESSIBLE;
-                        if (mPos != -1) {
-                            mShiftPos = mPos;
-                            fileInfo = mAdapter.getFileInfoList().get(mPos);
-                            if (!mFileViewInteractionHub.getSelectedFileList().contains(fileInfo)) {
-                                fileInfo.Selected = true;
-                                integerList.clear();
-                                mFileViewInteractionHub.clearSelection();
-                                integerList.add(mPos);
-                                mFileViewInteractionHub.addDialogSelectedItem(fileInfo);
-                            }
-                        } else {
-                            integerList.clear();
-                            mFileViewInteractionHub.clearSelection();
-                        }
-                        if (mIsItem) {
-                            boolean isDirectory = true;
-                            if (fileInfo != null) {
-                                File file = new File(fileInfo.filePath);
-                                isDirectory = file.isDirectory() ? true : false;
-                                compressFileState = Util.getCompressFileState(fileInfo.filePath);
-                            }
-                            mFileViewInteractionHub.setIsBlank(false);
-                            mFileViewInteractionHub.setIsDirectory(isDirectory);
-                        } else {
-                            mFileViewInteractionHub.setIsBlank(true);
-                            mFileViewInteractionHub.setIsDirectory(true);
-                        }
-                        ArrayList<FileInfo> selectedFile = mFileViewInteractionHub
-                                                                         .getSelectedFileList();
-                        if (selectedFile.size() != 0) {
-                            for (FileInfo info : selectedFile) {
-                                mFileViewInteractionHub.setIsProtected(false);
-                                if (!info.canWrite) {
-                                    mFileViewInteractionHub.setIsProtected(true);
-                                    break;
-                                }
-                            }
-                        } else {
-                            mFileViewInteractionHub.setIsProtected(
-                                !new File(mFileViewInteractionHub.getCurrentPath()).canWrite());
-                        }
-                        mFileViewInteractionHub.setCompressFileState(compressFileState);
-                        mFileViewInteractionHub.showContextDialog(mFileViewInteractionHub,
-                                motionEvent);
-                        mIsShowDialog = false;
+                    if (mIsShowDialog) {
+                        showMenu();
                     } else {
                         if (mPos != -1) {
                             fileInfo = mAdapter.getFileInfoList().get(mPos);
@@ -558,8 +581,8 @@ public class SystemSpaceFragment extends BaseFragment implements
                                 if (mShiftPos == -1) {
                                     mShiftPos = mPos;
                                 }
-                                integerList.clear();
-                                integerList.add(mPos);
+                                mIntegerList.clear();
+                                mIntegerList.add(mPos);
                                 mFileViewInteractionHub.clearSelection();
                                 mFileViewInteractionHub.addDialogSelectedItem(fileInfo);
                                 if (mShiftPos != mPos) {
@@ -567,37 +590,37 @@ public class SystemSpaceFragment extends BaseFragment implements
                                         fileInfo = mAdapter.getFileInfoList().get(i);
                                         fileInfo.Selected = true;
                                         if (i != mPos) {
-                                            integerList.add(i);
+                                            mIntegerList.add(i);
                                             mFileViewInteractionHub.addDialogSelectedItem(fileInfo);
                                         }
                                     }
                                 }
                             } else if (MainActivity.getCtrlState()) {
                                 mShiftPos = mPos;
-                                if (!integerList.contains(mPos)) {
-                                    integerList.add(mPos);
+                                if (!mIntegerList.contains(mPos)) {
+                                    mIntegerList.add(mPos);
                                     mFileViewInteractionHub.addDialogSelectedItem(fileInfo);
                                 } else {
-                                    integerList.remove(new Integer(mPos));
+                                    mIntegerList.remove(new Integer(mPos));
                                     mFileViewInteractionHub.removeDialogSelectedItem(fileInfo);
                                 }
-                            } else if (!integerList.contains(mPos) || integerList.size() > 1) {
+                            } else if (!mIntegerList.contains(mPos) || mIntegerList.size() > 1) {
                                 mShiftPos = mPos;
-                                integerList.clear();
-                                integerList.add(mPos);
+                                mIntegerList.clear();
+                                mIntegerList.add(mPos);
                                 mFileViewInteractionHub.clearSelection();
                                 mFileViewInteractionHub.addDialogSelectedItem(fileInfo);
                             }
                         } else {
                             if (!MainActivity.getCtrlState() && !MainActivity.getShiftState()) {
-                                integerList.clear();
+                                mIntegerList.clear();
                                 mFileViewInteractionHub.clearSelection();
                                 mShiftPos = -1;
                             }
                         }
                     }
-                    if (isMove) {
-                        isMove = false;
+                    if (mIsMove) {
+                        mIsMove = false;
                         float upX = motionEvent.getX();
                         float upY = motionEvent.getY();
                         FileInfo info;
@@ -605,11 +628,11 @@ public class SystemSpaceFragment extends BaseFragment implements
                             info = mFileListInfo.get(i);
                             if (frameSelectionJudge(info, mDownX, mDownY, upX, upY)) {
                                 info.Selected = true;
-                                if (!integerList.contains(i)) {
-                                    integerList.add(i);
+                                if (!mIntegerList.contains(i)) {
+                                    mIntegerList.add(i);
                                     mFileViewInteractionHub.addDialogSelectedItem(info);
                                 } else {
-                                    integerList.remove(new Integer(i));
+                                    mIntegerList.remove(new Integer(i));
                                     mFileViewInteractionHub.removeDialogSelectedItem(info);
                                 }
                             }

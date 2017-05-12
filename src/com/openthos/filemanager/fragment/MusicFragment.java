@@ -136,4 +136,8 @@ public class MusicFragment  extends BaseFragment implements AdapterView.OnItemCl
     @Override
     public void processDirectionKey(int keyCode) {
     }
+
+    @Override
+    public void showMenu() {
+    }
 }

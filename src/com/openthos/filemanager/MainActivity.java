@@ -2215,4 +2215,14 @@ public class MainActivity extends BaseActivity
             }
         }
     }
+
+    public LongPressRunnable mLongPressRunnable = new LongPressRunnable();
+
+    private class LongPressRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            ((BaseFragment) getVisibleFragment()).showMenu();
+        }
+    }
 }

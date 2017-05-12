@@ -44,4 +44,8 @@ public class OnlineNeighborFragment extends BaseFragment{
     @Override
     public void processDirectionKey(int keyCode) {
     }
+
+    @Override
+    public void showMenu() {
+    }
 }

@@ -125,4 +125,8 @@ public class VideoFragment extends BaseFragment implements AdapterView.OnItemCli
     @Override
     public void processDirectionKey(int keyCode) {
     }
+
+    @Override
+    public void showMenu() {
+    }
 }

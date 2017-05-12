@@ -233,4 +233,8 @@ public class PersonalSpaceFragment extends BaseFragment {
         integerList.add(mPos);
         mPersonalAdaper.notifyDataSetChanged();
     }
+
+    @Override
+    public void showMenu() {
+    }
 }

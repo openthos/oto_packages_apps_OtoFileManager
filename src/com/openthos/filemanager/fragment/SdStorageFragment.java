@@ -241,6 +241,8 @@ public class SdStorageFragment extends BaseFragment {
         mPersonalSpace.setOnTouchListener(sdOnTouchListener);
     }
 
+
+
     private class SdOnTouchListener implements View.OnTouchListener {
         private long lastTime;
 
@@ -250,14 +252,19 @@ public class SdStorageFragment extends BaseFragment {
                 case MotionEvent.ACTION_DOWN:
                     if (motionEvent.getButtonState() == MotionEvent.BUTTON_PRIMARY) {
                         lastTime = System.currentTimeMillis();
+                        mIsUsb = false;
+                        mLongPressView = view;
+                        mLongPressEvent = motionEvent;
+                        mMainActivity.mHandler.postDelayed(mMainActivity.mLongPressRunnable,
+                                                           Constants.LONG_PRESS_TIME);
                     } else {
                         lastTime = -1;
                     }
                     break;
                 case MotionEvent.ACTION_UP:
                     if (lastTime != -1 &&
-                            System.currentTimeMillis() - lastTime > Constants.LONG_PRESS_TIME) {
-                        secondaryClick(view, motionEvent);
+                            System.currentTimeMillis() - lastTime < Constants.LONG_PRESS_TIME) {
+                        mMainActivity.mHandler.removeCallbacks(mMainActivity.mLongPressRunnable);
                     }
                     break;
             }
@@ -534,6 +541,11 @@ public class SdStorageFragment extends BaseFragment {
                             if (currentBackTime - lastBackTime > Constants.DOUBLE_CLICK_INTERVAL_TIME
                                     || mCurrentPath != mLastPath) {
                                 lastBackTime = currentBackTime;
+                                mIsUsb = true;
+                                mLongPressView = view;
+                                mLongPressEvent = motionEvent;
+                                mMainActivity.mHandler.postDelayed(mMainActivity.mLongPressRunnable,
+                                                                   Constants.LONG_PRESS_TIME);
                             } else {
                                 mMainActivity.enter(mCurrentPath);
                             }
@@ -551,9 +563,10 @@ public class SdStorageFragment extends BaseFragment {
                     break;
                 case MotionEvent.ACTION_UP:
                     if (lastBackTime != -1 &&
-                            System.currentTimeMillis() - lastBackTime > Constants.LONG_PRESS_TIME) {
+                            System.currentTimeMillis() - lastBackTime < Constants.LONG_PRESS_TIME) {
+                        mMainActivity.mHandler.removeCallbacks(mMainActivity.mLongPressRunnable);
+                    } else {
                         mLastPath = null;
-                        showDiskDialog(view, motionEvent, true);
                         lastBackTime = -1;
                     }
                     break;
@@ -564,5 +577,18 @@ public class SdStorageFragment extends BaseFragment {
 
     @Override
     public void processDirectionKey(int keyCode) {
+    }
+
+    private View mLongPressView;
+    private MotionEvent mLongPressEvent;
+    private boolean mIsUsb;
+
+    @Override
+    public void showMenu() {
+        if (mIsUsb) {
+            showDiskDialog(mLongPressView, mLongPressEvent, true);
+        } else {
+            secondaryClick(mLongPressView, mLongPressEvent);
+        }
     }
 }
