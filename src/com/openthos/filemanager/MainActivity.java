@@ -2234,4 +2234,9 @@ public class MainActivity extends BaseActivity
             ((BaseFragment) getVisibleFragment()).showMenu();
         }
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        //super.onSaveInstanceState(outState);
+    }
 }

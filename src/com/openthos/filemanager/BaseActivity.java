@@ -26,7 +26,7 @@ public abstract class BaseActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        AppManager.getAppManager().finishActivity(this);
+        //AppManager.getAppManager().finishActivity(this);
     }
 
     public void setNavigationBar(String displayPath) {

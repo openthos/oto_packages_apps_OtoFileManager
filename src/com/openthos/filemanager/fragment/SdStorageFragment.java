@@ -166,6 +166,9 @@ public class SdStorageFragment extends BaseFragment {
 
     private void initUsbData() {
         String[] cmd = {"df"};
+        if (mUsbLists == null) {
+            mUsbLists = new ArrayList<>();
+        }
         mUsbLists.clear();
         mUsbLists.addAll(Util.execUsb(cmd));
         if (mUsbLists.size() > 0) {

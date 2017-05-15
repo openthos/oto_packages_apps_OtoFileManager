@@ -40,6 +40,12 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
     public FileViewInteractionHub mFileViewInteractionHub;
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                                                       @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(getLayoutId(),container,false);
