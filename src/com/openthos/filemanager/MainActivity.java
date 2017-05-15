@@ -615,16 +615,6 @@ public class MainActivity extends BaseActivity
         mPathAdapter = new PathAdapter(this, mPathList, mAddressTouchListener);
         mAddressListView.setAdapter(mPathAdapter);
         getMountData();
-
-        try {
-        StorageVolume[] vols = getMountService().getVolumeList();
-        StorageVolume vol= null;
-        for (StorageVolume i : vols) {
-            android.util.Log.i("wwwwwww", i.toString());
-        }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
     private void getMountData() {
@@ -1180,13 +1170,16 @@ public class MainActivity extends BaseActivity
     }
 
     public void uninstallUSB(String usbPath) {
+        if (usbPath.indexOf("/storage/usb") != -1 && usbPath.indexOf("_") != -1) {
+            usbPath = usbPath.substring(0, 13);
+        }
         try {
             Intent umountIntent = new Intent(ExternalStorageMountter.UMOUNT_ONLY);
             umountIntent.setComponent(ExternalStorageMountter.COMPONENT_NAME);
             StorageVolume[] vols = getMountService().getVolumeList();
             StorageVolume vol= null;
             for (StorageVolume i : vols) {
-                if (i.getPath().equals(mUsbPath)) {
+                if (i.getPath().equals(usbPath)) {
                     vol = i;
                     break;
                 }
@@ -1786,14 +1779,18 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    public void formatVolume(){
+    public void formatVolume() {
+        String usbPath = mUsbPath;
+        if (usbPath.indexOf("/storage/usb") != -1 && usbPath.indexOf("_") != -1) {
+            usbPath = usbPath.substring(0, 13);
+        }
         try {
             Intent formatIntent = new Intent(ExternalStorageFormatter.FORMAT_ONLY);
             formatIntent.setComponent(ExternalStorageFormatter.COMPONENT_NAME);
             StorageVolume[] vols = getMountService().getVolumeList();
             StorageVolume vol= null;
             for (StorageVolume i : vols) {
-                if (i.getPath().equals(mUsbPath)) {
+                if (i.getPath().equals(usbPath)) {
                     vol = i;
                     break;
                 }
