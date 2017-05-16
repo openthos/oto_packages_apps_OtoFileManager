@@ -363,17 +363,9 @@ public class MainActivity extends BaseActivity
             public void handleMessage(Message msg) {
                 if (!Thread.currentThread().isInterrupted()) {
                     switch (msg.what) {
-                        case Constants.DESKTOP_SHOW_FILE:
-                            Intent showIntent = new Intent();
-                            showIntent.setAction(Constants.ACTION_DESKTOP_SHOW_FILE);
-                            showIntent.putExtra(Constants.PATH_TAG, (String) msg.obj);
-                            MainActivity.this.sendBroadcast(showIntent);
-                            break;
-                        case Constants.DESKTOP_DELETE_FILE:
-                            Intent deleteIntent = new Intent();
-                            deleteIntent.setAction(Constants.ACTION_DESKTOP_DELETE_FILE);
-                            deleteIntent.putExtra(Constants.PATH_TAG, (String) msg.obj);
-                            MainActivity.this.sendBroadcast(deleteIntent);
+                        case Constants.SET_CLIPBOARD_TEXT:
+                            ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE))
+                                                               .setText((String) msg.obj);
                             break;
                         case Constants.USB_CHECKING:
                         case Constants.USB_MOUNT:
@@ -968,16 +960,22 @@ public class MainActivity extends BaseActivity
     }
 
     public void cut() {
-        ArrayList<FileInfo> list =
-               ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.getSelectedFileList();
-        StringBuffer stringBuffer = new StringBuffer();
-        if (!list.isEmpty()) {
-            for (int i = 0; i < list.size(); i++) {
-                stringBuffer.append(Constants.EXTRA_CROP_FILE_HEADER + list.get(i).filePath);
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                ArrayList<FileInfo> list = ((BaseFragment) getVisibleFragment())
+                                                      .mFileViewInteractionHub.getSelectedFileList();
+                StringBuffer stringBuffer = new StringBuffer();
+                if (!list.isEmpty()) {
+                    for (int i = 0; i < list.size(); i++) {
+                        stringBuffer.append(Constants.EXTRA_CROP_FILE_HEADER + list.get(i).filePath);
+                    }
+                    mHandler.sendMessage(Message.obtain(mHandler,
+                                             Constants.SET_CLIPBOARD_TEXT, stringBuffer.toString()));
+                }
             }
-            ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE))
-                    .setText(stringBuffer);
-        }
+        }.start();
     }
 
     public void paste() {
@@ -993,13 +991,11 @@ public class MainActivity extends BaseActivity
         if (sourcePath == null) {
             sourcePath = "";
         }
-        String[] srcCopyPaths = sourcePath.split(Constants.EXTRA_FILE_HEADER);
-        String[] srcCropPaths = sourcePath.split(Constants.EXTRA_CROP_FILE_HEADER);
         if (!TextUtils.isEmpty(sourcePath) && sourcePath.startsWith(Constants.EXTRA_FILE_HEADER)) {
-            new CopyThread(srcCopyPaths, destPath).start();
+            new CopyThread(sourcePath, destPath).start();
         } else if (!TextUtils.isEmpty(sourcePath)
                                         && sourcePath.startsWith(Constants.EXTRA_CROP_FILE_HEADER)) {
-            new CropThread(srcCropPaths, destPath).start();
+            new CropThread(sourcePath, destPath).start();
         }
     }
 
@@ -1021,9 +1017,9 @@ public class MainActivity extends BaseActivity
         String[] mSrcCopyPaths;
         String mDestPath;
 
-        public CopyThread(String[] srcPaths, String destPath) {
+        public CopyThread(String srcPaths, String destPath) {
             super();
-            mSrcCopyPaths = srcPaths;
+            mSrcCopyPaths = srcPaths.split(Constants.EXTRA_FILE_HEADER);
             mDestPath = destPath;
         }
 
@@ -1041,9 +1037,9 @@ public class MainActivity extends BaseActivity
         String[] mSrcCropPaths;
         String mDestPath;
 
-        public CropThread(String[] srcPaths, String destPath) {
+        public CropThread(String srcPaths, String destPath) {
             super();
-            mSrcCropPaths = srcPaths;
+            mSrcCropPaths = srcPaths.split(Constants.EXTRA_CROP_FILE_HEADER);
             mDestPath = destPath;
         }
 
@@ -1052,22 +1048,28 @@ public class MainActivity extends BaseActivity
             super.run();
             for (int i = 1; i < mSrcCropPaths.length; i++) {
                 FileOperationHelper.MoveFile(
-                        mSrcCropPaths[i].replace(Constants.EXTRA_CROP_FILE_HEADER, ""), mDestPath, true);
+                    mSrcCropPaths[i].replace(Constants.EXTRA_CROP_FILE_HEADER, ""), mDestPath, true);
             }
         }
     }
 
     public void copy() {
-        ArrayList<FileInfo> list =
-                ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.getSelectedFileList();
-        StringBuffer stringBuffer = new StringBuffer();
-        if (!list.isEmpty()) {
-            for (int i = 0; i < list.size(); i++) {
-                stringBuffer.append(Constants.EXTRA_FILE_HEADER + list.get(i).filePath);
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                ArrayList<FileInfo> list = ((BaseFragment) getVisibleFragment())
+                                                      .mFileViewInteractionHub.getSelectedFileList();
+                StringBuffer stringBuffer = new StringBuffer();
+                if (!list.isEmpty()) {
+                    for (int i = 0; i < list.size(); i++) {
+                        stringBuffer.append(Constants.EXTRA_FILE_HEADER + list.get(i).filePath);
+                    }
+                    mHandler.sendMessage(Message.obtain(mHandler, Constants.SET_CLIPBOARD_TEXT,
+                                                                          stringBuffer.toString()));
+                }
             }
-            ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE))
-                            .setText(stringBuffer);
-        }
+        }.start();
     }
 
     private void processUserOperation() {
@@ -1867,6 +1869,7 @@ public class MainActivity extends BaseActivity
     }
 
     class CustomFileObserver extends FileObserver {
+        private long mPreTime = 0;
         public CustomFileObserver(String path) {
             super(path);
         }
@@ -1879,10 +1882,18 @@ public class MainActivity extends BaseActivity
                 case FileObserver.DELETE:
                 case FileObserver.MOVED_FROM:
                 case FileObserver.MOVED_TO:
-                case FileObserver.MODIFY:
-                    mHandler.sendMessage(Message.obtain(mHandler, Constants.ONLY_REFRESH,
+                    if (System.currentTimeMillis() - mPreTime >= 1000) {
+                        mHandler.removeMessages(Constants.ONLY_REFRESH);
+                        mHandler.sendMessage(Message.obtain(mHandler, Constants.ONLY_REFRESH,
                                          ((BaseFragment) getVisibleFragment())
                                                        .mFileViewInteractionHub.getCurrentPath()));
+                        mPreTime = System.currentTimeMillis();
+                    } else {
+                        mHandler.removeMessages(Constants.ONLY_REFRESH);
+                        mHandler.sendMessageDelayed(Message.obtain(mHandler, Constants.ONLY_REFRESH,
+                                         ((BaseFragment) getVisibleFragment())
+                                                    .mFileViewInteractionHub.getCurrentPath()), 1000);
+                    }
                     break;
                 default:
                     break;

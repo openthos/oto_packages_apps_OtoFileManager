@@ -311,6 +311,7 @@ public class FileOperationHelper {
                     destFile.getAbsolutePath()});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
+            MainActivity.mHandler.removeMessages(Constants.COPY_INFO_HIDE);
             MainActivity.mHandler.sendEmptyMessage(srcFile.equals(RECYCLE_PATH1)
                 || srcFile.equals(RECYCLE_PATH2) || srcFile.equals(RECYCLE_PATH3)?
                     Constants.DELETE_INFO_SHOW : Constants.COPY_INFO_SHOW);
@@ -324,24 +325,9 @@ public class FileOperationHelper {
                     i--;
                 }
             }
-            MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
-            if (command.contains("cp")) {
-                if (destFile.getParent().equals(Constants.DESKTOP_PATH)) {
-                    MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
-                            Constants.DESKTOP_SHOW_FILE, destFile.getAbsolutePath()));
-                }
-            } else if (command.contains("mv")) {
-                if (destFile.getParent().equals(Constants.DESKTOP_PATH)) {
-                    MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
-                            Constants.DESKTOP_SHOW_FILE, destFile.getAbsolutePath()));
-                }
-                if (sourceFile.getParent().equals(Constants.DESKTOP_PATH)) {
-                    MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
-                            Constants.DESKTOP_DELETE_FILE, sourceFile.getAbsolutePath()));
-                }
-            }
+            MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
         } catch (IOException e) {
-            MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
+            MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
         } finally {
             if (in != null) {
                 try {
@@ -351,14 +337,14 @@ public class FileOperationHelper {
                 }
             }
         }
-        if (isRefreah) {
-            MainActivity.mHandler.sendMessage(
-                               Message.obtain(MainActivity.mHandler, Constants.REFRESH, destDir));
-        } else {
-            MainActivity.mHandler.sendMessage(
-                    Message.obtain(MainActivity.mHandler, Constants.REFRESH,
-                            new File(srcFile).getParent()));
-        }
+        //if (isRefreah) {
+        //    MainActivity.mHandler.sendMessage(
+        //                       Message.obtain(MainActivity.mHandler, Constants.REFRESH, destDir));
+        //} else {
+        //    MainActivity.mHandler.sendMessage(
+        //            Message.obtain(MainActivity.mHandler, Constants.REFRESH,
+        //                    new File(srcFile).getParent()));
+        //}
         if (isRecycle) {
             if (destFile.exists()) {
                 ContentValues contentValues = new ContentValues();
@@ -502,6 +488,7 @@ public class FileOperationHelper {
                     || path.equals(RECYCLE_PATH2)
                     || path.equals(RECYCLE_PATH3)) {
                 //clean Recycle
+                MainActivity.mHandler.removeMessages(Constants.COPY_INFO_HIDE);
                 MainActivity.mHandler.sendEmptyMessage(Constants.DELETE_INFO_SHOW);
                 delete(new File(path), true);
             } else if (path.contains(RECYCLE_PATH1)
@@ -549,6 +536,7 @@ public class FileOperationHelper {
                 pro = Runtime.getRuntime().exec(new String[]{command, arg, file.getAbsolutePath()});
                 in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
                 String line;
+                MainActivity.mHandler.removeMessages(Constants.COPY_INFO_HIDE);
                 MainActivity.mHandler.sendEmptyMessage(Constants.DELETE_INFO_SHOW);
                 int i = 0;
                 while ((line = in.readLine()) != null) {
@@ -560,14 +548,10 @@ public class FileOperationHelper {
                         i--;
                     }
                 }
-                MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
-                if (file.getAbsolutePath().contains(Constants.DESKTOP_PATH)) {
-                    MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
-                            Constants.DESKTOP_DELETE_FILE, file.getAbsolutePath()));
-                }
+                MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
             } catch (IOException e) {
                 e.printStackTrace();
-                MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
+                MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
             } finally {
                 if (in != null) {
                     try {
@@ -580,8 +564,8 @@ public class FileOperationHelper {
             if (isReCreate) {
                 file.mkdir();
             } else {
-                MainActivity.mHandler.sendMessage(
-                        Message.obtain(MainActivity.mHandler, Constants.REFRESH, file.getParent()));
+                //MainActivity.mHandler.sendMessage(
+                //        Message.obtain(MainActivity.mHandler, Constants.REFRESH, file.getParent()));
             }
             if (file.getPath().equals(RECYCLE_PATH1)
                     || file.getPath().equals(RECYCLE_PATH2)
@@ -626,6 +610,7 @@ public class FileOperationHelper {
             Process pro = Runtime.getRuntime().exec(
                     new String[]{"/system/bin/7za", "a", tarPath, arg, path, "-bb3", "-y"});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+            MainActivity.mHandler.removeMessages(Constants.COPY_INFO_HIDE);
             MainActivity.mHandler.sendEmptyMessage(Constants.COMPRESS_INFO_SHOW);
             String line;
             int i = 0;
@@ -638,12 +623,12 @@ public class FileOperationHelper {
                     i--;
                 }
             }
-            MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
+            MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
             MainActivity.mHandler.sendMessage(
                 Message.obtain(MainActivity.mHandler, Constants.ONLY_REFRESH, f.getParent()));
         } catch (IOException e) {
             e.printStackTrace();
-            MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
+            MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
         } finally {
             if (in != null) {
                 try {
@@ -669,6 +654,7 @@ public class FileOperationHelper {
                                                         path, "-o" + f.getParent(), "-bb3", "-y"});
             }
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+            MainActivity.mHandler.removeMessages(Constants.COPY_INFO_HIDE);
             MainActivity.mHandler.sendEmptyMessage(Constants.DECOMPRESS_INFO_SHOW);
             String line;
             int i = 0;
@@ -681,12 +667,12 @@ public class FileOperationHelper {
                     i--;
                 }
             }
-            MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
+            MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
             MainActivity.mHandler.sendMessage(
                 Message.obtain(MainActivity.mHandler, Constants.ONLY_REFRESH, f.getParent()));
         } catch (IOException e) {
             e.printStackTrace();
-            MainActivity.mHandler.sendEmptyMessage(Constants.COPY_INFO_HIDE);
+            MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
         } finally {
             if (in != null) {
                 try {
