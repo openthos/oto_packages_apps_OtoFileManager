@@ -2247,4 +2247,15 @@ public class MainActivity extends BaseActivity
     protected void onSaveInstanceState(Bundle outState) {
         //super.onSaveInstanceState(outState);
     }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL) {
+            if (event.isCtrlPressed() && event.isAltPressed()) {
+                mIsCtrlPress = false;
+                return true;
+            }
+        }
+        return super.dispatchKeyEvent(event);
+    }
 }
