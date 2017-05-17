@@ -1556,11 +1556,16 @@ public class MainActivity extends BaseActivity
                 return fragment;
             }
         }
+        android.util.Log.i("newbee", android.util.Log.getStackTraceString(new Throwable()));
         String path = mEt_nivagation.getText().toString();
-        for (int i = 0; i < path.length(); i++) {
-            if (path.charAt(i) != ' ') {
-                showSpaceFragment(path.substring(i, path.length()));
-                break;
+        if (TextUtils.isEmpty(path.trim())) {
+            showSpaceFragment("~");
+        } else {
+            for (int i = 0; i < path.length(); i++) {
+                if (path.charAt(i) != ' ') {
+                    showSpaceFragment(path.substring(i, path.length()));
+                    break;
+                }
             }
         }
         return getVisibleFragment();

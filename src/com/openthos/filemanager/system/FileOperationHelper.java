@@ -624,8 +624,6 @@ public class FileOperationHelper {
                 }
             }
             MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
-            MainActivity.mHandler.sendMessage(
-                Message.obtain(MainActivity.mHandler, Constants.ONLY_REFRESH, f.getParent()));
         } catch (IOException e) {
             e.printStackTrace();
             MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
@@ -668,8 +666,6 @@ public class FileOperationHelper {
                 }
             }
             MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
-            MainActivity.mHandler.sendMessage(
-                Message.obtain(MainActivity.mHandler, Constants.ONLY_REFRESH, f.getParent()));
         } catch (IOException e) {
             e.printStackTrace();
             MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
