@@ -196,7 +196,7 @@ public class SeafileFragment extends BaseFragment {
         mCurFragment = new SystemSpaceFragment(
                 Constants.LEFT_FAVORITES, path, null, null, false);
         transaction.add(R.id.fl_mian, mCurFragment, Constants.SEAFILESYSTEMSPACE_TAG);
-        transaction.show(mCurFragment).commit();
+        transaction.show(mCurFragment).commitAllowingStateLoss();
         mMainActivity.mCurFragment = mCurFragment;
         //mMainActivity.setFileInfo(R.id.et_nivagation, path, mAddressFragment);
     }

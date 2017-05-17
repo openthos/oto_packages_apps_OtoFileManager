@@ -197,7 +197,8 @@ public class PersonalSpaceFragment extends BaseFragment {
         mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, mCopyOrMove, false);
         FragmentTransaction transaction = mManager.beginTransaction();
         transaction.hide(mMainActivity.mCurFragment);
-        transaction.add(R.id.fl_mian, mCurFragment, Constants.PERSONALSYSTEMSPACE_TAG).commit();
+        transaction.add(R.id.fl_mian, mCurFragment, Constants.PERSONALSYSTEMSPACE_TAG)
+                .commitAllowingStateLoss();
         mMainActivity.mCurFragment = mCurFragment;
     }
 

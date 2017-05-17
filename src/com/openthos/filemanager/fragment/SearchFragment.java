@@ -86,13 +86,13 @@ public class SearchFragment extends BaseFragment{
                     }
                 } else {
                     if (mCurFragment != null) {
-                        mManager.beginTransaction().remove(mCurFragment).commit();
+                        mManager.beginTransaction().remove(mCurFragment).commitAllowingStateLoss();
                     }
                     mActivity = (MainActivity) getActivity();
-                    mManager.beginTransaction().hide(mActivity.getVisibleFragment()).commit();
+                    mManager.beginTransaction().hide(mActivity.getVisibleFragment()).commitAllowingStateLoss();
                     mCurFragment = new SystemSpaceFragment(TAG, fileRealPath, null,null, false);
                     mManager.beginTransaction().add(R.id.fl_mian, mCurFragment,
-                            Constants.SEARCHSYSTEMSPACE_TAG).commit();
+                            Constants.SEARCHSYSTEMSPACE_TAG).commitAllowingStateLoss();
                     mActivity.mCurFragment = mCurFragment;
                     notifyModify();
                 }

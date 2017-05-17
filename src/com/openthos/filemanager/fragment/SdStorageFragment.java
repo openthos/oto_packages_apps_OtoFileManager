@@ -411,16 +411,16 @@ public class SdStorageFragment extends BaseFragment {
         transaction.hide(mMainActivity.mCurFragment);
         if (Constants.PERSONAL_TAG.equals(tag)) {
             mMainActivity.setNavigationPath(null);
-            transaction.show(mMainActivity.mPersonalSpaceFragment).commit();
+            transaction.show(mMainActivity.mPersonalSpaceFragment).commitAllowingStateLoss();
             mCurFragment = mMainActivity.mPersonalSpaceFragment;
         } else if (Constants.YUN_SPACE_FRAGMENT.equals(tag)) {
             mMainActivity.setNavigationPath(null);
-            transaction.show(mMainActivity.mSeafileFragment).commit();
+            transaction.show(mMainActivity.mSeafileFragment).commitAllowingStateLoss();
             mCurFragment = mMainActivity.mSeafileFragment;
         } else {
             mCurFragment = new SystemSpaceFragment(tag, path,
                                                    mFileInfoArrayList, copyOrMove, false);
-            transaction.add(R.id.fl_mian, mCurFragment, Constants.SDSSYSTEMSPACE_TAG).commit();
+            transaction.add(R.id.fl_mian, mCurFragment, Constants.SDSSYSTEMSPACE_TAG).commitAllowingStateLoss();
         }
         mMainActivity.mCurFragment = mCurFragment;
         mCurId = Constants.RETURN_TO_WHITE;
