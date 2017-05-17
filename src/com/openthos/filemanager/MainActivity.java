@@ -449,7 +449,8 @@ public class MainActivity extends BaseActivity
     }
 
     private void showSdSFragmentAfterInstallUSB() {
-        mManager.beginTransaction().remove(mCurFragment).show(mSdStorageFragment).commit();
+        mManager.beginTransaction().remove(mCurFragment).show(mSdStorageFragment)
+                .commitAllowingStateLoss();
         mCurFragment = mSdStorageFragment;
     }
 
@@ -457,21 +458,23 @@ public class MainActivity extends BaseActivity
         switch (flags) {
             case Constants.USB_INIT:
                 if (TextUtils.isEmpty(getCurPath())) {
-                    mManager.beginTransaction().remove(mSdStorageFragment).commit();
-                    mManager.beginTransaction().hide(mCurFragment).commit();
+                    mManager.beginTransaction().remove(mSdStorageFragment).commitAllowingStateLoss();
+                    mManager.beginTransaction().hide(mCurFragment).commitAllowingStateLoss();
                     mSdStorageFragment = new SdStorageFragment(
                             mManager, mUsbLists, MainActivity.this);
                     setSelectedBackground(R.id.tv_computer);
                     mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment,
-                            Constants.SDSTORAGEFRAGMENT_TAG).show(mSdStorageFragment).commit();
+                            Constants.SDSTORAGEFRAGMENT_TAG).show(mSdStorageFragment)
+                            .commitAllowingStateLoss();
                     mCurFragment = mSdStorageFragment;
                 } else {
                     BaseFragment visibleFragment = (BaseFragment) getVisibleFragment();
-                    mManager.beginTransaction().remove(mSdStorageFragment).commit();
+                    mManager.beginTransaction().remove(mSdStorageFragment).commitAllowingStateLoss();
                     mSdStorageFragment = new SdStorageFragment(
                             mManager, mUsbLists, MainActivity.this);
                     mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment,
-                            Constants.SDSTORAGEFRAGMENT_TAG).hide(mSdStorageFragment).commit();
+                            Constants.SDSTORAGEFRAGMENT_TAG).hide(mSdStorageFragment)
+                            .commitAllowingStateLoss();
                     mSdStorageFragment.mCurFragment = visibleFragment;
                 }
                 break;
@@ -594,7 +597,7 @@ public class MainActivity extends BaseActivity
             transaction.add(R.id.fl_mian, mSeafileFragment, Constants.SEAFILESYSTEMSPACE_TAG)
                     .hide(mSeafileFragment);
         }
-        transaction.commit();
+        transaction.commitAllowingStateLoss();
     }
 
     protected void initData() {
@@ -686,7 +689,7 @@ public class MainActivity extends BaseActivity
                     v.getBlock(), "/storage/disk" + i, null, null, true);
             mMountMap.put(v.getBlock(), mountFragment);
             mManager.beginTransaction().add(R.id.fl_mian, mMountMap.get(v.getBlock()),
-                    v.getBlock()).hide(mMountMap.get(v.getBlock())).commit();
+                    v.getBlock()).hide(mMountMap.get(v.getBlock())).commitAllowingStateLoss();
             v.setPath("/storage/disk" + i);
             i++;
             llMount.addView(inflate);
@@ -751,8 +754,8 @@ public class MainActivity extends BaseActivity
             mAddressFragment = new SystemSpaceFragment(
                                    Constants.LEFT_FAVORITES, path, null, null, false);
             transaction.add(R.id.fl_mian, mAddressFragment, Constants.ADDRESSFRAGMENT_TAG);
-            //transaction.show(mAddressFragment).addToBackStack(null).commit();
-            transaction.show(mAddressFragment).commit();
+            //transaction.show(mAddressFragment).addToBackStack(null).commitAllowingStateLoss();
+            transaction.show(mAddressFragment).commitAllowingStateLoss();
             setFileInfo(R.id.et_nivagation, path, mAddressFragment);
             mHashMap.put(Constants.ADDRESSFRAGMENT_TAG, R.id.tv_computer);
         } else {
@@ -1074,7 +1077,7 @@ public class MainActivity extends BaseActivity
 
     private void processUserOperation() {
         mManager.beginTransaction().hide(mCurFragment)
-                .show(mUserOperationFragments.get(mFragmentIndex)).commit();
+                .show(mUserOperationFragments.get(mFragmentIndex)).commitAllowingStateLoss();
         mCurFragment = mUserOperationFragments.get(mFragmentIndex);
         if (mCurFragment instanceof SystemSpaceFragment) {
             SystemSpaceFragment mCurFragment = (SystemSpaceFragment) this.mCurFragment;
@@ -1271,7 +1274,7 @@ public class MainActivity extends BaseActivity
         if (fragment != null) {
             transaction.show(fragment);
         }
-        transaction.commit();
+        transaction.commitAllowingStateLoss();
         mCurFragment = fragment;
         mUserOperationFragments.add(mCurFragment);
         mFragmentIndex++;
@@ -1351,7 +1354,8 @@ public class MainActivity extends BaseActivity
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     menu_tag);
             mPopWinShare.setFocusable(true);
-            mPopWinShare.showAsDropDown(ll_usb.getChildAt(getUsbPosition(mUsbPath)), USB_POPWINDOW_X, USB_POPWINDOW_Y);
+            mPopWinShare.showAsDropDown(ll_usb.getChildAt(getUsbPosition(mUsbPath)),
+                     USB_POPWINDOW_X, USB_POPWINDOW_Y);
         }
         mPopWinShare.update();
         mPopWinShare.getContentView().setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -1540,7 +1544,8 @@ public class MainActivity extends BaseActivity
                     }
                 }
             } else if (mStartSearchFragment != null && mCurFragment instanceof SearchFragment) {
-                mManager.beginTransaction().hide(mCurFragment).show(mStartSearchFragment).commit();
+                mManager.beginTransaction().hide(mCurFragment).show(mStartSearchFragment)
+                        .commitAllowingStateLoss();
                 mCurFragment = mStartSearchFragment;
                 mStartSearchFragment = null;
             } else {
@@ -1577,7 +1582,7 @@ public class MainActivity extends BaseActivity
         mSearchFragment = (SearchFragment) mManager
                               .findFragmentByTag(Constants.SEARCHFRAGMENT_TAG);
         fragmentTransaction.show(mSearchFragment);
-        fragmentTransaction.commit();
+        fragmentTransaction.commitAllowingStateLoss();
         mCurFragment = mSearchFragment;
     }
 
@@ -1585,7 +1590,7 @@ public class MainActivity extends BaseActivity
         FragmentTransaction fragmentTransaction = mManager.beginTransaction();
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mDeskFragment);
-        fragmentTransaction.commit();
+        fragmentTransaction.commitAllowingStateLoss();
         setNavigationPath(Constants.DESKTOP_PATH);
         setSelectedBackground(R.id.tv_desk);
         mCurFragment = mDeskFragment;
@@ -1595,7 +1600,7 @@ public class MainActivity extends BaseActivity
         FragmentTransaction fragmentTransaction = mManager.beginTransaction();
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mMusicFragment);
-        fragmentTransaction.commit();
+        fragmentTransaction.commitAllowingStateLoss();
         setNavigationPath(Constants.MUSIC_PATH);
         setSelectedBackground(R.id.tv_music);
         mCurFragment = mMusicFragment;
@@ -1605,7 +1610,7 @@ public class MainActivity extends BaseActivity
         FragmentTransaction fragmentTransaction = mManager.beginTransaction();
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mVideoFragment);
-        fragmentTransaction.commit();
+        fragmentTransaction.commitAllowingStateLoss();
         setNavigationPath(Constants.VIDEOS_PATH);
         setSelectedBackground(R.id.tv_video);
         mCurFragment = mVideoFragment;
@@ -1615,7 +1620,7 @@ public class MainActivity extends BaseActivity
         FragmentTransaction fragmentTransaction = mManager.beginTransaction();
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mPictrueFragment);
-        fragmentTransaction.commit();
+        fragmentTransaction.commitAllowingStateLoss();
         setNavigationPath(Constants.PICTURES_PATH);
         setSelectedBackground(R.id.tv_picture);
         mCurFragment = mPictrueFragment;
@@ -1625,7 +1630,7 @@ public class MainActivity extends BaseActivity
         FragmentTransaction fragmentTransaction = mManager.beginTransaction();
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mDocumentFragment);
-        fragmentTransaction.commit();
+        fragmentTransaction.commitAllowingStateLoss();
         setNavigationPath(Constants.DOCUMENT_PATH);
         setSelectedBackground(R.id.tv_document);
         mCurFragment = mDocumentFragment;
@@ -1635,7 +1640,7 @@ public class MainActivity extends BaseActivity
         FragmentTransaction fragmentTransaction = mManager.beginTransaction();
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mDownloadFragment);
-        fragmentTransaction.commit();
+        fragmentTransaction.commitAllowingStateLoss();
         setNavigationPath(Constants.DOWNLOAD_PATH);
         setSelectedBackground(R.id.tv_download);
         mCurFragment = mDownloadFragment;
@@ -1645,7 +1650,7 @@ public class MainActivity extends BaseActivity
         FragmentTransaction fragmentTransaction = mManager.beginTransaction();
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mRecycleFragment);
-        fragmentTransaction.commit();
+        fragmentTransaction.commitAllowingStateLoss();
         setNavigationPath(Constants.RECYCLE_PATH);
         setSelectedBackground(R.id.tv_recycle);
         mCurFragment = mRecycleFragment;
@@ -1655,7 +1660,7 @@ public class MainActivity extends BaseActivity
         FragmentTransaction fragmentTransaction = mManager.beginTransaction();
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mSeafileFragment);
-        fragmentTransaction.commit();
+        fragmentTransaction.commitAllowingStateLoss();
         setNavigationPath(getResources().getString(R.string.cloud));
         setSelectedBackground(R.id.tv_computer);
         mCurFragment = mSeafileFragment;
@@ -1665,7 +1670,7 @@ public class MainActivity extends BaseActivity
         FragmentTransaction fragmentTransaction = mManager.beginTransaction();
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mPersonalSpaceFragment);
-        fragmentTransaction.commit();
+        fragmentTransaction.commitAllowingStateLoss();
         setNavigationPath(null);
         setSelectedBackground(R.id.tv_computer);
         mCurFragment = mPersonalSpaceFragment;
@@ -1675,7 +1680,7 @@ public class MainActivity extends BaseActivity
         FragmentTransaction fragmentTransaction = mManager.beginTransaction();
         fragmentTransaction.hide(mCurFragment);
         fragmentTransaction.show(mSdStorageFragment);
-        fragmentTransaction.commit();
+        fragmentTransaction.commitAllowingStateLoss();
         setCurPath(null);
         setNavigationPath(null);
         setSelectedBackground(R.id.tv_computer);
@@ -1688,7 +1693,7 @@ public class MainActivity extends BaseActivity
         FragmentTransaction fragmentTransaction = mManager.beginTransaction();
         fragmentTransaction.hide(getVisibleFragment());
         fragmentTransaction.show(mSeafileFragment);
-        fragmentTransaction.commit();
+        fragmentTransaction.commitAllowingStateLoss();
         setNavigationPath(null);
         setSelectedBackground(R.id.tv_cloud_service);
         mCurFragment = mSeafileFragment;
@@ -2167,9 +2172,9 @@ public class MainActivity extends BaseActivity
         setNavigationPath(v.getPath());
         setCurPath(v.getPath());
         if (mCurFragment != null) {
-            mManager.beginTransaction().hide(mCurFragment).commit();
+            mManager.beginTransaction().hide(mCurFragment).commitAllowingStateLoss();
         }
-        mManager.beginTransaction().show(fragment).commit();
+        mManager.beginTransaction().show(fragment).commitAllowingStateLoss();
         mCurFragment = fragment;
         mUserOperationFragments.add(fragment);
         mFragmentIndex++;
@@ -2199,13 +2204,13 @@ public class MainActivity extends BaseActivity
         setNavigationPath(usbPath);
         setCurPath(usbPath);
         if (mCurFragment != null) {
-            mManager.beginTransaction().hide(mCurFragment).commit();
+            mManager.beginTransaction().hide(mCurFragment).commitAllowingStateLoss();
         }
         if (!mUsbStorageFragment.isAdded()) {
             mManager.beginTransaction().add(R.id.fl_mian,
-                    mUsbStorageFragment, usbPath).commit();
+                    mUsbStorageFragment, usbPath).commitAllowingStateLoss();
         } else {
-            mManager.beginTransaction().show(mUsbStorageFragment).commit();
+            mManager.beginTransaction().show(mUsbStorageFragment).commitAllowingStateLoss();
         }
         mCurFragment = mUsbStorageFragment;
         mUserOperationFragments.add(mUsbStorageFragment);

@@ -167,17 +167,17 @@ public class SearchOnKeyListener implements TextView.OnKeyListener {
 
     private void startSearchFragment() {
         mMainActivity.mStartSearchFragment = (BaseFragment) mMainActivity.getVisibleFragment();
-        manager.beginTransaction().hide(mMainActivity.getVisibleFragment()).commit();
+        manager.beginTransaction().hide(mMainActivity.getVisibleFragment()).commitAllowingStateLoss();
         if (manager.findFragmentByTag(Constants.SEARCHFRAGMENT_TAG) != null) {
             mCurSearchFragment  = (SearchFragment) manager
                                   .findFragmentByTag(Constants.SEARCHFRAGMENT_TAG);
             if (mCurSearchFragment != null) {
-                manager.beginTransaction().remove(mCurSearchFragment).commit();
+                manager.beginTransaction().remove(mCurSearchFragment).commitAllowingStateLoss();
             }
         }
         mCurSearchFragment = new SearchFragment(manager, mFileList);
         manager.beginTransaction().add(R.id.fl_mian, mCurSearchFragment,
-                                       Constants.SEARCHFRAGMENT_TAG).commit();
+                                       Constants.SEARCHFRAGMENT_TAG).commitAllowingStateLoss();
         mMainActivity.mCurFragment = mCurSearchFragment;
         progressDialog.dismiss();
     }
@@ -188,17 +188,17 @@ public class SearchOnKeyListener implements TextView.OnKeyListener {
         if (!(mMainActivity.getVisibleFragment() instanceof SearchFragment)) {
             mMainActivity.mStartSearchFragment = (BaseFragment) mMainActivity.getVisibleFragment();
         }
-        manager.beginTransaction().hide(mMainActivity.getVisibleFragment()).commit();
+        manager.beginTransaction().hide(mMainActivity.getVisibleFragment()).commitAllowingStateLoss();
         if (manager.findFragmentByTag(Constants.SEARCHFRAGMENT_TAG) != null) {
             mCurSearchFragment  = (SearchFragment) manager
                                   .findFragmentByTag(Constants.SEARCHFRAGMENT_TAG);
             if (mCurSearchFragment != null) {
-                manager.beginTransaction().remove(mCurSearchFragment).commit();
+                manager.beginTransaction().remove(mCurSearchFragment).commitAllowingStateLoss();
             }
         }
         mCurSearchFragment = new SearchFragment(manager,null);
         manager.beginTransaction().add(R.id.fl_mian, mCurSearchFragment,
-                                       Constants.SEARCHFRAGMENT_TAG).commit();
+                                       Constants.SEARCHFRAGMENT_TAG).commitAllowingStateLoss();
         mMainActivity.mCurFragment = mCurSearchFragment;
         progressDialog.dismiss();
     }
