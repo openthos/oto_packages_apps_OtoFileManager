@@ -1048,6 +1048,7 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     public void clearSelect() {
         mShiftPos = -1;
+        mPos = -1;
     }
 
     public boolean isRecycle() {
