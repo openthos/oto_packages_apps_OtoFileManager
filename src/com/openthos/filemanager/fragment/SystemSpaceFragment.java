@@ -91,7 +91,7 @@ public class SystemSpaceFragment extends BaseFragment implements
     private View mNoSdView;
     private HashMap<Enum, Boolean> mSortMap;
     private long mCurrentTime;
-    private int mPos = -1;
+    public int mPos = -1;
     private boolean mNamePositive = true;
     private boolean mSizePositive = true;
     private boolean mDatePositive = true;
@@ -339,6 +339,14 @@ public class SystemSpaceFragment extends BaseFragment implements
         file_path_list.setOnTouchListener(mViewMotionListener);
     }
 
+    public View getFirstVisibleView() {
+        if ("grid".equals(LocalCache.getViewTag())) {
+            return file_path_grid.getChildAt(0);
+        } else {
+            return file_path_list.getChildAt(0);
+        }
+    }
+
     @Override
     public void processDirectionKey(int keyCode) {
         int size = mFileNameList.size();
@@ -349,7 +357,11 @@ public class SystemSpaceFragment extends BaseFragment implements
         int numColumns = file_path_grid.getNumColumns();
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_LEFT:
-                mPos = isGrid && mPos > 0? mPos -1 : mPos;
+                if (isGrid) {
+                    mPos = isGrid && mPos > 0? mPos -1 : mPos;
+                } else {
+                    mPos = mPos > 0? mPos -1 : mPos;
+                }
                 break;
             case KeyEvent.KEYCODE_DPAD_UP:
                 if (isGrid) {
@@ -359,7 +371,11 @@ public class SystemSpaceFragment extends BaseFragment implements
                 }
                 break;
             case KeyEvent.KEYCODE_DPAD_RIGHT:
+                if (isGrid) {
                 mPos = isGrid && mPos < size - 1? mPos + 1 : mPos;
+                } else {
+                    mPos = mPos < size - 1? mPos + 1 : mPos;
+                }
                 break;
             case KeyEvent.KEYCODE_DPAD_DOWN:
                 if (isGrid) {

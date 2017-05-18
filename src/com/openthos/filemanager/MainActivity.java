@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.FileObserver;
@@ -118,7 +119,6 @@ public class MainActivity extends BaseActivity
     private EditText mEt_search_view;
     private ImageView mIv_search_view;
     private LinearLayout ll_usb;
-    private LinearLayout llMount;
 
     private FragmentManager mManager = getSupportFragmentManager();
     private PopWinShare mPopWinShare;
@@ -178,6 +178,14 @@ public class MainActivity extends BaseActivity
     private List<SystemSpaceFragment> mDynamicFragments;
     private ArrayList<String[]> mUsbLists = new ArrayList<>();
     private HashMap<String, SystemSpaceFragment> mUsbFragments = new HashMap<>();
+    private LinearLayout mLlCollection;
+    private LinearLayout mLlMount;
+    private int mLeftIndex = 0;
+    private List<View> mLeftViewList = new ArrayList<>();
+    private List<View> mUsbViews = new ArrayList<>();
+    private int mCurTabIndext = 0;
+    private View mCurLeftItem;
+    private View mPreView;
 
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -301,6 +309,8 @@ public class MainActivity extends BaseActivity
     protected void initView() {
         //mInitSeafileThread = new InitSeafileThread();
         //mInitSeafileThread.start();
+        mLlCollection = (LinearLayout) findViewById(R.id.ll_collection);
+        mLlMount = (LinearLayout) findViewById(R.id.ll_mount);
         mSharedPreferences = getSharedPreferences(VIEW_TAG, Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
         String viewTag = mSharedPreferences.getString(VIEW_TAG, VIEW_TAG_GRID);
@@ -325,7 +335,6 @@ public class MainActivity extends BaseActivity
         mIv_search_view = (ImageView) findViewById(R.id.iv_search);
         mEt_search_view = (EditText) findViewById(R.id.search_view);
         ll_usb = (LinearLayout) findViewById(R.id.ll_usb);
-        llMount = (LinearLayout) findViewById(R.id.ll_mount);
         mAddressListView = (HorizontalListView) findViewById(R.id.lv_address);
         mLeftTexts = new TextView[]{mTv_music, mTv_desk, mTv_video, mTv_computer, mTv_picture,
                 mTv_net_service, mTv_document, mTv_download, mTv_recycle, mTv_cloud_service};
@@ -378,8 +387,11 @@ public class MainActivity extends BaseActivity
                             break;
                         case Constants.USB_READY:
                             ll_usb.removeAllViews();
+                            mUsbViews.clear();
                             for (int i = 0; i < mUsbLists.size(); i++) {
-                                ll_usb.addView(getUsbView(i));
+                                View v = getUsbView(i);
+                                ll_usb.addView(v);
+                                mUsbViews.add(v);
                             }
                             if (mProgressDialog != null) {
                                 mProgressDialog.dismiss();
@@ -501,7 +513,9 @@ public class MainActivity extends BaseActivity
                     for (int i = 0; i < mUsbLists.size(); i++) {
                         if (mUsbPath.equals(mUsbLists.get(i)[0])) {
                             position = getUsbPosition(mUsbPath);
-                            ll_usb.removeViewAt(getUsbPosition(mUsbPath));
+                            View v = ll_usb.getChildAt(getUsbPosition(mUsbPath));
+                            mUsbViews.remove(v);
+                            ll_usb.removeView(v);
                             mSdStorageFragment.removeUsbView(position);
                             break;
                         }
@@ -609,6 +623,10 @@ public class MainActivity extends BaseActivity
         mAddressTouchListener = new AddressOnTouchListener();
         mPathAdapter = new PathAdapter(this, mPathList, mAddressTouchListener);
         mAddressListView.setAdapter(mPathAdapter);
+        for (int index = 0; index < mLlCollection.getChildCount(); index++) {
+            mLeftViewList.add(mLlCollection.getChildAt(index));
+        }
+        mLeftViewList.add(mTv_computer);
         getMountData();
     }
 
@@ -692,7 +710,9 @@ public class MainActivity extends BaseActivity
                     v.getBlock()).hide(mMountMap.get(v.getBlock())).commitAllowingStateLoss();
             v.setPath("/storage/disk" + i);
             i++;
-            llMount.addView(inflate);
+            mLlMount.addView(inflate);
+            mLeftViewList.add(inflate);
+            mCurTabIndext = -1;
             mDynamicFragments.add(mountFragment);
         }
         Intent intent = getIntent();
@@ -839,12 +859,114 @@ public class MainActivity extends BaseActivity
         return false;
     }
 
+    public void processTab(View v) {
+        if (mPreView != null) {
+            mPreView.setBackgroundColor(Color.TRANSPARENT);
+        }
+        v.setBackgroundColor(0x68ffffff);
+        v.setFocusable(true);
+        //v.setFocusableInTouchMode(true);
+        v.requestFocus();
+        mPreView = v;
+    }
+
+    private void switchTab() {
+        switch (mCurTabIndext) {
+            case 0:
+                processTab(mIv_back);
+                break;
+            case 1:
+                processTab(mIv_forward);
+                break;
+            case 2:
+                processTab(mIv_up);
+                break;
+            case 3:
+                processTab(mIv_setting);
+                break;
+            case 4:
+                processTab(mIv_grid_view);
+                break;
+            case 5:
+                processTab(mIv_list_view);
+                break;
+            case 6:
+                mAddressListView.setVisibility(View.GONE);
+                mEt_nivagation.setVisibility(View.VISIBLE);
+                processTab(mEt_nivagation);
+                mEt_nivagation.setSelection(mEt_nivagation.getText().length());
+                mPreView = null;
+                break;
+            case 7:
+                processTab(mEt_search_view);
+                mPreView = null;
+                break;
+            case 8:
+                processTab(mTv_desk);
+                mCurLeftItem = mTv_desk;
+                break;
+            case 9:
+                if (mCurFragment instanceof SdStorageFragment) {
+                    if (mSdStorageFragment.mCurView != null) {
+                        mSdStorageFragment.mCurView.setSelected(false);
+                    }
+                    mTv_desk.setBackgroundColor(Color.TRANSPARENT);
+                    mSdStorageFragment.mPersonalSpace.requestFocus();
+                    mSdStorageFragment.mPersonalSpace.setSelected(true);
+                    mSdStorageFragment.mCurId = R.id.rl_personal_space;
+                    mSdStorageFragment.mCurView = mSdStorageFragment.mPersonalSpace;
+                } else if (mCurFragment instanceof SystemSpaceFragment) {
+                    SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) this.mCurFragment;
+                    FileListAdapter adapter = systemSpaceFragment.getAdapter();
+                    List integerList = adapter.getSelectFileInfoList();
+                    integerList.clear();
+                    systemSpaceFragment.mFileViewInteractionHub.clearSelection();
+                    if (adapter.getFileInfoList().size() != 0) {
+                        FileInfo fileInfo = adapter.getFileInfoList().get(0);
+                        fileInfo.Selected = true;
+                        integerList.add(0);
+                        systemSpaceFragment.mFileViewInteractionHub.addDialogSelectedItem(fileInfo);
+                        systemSpaceFragment.mPos = 0;
+                        adapter.notifyDataSetChanged();
+                    }
+
+                }
+                break;
+        }
+    }
+
+    public void processLeftDirectionKey(int keyCode) {
+        mCurLeftItem.setSelected(false);
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+            case KeyEvent.KEYCODE_DPAD_UP:
+                mLeftIndex = mLeftIndex > 0 ? --mLeftIndex : mLeftIndex;
+                break;
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+            case KeyEvent.KEYCODE_DPAD_DOWN:
+                mLeftIndex = mLeftIndex < mLeftViewList.size() - 1 ? ++mLeftIndex : mLeftIndex;
+                break;
+        }
+        mCurLeftItem = mLeftViewList.get(mLeftIndex);
+        processTab(mCurLeftItem);
+    }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN
              || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
                      && !(mEt_nivagation.isFocused() || mEt_search_view.isFocused())) {
-            ((BaseFragment) mCurFragment).processDirectionKey(keyCode);
+            if (mCurTabIndext == 8) {
+                if (mLeftIndex > mLlCollection.getChildCount() - 1) {
+                    if (mUsbViews.size() != 0) {
+                        mLeftViewList.addAll(mLeftViewList.size() - mLlMount.getChildCount(), mUsbViews);
+                    }
+                }
+                processLeftDirectionKey(keyCode);
+                mLeftViewList.removeAll(mUsbViews);
+            } else if (mCurTabIndext == -1 || mCurTabIndext > 8) {
+                ((BaseFragment) mCurFragment).processDirectionKey(keyCode);
+            }
             return true;
         }
         if (keyCode == KeyEvent.KEYCODE_DEL && !mEt_search_view.hasFocus()
@@ -932,18 +1054,71 @@ public class MainActivity extends BaseActivity
             if (mEt_nivagation.isFocused() || mEt_search_view.isFocused()) {
                 return false;
             }
-            if (isRecycle()) {
-                Toast.makeText(this, getString(R.string.fail_open_recycle),
-                                                                  Toast.LENGTH_SHORT).show();
-                return false;
-            }
-            if (getVisibleFragment() instanceof BaseFragment) {
-                ((BaseFragment) getVisibleFragment()).enter();
+            if (mCurTabIndext == 8) {
+                leftEnter(mCurLeftItem);
+            } else {
+                if (isRecycle()) {
+                    Toast.makeText(this, getString(R.string.fail_open_recycle),
+                            Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                if (getVisibleFragment() instanceof BaseFragment) {
+                    ((BaseFragment) getVisibleFragment()).enter();
+                }
             }
         }
         return false;
     }
 
+    public void leftEnter(View view) {
+        switch (view.getId()) {
+            case R.id.tv_desk:
+                setFileInfo(R.id.tv_desk, Constants.DESKTOP_PATH, mDeskFragment);
+                checkFolder(mDeskFragment);
+                break;
+            case R.id.tv_music:
+                setFileInfo(R.id.tv_music, Constants.MUSIC_PATH, mMusicFragment);
+                checkFolder(mMusicFragment);
+                break;
+            case R.id.tv_video:
+                setFileInfo(R.id.tv_video, Constants.VIDEOS_PATH, mVideoFragment);
+                checkFolder(mVideoFragment);
+                break;
+            case R.id.tv_picture:
+                setFileInfo(R.id.tv_picture, Constants.PICTURES_PATH, mPictrueFragment);
+                checkFolder(mPictrueFragment);
+                break;
+            case R.id.tv_document:
+                setFileInfo(R.id.tv_document, Constants.DOCUMENT_PATH, mDocumentFragment);
+                checkFolder(mDocumentFragment);
+                break;
+            case R.id.tv_download:
+                setFileInfo(R.id.tv_download, Constants.DOWNLOAD_PATH, mDownloadFragment);
+                checkFolder(mDownloadFragment);
+                break;
+            case R.id.tv_recycle:
+                setFileInfo(R.id.tv_recycle, Constants.RECYCLE_PATH, mRecycleFragment);
+                checkFolder(mRecycleFragment);
+                break;
+            case R.id.tv_computer:
+                clickComputer();
+                break;
+            case R.id.tv_cloud_service:
+                setFileInfo(R.id.tv_cloud_service, "", mSeafileFragment);
+                break;
+            case R.id.usb:
+                mUsbPath = (String) view.getTag();
+                enter(mUsbPath);
+                break;
+            case R.id.mount:
+                Volume v = (Volume) view.getTag();
+                if (!v.isMount()) {
+                    mountVolume(v);
+                }
+                enter(v);
+                break;
+        }
+    }
     private boolean isCopyByHot() {
         return getVisibleFragment() instanceof PersonalSpaceFragment
                 || getVisibleFragment() instanceof SdStorageFragment
@@ -1299,7 +1474,7 @@ public class MainActivity extends BaseActivity
                 for (int i = 0; i < mDynamicFragments.size(); i++) {
                     SystemSpaceFragment systemSpaceFragment = mDynamicFragments.get(i);
                     if (mCurFragment == systemSpaceFragment) {
-                        setSelectView(llMount.getChildAt(i));
+                        setSelectView(mLlMount.getChildAt(i));
                     }
                 }
                 break;
@@ -1839,8 +2014,8 @@ public class MainActivity extends BaseActivity
                 }
             }
         }
-        for (int i = 0; i < llMount.getChildCount(); i++) {
-            View childAt = llMount.getChildAt(i);
+        for (int i = 0; i < mLlMount.getChildCount(); i++) {
+            View childAt = mLlMount.getChildAt(i);
             if (childAt.isSelected()) {
                 if (childAt == view) {
                     return;
@@ -1983,54 +2158,7 @@ public class MainActivity extends BaseActivity
             switch (motionEvent.getButtonState()) {
                 case MotionEvent.BUTTON_PRIMARY:
                     setSelectView(view);
-                    switch (view.getId()) {
-                        case R.id.tv_desk:
-                            setFileInfo(R.id.tv_desk, Constants.DESKTOP_PATH, mDeskFragment);
-                            checkFolder(mDeskFragment);
-                            break;
-                        case R.id.tv_music:
-                            setFileInfo(R.id.tv_music, Constants.MUSIC_PATH, mMusicFragment);
-                            checkFolder(mMusicFragment);
-                            break;
-                        case R.id.tv_video:
-                            setFileInfo(R.id.tv_video, Constants.VIDEOS_PATH, mVideoFragment);
-                            checkFolder(mVideoFragment);
-                            break;
-                        case R.id.tv_picture:
-                            setFileInfo(R.id.tv_picture, Constants.PICTURES_PATH, mPictrueFragment);
-                            checkFolder(mPictrueFragment);
-                            break;
-                        case R.id.tv_document:
-                            setFileInfo(R.id.tv_document, Constants.DOCUMENT_PATH, mDocumentFragment);
-                            checkFolder(mDocumentFragment);
-                            break;
-                        case R.id.tv_download:
-                            setFileInfo(R.id.tv_download, Constants.DOWNLOAD_PATH, mDownloadFragment);
-                            checkFolder(mDownloadFragment);
-                            break;
-                        case R.id.tv_recycle:
-                            setFileInfo(R.id.tv_recycle, Constants.RECYCLE_PATH, mRecycleFragment);
-                            checkFolder(mRecycleFragment);
-                            break;
-                        case R.id.tv_computer:
-                            clickComputer();
-                            break;
-                        case R.id.tv_cloud_service:
-                            setFileInfo(R.id.tv_cloud_service, "", mSeafileFragment);
-                            break;
-                        case R.id.usb:
-                            mUsbPath = (String) view.getTag();
-                            enter(mUsbPath);
-                            break;
-                        case R.id.mount:
-                            Volume v = (Volume) view.getTag();
-                            if (!v.isMount()) {
-                                mountVolume(v);
-                            }
-                            enter(v);
-                            break;
-                    }
-                    break;
+                    leftEnter(view);
                 case MotionEvent.BUTTON_SECONDARY:
                     switch (view.getId()) {
                         case R.id.usb:
@@ -2265,6 +2393,20 @@ public class MainActivity extends BaseActivity
                 mIsCtrlPress = false;
                 return true;
             }
+        }
+
+        if (event.getKeyCode() == KeyEvent.KEYCODE_TAB
+                && event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (mCurTabIndext < 9) {
+                mCurTabIndext++;
+            } else {
+                mCurTabIndext = 0;
+                if (mCurFragment instanceof SdStorageFragment) {
+                    mSdStorageFragment.mPersonalSpace.setSelected(false);
+                }
+            }
+            switchTab();
+            return true;
         }
         return super.dispatchKeyEvent(event);
     }

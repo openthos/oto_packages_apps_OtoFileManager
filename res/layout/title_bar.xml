@@ -98,7 +98,11 @@
                 android:background="@drawable/edit_bg_shape"
                 android:hint="@string/text_file_path"
                 android:paddingLeft="8dp"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:nextFocusLeft="@id/et_nivagation"
+                android:nextFocusUp="@id/et_nivagation"
+                android:nextFocusRight="@id/et_nivagation"
+                android:nextFocusDown="@id/et_nivagation"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -117,7 +121,11 @@
                 android:paddingLeft="10dp"
                 android:singleLine="true"
                 android:layout_alignParentRight="true"
-                android:paddingRight="8dp" />
+                android:paddingRight="8dp"
+                android:nextFocusLeft="@id/search_view"
+                android:nextFocusUp="@id/search_view"
+                android:nextFocusRight="@id/search_view"
+                android:nextFocusDown="@id/search_view"/>
             <ImageView
                 android:id="@+id/iv_search"
                 android:layout_width="wrap_content"

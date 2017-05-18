@@ -2,6 +2,8 @@ package com.openthos.filemanager;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 
 import com.openthos.filemanager.component.AppManager;
@@ -10,12 +12,15 @@ import com.openthos.filemanager.system.FileSortHelper;
 public abstract class BaseActivity extends FragmentActivity {
 
     private FileSortHelper mFileSortHelper;
+    public ViewGroup mInflate;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(getLayoutId());
+        mInflate = (ViewGroup) View.inflate(this, getLayoutId(), null);
+       // setContentView(getLayoutId());
+        setContentView(mInflate);
         AppManager.getAppManager().addActivity(this);
         mFileSortHelper = new FileSortHelper();
         initView();

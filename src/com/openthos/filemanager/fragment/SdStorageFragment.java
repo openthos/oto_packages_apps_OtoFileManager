@@ -6,6 +6,7 @@ import android.os.StatFs;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.ProgressBar;
@@ -38,7 +39,7 @@ public class SdStorageFragment extends BaseFragment {
     private LinearLayout mAndroidSystem;
     private LinearLayout mSdSpace;
     private LinearLayout mAndroidService;
-    private LinearLayout mPersonalSpace;
+    public LinearLayout mPersonalSpace;
     private TextView mSystemTotal;
     private TextView mSystemAvail;
     private LinearLayout mSdInfo;
@@ -63,7 +64,11 @@ public class SdStorageFragment extends BaseFragment {
     private ArrayList<Volume> mVolumes;
     public ArrayList<String[]> mUsbLists;
     private MouseRelativeOnGenericMotionListener mTouchListener
-                                     = new MouseRelativeOnGenericMotionListener();
+            = new MouseRelativeOnGenericMotionListener();
+    private int homeIndex = 0;
+    private List<Integer> mHomeIdList = new ArrayList<>();
+    private List<View> mHomeViewList = new ArrayList<>();
+    public View mCurView;
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public SdStorageFragment(FragmentManager manager,
@@ -84,12 +89,40 @@ public class SdStorageFragment extends BaseFragment {
     }
 
     @Override
+    public void processDirectionKey(int keyCode) {
+        for (View v : mHomeViewList) {
+            v.setSelected(false);
+        }
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+            case KeyEvent.KEYCODE_DPAD_UP:
+                homeIndex = homeIndex > 0 ? --homeIndex : homeIndex;
+                break;
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+            case KeyEvent.KEYCODE_DPAD_DOWN:
+                homeIndex = homeIndex < mHomeViewList.size() - 1 ?
+                                              ++homeIndex : homeIndex;
+                break;
+        }
+        mCurId = mHomeIdList.get(homeIndex);
+        mCurView = mHomeViewList.get(homeIndex);
+        mCurView.requestFocus();
+        mCurView.setSelected(true);
+    }
+
+    @Override
     protected void initView() {
         mFragmentSds = (LinearLayout) rootView.findViewById(R.id.fragment_sds_ll);
-        mAndroidSystem = (LinearLayout) rootView.findViewById(R.id.rl_android_system);
-        mSdSpace = (LinearLayout) rootView.findViewById(R.id.rl_sd_space);
-        mAndroidService = (LinearLayout) rootView.findViewById(R.id.rl_android_service);
         mPersonalSpace = (LinearLayout) rootView.findViewById(R.id.rl_personal_space);
+        mHomeIdList.add(R.id.rl_personal_space);
+        mHomeViewList.add(mPersonalSpace);
+        mAndroidSystem = (LinearLayout) rootView.findViewById(R.id.rl_android_system);
+        mHomeIdList.add(R.id.rl_android_system);
+        mHomeViewList.add(mAndroidSystem);
+        mSdSpace = (LinearLayout) rootView.findViewById(R.id.rl_sd_space);
+        mHomeIdList.add(R.id.rl_sd_space);
+        mHomeViewList.add(mSdSpace);
+        mAndroidService = (LinearLayout) rootView.findViewById(R.id.rl_android_service);
         mLlMobileDevice = (LinearLayout) rootView.findViewById(R.id.ll_mobile_device);
 
         mSystemTotal = (TextView) rootView.findViewById(R.id.tv_system_total);
@@ -421,6 +454,7 @@ public class SdStorageFragment extends BaseFragment {
             mCurFragment = new SystemSpaceFragment(tag, path,
                                                    mFileInfoArrayList, copyOrMove, false);
             transaction.add(R.id.fl_mian, mCurFragment, Constants.SDSSYSTEMSPACE_TAG).commitAllowingStateLoss();
+            ((SystemSpaceFragment)mCurFragment).mPos = 0;
         }
         mMainActivity.mCurFragment = mCurFragment;
         mCurId = Constants.RETURN_TO_WHITE;
@@ -576,10 +610,6 @@ public class SdStorageFragment extends BaseFragment {
             }
             return true;
         }
-    }
-
-    @Override
-    public void processDirectionKey(int keyCode) {
     }
 
     private View mLongPressView;

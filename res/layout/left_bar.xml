@@ -21,6 +21,11 @@
             android:singleLine="true"
             android:textSize="13sp" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/ll_collection" >
         <TextView
             android:id="@+id/tv_desk"
             style="@style/textSet"
@@ -62,6 +67,7 @@
             style="@style/textSet"
             android:drawableLeft="@drawable/left_recycle_selector"
             android:text="@string/recycle" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/left_local_up"
