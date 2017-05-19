@@ -63,9 +63,9 @@ public class CreateFileDialog extends AlertDialog implements View.OnClickListene
         mPopupWindow.setTouchable(true);
         mPopupWindow.setOutsideTouchable(true);
         mPopupWindow.setBackgroundDrawable(new BitmapDrawable());
-        int xOff = (int) mContext.getResources().getDimension(R.dimen.left_margrin_text);
-        int yOff = (int) mContext.getResources().getDimension(R.dimen.navigation);
-        mPopupWindow.showAtLocation(mView, Gravity.RIGHT | Gravity.BOTTOM, xOff, -yOff);
+        int xOff = getWindow().getDecorView().getWidth()/2;
+        int yOff = getWindow().getDecorView().getHeight()/2;
+        mPopupWindow.showAtLocation(mView, Gravity.CENTER, xOff, yOff);
     }
 
     public CreateFileDialog(Context context, String title, String msg,
