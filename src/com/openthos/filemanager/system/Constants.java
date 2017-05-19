@@ -101,6 +101,9 @@ public abstract class Constants {
 
     public static final long LONG_PRESS_TIME = 500;
 
+    public static final int LIMIT_FILES_NUM = 5;
+    public static final int LIMIT_FILES_HEIGHT = 280;
+
      /**
      *
      * getMIMEType: Get the MIME Types from the file name.

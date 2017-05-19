@@ -71,6 +71,12 @@ public class OpenWithDialog extends BaseDialog implements AdapterView.OnItemClic
             mListView.setAdapter(mResolveAdapter);
             mListView.setVisibility(View.VISIBLE);
             mTextView.setVisibility(View.GONE);
+            if (mResolveList.size() > Constants.LIMIT_FILES_NUM) {
+                ViewGroup.LayoutParams params = mListView.getLayoutParams();
+                params.height = Constants.LIMIT_FILES_HEIGHT;
+                mListView.setLayoutParams(params);
+            }
+            mResolveAdapter.notifyDataSetChanged();
         } else {
             mListView.setVisibility(View.GONE);
             mTextView.setVisibility(View.VISIBLE);

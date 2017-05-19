@@ -286,7 +286,9 @@ public class SdStorageFragment extends BaseFragment {
         public boolean onTouch(View view, MotionEvent motionEvent) {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    if (motionEvent.getButtonState() == MotionEvent.BUTTON_PRIMARY) {
+                    if (motionEvent.getButtonState() == MotionEvent.BUTTON_PRIMARY
+                        && System.currentTimeMillis() - lastTime
+                            > Constants.DOUBLE_CLICK_INTERVAL_TIME) {
                         lastTime = System.currentTimeMillis();
                         mIsUsb = false;
                         mLongPressView = view;
@@ -400,6 +402,7 @@ public class SdStorageFragment extends BaseFragment {
             mCurId = id;
             lastBackTime = currentBackTime;
         } else {
+            mMainActivity.mHandler.removeCallbacks(mMainActivity.mLongPressRunnable);
             enter(tag, path);
         }
     }
