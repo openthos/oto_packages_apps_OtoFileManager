@@ -27,6 +27,7 @@ import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -1529,6 +1530,7 @@ public class MainActivity extends BaseActivity
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     menu_tag);
             mPopWinShare.setFocusable(true);
+            //mPopWinShare.setWindowLayoutType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
             mPopWinShare.showAsDropDown(ll_usb.getChildAt(getUsbPosition(mUsbPath)),
                      USB_POPWINDOW_X, USB_POPWINDOW_Y);
         }
@@ -1549,6 +1551,7 @@ public class MainActivity extends BaseActivity
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 MOUNT_POPWINDOW_TAG);
         mPopWinShare.setFocusable(true);
+        //mPopWinShare.setWindowLayoutType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
         mPopWinShare.showAsDropDown(view, USB_POPWINDOW_X, USB_POPWINDOW_Y);
         mPopWinShare.update();
         mPopWinShare.getContentView().setOnFocusChangeListener(new View.OnFocusChangeListener() {

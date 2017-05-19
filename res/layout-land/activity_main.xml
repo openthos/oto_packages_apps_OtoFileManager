@@ -8,8 +8,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5">
+        android:layout_height="42dp">
 
         <include layout="@layout/title_bar" />
 
@@ -26,16 +25,20 @@
         android:layout_weight="10"
         android:orientation="horizontal">
 
-        <RelativeLayout
-            android:layout_width="0dp"
+        <ScrollView
+            android:layout_width="275dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/left_bg_shape">
+            android:fillViewport="true">
 
-            <include layout="@layout/left_bar" />
+            <RelativeLayout
+                android:layout_width="275dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/left_bg_shape">
 
-        </RelativeLayout>
+                <include layout="@layout/left_bar" />
 
+            </RelativeLayout>
+        </ScrollView>
 
         <View
             android:layout_width="1dp"
