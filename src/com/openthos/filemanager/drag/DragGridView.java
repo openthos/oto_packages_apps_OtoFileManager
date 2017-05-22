@@ -46,7 +46,8 @@ public class DragGridView extends GridView {
     private static final int speed = 80;
     private OnChanageListener onChanageListener;
     private int tempPosition;
-    private int mPaddingLeft, mPaddingTop, mColumnWidth, mVerticalSpace, mNumColumns;
+    private int mPaddingLeft, mPaddingTop, mColumnWidth,
+                mVerticalSpace, mNumColumns, mHorizontalSpace;
 
     public DragGridView(Context context) {
         this(context, null);
@@ -251,19 +252,22 @@ public class DragGridView extends GridView {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         setParams(getPaddingLeft(), getPaddingTop(),
-                  getColumnWidth(), getVerticalSpacing(), getNumColumns());
+                  getColumnWidth(), getVerticalSpacing(), getNumColumns(), getHorizontalSpacing());
      }
 
-    private void setParams(int left, int top, int width, int space, int numColumns) {
+    private void setParams(int left, int top, int width, int space,
+                           int numColumns, int horizontalSpace) {
         mPaddingLeft = left;
         mPaddingTop = top;
         mColumnWidth = width;
         mVerticalSpace = space;
         mNumColumns = numColumns;
+        mHorizontalSpace = horizontalSpace;
     }
 
     public int[] getParams() {
-        return new int[] {mPaddingLeft, mPaddingTop, mColumnWidth, mVerticalSpace, mNumColumns};
+        return new int[] {mPaddingLeft, mPaddingTop, mColumnWidth, mVerticalSpace,
+                                                     mNumColumns, mHorizontalSpace};
     }
 
     public int getVerticalScrollDistance() {

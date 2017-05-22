@@ -135,8 +135,9 @@ public class SystemSpaceFragment extends BaseFragment implements
     private int GRID_LEFT_POS = 0;
     private int GRID_TOP_POS = 1;
     private int GRID_WIDTH_POS = 2;
-    private int GRID_SPACE_POS = 3;
+    private int GRID_VERSPACE_POS = 3;
     private int GRID_NUMCOLUMNS_POS = 4;
+    private int GRID_HORSPACE_POS = 5;
     private int ADAPTER_WIDTH_POS = 0;
     private int ADAPTER_HEIGHT_POS = 1;
     private int mLastClickId;
@@ -1034,16 +1035,18 @@ public class SystemSpaceFragment extends BaseFragment implements
         int[] itemParams = mAdapter.getParams();
         for (int i = 0; i < mFileListInfo.size(); i++) {
             mFileListInfo.get(i).left = gridViewParams[GRID_LEFT_POS]
-                    + (i % gridViewParams[GRID_NUMCOLUMNS_POS]) * (gridViewParams[GRID_WIDTH_POS]);
+                    + (i % gridViewParams[GRID_NUMCOLUMNS_POS]) * (
+                            gridViewParams[GRID_WIDTH_POS] + gridViewParams[GRID_HORSPACE_POS]);
             mFileListInfo.get(i).top = gridViewParams[GRID_TOP_POS]
                     + (i / gridViewParams[GRID_NUMCOLUMNS_POS])
-                    * (itemParams[ADAPTER_HEIGHT_POS] + gridViewParams[GRID_SPACE_POS]) - fixY;
+                    * (itemParams[ADAPTER_HEIGHT_POS] + gridViewParams[GRID_VERSPACE_POS]) - fixY;
             mFileListInfo.get(i).right = gridViewParams[GRID_LEFT_POS]
                     + itemParams[ADAPTER_WIDTH_POS]
-                    + (i % gridViewParams[GRID_NUMCOLUMNS_POS]) * (gridViewParams[GRID_WIDTH_POS]);
+                    + (i % gridViewParams[GRID_NUMCOLUMNS_POS]) * (gridViewParams[GRID_WIDTH_POS]
+                    + gridViewParams[GRID_HORSPACE_POS]);
             mFileListInfo.get(i).bottom = gridViewParams[GRID_TOP_POS]
                     + itemParams[ADAPTER_HEIGHT_POS] + (i / gridViewParams[GRID_NUMCOLUMNS_POS])
-                    * (itemParams[ADAPTER_HEIGHT_POS] + gridViewParams[GRID_SPACE_POS]) - fixY;
+                    * (itemParams[ADAPTER_HEIGHT_POS] + gridViewParams[GRID_VERSPACE_POS]) - fixY;
         }
     }
 
