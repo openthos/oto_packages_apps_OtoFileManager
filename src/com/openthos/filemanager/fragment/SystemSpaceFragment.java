@@ -479,6 +479,7 @@ public class SystemSpaceFragment extends BaseFragment implements
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
+            mMainActivity.mCurTabIndext = 9;
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     mMainActivity.clearNivagateFocus();

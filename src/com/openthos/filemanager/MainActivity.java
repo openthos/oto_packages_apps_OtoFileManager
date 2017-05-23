@@ -100,24 +100,11 @@ public class MainActivity extends BaseActivity
     private static final String SETTING_POPWINDOW_TAG = "iv_setting";
     private static final String USB_POPWINDOW_TAG = "iv_usb";
     private static final String MOUNT_POPWINDOW_TAG = "MOUNT_POPWINDOW_TAG";
-    private TextView mTv_desk;
-    private TextView mTv_music;
-    private TextView mTv_video;
-    private TextView mTv_computer;
-    private TextView mTv_picture;
-    private TextView mTv_document;
-    private TextView mTv_download;
-    private TextView mTv_recycle;
-    private TextView mTv_cloud_service;
-    private TextView mTv_net_service;
-    private ImageView mIv_list_view;
-    private ImageView mIv_grid_view;
-    public ImageView mIv_back;
-    public ImageView mIv_up;
-    private ImageView mIv_forward;
-    private ImageView mIv_setting;
-    private EditText mEt_nivagation;
-    private EditText mEt_search_view;
+    private TextView mTv_desk, mTv_music, mTv_video, mTv_computer, mTv_picture,
+                      mTv_document, mTv_download, mTv_recycle, mTv_cloud_service,mTv_net_service;
+    private ImageView mIv_list_view, mIv_grid_view, mIv_forward, mIv_setting;
+    public ImageView mIv_up, mIv_back;
+    private EditText mEt_nivagation, mEt_search_view;
     private ImageView mIv_search_view;
     private LinearLayout ll_usb;
 
@@ -125,12 +112,8 @@ public class MainActivity extends BaseActivity
     private PopWinShare mPopWinShare;
     public Fragment mCurFragment;
     public SdStorageFragment mSdStorageFragment;
-    public boolean mIsSdStorageFragmentHided;
-    private SystemSpaceFragment mDeskFragment, mMusicFragment, mVideoFragment,
-                                mPictrueFragment, mAddressFragment,
-                                mDocumentFragment, mDownloadFragment,
-                                mRecycleFragment;
-    private OnlineNeighborFragment mOnlineNeighborFragment;
+    private SystemSpaceFragment mDeskFragment, mMusicFragment, mVideoFragment, mPictrueFragment,
+            mAddressFragment, mDocumentFragment, mDownloadFragment, mRecycleFragment;
     public SeafileFragment mSeafileFragment;
     private UsbConnectReceiver mReceiver;
     private boolean mIsMutiSelect;
@@ -184,9 +167,9 @@ public class MainActivity extends BaseActivity
     private int mLeftIndex = 0;
     private List<View> mLeftViewList = new ArrayList<>();
     private List<View> mUsbViews = new ArrayList<>();
-    private int mCurTabIndext = 0;
-    private View mCurLeftItem;
-    private View mPreView;
+    public int mCurTabIndext = 0;
+    private View mCurLeftItem, mPreView;
+    private EditTextTouchListener mEditTextTouchListener;
 
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -673,6 +656,7 @@ public class MainActivity extends BaseActivity
     protected void initListener() {
         mHomeLeftOnTouchListener = new HomeLeftOnTouchListener();
         mHomeLeftOnHoverListener = new HomeLeftOnHoverListener();
+        mEditTextTouchListener = new EditTextTouchListener();
         for (int i = 0; i < mLeftTexts.length; i++) {
             mLeftTexts[i].setOnTouchListener(mHomeLeftOnTouchListener);
             mLeftTexts[i].setOnHoverListener(mHomeLeftOnHoverListener);
@@ -688,9 +672,9 @@ public class MainActivity extends BaseActivity
                                         mEt_search_view.getText(), MainActivity.this);
         mEt_search_view.setOnKeyListener(mSearchOnKeyListener);
         mIv_search_view.setOnClickListener(this);
-        NivagationOnClickLinstener nivagationOnClickLinstener = new NivagationOnClickLinstener();
+        mEt_search_view.setOnTouchListener(mEditTextTouchListener);
         NivagationOnKeyLinstener nivagationOnKeyLinstener = new NivagationOnKeyLinstener();
-        mEt_nivagation.setOnClickListener(nivagationOnClickLinstener);
+        mEt_nivagation.setOnTouchListener(mEditTextTouchListener);
         mEt_nivagation.setOnKeyListener(nivagationOnKeyLinstener);
         mEt_nivagation.addTextChangedListener(new TextChangeListener());
         mEt_nivagation.setOnFocusChangeListener(new AddressOnFocusChangeListener());
@@ -729,12 +713,6 @@ public class MainActivity extends BaseActivity
         setCurPath(path);
     }
 
-    class NivagationOnClickLinstener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            v.requestFocus();
-        }
-    }
 
     class NivagationOnKeyLinstener implements View.OnKeyListener {
         @Override
@@ -861,14 +839,18 @@ public class MainActivity extends BaseActivity
     }
 
     public void processTab(View v) {
-        if (mPreView != null) {
-            mPreView.setBackgroundColor(Color.TRANSPARENT);
-        }
+        disSelectPreView();
         v.setBackgroundColor(0x68ffffff);
         v.setFocusable(true);
         //v.setFocusableInTouchMode(true);
         v.requestFocus();
         mPreView = v;
+    }
+
+    public void disSelectPreView() {
+        if (mPreView != null) {
+            mPreView.setBackgroundColor(Color.TRANSPARENT);
+        }
     }
 
     private void switchTab() {
@@ -1319,18 +1301,23 @@ public class MainActivity extends BaseActivity
         clearNivagateFocus();
         switch (view.getId()) {
             case R.id.iv_back:
+                mCurTabIndext = 0;
                 onBackward();
                 break;
             case R.id.iv_up:
+                mCurTabIndext = 2;
                 onUp();
                 break;
             case R.id.iv_forward:
+                mCurTabIndext = 1;
                 onForward();
                 break;
             case R.id.iv_setting:
+                mCurTabIndext = 3;
                 showPopWindow(SETTING_POPWINDOW_TAG);
                 break;
             case R.id.iv_grid_view:
+                mCurTabIndext = 4;
                 mIv_grid_view.setSelected(true);
                 mIv_list_view.setSelected(false);
                 LocalCache.setViewTag(VIEW_TAG_GRID);
@@ -1339,6 +1326,7 @@ public class MainActivity extends BaseActivity
                 mEditor.commit();
                 break;
             case R.id.iv_list_view:
+                mCurTabIndext = 5;
                 mIv_grid_view.setSelected(false);
                 mIv_list_view.setSelected(true);
                 LocalCache.setViewTag(VIEW_TAG_LIST);
@@ -1351,6 +1339,7 @@ public class MainActivity extends BaseActivity
                         KeyEvent.KEYCODE_ENTER));
                 break;
         }
+        disSelectPreView();
     }
 
     public void uninstallUSB(String usbPath) {
@@ -2163,6 +2152,8 @@ public class MainActivity extends BaseActivity
             clearNivagateFocus();
             switch (motionEvent.getButtonState()) {
                 case MotionEvent.BUTTON_PRIMARY:
+                    mCurTabIndext = 8;
+                    disSelectPreView();
                     setSelectView(view);
                     leftEnter(view);
                 case MotionEvent.BUTTON_SECONDARY:
@@ -2210,6 +2201,8 @@ public class MainActivity extends BaseActivity
                             mFileViewInteractionHub.openSelectFolder(mClickPath);
                     }
                 } else {
+                    mCurTabIndext = 6;
+                    disSelectPreView();
                     mAddressListView.setVisibility(View.GONE);
                     mEt_nivagation.setVisibility(View.VISIBLE);
                     mEt_nivagation.requestFocus();
@@ -2415,5 +2408,21 @@ public class MainActivity extends BaseActivity
             return true;
         }
         return super.dispatchKeyEvent(event);
+    }
+
+    private class EditTextTouchListener implements View.OnTouchListener {
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (v.getId()) {
+                case R.id.et_nivagation:
+                    mCurTabIndext = 6;
+                    break;
+                case R.id.search_view:
+                    mCurTabIndext = 7;
+                    break;
+            }
+            return false;
+        }
     }
 }

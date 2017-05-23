@@ -334,6 +334,7 @@ public class SdStorageFragment extends BaseFragment {
     }
 
     public void primaryClick(View view) {
+        mMainActivity.mCurTabIndext = 9;
         currentBackTime = System.currentTimeMillis();
         if (view.getId() != R.id.mount_grid) {
             mMountView = null;
