@@ -1008,6 +1008,9 @@ public class MainActivity extends BaseActivity
             sendBroadcastMessage("iv_menu", "pop_cacel", false);
         }
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_A) {
+            if (isCopyByHot()) {
+                return false;
+            }
             sendBroadcastMessage("iv_menu", "pop_cacel", false);
             if (getVisibleFragment() instanceof SystemSpaceFragment) {
                 final SystemSpaceFragment fragment = (SystemSpaceFragment) getVisibleFragment();

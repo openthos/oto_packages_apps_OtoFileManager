@@ -139,9 +139,6 @@ public class SdStorageFragment extends BaseFragment {
         mLinearlayouts = new LinearLayout[]{
                 mAndroidService, mSdSpace, mAndroidSystem, mPersonalSpace};
         if (Build.TYPE.equals("eng")) {
-            mSdSpace.setVisibility(View.VISIBLE);
-        } else {
-            mSdSpace.setVisibility(View.INVISIBLE);
         }
     }
 
