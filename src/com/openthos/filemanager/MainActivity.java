@@ -2156,6 +2156,7 @@ public class MainActivity extends BaseActivity
                     disSelectPreView();
                     setSelectView(view);
                     leftEnter(view);
+                    break;
                 case MotionEvent.BUTTON_SECONDARY:
                     switch (view.getId()) {
                         case R.id.usb:
