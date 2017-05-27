@@ -952,8 +952,8 @@ public class MainActivity extends BaseActivity
             }
             return true;
         }
-        if (keyCode == KeyEvent.KEYCODE_DEL && !mEt_search_view.hasFocus()
-                                                                  && !mEt_nivagation.isFocused()) {
+        if ((keyCode == KeyEvent.KEYCODE_ESCAPE || keyCode == KeyEvent.KEYCODE_DEL)
+                && !mEt_search_view.hasFocus() && !mEt_nivagation.isFocused()) {
             onBackPressed();
         }
         mIsCtrlPress = event.isCtrlPressed();
