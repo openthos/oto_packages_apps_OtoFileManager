@@ -177,8 +177,12 @@ public class MenuFirstDialog extends BaseDialog
                         mTvDialogItem.setTextColor(Color.BLACK);
                         break;
                     case Constants.DECOMPRESSIBLE:
-                        mTvDialogItem.setTextColor(Color.LTGRAY);
-                        isSetHoverListener = false;
+                        if (mFileViewInteractionHub.getSelectedFileList().size() > 1) {
+                            mTvDialogItem.setTextColor(Color.BLACK);
+                        } else {
+                            mTvDialogItem.setTextColor(Color.LTGRAY);
+                            isSetHoverListener = false;
+                        }
                         break;
                     default:
                         break;
