@@ -1343,42 +1343,23 @@ public class MainActivity extends BaseActivity
     }
 
     public void uninstallUSB(String usbPath) {
-        if (usbPath.indexOf("/storage/usb") != -1 && usbPath.indexOf("_") != -1) {
-            usbPath = usbPath.substring(0, 13);
-        }
-        try {
-            Intent umountIntent = new Intent(ExternalStorageMountter.UMOUNT_ONLY);
-            umountIntent.setComponent(ExternalStorageMountter.COMPONENT_NAME);
-            StorageVolume[] vols = getMountService().getVolumeList();
-            StorageVolume vol= null;
-            for (StorageVolume i : vols) {
-                if (i.getPath().equals(usbPath)) {
-                    vol = i;
-                    break;
-                }
-            }
-            if (vol != null) {
-                umountIntent.putExtra(StorageVolume.EXTRA_STORAGE_VOLUME, vol);
-                startService(umountIntent);
-            }
-        } catch (RemoteException e) {
-        }
         //if (usbPath.indexOf("/storage/usb") != -1 && usbPath.indexOf("_") != -1) {
         //    usbPath = usbPath.substring(0, 13);
         //}
 
-        //if (mPopUpProgressDialog == null) {
-        //    mPopUpProgressDialog = new ProgressDialog(this);
-        //}
-        //mPopUpProgressDialog.setMessage(getString(R.string.USB_umounting));
-        //mPopUpProgressDialog.setIndeterminate(true);
-        //mPopUpProgressDialog.setCancelable(true);
-        //mPopUpProgressDialog.setCanceledOnTouchOutside(true);
-        //mPopUpProgressDialog.show();
+        if (mPopUpProgressDialog == null) {
+            mPopUpProgressDialog = new ProgressDialog(this);
+        }
+        mPopUpProgressDialog.setMessage(getString(R.string.USB_umounting));
+        mPopUpProgressDialog.setIndeterminate(true);
+        mPopUpProgressDialog.setCancelable(true);
+        mPopUpProgressDialog.setCanceledOnTouchOutside(true);
+        mPopUpProgressDialog.show();
         //mUsbSingleExecutor.execute(new UninstallUsbThread(usbPath));
+        new UninstallUsbThread(usbPath).start();
     }
 
-    private class UninstallUsbThread implements Runnable {
+    private class UninstallUsbThread extends Thread {
         private String usbPath;
 
         public UninstallUsbThread(String usbPath) {
@@ -1395,9 +1376,27 @@ public class MainActivity extends BaseActivity
                 String line;
                 while ((line = in.readLine()) != null) {
                 }
-                getMountService().unmountVolume(usbPath, true, false);
-                sendMsg(Constants.USB_UNMOUNT, usbPath);
-
+                mPopUpProgressDialog.dismiss();
+                if (usbPath.indexOf("/storage/usb") != -1 && usbPath.indexOf("_") != -1) {
+                    usbPath = usbPath.substring(0, 13);
+                }
+                try {
+                    Intent umountIntent = new Intent(ExternalStorageMountter.UMOUNT_ONLY);
+                    umountIntent.setComponent(ExternalStorageMountter.COMPONENT_NAME);
+                    StorageVolume[] vols = getMountService().getVolumeList();
+                    StorageVolume vol= null;
+                    for (StorageVolume i : vols) {
+                        if (i.getPath().equals(usbPath)) {
+                            vol = i;
+                            break;
+                        }
+                    }
+                    if (vol != null) {
+                        umountIntent.putExtra(StorageVolume.EXTRA_STORAGE_VOLUME, vol);
+                        startService(umountIntent);
+                    }
+                } catch (RemoteException e) {
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
