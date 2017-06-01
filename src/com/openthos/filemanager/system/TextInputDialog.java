@@ -46,7 +46,12 @@ public class TextInputDialog extends AlertDialog {
 
         mFolderName = (EditText) mView.findViewById(R.id.text);
         mFolderName.setText(mInputText);
-
+        int index = mFolderName.getText().toString().lastIndexOf(".");
+        if (index > 0) {
+            mFolderName.setSelection(0, index);
+        } else {
+            mFolderName.setSelection(0, mFolderName.getText().toString().length());
+        }
         setView(mView);
         setButton(BUTTON_POSITIVE, mContext.getString(R.string.confirm),
                 new OnClickListener() {
