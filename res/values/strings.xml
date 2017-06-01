@@ -236,7 +236,7 @@
     <string name="cloud_sync">Sync</string>
     <string name="cloud_desync">Desync</string>
     <string name="no_app_open_with">No application to open this file.\nPlease download in AppStore.</string>
-    <string name="USB_umounting">USB_umounting</string>
+    <string name="usb_sync">Synchronizing data! Please do not unplug the USB device!</string>
     <string name="can_not_search">You can\'t search in the current path.</string>
     <string name="remove_usb_device">Umount usb devices</string>
     <string name="format_usb_device">Format usb devices</string>

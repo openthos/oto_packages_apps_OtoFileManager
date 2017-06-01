@@ -1350,7 +1350,7 @@ public class MainActivity extends BaseActivity
         if (mPopUpProgressDialog == null) {
             mPopUpProgressDialog = new ProgressDialog(this);
         }
-        mPopUpProgressDialog.setMessage(getString(R.string.USB_umounting));
+        mPopUpProgressDialog.setMessage(getString(R.string.usb_sync));
         mPopUpProgressDialog.setIndeterminate(true);
         mPopUpProgressDialog.setCancelable(true);
         mPopUpProgressDialog.setCanceledOnTouchOutside(true);
