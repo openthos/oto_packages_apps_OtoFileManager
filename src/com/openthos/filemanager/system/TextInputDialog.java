@@ -52,6 +52,18 @@ public class TextInputDialog extends AlertDialog {
         } else {
             mFolderName.setSelection(0, mFolderName.getText().toString().length());
         }
+        mFolderName.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                        || event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER)
+                        && event.getAction()==KeyEvent.ACTION_DOWN) {
+                    dismiss();
+                    mListener.onFinish(mFolderName.getText().toString());
+                }
+                return false;
+            }
+        });
         setView(mView);
         setButton(BUTTON_POSITIVE, mContext.getString(R.string.confirm),
                 new OnClickListener() {
