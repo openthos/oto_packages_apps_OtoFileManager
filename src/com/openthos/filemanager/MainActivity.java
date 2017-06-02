@@ -35,6 +35,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.widget.RelativeLayout;
 import android.widget.LinearLayout;
 import android.app.ProgressDialog;
+import android.os.Build;
 
 import com.openthos.filemanager.bean.SeafileAccount;
 import com.openthos.filemanager.bean.SeafileLibrary;
@@ -75,6 +76,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.io.IOException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -747,6 +749,15 @@ public class MainActivity extends BaseActivity
             path = Constants.SD_PATH + path;
         }
         File file = new File(path);
+        try {
+            path = file.getCanonicalPath();
+            if (Build.TYPE != "eng"
+                    && !(path.startsWith(Constants.USER_PERMISSION_PATH))) {
+                return;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (file.exists()) {
             FragmentTransaction transaction = mManager.beginTransaction();
             transaction.hide(mCurFragment);
@@ -2183,6 +2194,9 @@ public class MainActivity extends BaseActivity
                         && getVisibleFragment() instanceof SystemSpaceFragment
                         && view.getTag() instanceof PathAdapter.ViewHolder) {
                     int pos = (int) ((PathAdapter.ViewHolder) view.getTag()).path.getTag();
+                    if (pos == 0 && Build.TYPE != "eng" && mPath[pos].equals(Constants.SD_PATH)) {
+                        return true;
+                    }
                     if (pos == mPath.length - 1) {
                         ((IFileInteractionListener) getVisibleFragment()).
                             onRefreshFileList(mCurPath, getFileSortHelper());

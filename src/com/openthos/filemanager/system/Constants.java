@@ -56,6 +56,7 @@ public abstract class Constants {
     public static final String BAIDU_PAN_PATH = Constants.ROOT_PATH + "BaiduNetdisk";
     public static final String PERMISS_DIR_STORAGE_USB = "/storage/usb";
     public static final String PERMISS_DIR_SEAFILE = "/data/sea/data";
+    public static final String USER_PERMISSION_PATH = "/storage";
 
     public static final String COMPRESS_FILES = "com.openthos.compress.compress";
     public static final String DECOMPRESS_FILE = "com.openthos.compress.decompress";
