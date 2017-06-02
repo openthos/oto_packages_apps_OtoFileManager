@@ -389,7 +389,7 @@ public class PropertyDialog extends BaseDialog implements View.OnClickListener,
             if (f.exists() && f.isDirectory()) {
                 try {
                     Process pro = Runtime.getRuntime().exec(
-                                              new String[]{"du", "-h", f.getAbsolutePath()});
+                                              new String[]{"du", "-h", f.getAbsolutePath() + "/"});
                     in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
                     while ((line = in.readLine()) != null) {
                         if (line != null) {
