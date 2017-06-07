@@ -751,7 +751,7 @@ public class MainActivity extends BaseActivity
         File file = new File(path);
         try {
             path = file.getCanonicalPath();
-            if (Build.TYPE != "eng"
+            if (!Build.TYPE.equals("eng")
                     && !(path.startsWith(Constants.USER_PERMISSION_PATH))) {
                 return;
             }
@@ -2194,7 +2194,8 @@ public class MainActivity extends BaseActivity
                         && getVisibleFragment() instanceof SystemSpaceFragment
                         && view.getTag() instanceof PathAdapter.ViewHolder) {
                     int pos = (int) ((PathAdapter.ViewHolder) view.getTag()).path.getTag();
-                    if (pos == 0 && Build.TYPE != "eng" && mPath[pos].equals(Constants.SD_PATH)) {
+                    if (pos == 0 && !Build.TYPE.equals("eng")
+                           && mPath[pos].equals(Constants.SD_PATH)) {
                         return true;
                     }
                     if (pos == mPath.length - 1) {
