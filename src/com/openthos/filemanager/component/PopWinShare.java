@@ -1,6 +1,7 @@
 package com.openthos.filemanager.component;
 
 import android.graphics.drawable.ColorDrawable;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -10,6 +11,8 @@ import android.widget.TextView;
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
 
+import java.util.ArrayList;
+import java.util.List;
 public class PopWinShare extends PopupWindow {
     private static final String IV_SETTING_TAG = "iv_setting";
     private static final String IV_USB_TAG = "iv_usb";
@@ -24,9 +27,9 @@ public class PopWinShare extends PopupWindow {
     private LinearLayout mLl_menu, mLl_setting, mLl_usb;
     private LinearLayout mLlMount;
     private TextView mPopMount, mPopUmount;
+    private List<LinearLayout> mContainers;
 
-
-    public PopWinShare(MainActivity mainActivity, View.OnClickListener paramOnClickListener,
+    public PopWinShare(final MainActivity mainActivity, View.OnClickListener paramOnClickListener,
                        int paramInt1, int paramInt2, String menu_tag) {
         super(mainActivity);
         mMainView = LayoutInflater.from(mainActivity).inflate(R.layout.popwin_share, null);
@@ -34,6 +37,11 @@ public class PopWinShare extends PopupWindow {
         mLl_setting = (LinearLayout) mMainView.findViewById(R.id.ll_setting);
         mLl_usb = (LinearLayout) mMainView.findViewById(R.id.ll_usb);
         mLlMount = (LinearLayout) mMainView.findViewById(R.id.ll_mount);
+        mContainers = new ArrayList<>();
+        mContainers.add(mLl_menu);
+        mContainers.add(mLl_setting);
+        mContainers.add(mLl_usb);
+        mContainers.add(mLlMount);
         if (IV_MENU_TAG.equals(menu_tag)) {
             mLl_setting.setVisibility(View.GONE);
             mLl_usb.setVisibility(View.GONE);
@@ -91,5 +99,56 @@ public class PopWinShare extends PopupWindow {
         setHeight(paramInt2);
         setAnimationStyle(R.style.AnimTools);
         setBackgroundDrawable(new ColorDrawable());
+        mMainView.setOnKeyListener(new View.OnKeyListener() {
+            int currentIndex = -1;
+            int childCount;
+            View currentChild;
+
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getKeyCode() == KeyEvent.KEYCODE_TAB) {
+                    return false;
+                }
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    if (currentChild != null) {
+                        currentChild.setBackground(mainActivity.getResources()
+                                .getDrawable(android.R.color.transparent));
+                    }
+                    LinearLayout view = null;
+                    for (LinearLayout container : mContainers) {
+                        if (container.getVisibility() == View.VISIBLE) {
+                            view = container;
+                            break;
+                        }
+                    }
+                    if (view != null) {
+                        childCount = view.getChildCount();
+                        switch (event.getKeyCode()) {
+                            case KeyEvent.KEYCODE_DPAD_LEFT:
+                            case KeyEvent.KEYCODE_DPAD_UP:
+                                view.getChildAt(currentIndex > 0 ? --currentIndex : currentIndex)
+                                        .setBackground(mainActivity.getResources()
+                                                .getDrawable(android.R.color.holo_purple));
+                                break;
+                            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                            case KeyEvent.KEYCODE_DPAD_DOWN:
+                                view.getChildAt(currentIndex < childCount - 1 ?
+                                    ++currentIndex : currentIndex).setBackground(mainActivity
+                                        .getResources().getDrawable(android.R.color.holo_purple));
+                                break;
+                            case KeyEvent.KEYCODE_ENTER:
+                            case KeyEvent.KEYCODE_NUMPAD_ENTER:
+                                if (currentChild != null) {
+                                    currentChild.performClick();
+                                }
+                                break;
+                        }
+                        currentChild = view.getChildAt(currentIndex);
+                    }
+                }
+                return false;
+            }
+        });
+        mMainView.setFocusableInTouchMode(true);
     }
 }
