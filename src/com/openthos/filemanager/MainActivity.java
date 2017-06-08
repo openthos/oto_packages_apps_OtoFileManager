@@ -750,9 +750,15 @@ public class MainActivity extends BaseActivity
         }
         File file = new File(path);
         try {
-            path = file.getCanonicalPath();
+            if (file.getCanonicalPath().startsWith(new File("sdcard").getCanonicalPath())) {
+                path = file.getAbsolutePath();
+            } else {
+                path = file.getCanonicalPath();
+            }
             if (!Build.TYPE.equals("eng")
                     && !(path.startsWith(Constants.USER_PERMISSION_PATH))) {
+                Toast.makeText(this, "" + getResources().getString(R.string.have_no_permission),
+                               Toast.LENGTH_SHORT).show();
                 return;
             }
         } catch (IOException e) {
