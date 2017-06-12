@@ -1,5 +1,6 @@
 package com.openthos.filemanager;
 
+import android.app.ActivityThread;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -1400,7 +1401,8 @@ public class MainActivity extends BaseActivity
                 try {
                     Intent umountIntent = new Intent(ExternalStorageMountter.UMOUNT_ONLY);
                     umountIntent.setComponent(ExternalStorageMountter.COMPONENT_NAME);
-                    StorageVolume[] vols = getMountService().getVolumeList();
+                    StorageVolume[] vols = getMountService().getVolumeList(
+                            MainActivity.this.getUserId(), ActivityThread.currentPackageName(), 0);
                     StorageVolume vol= null;
                     for (StorageVolume i : vols) {
                         if (i.getPath().equals(usbPath)) {
@@ -1985,7 +1987,8 @@ public class MainActivity extends BaseActivity
         try {
             Intent formatIntent = new Intent(ExternalStorageFormatter.FORMAT_ONLY);
             formatIntent.setComponent(ExternalStorageFormatter.COMPONENT_NAME);
-            StorageVolume[] vols = getMountService().getVolumeList();
+            StorageVolume[] vols = getMountService().getVolumeList(
+                    MainActivity.this.getUserId(), ActivityThread.currentPackageName(), 0);
             StorageVolume vol= null;
             for (StorageVolume i : vols) {
                 if (i.getPath().equals(usbPath)) {

@@ -590,20 +590,12 @@ public abstract class Constants {
     public static final String SUFFIX_TAR_GZIP = ".gz";
     public static final String SUFFIX_TAR_BZIP2 = ".bz2";
 
-    /**
-     * public static final String ACTION_DESKTOP_SHOW_FILE = "android.intent.action.DESKTOP_SHOW_FILE";
-     * public static final String ACTION_DESKTOP_DELETE_FILE = "android.intent.action.DESKTOP_DELETE_FILE";
-     * public static final String PATH_TAG = "path";
-     * public static final String EXTRA_CROP_FILE_HEADER = "OtoCropFile:///";
-     * public static final String EXTRA_FILE_HEADER = "OtoFile:///";
-     * public static final String PACKAGENAME_TAG = "package";
-     * public static final String APPNAME_OTO_LAUNCHER = "com.android.launcher3";
-     */
-    public static final String ACTION_DESKTOP_SHOW_FILE = Intent.ACTION_DESKTOP_SHOW_FILE;
-    public static final String PATH_TAG = Intent.EXTRA_DESKTOP_PATH_TAG;
-    public static final String ACTION_DESKTOP_DELETE_FILE = Intent.ACTION_DESKTOP_DELETE_FILE;
-    public static final String EXTRA_CROP_FILE_HEADER = Intent.EXTRA_CROP_FILE_HEADER;
-    public static final String EXTRA_FILE_HEADER = Intent.EXTRA_FILE_HEADER;
-    public static final String PACKAGENAME_TAG = ApplicationInfo.PACKAGENAME_TAG;
-    public static final String APPNAME_OTO_LAUNCHER = ApplicationInfo.APPNAME_OTO_LAUNCHER;
+    public static final String ACTION_DESKTOP_SHOW_FILE = "android.intent.action.DESKTOP_SHOW_FILE";
+    public static final String ACTION_DESKTOP_DELETE_FILE = "android.intent.action.DESKTOP_DELETE_FILE";
+    public static final String PATH_TAG = "path";
+    public static final String EXTRA_CROP_FILE_HEADER = "OtoCropFile:///";
+    public static final String EXTRA_FILE_HEADER = "OtoFile:///";
+    public static final String PACKAGENAME_TAG = "package";
+    public static final String APPNAME_OTO_LAUNCHER = "com.android.launcher3";
+    public static final String EXTRA_DELETE_FILE_HEADER = "OtoDeleteFile:///";
 }

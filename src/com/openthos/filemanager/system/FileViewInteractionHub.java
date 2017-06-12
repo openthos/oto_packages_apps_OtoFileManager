@@ -906,7 +906,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         }
         String path = "";
         for (FileInfo info : getSelectedFileList()) {
-            path += Intent.EXTRA_DELETE_FILE_HEADER + info.filePath;
+            path += Constants.EXTRA_DELETE_FILE_HEADER + info.filePath;
         }
         //CompressDialog compressDialog = new CompressDialog(mContext, file.filePath);
         //compressDialog.showDialog();
