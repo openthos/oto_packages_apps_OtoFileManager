@@ -268,7 +268,7 @@ public class SystemSpaceFragment extends BaseFragment implements
         } else {
             rootDir = baseSd ? sdDir : Constants.ROOT_PATH;
         }
-        mFileViewInteractionHub.setRootPath(rootDir);
+        mFileViewInteractionHub.setRootPath("/");
 
         String currentDir = FileManagerPreferenceActivity.getPrimaryFolder
                                                               (mActivity, sdOrSystem, directorPath);
