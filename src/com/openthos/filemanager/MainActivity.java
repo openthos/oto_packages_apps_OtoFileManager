@@ -520,7 +520,7 @@ public class MainActivity extends BaseActivity
 
                 }
 
-                if (getCurPath() != null && getCurPath().equals(mUsbPath)) {
+                if (getCurPath() != null && getCurPath().startsWith(mUsbPath)) {
                     showSdSFragmentAfterInstallUSB();
                     setCurPath(null);
                     setNavigationPath(getCurPath());
@@ -2307,6 +2307,13 @@ public class MainActivity extends BaseActivity
         Util.exec(new String[]{"su", "-c", "umount " + v.getPath()});
         v.setIsMount(false);
         mSdStorageFragment.initMountData();
+        if (getCurPath() != null && getCurPath().startsWith(v.getPath())) {
+            mManager.beginTransaction().hide(mMountMap.get(v.getBlock()))
+                    .show(mSdStorageFragment).commit();
+            mCurFragment = mSdStorageFragment;
+            setCurPath(null);
+            setNavigationPath(null);
+        }
         mUserOperationFragments.remove(mMountMap.get(v.getBlock()));
     }
 
