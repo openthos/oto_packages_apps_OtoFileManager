@@ -1277,6 +1277,16 @@ public class MainActivity extends BaseActivity
 
     public void onBackward() {
         if (mFragmentIndex < mUserOperationFragments.size()) {
+            if (mCurFragment == mSdStorageFragment) {
+                mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_disable));
+                if (mFragmentIndex > 0) {
+                    mIv_forward.setImageDrawable(getDrawable(R.mipmap.forward_enable));
+                }
+            } else {
+                mIv_forward.setImageDrawable(getDrawable(R.mipmap.forward_enable));
+                mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_enable));
+            }
+
             if (mFragmentIndex > 1) {
                 mFragmentIndex--;
                 processUserOperation();
@@ -1284,12 +1294,6 @@ public class MainActivity extends BaseActivity
                 returnToRootDir();
                 mFragmentIndex = 0;
                 mIv_back.setImageDrawable(getDrawable(R.mipmap.backward_disable));
-            }
-            if (mCurFragment == mSdStorageFragment) {
-                mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_disable));
-            } else {
-                mIv_forward.setImageDrawable(getDrawable(R.mipmap.forward_enable));
-                mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_enable));
             }
         }
     }
@@ -1307,6 +1311,10 @@ public class MainActivity extends BaseActivity
         } else {
             mIv_back.setImageDrawable(getDrawable(R.mipmap.backward_enable));
             mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_enable));
+        }
+
+        if (mFragmentIndex ==  mUserOperationFragments.size() - 1) {
+            mIv_forward.setImageDrawable(getDrawable(R.mipmap.forward_disable));
         }
     }
 
@@ -1740,6 +1748,10 @@ public class MainActivity extends BaseActivity
                 returnToRootDir();
             }
         }
+
+        if (mCurFragment == mSdStorageFragment) {
+            mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_disable));
+        }
     }
 
     public Fragment getVisibleFragment() {
@@ -1892,12 +1904,12 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         mReceiver.unregisterReceiver();
         if (mCustomFileObserver != null) {
             mCustomFileObserver.stopWatching();
             mCustomFileObserver = null;
         }
+        super.onDestroy();
     }
 
     @Override
