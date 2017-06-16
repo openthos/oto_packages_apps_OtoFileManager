@@ -163,7 +163,7 @@ public class MainActivity extends BaseActivity
     private ArrayList<Disk> disks = new ArrayList<>();
     private HashMap<String, SystemSpaceFragment> mMountMap = new HashMap<>();
     private List<SystemSpaceFragment> mDynamicFragments;
-    private ArrayList<String[]> mUsbLists = new ArrayList<>();
+    private ArrayList<String> mUsbLists = new ArrayList<>();
     private HashMap<String, SystemSpaceFragment> mUsbFragments = new HashMap<>();
     private LinearLayout mLlCollection;
     private LinearLayout mLlMount;
@@ -498,7 +498,7 @@ public class MainActivity extends BaseActivity
                 if (mUsbPath != null) {
                     int position;
                     for (int i = 0; i < mUsbLists.size(); i++) {
-                        if (mUsbPath.equals(mUsbLists.get(i)[0])) {
+                        if (mUsbPath.equals(mUsbLists.get(i))) {
                             position = getUsbPosition(mUsbPath);
                             View v = ll_usb.getChildAt(getUsbPosition(mUsbPath));
                             mUsbViews.remove(v);
@@ -508,11 +508,11 @@ public class MainActivity extends BaseActivity
                         }
                     }
 
-                    if (mUsbPath.indexOf("/storage/usb") != -1) {
+                    if (mUsbPath.indexOf("/storage/") != -1) {
                         for (int i = mUsbLists.size() - 1; i >= 0; i--) {
-                            if ((mUsbLists.get(i)[0]).indexOf(mUsbPath + "_") != -1) {
-                                position = getUsbPosition(mUsbLists.get(i)[0]);
-                                ll_usb.removeViewAt(getUsbPosition(mUsbLists.get(i)[0]));
+                            if ((mUsbLists.get(i)).indexOf(mUsbPath + "_") != -1) {
+                                position = getUsbPosition(mUsbLists.get(i));
+                                ll_usb.removeViewAt(getUsbPosition(mUsbLists.get(i)));
                                 mSdStorageFragment.removeUsbView(position);
                             }
                         }
@@ -1978,8 +1978,8 @@ public class MainActivity extends BaseActivity
                     break;
                 case R.id.pop_usb_info:
                     int usbPosition = getUsbPosition(mUsbPath);
-                    String[] usbs = mUsbLists.get(usbPosition);
-                    if (usbs[0] != null && new File(usbs[0]).exists()) {
+                    String usbs = mUsbLists.get(usbPosition);
+                    if (usbs != null && new File(usbs).exists()) {
                         UsbPropertyDialog usbPropertyDialog =
                                 new UsbPropertyDialog(MainActivity.this, usbs);
                         usbPropertyDialog.showDialog();
@@ -2059,7 +2059,7 @@ public class MainActivity extends BaseActivity
         View inflate = View.inflate(this, R.layout.usb_list, null);
         TextView name = (TextView) inflate.findViewById(R.id.usb_list_usb_name);
         ImageView uninstall = (ImageView) inflate.findViewById(R.id.usb_list_uninstall);
-        String usbPath = mUsbLists.get(position)[0];
+        String usbPath = mUsbLists.get(position);
         name.setText(Util.getUsbName(this, usbPath));
         uninstall.setTag(usbPath);
         inflate.setTag(usbPath);
@@ -2286,7 +2286,7 @@ public class MainActivity extends BaseActivity
         return mVolumes;
     }
 
-    public ArrayList<String[]> getUsbLists() {
+    public ArrayList<String> getUsbLists() {
         return mUsbLists;
     }
 

@@ -62,7 +62,7 @@ public class SdStorageFragment extends BaseFragment {
     private String mLastPath;
     private LinearLayout[] mLinearlayouts;
     private ArrayList<Volume> mVolumes;
-    public ArrayList<String[]> mUsbLists;
+    public ArrayList<String> mUsbLists;
     private MouseRelativeOnGenericMotionListener mTouchListener
             = new MouseRelativeOnGenericMotionListener();
     private int homeIndex = 0;
@@ -72,7 +72,7 @@ public class SdStorageFragment extends BaseFragment {
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public SdStorageFragment(FragmentManager manager,
-                             ArrayList<String[]> usbLists, MainActivity context) {
+                             ArrayList<String> usbLists, MainActivity context) {
         mManager = manager;
         mUsbLists = usbLists;
         super.context = context;
@@ -195,12 +195,11 @@ public class SdStorageFragment extends BaseFragment {
     }
 
     private void initUsbData() {
-        String[] cmd = {"df"};
         if (mUsbLists == null) {
             mUsbLists = new ArrayList<>();
         }
         mUsbLists.clear();
-        mUsbLists.addAll(Util.execUsb(cmd));
+        mUsbLists.addAll(Util.execUsb());
         if (mUsbLists.size() > 0) {
             mLlMobileDevice.setVisibility(View.VISIBLE);
             mMainActivity.mHandler.sendEmptyMessage(Constants.USB_READY);
@@ -538,24 +537,25 @@ public class SdStorageFragment extends BaseFragment {
         }
     }
 
-    private View getUsbView(String[] usbData) {
+    private View getUsbView(String usbData) {
         View inflate = View.inflate(getActivity(), R.layout.usb_grid, null);
         LinearLayout usbLayout = (LinearLayout) inflate.findViewById(R.id.usb_grid_ll);
         ProgressBar diskResidue = (ProgressBar) inflate.findViewById(R.id.usb_grid_pb);
         TextView usbName = (TextView) inflate.findViewById(R.id.usb_grid_name);
         TextView totalSize = (TextView) inflate.findViewById(R.id.usb_grid_total_size);
         TextView availSize = (TextView) inflate.findViewById(R.id.usb_grid_available_size);
-        totalSize.setText(usbData[1]);
-        availSize.setText(usbData[3]);
-        usbName.setText(Util.getUsbName(getActivity(), usbData[0]));
-        int maxOne = (int) (Double.parseDouble(usbData[1].substring(0, 3)) * 100);
-        int availOne = (int) (Double.parseDouble(usbData[3].substring(0, 3)) * 100);
+        Util.UsbMemoryInfo usbInfo = Util.getUsbMemoryInfo(usbData);
+        totalSize.setText(Util.convertStorage(usbInfo.usbTotal));
+        availSize.setText(Util.convertStorage(usbInfo.usbFree));
+        int maxOne = (int) usbInfo.usbTotal;
+        int availOne = (int) usbInfo.usbFree;
+        usbName.setText(Util.getUsbName(getActivity(), usbData));
         int progressOne = maxOne - availOne >= 0 ?
                 maxOne - availOne : maxOne - (availOne / 1024);
         diskResidue.setMax(maxOne);
         diskResidue.setProgress(progressOne);
         inflate.setTag(usbLayout);
-        usbLayout.setTag(usbData[0]);
+        usbLayout.setTag(usbData);
         usbLayout.setOnTouchListener(new UsbTouchListener());
         return inflate;
     }

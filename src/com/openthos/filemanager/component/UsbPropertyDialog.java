@@ -24,9 +24,9 @@ import java.io.InputStreamReader;
 
 public class UsbPropertyDialog extends BaseDialog {
     private Context mContext;
-    private String[] mUsbs;
+    private String mUsbs;
 
-    public UsbPropertyDialog(Context context, String[] usbs) {
+    public UsbPropertyDialog(Context context, String usbs) {
         super(context);
         mContext = context;
         mUsbs = usbs;
@@ -46,8 +46,9 @@ public class UsbPropertyDialog extends BaseDialog {
     private void initBody() {
         TextView size = (TextView) findViewById(R.id.size);
         TextView sizeOnDisk = (TextView) findViewById(R.id.size_on_disk);
-        size.setText(mUsbs[1]);
-        sizeOnDisk.setText(mUsbs[3]);
+        Util.UsbMemoryInfo usbInfo = Util.getUsbMemoryInfo(mUsbs);
+        size.setText(Util.convertStorage(usbInfo.usbTotal));
+        sizeOnDisk.setText(Util.convertStorage(usbInfo.usbFree));
     }
 
     private void initFoot() {

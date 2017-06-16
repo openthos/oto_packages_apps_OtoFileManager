@@ -39,33 +39,18 @@ import java.util.HashSet;
 public class Util {
     private static final String LOG_TAG = "Util";
 
-    public static ArrayList<String[]> execUsb(String[] args) {
-        ArrayList<String[]> list = new ArrayList<>();
-        String []strs = null;
-        Process process = null;
-        BufferedReader buff = null;
-        try {
-            process = Runtime.getRuntime().exec(args);
-            buff= new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line = null;
-            while ((line = buff.readLine()) != null) {
-                if (line.startsWith("/storage/usb")){
-                    strs = line.split("\\s+");
-                    list.add(strs);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (buff != null) {
-                    buff.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (process != null) {
-                process.destroy();
+    public static ArrayList<String> execUsb() {
+        ArrayList<String> list = new ArrayList<>();
+        File file = new File("/storage");
+        File[] files = file.listFiles();
+        String usbPath;
+        for (File child : files) {
+            usbPath = child.getPath();
+            if (!(usbPath.equals("/storage/emulated") || usbPath.equals("/storage/sdcard0")
+                    || usbPath.equals("/storage/sdcard1") || usbPath.equals("/storage/self")
+                    || usbPath.startsWith("/storage/disk"))
+                && isNormalFile(usbPath) && shouldShowFile(usbPath) && child.canRead()) {
+                list.add(usbPath);
             }
         }
         return list;
@@ -463,30 +448,21 @@ public class Util {
         return totalBlocks * blockSize;
     }
 
-    public static UsbMemoryInfo getUsbMemoryInfo() {
-        Context context = null;
-        UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
-        HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
-        if (deviceList.size() > 0) {
-            String pathFile = "";
-            for (int i = 0; i < deviceList.size(); i++){
-                pathFile = "/storage/usb"+i;
-            }
-            try {
-                android.os.StatFs statfs = new android.os.StatFs(pathFile);
-                long nTotalBlocks = statfs.getBlockCount();
-                long nBlocSize = statfs.getBlockSize();
-                long nAvailaBlock = statfs.getAvailableBlocks();
-                long nFreeBlock = statfs.getFreeBlocks();
+    public static UsbMemoryInfo getUsbMemoryInfo(String usbPath) {
+        try {
+            android.os.StatFs statfs = new android.os.StatFs(usbPath);
+            long nTotalBlocks = statfs.getBlockCount();
+            long nBlocSize = statfs.getBlockSize();
+            long nAvailaBlock = statfs.getAvailableBlocks();
+            long nFreeBlock = statfs.getFreeBlocks();
 
-                UsbMemoryInfo usbInfo = new UsbMemoryInfo();
-                usbInfo.usbTotal = nTotalBlocks * nBlocSize;
-                usbInfo.usbFree = nAvailaBlock * nBlocSize;
+            UsbMemoryInfo usbInfo = new UsbMemoryInfo();
+            usbInfo.usbTotal = nTotalBlocks * nBlocSize;
+            usbInfo.usbFree = nAvailaBlock * nBlocSize;
 
-                return usbInfo;
-            } catch (IllegalArgumentException e) {
-                Log.e(LOG_TAG, e.toString());
-            }
+            return usbInfo;
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -555,8 +531,7 @@ public class Util {
     }
 
     public static String getUsbName(Context context, String path) {
-        return context.getResources().
-                getString(R.string.text_removable_disk) + path.replace("/storage/usb","");
+        return path.replace("/storage/", "");
     }
 
     public static String sZipFileMimeType = "application/zip";
