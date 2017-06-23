@@ -158,7 +158,6 @@ public class PersonalSpaceFragment extends BaseFragment {
                         mPersonalDialog = new PersonalMenuDialog(mContext, true);
                         integerList.clear();
                     }
-                    mPersonalDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                     mPersonalDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
                     mPersonalAdaper.notifyDataSetChanged();
                     break;

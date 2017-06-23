@@ -35,7 +35,6 @@ public class UsbPropertyDialog extends BaseDialog {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_usb_property);
         getWindow().setBackgroundDrawable(mContext.getResources().
                                           getDrawable(R.color.transparent));
@@ -63,12 +62,13 @@ public class UsbPropertyDialog extends BaseDialog {
         confirm.setOnClickListener(click);
     }
 
-    public void showDialog() {
-        show();
-        Window dialogWindow = getWindow();
-        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-        lp.dimAmount = 0.0f;
-        dialogWindow.setGravity(Gravity.CENTER);
-        dialogWindow.setAttributes(lp);
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initListener() {
+
     }
 }

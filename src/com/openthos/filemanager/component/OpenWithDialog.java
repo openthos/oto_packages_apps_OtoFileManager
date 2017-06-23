@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.BaseDialog;
+import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.system.FileInfo;
 import com.openthos.filemanager.system.FileViewInteractionHub;
@@ -34,8 +35,6 @@ import java.util.List;
 
 public class OpenWithDialog extends BaseDialog implements AdapterView.OnItemClickListener {
 
-    private Context mContext;
-    private ListView mListView;
     private TextView mTextView;
     private List<ResolveInfo> mResolveList;
     private ResolveAdapter mResolveAdapter;
@@ -45,7 +44,7 @@ public class OpenWithDialog extends BaseDialog implements AdapterView.OnItemClic
 
     public OpenWithDialog(Context context, String filePath) {
         super(context);
-        mContext = context;
+        mActivity = (MainActivity) context;
         mFilePath = filePath;
     }
 
@@ -57,12 +56,17 @@ public class OpenWithDialog extends BaseDialog implements AdapterView.OnItemClic
         initListener();
     }
 
-    private void initListener() {
+    @Override
+    protected void initData() {
+
+    }
+
+    protected void initListener() {
         mListView.setOnItemClickListener(this);
     }
 
     private void initView() {
-        mPackageManager = mContext.getPackageManager();
+        mPackageManager = mActivity.getPackageManager();
         mListView = (ListView) findViewById(R.id.lv_open_with);
         mTextView = (TextView) findViewById(R.id.tv_no_open_with);
         initList();
@@ -94,16 +98,6 @@ public class OpenWithDialog extends BaseDialog implements AdapterView.OnItemClic
                                            PackageManager.MATCH_DEFAULT_ONLY);
     }
 
-    public void showDialog() {
-        Window dialogWindow = getWindow();
-        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-        lp.dimAmount = 0.0f;
-        lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
-        show();
-        dialogWindow.setGravity(Gravity.CENTER);
-        dialogWindow.setAttributes(lp);
-    }
-
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         String packageName = mResolveList.get(i).activityInfo.packageName;
@@ -114,7 +108,7 @@ public class OpenWithDialog extends BaseDialog implements AdapterView.OnItemClic
         ComponentName cn = new ComponentName(packageName, className);
         intent.setDataAndType(Uri.fromFile(new File(mFilePath)), mFileType);
         intent.setComponent(cn);
-        mContext.startActivity(intent);
+        mActivity.startActivity(intent);
         dismiss();
     }
 
@@ -140,7 +134,7 @@ public class OpenWithDialog extends BaseDialog implements AdapterView.OnItemClic
             ViewHolder holder;
             View convertView = view;
             if (convertView == null) {
-                convertView = LayoutInflater.from(mContext).
+                convertView = LayoutInflater.from(mActivity).
                                              inflate(R.layout.list_item, viewGroup, false);
                 holder = new ViewHolder(convertView);
                 convertView.setTag(holder);

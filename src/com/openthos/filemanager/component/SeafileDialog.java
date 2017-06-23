@@ -57,6 +57,16 @@ public class SeafileDialog extends BaseDialog implements View.OnClickListener {
         initLisener();
     }
 
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
     private void initView() {
         mTvCreate = (TextView) findViewById(R.id.cloud_create);
         mTvSync = (TextView) findViewById(R.id.cloud_sync);
@@ -189,19 +199,7 @@ public class SeafileDialog extends BaseDialog implements View.OnClickListener {
     }
 
     public void showDialog(int x, int y) {
-        Window dialogWindow = getWindow();
-        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-        lp.dimAmount = 0.0f;
-        lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
-        show();
-        dialogWindow.setGravity(Gravity.LEFT | Gravity.TOP);
-        WindowManager m = mMainActivity.getWindowManager();
-        Display d = m.getDefaultDisplay();
-        int dialogPadding = (int) mMainActivity.getResources().getDimension(
-                                                                  R.dimen.left_margrin_text);
-        lp.x = x - dialogPadding;
-        lp.y = y - dialogPadding;
-        dialogWindow.setAttributes(lp);
+        super.showDialog(x, y);
         if (mMainActivity.isInitSeafile()) {
            Toast.makeText(mMainActivity,
                                      mMainActivity.getString(R.string.init_seafile), 0).show();

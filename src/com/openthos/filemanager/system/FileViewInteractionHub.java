@@ -23,7 +23,7 @@ import android.widget.ListView;
 
 import com.openthos.filemanager.BaseActivity;
 import com.openthos.filemanager.MainActivity;
-import com.openthos.filemanager.component.MenuFirstDialog;
+import com.openthos.filemanager.component.MenuDialog;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.component.CompressDialog;
 import com.openthos.filemanager.component.CreateFileDialog;
@@ -55,7 +55,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     private Context mContext;
     private CopyOrMove copyOrMoveMode;
     private int selectedDialogItem;
-    private MenuFirstDialog menuFirstDialog;
+    private MenuDialog menuDialog;
     private MainActivity mMainActivity;
 
     private boolean mIsBlank = true;
@@ -1196,15 +1196,14 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 
     public void showContextDialog(FileViewInteractionHub fileViewInteractionHub,
                                    MotionEvent event) {
-        menuFirstDialog = new MenuFirstDialog(mContext, fileViewInteractionHub, event);
-        menuFirstDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        menuFirstDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
+        menuDialog = new MenuDialog(mContext, fileViewInteractionHub, event);
+        menuDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
     }
 
     public void dismissContextDialog() {
-        if (menuFirstDialog != null) {
-            menuFirstDialog.dismiss();
-            menuFirstDialog = null;
+        if (menuDialog != null) {
+            menuDialog.dismiss();
+            menuDialog = null;
         }
     }
 

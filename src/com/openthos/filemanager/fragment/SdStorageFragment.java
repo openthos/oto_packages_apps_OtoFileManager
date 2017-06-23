@@ -387,7 +387,7 @@ public class SdStorageFragment extends BaseFragment {
     }
 
     private void showDiskDialog(View view, MotionEvent event, boolean isUSB) {
-        DiskDialog diskDialog = new DiskDialog(context, isUSB, view);
+        DiskDialog diskDialog = new DiskDialog(context, isUSB);
         diskDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         diskDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
     }

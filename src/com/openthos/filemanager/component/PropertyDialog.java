@@ -79,13 +79,22 @@ public class PropertyDialog extends BaseDialog implements View.OnClickListener,
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_property);
         getWindow().setBackgroundDrawable(mContext.getResources().getDrawable(R.color.transparent));
         File file = new File(mPath);
         initTitle(file);
         initBody(file);
         initFoot();
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initListener() {
+
     }
 
     private void initTitle(File file) {
@@ -366,16 +375,6 @@ public class PropertyDialog extends BaseDialog implements View.OnClickListener,
     @Override
     public void onClick(View v) {
         mIsChange = true;
-    }
-
-    public void showDialog() {
-        Window dialogWindow = getWindow();
-        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-        lp.dimAmount = 0.0f;
-        lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
-        show();
-        dialogWindow.setGravity(Gravity.CENTER);
-        dialogWindow.setAttributes(lp);
     }
 
     private class GetFolderSize extends AsyncTask<String, Void, String> {

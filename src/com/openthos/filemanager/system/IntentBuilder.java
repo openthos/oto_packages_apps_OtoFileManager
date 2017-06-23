@@ -40,7 +40,6 @@ public class IntentBuilder {
                 context.startActivity(intents);
             } else {
                 OpenWithDialog openWithDialog = new OpenWithDialog(context, filePath);
-                openWithDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 openWithDialog.showDialog();
             }
         } else {
@@ -80,10 +79,9 @@ public class IntentBuilder {
 //                        }
 //                    });
 
-            TextSelectDialog dialog = new TextSelectDialog(context, R.style.menu_dialog,filePath);
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            TextSelectDialog dialog = new TextSelectDialog(context, filePath);
             if (event != null) {
-                dialog.showTextDialog((int) event.getRawX(), (int) event.getRawY());
+                dialog.showDialog((int) event.getRawX(), (int) event.getRawY());
             }
         }
     }

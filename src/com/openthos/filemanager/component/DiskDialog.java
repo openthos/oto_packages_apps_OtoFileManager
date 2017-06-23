@@ -18,28 +18,22 @@ import android.widget.TextView;
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.BaseDialog;
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.adapter.BaseDialogAdapter;
 import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.fragment.SdStorageFragment;
 import java.util.ArrayList;
 import static android.R.color.holo_purple;
 import static android.R.color.transparent;
 
-public class DiskDialog extends BaseDialog
-                               implements ListView.OnItemClickListener, View.OnHoverListener{
-    private Context mContext;
+public class DiskDialog extends BaseDialog implements ListView.OnItemClickListener{
     private boolean mIsUSB;
     private View mView;
-    private MainActivity mMainActivity;
     private MotionEvent mMotionEvent;
-    private ListView mListView;
-    private ArrayList mData;
 
-    public DiskDialog(Context context, boolean isUSB, View view) {
+    public DiskDialog(Context context, boolean isUSB) {
         super(context);
-        mContext = context;
-        mMainActivity = (MainActivity) context;
+        mActivity = (MainActivity) context;
         mIsUSB = isUSB;
-        mView = view;
     }
 
     @Override
@@ -57,19 +51,19 @@ public class DiskDialog extends BaseDialog
 
     public void initData() {
         String[] diskMeun = new String[] {
-                mContext.getString(R.string.operation_open),
+                mActivity.getString(R.string.operation_open),
         };
 
         String[] uDiskMeun = new String[] {
-                mContext.getString(R.string.operation_open),
-                mContext.getString(R.string.umount),
-                mContext.getString(R.string.format_usb_device)
+                mActivity.getString(R.string.operation_open),
+                mActivity.getString(R.string.umount),
+                mActivity.getString(R.string.format_usb_device)
         };
 
-        mData = new ArrayList();
+        mDatas = new ArrayList();
         prepareData(mIsUSB ? uDiskMeun : diskMeun);
 
-        BaseDialogAdapter mAdapter = new BaseDialogAdapter();
+        BaseDialogAdapter mAdapter = new BaseDialogAdapter(mActivity, mDatas);
         mListView.setAdapter(mAdapter);
     }
 
@@ -79,79 +73,21 @@ public class DiskDialog extends BaseDialog
 
     public  void prepareData(String[] sArr) {
         for (int i = 0; i < sArr.length; i++) {
-            mData.add(sArr[i]);
-        }
-    }
-
-    class BaseDialogAdapter extends BaseAdapter {
-
-        @Override
-        public int getCount() {
-            return mData.size();
-        }
-
-        @Override
-        public Object getItem(int i) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            view = View.inflate(mContext, R.layout.dialog_base_item ,null);
-            view.setOnHoverListener(DiskDialog.this);
-            TextView mTvDialogItem = (TextView) view.findViewById(R.id.dialog_base_item);
-            String content = mData.get(i).toString();
-            mTvDialogItem.setText(content);
-            view.setTag(content);
-            return view;
+            mDatas.add(sArr[i]);
         }
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         String content = (String) view.getTag();
-        if (mContext.getString(R.string.umount).equals(content)) {
+        if (mActivity.getString(R.string.umount).equals(content)) {
             ((SdStorageFragment) (((MainActivity)
-                                           mContext).getVisibleFragment())).uninstallUSB();
-        } else if (mContext.getString(R.string.operation_open).equals(content)) {
-            ((SdStorageFragment) (((MainActivity) mContext).getVisibleFragment())).enter();
-        } else if (mContext.getString(R.string.format_usb_device).equals(content)) {
-            ((MainActivity) mContext).formatVolume();
+                                           mActivity).getVisibleFragment())).uninstallUSB();
+        } else if (mActivity.getString(R.string.operation_open).equals(content)) {
+            ((SdStorageFragment) (((MainActivity) mActivity).getVisibleFragment())).enter();
+        } else if (mActivity.getString(R.string.format_usb_device).equals(content)) {
+            ((MainActivity) mActivity).formatVolume();
         }
         dismiss();
-    }
-
-    @Override
-    public boolean onHover(View view, MotionEvent motionEvent) {
-        int action = motionEvent.getAction();
-        switch (action) {
-            case MotionEvent.ACTION_HOVER_ENTER:
-                view.setBackgroundColor(mContext.getResources().getColor(holo_purple));
-                break;
-            case MotionEvent.ACTION_HOVER_EXIT:
-                view.setBackgroundColor(mContext.getResources().getColor(transparent));
-                break;
-        }
-        return false;
-    }
-
-    public void showDialog(int x, int y) {
-        Window dialogWindow = getWindow();
-        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-        lp.dimAmount = 0.0f;
-        lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
-        show();
-        dialogWindow.setGravity(Gravity.LEFT | Gravity.TOP);
-        WindowManager m = ((Activity) mContext).getWindowManager();
-        Display d = m.getDefaultDisplay();
-        int dialogPadding = (int) mContext.getResources().getDimension(R.dimen.left_margrin_text);
-        lp.x = x - dialogPadding;
-        lp.y = y - dialogPadding;
-        dialogWindow.setAttributes(lp);
     }
 }

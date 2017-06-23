@@ -52,11 +52,20 @@ public class CompressDialog extends BaseDialog {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_compress);
         getWindow().setBackgroundDrawable(mContext.getResources().getDrawable(R.color.transparent));
         initBody();
         initFoot();
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initListener() {
+
     }
 
     private void initBody() {
@@ -119,15 +128,5 @@ public class CompressDialog extends BaseDialog {
         };
         confirm.setOnClickListener(click);
         cancel.setOnClickListener(click);
-    }
-
-    public void showDialog() {
-        Window dialogWindow = getWindow();
-        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-        lp.dimAmount = 0.0f;
-        lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
-        show();
-        dialogWindow.setGravity(Gravity.CENTER);
-        dialogWindow.setAttributes(lp);
     }
 }

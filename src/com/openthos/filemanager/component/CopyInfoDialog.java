@@ -51,12 +51,21 @@ public class CopyInfoDialog extends BaseDialog {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         View v = View.inflate(mContext, R.layout.dialog_copy_info, null);
         setContentView(v);
         mTextMessage = (TextView) v.findViewById(R.id.text_message);
         mTextTitle = (TextView) v.findViewById(R.id.text_title);
         mGif = (GifView) v.findViewById(R.id.gif);
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initListener() {
+
     }
 
     public void showDialog(int rawId) {
@@ -66,13 +75,7 @@ public class CopyInfoDialog extends BaseDialog {
                                      .findViewById(R.id.gif);
         }
         mGif.setMovieResource(mRawId);
-        Window dialogWindow = getWindow();
-        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-        lp.dimAmount = 0.0f;
-        lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
-        show();
-        dialogWindow.setGravity(Gravity.CENTER);
-        dialogWindow.setAttributes(lp);
+        showDialog();
     }
 
     public void changeMsg(final String s) {

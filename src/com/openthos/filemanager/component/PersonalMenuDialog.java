@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.BaseDialog;
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.adapter.BaseDialogAdapter;
 import com.openthos.filemanager.fragment.PersonalSpaceFragment;
 import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.system.FileInfo;
@@ -33,122 +34,48 @@ import java.util.ArrayList;
 import static android.R.color.holo_purple;
 import static android.R.color.transparent;
 
-public class PersonalMenuDialog extends BaseDialog
-                             implements View.OnHoverListener, ListView.OnItemClickListener{
-    private Context mContext;
-    private ListView mListView;
-    private ArrayList mData;
-    boolean mIsBlank;
+public class PersonalMenuDialog extends BaseDialog implements ListView.OnItemClickListener {
+
+    private boolean mIsBlank;
 
     public PersonalMenuDialog(Context context, boolean isBlank) {
         super(context);
-        mContext = context;
+        mActivity = (MainActivity) context;
         mIsBlank = isBlank;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.dialog_base);
-        initView();
-        initData();
-        initListener();
-    }
-
-    private void initListener() {
-        mListView.setOnItemClickListener(this);
-    }
-
-    private void initData() {
-        mData = new ArrayList();
+    protected void initData() {
+        mDatas = new ArrayList();
         if (mIsBlank) {
-            mData.add(mContext.getString(R.string.operation_refresh));
+            mDatas.add(mActivity.getString(R.string.operation_refresh));
         } else {
-            String[] menu = mContext.getResources().getStringArray(R.array.personal_folder_menu);
+            String[] menu = mActivity.getResources().getStringArray(R.array.personal_folder_menu);
             for (int i = 0; i < menu.length; i++) {
-                mData.add(menu[i]);
+                mDatas.add(menu[i]);
             }
         }
-        BaseDialogAdapter mAdapter = new BaseDialogAdapter();
+        BaseDialogAdapter mAdapter = new BaseDialogAdapter(mActivity, mDatas);
         mListView.setAdapter(mAdapter);
     }
 
-    private void initView() {
-        mListView = (ListView) findViewById(R.id.dialog_base_lv);
-    }
-
-    class BaseDialogAdapter extends BaseAdapter {
-
-        @Override
-        public int getCount() {
-            return mData.size();
-        }
-
-        @Override
-        public Object getItem(int i) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            view = View.inflate(mContext, R.layout.dialog_base_item, null);
-            TextView mTvDialogItem = (TextView) view.findViewById(R.id.dialog_base_item);
-            String content = mData.get(i).toString();
-            mTvDialogItem.setText(content);
-            view.setOnHoverListener(PersonalMenuDialog.this);
-            view.setTag(content);
-            return view;
-        }
-    }
-
     @Override
+    protected void initListener() {
+        mListView.setOnItemClickListener(this);
+    }
+
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         String content = (String) view.getTag();
         PersonalSpaceFragment personalSpaceFragment =
-            (PersonalSpaceFragment) ((MainActivity) mContext).getVisibleFragment();
-        if (mContext.getString(R.string.operation_open).equals(content)) {
+            (PersonalSpaceFragment) ((MainActivity) mActivity).getVisibleFragment();
+        if (mActivity.getString(R.string.operation_open).equals(content)) {
             personalSpaceFragment.enter();
-        } else if (mContext.getString(R.string.operation_copy_path).equals(content)) {
+        } else if (mActivity.getString(R.string.operation_copy_path).equals(content)) {
             personalSpaceFragment.copyPath();
-        } else if (mContext.getString(R.string.operation_refresh).equals(content)) {
+        } else if (mActivity.getString(R.string.operation_refresh).equals(content)) {
             personalSpaceFragment.checkFolder();
         }
         if (!TextUtils.isEmpty(content)) {
             dismiss();
         }
-    }
-
-    @Override
-    public boolean onHover(View view, MotionEvent motionEvent) {
-        int action = motionEvent.getAction();
-        switch (action) {
-            case MotionEvent.ACTION_HOVER_ENTER:
-                view.setBackgroundColor(mContext.getResources().getColor(holo_purple));
-                break;
-            case MotionEvent.ACTION_HOVER_EXIT:
-                view.setBackgroundColor(mContext.getResources().getColor(transparent));
-                break;
-        }
-        return false;
-    }
-
-    public void showDialog(int x, int y) {
-        Window dialogWindow = getWindow();
-        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-        lp.dimAmount = 0.0f;
-        lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
-        show();
-        dialogWindow.setGravity(Gravity.LEFT | Gravity.TOP);
-        WindowManager m = ((Activity) mContext).getWindowManager();
-        Display d = m.getDefaultDisplay();
-        int dialogPadding = (int) mContext.getResources().getDimension(R.dimen.left_margrin_text);
-        lp.x = x - dialogPadding;
-        lp.y = y - dialogPadding;
-        dialogWindow.setAttributes(lp);
     }
 }

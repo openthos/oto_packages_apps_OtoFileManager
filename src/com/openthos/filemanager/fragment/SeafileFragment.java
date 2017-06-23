@@ -168,13 +168,11 @@ public class SeafileFragment extends BaseFragment {
 
     private void showItemDialog(MotionEvent motionEvent, SeafileLibrary library, int pos) {
         SeafileDialog seafileDialog = new SeafileDialog(mMainActivity, true, library, pos);
-        seafileDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         seafileDialog.showDialog((int) motionEvent.getRawX(), (int) motionEvent.getRawY());
     }
 
     void showDialog(MotionEvent motionEvent) {
         SeafileDialog seafileDialog = new SeafileDialog(mMainActivity, false, null, -1);
-        seafileDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         seafileDialog.showDialog((int) motionEvent.getRawX(), (int) motionEvent.getRawY());
     }
 
