@@ -36,19 +36,6 @@ public class DiskDialog extends BaseDialog implements ListView.OnItemClickListen
         mIsUSB = isUSB;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.dialog_base);
-        initView();
-        initData();
-        initListener();
-    }
-
-    public void initView() {
-        mListView = (ListView) findViewById(R.id.dialog_base_lv);
-    }
-
     public void initData() {
         String[] diskMeun = new String[] {
                 mActivity.getString(R.string.operation_open),

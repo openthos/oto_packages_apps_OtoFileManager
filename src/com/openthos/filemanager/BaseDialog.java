@@ -20,6 +20,7 @@ import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ListAdapter;
 
 import com.openthos.filemanager.component.MenuDialog;
 import com.openthos.filemanager.system.Constants;
@@ -61,6 +62,26 @@ public abstract class BaseDialog extends Dialog{
         mListView = (ListView) findViewById(R.id.dialog_base_lv);
         initData();
         initListener();
+        setListViewBasedOnChildren(mListView);
+    }
+
+    public void setListViewBasedOnChildren(ListView listView) {
+        if (listView == null || listView.getAdapter() == null) {
+            return;
+        }
+        ListAdapter listAdapter = listView.getAdapter();
+        int maxWidth = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            int width = listItem.getMeasuredWidth();
+            if (width > maxWidth) {
+                maxWidth = width;
+            }
+        }
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.width = maxWidth;
+        listView.setLayoutParams(params);
     }
 
     protected abstract  void initData();

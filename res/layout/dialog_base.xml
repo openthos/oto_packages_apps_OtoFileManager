@@ -6,7 +6,7 @@
     android:background="@color/white">
     <ListView
         android:id="@+id/dialog_base_lv"
-        android:layout_width="176dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:fadingEdge="none"
         android:scrollbars="none"

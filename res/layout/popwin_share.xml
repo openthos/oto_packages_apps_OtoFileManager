@@ -5,7 +5,7 @@
     android:background="@drawable/pop_bg_shape">
     <LinearLayout
         android:id="@+id/ll_setting"
-        android:layout_width="176dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:visibility="gone"
@@ -21,7 +21,7 @@
 
     <LinearLayout
         android:id="@+id/ll_usb"
-        android:layout_width="176dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:visibility="gone"
@@ -47,7 +47,7 @@
 
     <LinearLayout
         android:id="@+id/ll_mount"
-        android:layout_width="176dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:visibility="gone"
