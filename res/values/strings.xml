@@ -267,4 +267,9 @@
     <string name="automount_mount">Mount</string>
     <string name="automount_umount">Umount</string>
     <string name="have_no_permission">You have no permission of this path</string>
+    <string name="folder_count">"%d" folders;\t </string>
+    <string name="file_count">"%d" files,</string>
+    <string name="file_count_zise">"%s" of space; </string>
+    <string name="empty_folder">Empty Folder!</string>
+    <string name="item_selected">"%d" items selected</string>
 </resources>

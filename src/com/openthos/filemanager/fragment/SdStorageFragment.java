@@ -101,7 +101,7 @@ public class SdStorageFragment extends BaseFragment {
             case KeyEvent.KEYCODE_DPAD_RIGHT:
             case KeyEvent.KEYCODE_DPAD_DOWN:
                 homeIndex = homeIndex < mHomeViewList.size() - 1 ?
-                                              ++homeIndex : homeIndex;
+                        ++homeIndex : homeIndex;
                 break;
         }
         mCurId = mHomeIdList.get(homeIndex);
@@ -148,11 +148,12 @@ public class SdStorageFragment extends BaseFragment {
         if (null != systemInfo) {
             mSystemTotal.setText(Util.convertStorage(sdCardInfo.total));
             mSystemAvail.setText(Util.convertStorage(sdCardInfo.free));
-            mPbSystem.setMax((int) Double.parseDouble
-                    (Util.convertStorage(sdCardInfo.total).substring(0, 3)) * 10);
-            mPbSystem.setProgress((int) (Double.parseDouble
-                    (Util.convertStorage(sdCardInfo.total - sdCardInfo.free)
-                            .substring(0, 3)) * 10));
+            int maxOne = 1000;
+            int progressOne = (int) ((sdCardInfo.total - sdCardInfo.free)
+                    * 1000 / (sdCardInfo.total));
+
+            mPbSystem.setMax(maxOne);
+            mPbSystem.setProgress(progressOne);
         }
         showSdcardInfo();
     }
@@ -216,14 +217,7 @@ public class SdStorageFragment extends BaseFragment {
         for (Volume v : mVolumes) {
             if (v.isMount()) {
                 isShow = true;
-                StatFs stat = new StatFs(v.getPath());
-                long blockSize = stat.getBlockSize();
-                long availableBlocks = stat.getAvailableBlocks();
-                long totalBlocks = stat.getBlockCount();
-                String[] s = new String[]{v.getBlock(),
-                                          Util.convertStorage(blockSize * availableBlocks),
-                                          Util.convertStorage(totalBlocks * blockSize)};
-                mMountDevices.addView(getMountView(s, v));
+                mMountDevices.addView(getMountView(v));
             }
         }
         if (isShow) {
@@ -236,20 +230,23 @@ public class SdStorageFragment extends BaseFragment {
         }
     }
 
-    private View getMountView(String[] mountInfo, Volume v) {
+    private View getMountView(Volume v) {
+        StatFs stat = new StatFs(v.getPath());
+        long blockSize = stat.getBlockSize();
+        long availableBlocks = stat.getAvailableBlocks();
+        long totalBlocks = stat.getBlockCount();
         View inflate = View.inflate(getActivity(), R.layout.mount_grid, null);
         LinearLayout mountLayout = (LinearLayout) inflate.findViewById(R.id.mount_grid_ll);
         ProgressBar diskResidue = (ProgressBar) inflate.findViewById(R.id.mount_grid_pb);
         TextView usbName = (TextView) inflate.findViewById(R.id.mount_grid_name);
         TextView totalSize = (TextView) inflate.findViewById(R.id.mount_grid_total_size);
         TextView availSize = (TextView) inflate.findViewById(R.id.mount_grid_available_size);
-        totalSize.setText(mountInfo[2]);
-        availSize.setText(mountInfo[1]);
-        usbName.setText(mountInfo[0]);
-        int maxOne = (int) (Double.parseDouble(mountInfo[1].substring(0, 3)) * 100);
-        int availOne = (int) (Double.parseDouble(mountInfo[2].substring(0, 3)) * 100);
-        int progressOne = maxOne - availOne >= 0 ?
-                maxOne - availOne : maxOne - (availOne / 1024);
+        totalSize.setText(Util.convertStorage(totalBlocks * blockSize));
+        availSize.setText(Util.convertStorage(blockSize * availableBlocks));
+        usbName.setText(v.getBlock());
+        int maxOne = 1000;
+        int progressOne = (int) ((totalBlocks * blockSize - blockSize * availableBlocks) * 1000
+                / (totalBlocks * blockSize));
         diskResidue.setMax(maxOne);
         diskResidue.setProgress(progressOne);
         inflate.setTag(v);
@@ -274,7 +271,6 @@ public class SdStorageFragment extends BaseFragment {
     }
 
 
-
     private class SdOnTouchListener implements View.OnTouchListener {
         private long lastTime;
 
@@ -283,14 +279,14 @@ public class SdStorageFragment extends BaseFragment {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     if (motionEvent.getButtonState() == MotionEvent.BUTTON_PRIMARY
-                        && System.currentTimeMillis() - lastTime
+                            && System.currentTimeMillis() - lastTime
                             > Constants.DOUBLE_CLICK_INTERVAL_TIME) {
                         lastTime = System.currentTimeMillis();
                         mIsUsb = false;
                         mLongPressView = view;
                         mLongPressEvent = motionEvent;
                         mMainActivity.mHandler.postDelayed(mMainActivity.mLongPressRunnable,
-                                                           Constants.LONG_PRESS_TIME);
+                                Constants.LONG_PRESS_TIME);
                     } else {
                         lastTime = -1;
                     }
@@ -344,7 +340,7 @@ public class SdStorageFragment extends BaseFragment {
                 break;
             case R.id.rl_sd_space:
                 setDiskClickInfo(R.id.rl_sd_space, Constants.SD_SPACE_FRAGMENT,
-                                 Constants.SD_PATH+"storage/");
+                        Constants.SD_PATH + "storage/");
                 break;
             case R.id.rl_android_service:
                 setDiskClickInfo(R.id.rl_android_service, Constants.YUN_SPACE_FRAGMENT, null);
@@ -394,7 +390,7 @@ public class SdStorageFragment extends BaseFragment {
 
     private void setDiskClickInfo(int id, String tag, String path) {
         if (currentBackTime - lastBackTime > Constants.DOUBLE_CLICK_INTERVAL_TIME
-                 || id != mCurId) {
+                || id != mCurId) {
             setSelectedCardBg(id);
             mCurId = id;
             lastBackTime = currentBackTime;
@@ -438,7 +434,7 @@ public class SdStorageFragment extends BaseFragment {
         }
         if (mFileInfoArrayList != null && copyOrMove != null) {
             T.showShort(context,
-                        context.getString(R.string.operation_failed_permission_refuse));
+                    context.getString(R.string.operation_failed_permission_refuse));
         }
         FragmentTransaction transaction = mManager.beginTransaction();
         transaction.hide(mMainActivity.mCurFragment);
@@ -452,16 +448,16 @@ public class SdStorageFragment extends BaseFragment {
             mCurFragment = mMainActivity.mSeafileFragment;
         } else {
             mCurFragment = new SystemSpaceFragment(tag, path,
-                                                   mFileInfoArrayList, copyOrMove, false);
+                    mFileInfoArrayList, copyOrMove, false);
             transaction.add(R.id.fl_mian, mCurFragment, Constants.SDSSYSTEMSPACE_TAG).commitAllowingStateLoss();
-            ((SystemSpaceFragment)mCurFragment).mPos = 0;
+            ((SystemSpaceFragment) mCurFragment).mPos = 0;
         }
         mMainActivity.mCurFragment = mCurFragment;
         mCurId = Constants.RETURN_TO_WHITE;
         mMainActivity.mUserOperationFragments.add(mMainActivity.mCurFragment);
         mMainActivity.mFragmentIndex++;
         mMainActivity.mIv_back.setImageDrawable(
-                                        mMainActivity.getDrawable(R.mipmap.backward_enable));
+                mMainActivity.getDrawable(R.mipmap.backward_enable));
         mMainActivity.mIv_up.setImageDrawable(mMainActivity.getDrawable(R.mipmap.up_enable));
     }
 
@@ -547,11 +543,10 @@ public class SdStorageFragment extends BaseFragment {
         Util.UsbMemoryInfo usbInfo = Util.getUsbMemoryInfo(usbData);
         totalSize.setText(Util.convertStorage(usbInfo.usbTotal));
         availSize.setText(Util.convertStorage(usbInfo.usbFree));
-        int maxOne = (int) usbInfo.usbTotal;
-        int availOne = (int) usbInfo.usbFree;
         usbName.setText(Util.getUsbName(getActivity(), usbData));
-        int progressOne = maxOne - availOne >= 0 ?
-                maxOne - availOne : maxOne - (availOne / 1024);
+        int maxOne = 1000;
+        int progressOne = (int) ((usbInfo.usbTotal - usbInfo.usbFree)
+                * 1000 / (usbInfo.usbTotal));
         diskResidue.setMax(maxOne);
         diskResidue.setProgress(progressOne);
         inflate.setTag(usbLayout);
@@ -583,7 +578,7 @@ public class SdStorageFragment extends BaseFragment {
                                 mLongPressView = view;
                                 mLongPressEvent = motionEvent;
                                 mMainActivity.mHandler.postDelayed(mMainActivity.mLongPressRunnable,
-                                                                   Constants.LONG_PRESS_TIME);
+                                        Constants.LONG_PRESS_TIME);
                             } else {
                                 mMainActivity.enter(mCurrentPath);
                             }

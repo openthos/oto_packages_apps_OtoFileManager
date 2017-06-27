@@ -7,6 +7,21 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/left_bg_shape">
+
+        <TextView
+            android:id="@+id/info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="5dp"
+            android:singleLine="true"
+            android:textSize="22sp" />
+    </LinearLayout>
+
     <FrameLayout
         android:id="@+id/fragment_sys_fl"
         android:layout_width="fill_parent"
@@ -16,7 +31,7 @@
             android:id="@+id/file_path_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="10dp"
+            android:padding="5dp"
             android:fastScrollEnabled="true"
             android:scrollbars="none"
             android:nextFocusUp="@id/file_path_list"

@@ -928,7 +928,7 @@ public class MainActivity extends BaseActivity
                         integerList.add(0);
                         systemSpaceFragment.mFileViewInteractionHub.addDialogSelectedItem(fileInfo);
                         systemSpaceFragment.mPos = 0;
-                        adapter.notifyDataSetChanged();
+                        systemSpaceFragment.onDataChanged();
                     }
 
                 }
