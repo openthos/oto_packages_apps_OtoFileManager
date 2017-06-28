@@ -2356,7 +2356,7 @@ public class MainActivity extends BaseActivity
 
     public void enter(String usbPath) {
         mUsbStorageFragment = mUsbFragments.get(usbPath);
-        if (mUsbStorageFragment == null) {
+        if (mUsbStorageFragment == null || !mUsbStorageFragment.isAdded()) {
             mUsbStorageFragment = new SystemSpaceFragment(
                     usbPath, usbPath, null, null, false);
             mUsbFragments.put(usbPath, mUsbStorageFragment);

@@ -803,12 +803,12 @@ public class SystemSpaceFragment extends BaseFragment implements
                         Settings.instance().getShowDotAndHiddenFiles());
                 if (lFileInfo != null) {
                     fileList.add(lFileInfo);
-                }
-                if (child.isDirectory()) {
-                    directoryCount++;
-                } else {
-                    fileCount++;
-                    fileSize += child.length();
+                    if (child.isDirectory()) {
+                        directoryCount++;
+                    } else {
+                        fileCount++;
+                        fileSize += child.length();
+                    }
                 }
             }
         }
