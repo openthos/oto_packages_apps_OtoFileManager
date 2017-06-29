@@ -192,7 +192,7 @@
     <string name="file_type_file">File</string>
     <string name="address_search_false">Please check the path.</string>
     <string name="downloads">Downloads</string>
-    <string name="docement">Docement</string>
+    <string name="docement">Documents</string>
     <string name="recycle">Recycle</string>
     <string name="text_personal">My Space</string>
     <string name="dialog_property_title">Propertys</string>
@@ -272,4 +272,5 @@
     <string name="file_count_zise">"%s" of space; </string>
     <string name="empty_folder">Empty Folder!</string>
     <string name="item_selected">"%d" items selected</string>
+    <string name="items">items</string>
 </resources>

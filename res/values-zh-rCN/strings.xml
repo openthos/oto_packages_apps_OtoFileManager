@@ -274,4 +274,5 @@
     <string name="file_count_zise">占用"%s"空间; </string>
     <string name="item_selected">"%d" 项被选中</string>
     <string name="empty_folder">空目录!</string>
+    <string name="items">项</string>
 </resources>

@@ -887,6 +887,13 @@ public class SystemSpaceFragment extends BaseFragment implements
                     mInfo.setText(mInfoText);
                 } else if (mFileViewInteractionHub.getSelectedFileList().size() == 1) {
                     mInfo.setText(mFileViewInteractionHub.getSelectedFileList().get(0).fileName);
+                    if (mFileViewInteractionHub.getSelectedFileList().get(0).IsDir) {
+                        mInfo.append("\t" + mFileViewInteractionHub.getSelectedFileList()
+                                .get(0).Count + " " + getString(R.string.items));
+                    } else {
+                        mInfo.append("\t" + Util.convertStorage(mFileViewInteractionHub
+                                .getSelectedFileList().get(0).fileSize));
+                    }
                 } else {
                     mInfo.setText(getString(R.string.item_selected,
                             mFileViewInteractionHub.getSelectedFileList().size()));

@@ -47,7 +47,8 @@ public class FileListItem {
                          Util.formatDateString(context, fileInfo.ModifiedDate),
                          context.getResources().getColor(R.color.file_name_color));
             Util.setText(view, R.id.file_size,
-                         fileInfo.IsDir ? String.valueOf(fileInfo.Count) :
+                         fileInfo.IsDir ? String.valueOf(fileInfo.Count) + " "
+                         + context.getResources().getString(R.string.items) :
                          Util.convertStorage(fileInfo.fileSize),
                          context.getResources().getColor(R.color.file_name_color));
             lFileImage.setVisibility(View.VISIBLE);

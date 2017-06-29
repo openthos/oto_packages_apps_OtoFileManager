@@ -155,7 +155,6 @@ public class SdStorageFragment extends BaseFragment {
             mPbSystem.setMax(maxOne);
             mPbSystem.setProgress(progressOne);
         }
-        showSdcardInfo();
     }
 
     private void showDiskInfo(String[] usbs) {
@@ -166,26 +165,6 @@ public class SdStorageFragment extends BaseFragment {
         int avail = (int) Double.parseDouble(usbs[3].substring(0, 2)) * 10;
         mPbSd.setMax(max);
         mPbSd.setProgress(max - avail);
-    }
-
-    private void showSdcardInfo() {
-        Util.SDCardInfo sdCardInfo = Util.getSDCardInfo();
-        if (null != sdCardInfo) {
-            mSdTotal.setText(Util.convertStorage(sdCardInfo.total));
-            mSdAvail.setText(Util.convertStorage(sdCardInfo.free));
-
-            L.e("tv_sd_total", Util.convertStorage(sdCardInfo.total).substring(0, 3));
-            L.e("tv_sd_avail", Util.convertStorage(sdCardInfo.free).substring(0, 3));
-
-            mPbSd.setMax((int) Double.parseDouble
-                    (Util.convertStorage(sdCardInfo.total).substring(0, 3)) * 10);
-            mPbSd.setProgress((int) (Double.parseDouble
-                    (Util.convertStorage(sdCardInfo.total - sdCardInfo.free)
-                            .substring(0, 3)) * 10));
-            mSdTotal.setVisibility(View.GONE);
-            mSdAvail.setVisibility(View.GONE);
-            mPbSd.setVisibility(View.GONE);
-        }
     }
 
     protected void initData() {
