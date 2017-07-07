@@ -937,7 +937,9 @@ public class MainActivity extends BaseActivity
     }
 
     public void processLeftDirectionKey(int keyCode) {
-        mCurLeftItem.setSelected(false);
+        if (mCurLeftItem != null) {
+            mCurLeftItem.setSelected(false);
+        }
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_LEFT:
             case KeyEvent.KEYCODE_DPAD_UP:

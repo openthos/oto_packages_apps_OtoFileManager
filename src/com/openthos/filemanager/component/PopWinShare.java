@@ -98,9 +98,12 @@ public class PopWinShare extends PopupWindow {
                         switch (event.getKeyCode()) {
                             case KeyEvent.KEYCODE_DPAD_LEFT:
                             case KeyEvent.KEYCODE_DPAD_UP:
-                                view.getChildAt(currentIndex > 0 ? --currentIndex : currentIndex)
-                                        .setBackground(mainActivity.getResources()
-                                                .getDrawable(android.R.color.holo_purple));
+                                if (currentIndex != -1) {
+                                    view.getChildAt(currentIndex > 0 ?
+                                            --currentIndex : currentIndex)
+                                            .setBackground(mainActivity.getResources()
+                                                    .getDrawable(android.R.color.holo_purple));
+                                }
                                 break;
                             case KeyEvent.KEYCODE_DPAD_RIGHT:
                             case KeyEvent.KEYCODE_DPAD_DOWN:

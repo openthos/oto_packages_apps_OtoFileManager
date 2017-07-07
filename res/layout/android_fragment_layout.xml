@@ -1,355 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragment_sds_ll"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-
+    android:fillViewport="true">
     <LinearLayout
+        android:id="@+id/fragment_sds_ll"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/text_fast_access"
-            android:textSize="13sp"/>
-
-        <View
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="20dp"
-            android:background="#E6E6E6"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/home_item_padding"
-        android:layout_marginRight="@dimen/home_item_padding"
-        android:layout_marginTop="30dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:visibility="visible">
-
-        <LinearLayout
-            android:id="@+id/rl_personal_space"
-            style="@style/homeItemLinear">
-
-            <ImageView
-                android:id="@+id/iv_personal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:src="@mipmap/storage"/>
-
-            <TextView
-                android:id="@+id/tv_personal_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="20dp"
-                android:text="@string/text_personal"
-                android:textColor="@android:color/black"
-                android:textSize="16sp"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/rl_android_service"
-            android:visibility="invisible"
-            style="@style/homeItemLinear">
-
-            <ImageView
-                android:id="@+id/iv_service"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:src="@mipmap/cloud_service"/>
-
-            <TextView
-                android:id="@+id/tv_service_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="20dp"
-                android:text="@string/text_cloud_services"
-                android:textColor="@android:color/black"
-                android:textSize="16sp"/>
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="30dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/text_local_storage"
-            android:textSize="13sp"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="20dp"
             android:layout_marginTop="20dp"
-            android:background="#E6E6E6"/>
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/home_item_padding"
-        android:layout_marginRight="@dimen/home_item_padding"
-        android:layout_marginTop="30dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:visibility="visible">
-
-        <LinearLayout
-            android:id="@+id/rl_android_system"
-            style="@style/homeItemLinear">
-
-            <ImageView
-                android:id="@+id/iv_android"
+            android:orientation="horizontal">
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:src="@mipmap/storage"/>
-
-            <LinearLayout
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/text_fast_access"
+                android:textSize="13sp"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="20dp"
+                android:background="#E6E6E6"/>
+        </LinearLayout>
+        <com.openthos.filemanager.drag.HomeGridView
+            android:id="@+id/grid_fast_access"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal"
+            android:layout_marginLeft="@dimen/home_item_padding"
+            android:layout_marginRight="@dimen/home_item_padding"
+            android:visibility="visible"
+            android:numColumns="auto_fit"
+            android:columnWidth="@dimen/home_item_length"
+            android:stretchMode="columnWidth"
+            android:listSelector="@android:color/transparent"
+            android:weightSum="4"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/text_local_storage"
+                android:textSize="13sp"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="20dp"
+                android:background="#E6E6E6"/>
+        </LinearLayout>
+        <com.openthos.filemanager.drag.HomeGridView
+            android:id="@+id/grid_local_storage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal"
+            android:layout_marginLeft="@dimen/home_item_padding"
+            android:layout_marginRight="@dimen/home_item_padding"
+            android:visibility="visible"
+            android:numColumns="auto_fit"
+            android:columnWidth="@dimen/home_item_length"
+            android:stretchMode="columnWidth"
+            android:listSelector="@android:color/transparent"
+            android:weightSum="4"/>
+        <LinearLayout
+            android:id="@+id/ll_mobile_device"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/text_mobile_device"
+                android:textSize="13sp"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="20dp"
+                android:background="#E6E6E6"/>
+        </LinearLayout>
+        <com.openthos.filemanager.drag.HomeGridView
+            android:id="@+id/grid_usb_device"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal"
+            android:layout_marginLeft="@dimen/home_item_padding"
+            android:layout_marginRight="@dimen/home_item_padding"
+            android:visibility="visible"
+            android:numColumns="auto_fit"
+            android:columnWidth="@dimen/home_item_length"
+            android:stretchMode="columnWidth"
+            android:listSelector="@android:color/transparent"
+            android:weightSum="4"/>
+        <LinearLayout
+            android:id="@+id/ll_auto_mount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/automount"
+                android:textSize="13sp"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="20dp"
+                android:background="#E6E6E6"/>
+        </LinearLayout>
+            <com.openthos.filemanager.drag.HomeGridView
+            android:id="@+id/grid_auto_mount_device"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tv_system_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="@string/text_android"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"/>
-
-                <ProgressBar
-                    android:id="@+id/pb_system"
-                    style="@android:style/Widget.ProgressBar.Horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="5dp"
-                    android:max="100"
-                    android:progress="50"
-                    android:progressDrawable="@drawable/my_progressbar"/>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tv_system_total_size"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/text_size"
-                        android:textSize="13sp"/>
-
-                    <TextView
-                        android:id="@+id/tv_system_total"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:singleLine="true"
-                        android:textSize="13sp"/>
-
-                    <TextView
-                        android:id="@+id/tv_system_avail_size"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="15dp"
-                        android:ellipsize="end"
-                        android:singleLine="true"
-                        android:text="@string/text_available"
-                        android:textSize="13sp"/>
-
-                    <TextView
-                        android:id="@+id/tv_system_avail"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:singleLine="true"
-                        android:textSize="13sp"/>
-                </LinearLayout>
-
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/rl_sd_space"
-            style="@style/homeItemLinear">
-
-            <ImageView
-                android:id="@+id/iv_person"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:src="@mipmap/storage"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tv_sd_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="@string/text_disk_storage"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"/>
-
-                <ProgressBar
-                    android:id="@+id/pb_sd"
-                    style="@android:style/Widget.ProgressBar.Horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="5dp"
-                    android:max="100"
-                    android:progress="50"
-                    android:progressDrawable="@drawable/my_progressbar"/>
-
-                <LinearLayout
-                    android:id="@+id/tv_sd_info"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tv_sd_total_size"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/text_size"
-                        android:textSize="13sp"/>
-
-                    <TextView
-                        android:id="@+id/tv_sd_total"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:singleLine="true"
-                        android:textSize="13sp"/>
-
-                    <TextView
-                        android:id="@+id/tv_sd_avail_size"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="15dp"
-                        android:text="@string/text_available"
-                        android:textSize="13sp"/>
-
-                    <TextView
-                        android:id="@+id/tv_sd_avail"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:singleLine="true"
-                        android:textSize="13sp"/>
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
+                android:layout_marginTop="30dp"
+                android:orientation="horizontal"
+                android:layout_marginLeft="@dimen/home_item_padding"
+                android:layout_marginRight="@dimen/home_item_padding"
+                android:visibility="visible"
+                android:numColumns="auto_fit"
+                android:columnWidth="@dimen/home_item_length"
+                android:stretchMode="columnWidth"
+                android:listSelector="@android:color/transparent"
+                android:weightSum="4"/>
     </LinearLayout>
-
-
-    <LinearLayout
-        android:id="@+id/ll_mobile_device"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="30dp"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/text_mobile_device"
-            android:textSize="13sp"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="20dp"
-            android:background="#E6E6E6"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_usb_device"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:orientation="horizontal"
-        android:layout_marginLeft="@dimen/home_item_padding"
-        android:layout_marginRight="@dimen/home_item_padding"
-        android:visibility="visible"
-        android:weightSum="4"/>
-
-    <LinearLayout
-        android:id="@+id/ll_auto_mount"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="30dp"
-        android:orientation="horizontal"
-        >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/automount"
-            android:textSize="13sp"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="20dp"
-            android:background="#E6E6E6"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_auto_mount_device"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:orientation="horizontal"
-        android:layout_marginLeft="@dimen/home_item_padding"
-        android:layout_marginRight="@dimen/home_item_padding"
-        android:visibility="visible"
-        android:weightSum="4"/>
-
-</LinearLayout>
+</ScrollView>

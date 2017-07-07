@@ -1,6 +1,5 @@
 package com.openthos.filemanager.fragment;
 
-import android.os.Build;
 import android.annotation.SuppressLint;
 import android.os.StatFs;
 import android.support.v4.app.Fragment;
@@ -8,7 +7,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.BaseAdapter;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.view.MotionEvent;
@@ -19,6 +20,7 @@ import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.bean.Volume;
 import com.openthos.filemanager.component.DiskDialog;
+import com.openthos.filemanager.drag.HomeGridView;
 import com.openthos.filemanager.system.FileInfo;
 import com.openthos.filemanager.system.FileViewInteractionHub;
 import com.openthos.filemanager.system.Util;
@@ -32,10 +34,8 @@ import java.util.List;
 
 public class SdStorageFragment extends BaseFragment {
     private static final String TAG = SdStorageFragment.class.getSimpleName();
-
-    ArrayList<FileInfo> mFileInfoArrayList = null;
-    FileViewInteractionHub.CopyOrMove copyOrMove = null;
-
+    private ArrayList<FileInfo> mFileInfoArrayList = null;
+    private FileViewInteractionHub.CopyOrMove copyOrMove = null;
     private LinearLayout mAndroidSystem;
     private LinearLayout mSdSpace;
     private LinearLayout mAndroidService;
@@ -48,27 +48,28 @@ public class SdStorageFragment extends BaseFragment {
     private TextView mSdAvail;
     private ProgressBar mPbSd;
     private View mMountView;
-
     public BaseFragment mCurFragment;
     private long lastBackTime = 0;
     private long currentBackTime;
-    private String mountDiskPath = null;
     private LinearLayout mFragmentSds;
     private LinearLayout mLlMobileDevice;
-    private LinearLayout mUsbDevices;
-    private LinearLayout mMountDevices;
+    private HomeGridView mUsbDevices, mMountDevices, mLocalStorage, mFastAccess;
+    private View mLongPressView;
+    private MotionEvent mLongPressEvent;
+    private boolean mIsUsb;
     private LinearLayout mLlMountDevice;
     private String mCurrentPath;
     private String mLastPath;
     private LinearLayout[] mLinearlayouts;
     private ArrayList<Volume> mVolumes;
     public ArrayList<String> mUsbLists;
-    private MouseRelativeOnGenericMotionListener mTouchListener
-            = new MouseRelativeOnGenericMotionListener();
     private int homeIndex = 0;
     private List<Integer> mHomeIdList = new ArrayList<>();
     private List<View> mHomeViewList = new ArrayList<>();
     public View mCurView;
+    private HomeItemAdapter mUsbAdapter;
+    private HomeOnTouchListener homeOnTouchListener;
+    private List<View> mFastAccessViews, mLocatStorageViews, mMountViews, mUsbViews;
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public SdStorageFragment(FragmentManager manager,
@@ -113,33 +114,26 @@ public class SdStorageFragment extends BaseFragment {
     @Override
     protected void initView() {
         mFragmentSds = (LinearLayout) rootView.findViewById(R.id.fragment_sds_ll);
-        mPersonalSpace = (LinearLayout) rootView.findViewById(R.id.rl_personal_space);
-        mHomeIdList.add(R.id.rl_personal_space);
-        mHomeViewList.add(mPersonalSpace);
-        mAndroidSystem = (LinearLayout) rootView.findViewById(R.id.rl_android_system);
-        mHomeIdList.add(R.id.rl_android_system);
-        mHomeViewList.add(mAndroidSystem);
-        mSdSpace = (LinearLayout) rootView.findViewById(R.id.rl_sd_space);
-        mHomeIdList.add(R.id.rl_sd_space);
-        mHomeViewList.add(mSdSpace);
-        mAndroidService = (LinearLayout) rootView.findViewById(R.id.rl_android_service);
         mLlMobileDevice = (LinearLayout) rootView.findViewById(R.id.ll_mobile_device);
-
-        mSystemTotal = (TextView) rootView.findViewById(R.id.tv_system_total);
-        mSystemAvail = (TextView) rootView.findViewById(R.id.tv_system_avail);
-        mSdTotal = (TextView) rootView.findViewById(R.id.tv_sd_total);
-        mSdAvail = (TextView) rootView.findViewById(R.id.tv_sd_avail);
-        mSdInfo = (LinearLayout) rootView.findViewById(R.id.tv_sd_info);
-        mSdInfo.setVisibility(View.GONE);
-        mPbSystem = (ProgressBar) rootView.findViewById(R.id.pb_system);
-        mPbSd = (ProgressBar) rootView.findViewById(R.id.pb_sd);
-        mUsbDevices = ((LinearLayout) rootView.findViewById(R.id.ll_usb_device));
-        mMountDevices = ((LinearLayout) rootView.findViewById(R.id.ll_auto_mount_device));
+        mUsbDevices = ((HomeGridView) rootView.findViewById(R.id.grid_usb_device));
+        mMountDevices = ((HomeGridView) rootView.findViewById(R.id.grid_auto_mount_device));
         mLlMountDevice = (LinearLayout) rootView.findViewById(R.id.ll_auto_mount);
-        mLinearlayouts = new LinearLayout[]{
-                mAndroidService, mSdSpace, mAndroidSystem, mPersonalSpace};
-        if (Build.TYPE.equals("eng")) {
-        }
+        mLocalStorage = (HomeGridView) rootView.findViewById(R.id.grid_local_storage);
+        mFastAccess = (HomeGridView) rootView.findViewById(R.id.grid_fast_access);
+
+        View inflate = View.inflate(mMainActivity, R.layout.grid_home_item, null);
+        mAndroidSystem = (LinearLayout) inflate.findViewById(R.id.rl_android_system);
+        mSdSpace = (LinearLayout) inflate.findViewById(R.id.rl_sd_space);
+        mPersonalSpace = (LinearLayout) inflate.findViewById(R.id.rl_personal_space);
+        mAndroidService = (LinearLayout) inflate.findViewById(R.id.rl_android_service);
+        mSystemTotal = (TextView) inflate.findViewById(R.id.tv_system_total);
+        mSystemAvail = (TextView) inflate.findViewById(R.id.tv_system_avail);
+        mSdTotal = (TextView) inflate.findViewById(R.id.tv_sd_total);
+        mSdAvail = (TextView) inflate.findViewById(R.id.tv_sd_avail);
+        mSdInfo = (LinearLayout) inflate.findViewById(R.id.tv_sd_info);
+        mSdInfo.setVisibility(View.GONE);
+        mPbSystem = (ProgressBar) inflate.findViewById(R.id.pb_system);
+        mPbSd = (ProgressBar) inflate.findViewById(R.id.pb_sd);
     }
 
     private void setVolumSize() {
@@ -157,24 +151,40 @@ public class SdStorageFragment extends BaseFragment {
         }
     }
 
-    private void showDiskInfo(String[] usbs) {
-        mountDiskPath = usbs[0];
-        mSdTotal.setText(usbs[1]);
-        mSdAvail.setText(usbs[3]);
-        int max = (int) Double.parseDouble(usbs[1].substring(0, 3)) * 10;
-        int avail = (int) Double.parseDouble(usbs[3].substring(0, 2)) * 10;
-        mPbSd.setMax(max);
-        mPbSd.setProgress(max - avail);
+
+    private void initFastAccessData() {
+        mFastAccessViews = new ArrayList<>();
+        mFastAccessViews.add(mPersonalSpace);
+        mHomeIdList.add(R.id.rl_personal_space);
+        mHomeViewList.add(mPersonalSpace);
+        HomeItemAdapter adapter = new HomeItemAdapter(mFastAccessViews);
+        mFastAccess.setAdapter(adapter);
+    }
+
+    private void initLocalStorageData() {
+        mLocatStorageViews = new ArrayList<>();
+        mLocatStorageViews.add(mAndroidSystem);
+        mLocatStorageViews.add(mSdSpace);
+        mHomeIdList.add(R.id.rl_android_system);
+        mHomeViewList.add(mAndroidSystem);
+        mHomeIdList.add(R.id.rl_sd_space);
+        mHomeViewList.add(mSdSpace);
+        HomeItemAdapter adapter = new HomeItemAdapter(mLocatStorageViews);
+        mLocalStorage.setAdapter(adapter);
     }
 
     protected void initData() {
+        initFastAccessData();
+        initLocalStorageData();
         setVolumSize();
         initUsbData();
-        mVolumes = mMainActivity.getVolumes();
         initMountData();
+        mLinearlayouts = new LinearLayout[]{
+                mAndroidService, mSdSpace, mAndroidSystem, mPersonalSpace};
     }
 
     private void initUsbData() {
+        mUsbViews = new ArrayList<>();
         if (mUsbLists == null) {
             mUsbLists = new ArrayList<>();
         }
@@ -183,30 +193,43 @@ public class SdStorageFragment extends BaseFragment {
         if (mUsbLists.size() > 0) {
             mLlMobileDevice.setVisibility(View.VISIBLE);
             mMainActivity.mHandler.sendEmptyMessage(Constants.USB_READY);
-            mUsbDevices.removeAllViews();
             for (int i = 0; i < mUsbLists.size(); i++) {
-                mUsbDevices.addView(getUsbView(mUsbLists.get(i)));
+                mUsbViews.add(getUsbView(mUsbLists.get(i)));
             }
+            mUsbAdapter = new HomeItemAdapter(mUsbViews);
+            mUsbDevices.setAdapter(mUsbAdapter);
         }
     }
 
     public void initMountData() {
+        mVolumes = mMainActivity.getVolumes();
         boolean isShow = false;
-        mMountDevices.removeAllViews();
+        mMountViews = new ArrayList<>();
         for (Volume v : mVolumes) {
             if (v.isMount()) {
                 isShow = true;
-                mMountDevices.addView(getMountView(v));
+                mMountViews.add(getMountView(v));
             }
         }
+        HomeItemAdapter autoMountAdapter = new HomeItemAdapter(mMountViews);
+        mMountDevices.setAdapter(autoMountAdapter);
         if (isShow) {
             mMountDevices.setVisibility(View.VISIBLE);
             mLlMountDevice.setVisibility(View.VISIBLE);
-
         } else {
             mMountDevices.setVisibility(View.GONE);
             mLlMountDevice.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    protected void initListener() {
+        homeOnTouchListener = new HomeOnTouchListener();
+        mFragmentSds.setOnTouchListener(homeOnTouchListener);
+        mUsbDevices.setOnTouchListener(homeOnTouchListener);
+        mMountDevices.setOnTouchListener(homeOnTouchListener);
+        mLocalStorage.setOnTouchListener(homeOnTouchListener);
+        mFastAccess.setOnTouchListener(homeOnTouchListener);
     }
 
     private View getMountView(Volume v) {
@@ -228,91 +251,89 @@ public class SdStorageFragment extends BaseFragment {
                 / (totalBlocks * blockSize));
         diskResidue.setMax(maxOne);
         diskResidue.setProgress(progressOne);
-        inflate.setTag(v);
-        inflate.setOnGenericMotionListener(mTouchListener);
-        return inflate;
+        mountLayout.setTag(v);
+        return mountLayout;
     }
 
-    @Override
-    protected void initListener() {
-        mFragmentSds.setOnGenericMotionListener(mTouchListener);
-        mAndroidSystem.setOnGenericMotionListener(mTouchListener);
-        mSdSpace.setOnGenericMotionListener(mTouchListener);
-        mAndroidService.setOnGenericMotionListener(mTouchListener);
-        mPersonalSpace.setOnGenericMotionListener(mTouchListener);
-        mUsbDevices.setOnGenericMotionListener(mTouchListener);
+    class HomeItemAdapter extends BaseAdapter {
+        private List<View> datas;
 
-        SdOnTouchListener sdOnTouchListener = new SdOnTouchListener();
-        mAndroidSystem.setOnTouchListener(sdOnTouchListener);
-        mSdSpace.setOnTouchListener(sdOnTouchListener);
-        mAndroidService.setOnTouchListener(sdOnTouchListener);
-        mPersonalSpace.setOnTouchListener(sdOnTouchListener);
+        public HomeItemAdapter(List<View> views) {
+            datas = views;
+        }
+
+        @Override
+        public int getCount() {
+            return datas == mUsbViews ? mUsbLists.size() : datas.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (datas == mUsbViews) {
+                return getUsbView(mUsbLists.get(position));
+            } else {
+                datas.get(position).setOnTouchListener(homeOnTouchListener);
+                return datas.get(position);
+            }
+        }
     }
 
-
-    private class SdOnTouchListener implements View.OnTouchListener {
+    class HomeOnTouchListener implements View.OnTouchListener {
         private long lastTime;
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
-            switch (motionEvent.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    if (motionEvent.getButtonState() == MotionEvent.BUTTON_PRIMARY
-                            && System.currentTimeMillis() - lastTime
-                            > Constants.DOUBLE_CLICK_INTERVAL_TIME) {
-                        lastTime = System.currentTimeMillis();
-                        mIsUsb = false;
-                        mLongPressView = view;
-                        mLongPressEvent = motionEvent;
-                        mMainActivity.mHandler.postDelayed(mMainActivity.mLongPressRunnable,
-                                Constants.LONG_PRESS_TIME);
-                    } else {
-                        lastTime = -1;
-                    }
-                    break;
-                case MotionEvent.ACTION_UP:
-                    if (lastTime != -1 &&
-                            System.currentTimeMillis() - lastTime < Constants.LONG_PRESS_TIME) {
-                        mMainActivity.mHandler.removeCallbacks(mMainActivity.mLongPressRunnable);
-                    }
-                    break;
-            }
-            return true;
-        }
-    }
-
-    public class MouseRelativeOnGenericMotionListener implements View.OnGenericMotionListener {
-        @Override
-        public boolean onGenericMotion(View v, MotionEvent event) {
-            if (v.getId() != R.id.ll_usb_device) {
+            if (view.getId() != R.id.usb_grid_ll) {
                 mLastPath = null;
             }
-            switch (event.getButtonState()) {
-                case MotionEvent.BUTTON_PRIMARY:
-                    mMainActivity.clearNivagateFocus();
-                    primaryClick(v);
-                    break;
-                case MotionEvent.BUTTON_SECONDARY:
-                    mMainActivity.clearNivagateFocus();
-                    secondaryClick(v, event);
-                    break;
-                case MotionEvent.BUTTON_TERTIARY:
-                    break;
-                case MotionEvent.ACTION_SCROLL:
-                    break;
-                case MotionEvent.ACTION_HOVER_ENTER:
+            mMainActivity.clearNivagateFocus();
+            switch (motionEvent.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    if (motionEvent.getButtonState() == MotionEvent.BUTTON_PRIMARY) {
+                        primaryClick(view, motionEvent);
+                        if (view.getId() != R.id.usb_grid_ll
+                                && view.getId() != R.id.mount_grid_ll) {
+                            lastTime = System.currentTimeMillis();
+                            mIsUsb = false;
+                            mLongPressView = view;
+                            mLongPressEvent = motionEvent;
+                            mMainActivity.mHandler.postDelayed(
+                                    mMainActivity.mLongPressRunnable,
+                                    Constants.LONG_PRESS_TIME);
+                        }
+                    } else if (motionEvent.getButtonState() == MotionEvent.BUTTON_SECONDARY) {
+                        secondaryClick(view, motionEvent);
+                        lastTime = -1;
+                        lastBackTime = -1;
+                        mLastPath = null;
+                    }
+                    return true;
+                case MotionEvent.ACTION_MOVE:
+                case MotionEvent.ACTION_UP:
+                    mMainActivity.mHandler.removeCallbacks(mMainActivity.mLongPressRunnable);
                     break;
             }
-            return true;
+            return false;
         }
     }
 
-    public void primaryClick(View view) {
+    public void primaryClick(View view, MotionEvent event) {
         mMainActivity.mCurTabIndext = 9;
         currentBackTime = System.currentTimeMillis();
-        if (view.getId() != R.id.mount_grid) {
+        if (view.getId() != R.id.mount_grid_ll) {
             mMountView = null;
         }
+        mMainActivity.clearNivagateFocus();
         switch (view.getId()) {
             case R.id.rl_android_system:
                 setDiskClickInfo(R.id.rl_android_system, Constants.SYSTEM_SPACE_FRAGMENT, null);
@@ -327,7 +348,7 @@ public class SdStorageFragment extends BaseFragment {
             case R.id.rl_personal_space:
                 setDiskClickInfo(R.id.rl_personal_space, Constants.PERSONAL_TAG, null);
                 break;
-            case R.id.mount_grid:
+            case R.id.mount_grid_ll:
                 setUnselectAll();
                 view.setSelected(true);
                 mCurId = view.getId();
@@ -340,7 +361,29 @@ public class SdStorageFragment extends BaseFragment {
                 }
                 mMountView = view;
                 break;
+            case R.id.usb_grid_ll:
+                mCurId = -1;
+                mCurrentPath = (String) view.getTag();
+                if (!view.isSelected()) {
+                    setUnselectAll();
+                    view.setSelected(true);
+                }
+                currentBackTime = System.currentTimeMillis();
+                if (currentBackTime - lastBackTime > Constants.DOUBLE_CLICK_INTERVAL_TIME
+                        || mCurrentPath != mLastPath ) {
+                    lastBackTime = currentBackTime;
+                    mIsUsb = true;
+                    mLongPressView = view;
+                    mLongPressEvent = event;
+                    mMainActivity.mHandler.postDelayed(mMainActivity.mLongPressRunnable,
+                            Constants.LONG_PRESS_TIME);
+                } else {
+                    mMainActivity.enter(mCurrentPath);
+                }
+                mLastPath = mCurrentPath;
+                break;
             default:
+                setUnselectAll();
                 setSelectedCardBg(Constants.RETURN_TO_WHITE);
                 mCurId = -1;
                 break;
@@ -348,15 +391,31 @@ public class SdStorageFragment extends BaseFragment {
     }
 
     public void secondaryClick(View view, MotionEvent event) {
-        mCurId = -1;
-        primaryClick(view);
+        mMainActivity.mCurTabIndext = 9;
+        setUnselectAll();
+        mMainActivity.clearNivagateFocus();
         switch (view.getId()) {
-            case R.id.ll_usb_device:
             case R.id.fragment_sds_ll:
-            case R.id.mount_grid:
+                setSelectedCardBg(-1);
+                break;
+            case R.id.usb_grid_ll:
+                mCurId = -1;
+                mCurrentPath = (String) view.getTag();
+                showDiskDialog(view, event, true);
+                view.setSelected(true);
+                break;
+            case R.id.mount_grid_ll:
+                view.setSelected(true);
+                break;
+            case R.id.grid_auto_mount_device:
+            case R.id.grid_fast_access:
+            case R.id.grid_local_storage:
+            case R.id.grid_usb_device:
                 break;
             default:
+                mCurId = view.getId();
                 showDiskDialog(view, event, false);
+                view.setSelected(true);
                 break;
         }
     }
@@ -473,10 +532,6 @@ public class SdStorageFragment extends BaseFragment {
             SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) baseFragment;
             canGoBack = systemSpaceFragment.canGoBack();
         }
-       //else {
-       //    PersonalSpaceFragment personalSpaceFragment = (PersonalSpaceFragment) baseFragment;
-       //    canGoBack = personalSpaceFragment.canGoBack();
-       //}
         return canGoBack;
     }
 
@@ -506,7 +561,7 @@ public class SdStorageFragment extends BaseFragment {
 
     public void removeUsbView(int position) {
         mUsbLists.remove(position);
-        mUsbDevices.removeViewAt(position);
+        mUsbAdapter.notifyDataSetChanged();
         if (mUsbLists.size() == 0) {
             mLlMobileDevice.setVisibility(View.GONE);
         }
@@ -530,66 +585,10 @@ public class SdStorageFragment extends BaseFragment {
         diskResidue.setProgress(progressOne);
         inflate.setTag(usbLayout);
         usbLayout.setTag(usbData);
-        usbLayout.setOnTouchListener(new UsbTouchListener());
+        usbLayout.setOnTouchListener(homeOnTouchListener);
         return inflate;
     }
 
-    private class UsbTouchListener implements View.OnTouchListener {
-
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            mCurId = -1;
-            mCurrentPath = (String) view.getTag();
-            mMainActivity.clearNivagateFocus();
-            if (!view.isSelected()) {
-                setUnselectAll();
-                view.setSelected(true);
-            }
-            switch (motionEvent.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    switch (motionEvent.getButtonState()) {
-                        case MotionEvent.BUTTON_PRIMARY:
-                            currentBackTime = System.currentTimeMillis();
-                            if (currentBackTime - lastBackTime > Constants.DOUBLE_CLICK_INTERVAL_TIME
-                                    || mCurrentPath != mLastPath) {
-                                lastBackTime = currentBackTime;
-                                mIsUsb = true;
-                                mLongPressView = view;
-                                mLongPressEvent = motionEvent;
-                                mMainActivity.mHandler.postDelayed(mMainActivity.mLongPressRunnable,
-                                        Constants.LONG_PRESS_TIME);
-                            } else {
-                                mMainActivity.enter(mCurrentPath);
-                            }
-                            mLastPath = mCurrentPath;
-                            break;
-                        case MotionEvent.BUTTON_SECONDARY:
-                            lastBackTime = -1;
-                            mLastPath = null;
-                            showDiskDialog(view, motionEvent, true);
-                            break;
-                        default:
-                            lastBackTime = -1;
-                            break;
-                    }
-                    break;
-                case MotionEvent.ACTION_UP:
-                    if (lastBackTime != -1 &&
-                            System.currentTimeMillis() - lastBackTime < Constants.LONG_PRESS_TIME) {
-                        mMainActivity.mHandler.removeCallbacks(mMainActivity.mLongPressRunnable);
-                    } else {
-                        mLastPath = null;
-                        lastBackTime = -1;
-                    }
-                    break;
-            }
-            return true;
-        }
-    }
-
-    private View mLongPressView;
-    private MotionEvent mLongPressEvent;
-    private boolean mIsUsb;
 
     @Override
     public void showMenu() {
