@@ -2,12 +2,16 @@ package com.openthos.filemanager.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -523,8 +527,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                                 Toast.makeText(mMainActivity, getString(R.string.fail_open_recycle),
                                         Toast.LENGTH_SHORT).show();
                             } else {
-                                mFileViewInteractionHub.onListItemClick(mPos,
-                                        Constants.DOUBLE_TAG, motionEvent, fileInfo);
+                                mFileViewInteractionHub.onListItemClick(mPos, motionEvent, fileInfo);
                                 mPos = -1;
                                 mLastClickId = -1;
                                 mIntegerList.clear();
@@ -820,7 +823,7 @@ public class SystemSpaceFragment extends BaseFragment implements
             mInfoText += getString(R.string.file_count, fileCount);
             mInfoText += getString(R.string.file_count_zise, Util.convertStorage(fileSize));
         }
-        if (TextUtils.isEmpty(mInfoText)){
+        if (TextUtils.isEmpty(mInfoText)) {
             mInfoText = getString(R.string.empty_folder);
         }
 
@@ -912,6 +915,45 @@ public class SystemSpaceFragment extends BaseFragment implements
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void setWallpaper(FileInfo f) {
+        WallpaperManager wpm = WallpaperManager.getInstance(mMainActivity);
+        Uri uri = Uri.fromFile(new File(f.filePath));
+        String path = uri.getEncodedPath();
+        if (path != null) {
+            path = Uri.decode(path);
+            ContentResolver cr = mMainActivity.getContentResolver();
+            StringBuffer buff = new StringBuffer();
+            buff.append("(")
+                    .append(MediaStore.Images.ImageColumns.DATA)
+                    .append("=")
+                    .append("'" + path + "'")
+                    .append(")");
+            Cursor cur = cr.query(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    new String[]{MediaStore.Images.ImageColumns._ID},
+                    buff.toString(), null, null);
+            int index = 0;
+            for (cur.moveToFirst(); !cur.isAfterLast(); cur
+                    .moveToNext()) {
+                index = cur.getColumnIndex(MediaStore.Images.ImageColumns._ID);
+                index = cur.getInt(index);
+            }
+            cur.close();
+            if (index != 0) {
+                Uri uri_temp = Uri
+                        .parse("content://media/external/images/media/"
+                                + index);
+                if (uri_temp != null) {
+                    uri = uri_temp;
+                }
+            }
+        }
+        Intent intent = wpm.getCropAndSetWallpaperIntent(uri);
+        startActivity(intent);
+        mMainActivity.finish();
     }
 
     @Override

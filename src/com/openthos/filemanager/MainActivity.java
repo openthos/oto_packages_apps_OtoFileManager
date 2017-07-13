@@ -38,6 +38,7 @@ import android.widget.LinearLayout;
 import android.app.ProgressDialog;
 import android.os.Build;
 
+import com.openthos.filemanager.bean.Mode;
 import com.openthos.filemanager.bean.SeafileAccount;
 import com.openthos.filemanager.bean.SeafileLibrary;
 import com.openthos.filemanager.bean.Disk;
@@ -88,8 +89,7 @@ import com.android.internal.os.storage.ExternalStorageMountter;
 import android.os.storage.StorageVolume;
 import android.os.RemoteException;
 
-public class MainActivity extends BaseActivity
-                 implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
     private static final int POPWINDOW_X = -15;
     private static final int POPWINDOW_Y = 10;
     private static final int USB_POPWINDOW_X = 60;
@@ -104,7 +104,7 @@ public class MainActivity extends BaseActivity
     private static final String USB_POPWINDOW_TAG = "iv_usb";
     private static final String MOUNT_POPWINDOW_TAG = "MOUNT_POPWINDOW_TAG";
     private TextView mTv_desk, mTv_music, mTv_video, mTv_computer, mTv_picture,
-                      mTv_document, mTv_download, mTv_recycle, mTv_cloud_service,mTv_net_service;
+            mTv_document, mTv_download, mTv_recycle, mTv_cloud_service, mTv_net_service;
     private ImageView mIv_list_view, mIv_grid_view, mIv_forward, mIv_setting;
     public ImageView mIv_up, mIv_back;
     private EditText mEt_nivagation, mEt_search_view;
@@ -160,7 +160,6 @@ public class MainActivity extends BaseActivity
     public List<Fragment> mUserOperationFragments;
     public int mFragmentIndex = -1;
     private ArrayList<Volume> mVolumes = new ArrayList<>();
-    private ArrayList<Disk> disks = new ArrayList<>();
     private HashMap<String, SystemSpaceFragment> mMountMap = new HashMap<>();
     private List<SystemSpaceFragment> mDynamicFragments;
     private ArrayList<String> mUsbLists = new ArrayList<>();
@@ -206,13 +205,13 @@ public class MainActivity extends BaseActivity
                     //current openthos id and password
                     SeafileUtils.mUserId = cursor.getString(cursor.getColumnIndex("openthosID"));
                     SeafileUtils.mUserPassword =
-                                     cursor.getString(cursor.getColumnIndex("password"));
+                            cursor.getString(cursor.getColumnIndex("password"));
                     break;
                 }
                 cursor.close();
             }
             if (TextUtils.isEmpty(SeafileUtils.mUserId)
-                                               || TextUtils.isEmpty(SeafileUtils.mUserPassword)) {
+                    || TextUtils.isEmpty(SeafileUtils.mUserPassword)) {
                 return;
             }
             String librarys = SeafileUtils.listRemote();
@@ -257,7 +256,7 @@ public class MainActivity extends BaseActivity
                 SeafileLibrary seafileLibrary = new SeafileLibrary();
                 seafileLibrary.libraryName = SeafileUtils.FILEMANAGER_SEAFILE_NAME;
                 seafileLibrary.libraryId
-                                     = SeafileUtils.create(SeafileUtils.FILEMANAGER_SEAFILE_NAME);
+                        = SeafileUtils.create(SeafileUtils.FILEMANAGER_SEAFILE_NAME);
                 mAccount.mLibrarys.add(seafileLibrary);
             }
             if (mAccount.mLibrarys.size() > 0) {
@@ -361,7 +360,7 @@ public class MainActivity extends BaseActivity
                     switch (msg.what) {
                         case Constants.SET_CLIPBOARD_TEXT:
                             ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE))
-                                                               .setText((String) msg.obj);
+                                    .setText((String) msg.obj);
                             break;
                         case Constants.USB_CHECKING:
                         case Constants.USB_MOUNT:
@@ -389,7 +388,7 @@ public class MainActivity extends BaseActivity
                             break;
                         case Constants.REFRESH:
                             ((IFileInteractionListener) getVisibleFragment())
-                                         .onRefreshFileList((String) msg.obj, getFileSortHelper());
+                                    .onRefreshFileList((String) msg.obj, getFileSortHelper());
                             resetClipboard();
                             break;
                         case Constants.COPY:
@@ -404,22 +403,22 @@ public class MainActivity extends BaseActivity
                         case Constants.COPY_INFO_SHOW:
                             mCopyInfoDialog.showDialog(R.raw.paste);
                             mCopyInfoDialog.changeTitle(MainActivity.this.getResources()
-                                                                    .getString(R.string.copy_info));
+                                    .getString(R.string.copy_info));
                             break;
                         case Constants.DELETE_INFO_SHOW:
                             mCopyInfoDialog.showDialog(R.raw.delete);
                             mCopyInfoDialog.changeTitle(MainActivity.this.getResources()
-                                                                    .getString(R.string.copy_info));
+                                    .getString(R.string.copy_info));
                             break;
                         case Constants.COMPRESS_INFO_SHOW:
                             mCopyInfoDialog.showDialog(R.raw.compress);
                             mCopyInfoDialog.changeTitle(MainActivity.this.getResources()
-                                                                    .getString(R.string.copy_info));
+                                    .getString(R.string.copy_info));
                             break;
                         case Constants.DECOMPRESS_INFO_SHOW:
                             mCopyInfoDialog.showDialog(R.raw.decompress);
                             mCopyInfoDialog.changeTitle(MainActivity.this.getResources()
-                                                                    .getString(R.string.copy_info));
+                                    .getString(R.string.copy_info));
                             break;
                         case Constants.COPY_INFO:
                             mCopyInfoDialog.changeMsg((String) msg.obj);
@@ -433,8 +432,8 @@ public class MainActivity extends BaseActivity
                             break;
                         case Constants.MENU_SHOWHIDE:
                             Toast.makeText(MainActivity.this,
-                                           getResources().getString(R.string.can_not_search),
-                                           Toast.LENGTH_SHORT).show();
+                                    getResources().getString(R.string.can_not_search),
+                                    Toast.LENGTH_SHORT).show();
                             break;
                         case Constants.SEAFILE_DATA_OK:
                             mSeafileFragment.setData(mAccount.mLibrarys);
@@ -548,45 +547,45 @@ public class MainActivity extends BaseActivity
         }
         if (mDeskFragment == null) {
             mDeskFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                                                    Constants.DESKTOP_PATH, null, null, true);
+                    Constants.DESKTOP_PATH, null, null, true);
             transaction.add(R.id.fl_mian, mDeskFragment, Constants.DESKFRAGMENT_TAG)
-                       .hide(mDeskFragment);
+                    .hide(mDeskFragment);
         }
         if (mMusicFragment == null) {
             mMusicFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                                                     Constants.MUSIC_PATH, null, null, true);
+                    Constants.MUSIC_PATH, null, null, true);
             transaction.add(R.id.fl_mian, mMusicFragment, Constants.MUSICFRAGMENT_TAG)
-                       .hide(mMusicFragment);
+                    .hide(mMusicFragment);
         }
         if (mVideoFragment == null) {
             mVideoFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                                                     Constants.VIDEOS_PATH, null, null, true);
+                    Constants.VIDEOS_PATH, null, null, true);
             transaction.add(R.id.fl_mian, mVideoFragment, Constants.VIDEOFRAGMENT_TAG)
-                       .hide(mVideoFragment);
+                    .hide(mVideoFragment);
         }
         if (mPictrueFragment == null) {
             mPictrueFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                                                       Constants.PICTURES_PATH, null, null, true);
+                    Constants.PICTURES_PATH, null, null, true);
             transaction.add(R.id.fl_mian, mPictrueFragment, Constants.PICTRUEFRAGMENT_TAG)
-                       .hide(mPictrueFragment);
+                    .hide(mPictrueFragment);
         }
         if (mDocumentFragment == null) {
             mDocumentFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                                                        Constants.DOCUMENT_PATH, null, null, true);
+                    Constants.DOCUMENT_PATH, null, null, true);
             transaction.add(R.id.fl_mian, mDocumentFragment, Constants.DOCUMENTFRAGMENT_TAG)
-                       .hide(mDocumentFragment);
+                    .hide(mDocumentFragment);
         }
         if (mDownloadFragment == null) {
             mDownloadFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                                                        Constants.DOWNLOAD_PATH, null, null, true);
+                    Constants.DOWNLOAD_PATH, null, null, true);
             transaction.add(R.id.fl_mian, mDownloadFragment, Constants.DOWNLOADFRRAGMENT_TAG)
-                       .hide(mDownloadFragment);
+                    .hide(mDownloadFragment);
         }
         if (mRecycleFragment == null) {
             mRecycleFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                                                        Constants.RECYCLE_PATH, null, null, true);
+                    Constants.RECYCLE_PATH, null, null, true);
             transaction.add(R.id.fl_mian, mRecycleFragment, Constants.RECYCLEFRAGMENT_TAG)
-                       .hide(mRecycleFragment);
+                    .hide(mRecycleFragment);
         }
         if (mPersonalSpaceFragment == null) {
             mPersonalSpaceFragment = new PersonalSpaceFragment();
@@ -619,7 +618,7 @@ public class MainActivity extends BaseActivity
 
     private void getMountData() {
         String data = getSharedPreferences("automount", Context.MODE_PRIVATE)
-                                                                      .getString("automount", "[]");
+                .getString("automount", "[]");
         try {
             JSONArray array = new JSONArray(data);
             for (int i = 0; i < array.length(); i++) {
@@ -672,7 +671,7 @@ public class MainActivity extends BaseActivity
         mIv_setting.setOnClickListener(this);
         clickComputer();
         mSearchOnKeyListener = new SearchOnKeyListener(mManager,
-                                        mEt_search_view.getText(), MainActivity.this);
+                mEt_search_view.getText(), MainActivity.this);
         mEt_search_view.setOnKeyListener(mSearchOnKeyListener);
         mIv_search_view.setOnClickListener(this);
         mEt_search_view.setOnTouchListener(mEditTextTouchListener);
@@ -703,6 +702,10 @@ public class MainActivity extends BaseActivity
             mCurTabIndext = -1;
             mDynamicFragments.add(mountFragment);
         }
+        initFirstPage();
+    }
+
+    protected void initFirstPage(){
         Intent intent = getIntent();
         String path = intent.getStringExtra(Constants.PATH_TAG);
         if (path != null) {
@@ -740,7 +743,7 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    private void showSpaceFragment(String path) {
+    protected void showSpaceFragment(String path) {
         if (TextUtils.isEmpty(path)) {
             return;
         }
@@ -759,7 +762,7 @@ public class MainActivity extends BaseActivity
             if (!Build.TYPE.equals("eng")
                     && !(path.startsWith(Constants.USER_PERMISSION_PATH))) {
                 Toast.makeText(this, "" + getResources().getString(R.string.have_no_permission),
-                               Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
         } catch (IOException e) {
@@ -769,7 +772,7 @@ public class MainActivity extends BaseActivity
             FragmentTransaction transaction = mManager.beginTransaction();
             transaction.hide(mCurFragment);
             mAddressFragment = new SystemSpaceFragment(
-                                   Constants.LEFT_FAVORITES, path, null, null, false);
+                    Constants.LEFT_FAVORITES, path, null, null, false);
             transaction.add(R.id.fl_mian, mAddressFragment, Constants.ADDRESSFRAGMENT_TAG);
             //transaction.show(mAddressFragment).addToBackStack(null).commitAllowingStateLoss();
             transaction.show(mAddressFragment).commitAllowingStateLoss();
@@ -957,8 +960,8 @@ public class MainActivity extends BaseActivity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN
-             || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
-                     && !(mEt_nivagation.isFocused() || mEt_search_view.isFocused())) {
+                || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
+                && !(mEt_nivagation.isFocused() || mEt_search_view.isFocused())) {
             if (mCurTabIndext == 8) {
                 if (mLeftIndex > mLlCollection.getChildCount() - 1) {
                     if (mUsbViews.size() != 0) {
@@ -1053,7 +1056,7 @@ public class MainActivity extends BaseActivity
                 return false;
             } else {
                 mHandler.sendMessage(Message.obtain(mHandler, Constants.ONLY_REFRESH,
-                  ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.getCurrentPath()));
+                        ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.getCurrentPath()));
             }
         }
         if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
@@ -1125,6 +1128,7 @@ public class MainActivity extends BaseActivity
                 break;
         }
     }
+
     private boolean isCopyByHot() {
         return getVisibleFragment() instanceof PersonalSpaceFragment
                 || getVisibleFragment() instanceof SdStorageFragment
@@ -1136,11 +1140,11 @@ public class MainActivity extends BaseActivity
     public boolean isRecycle() {
         return (getVisibleFragment() instanceof SystemSpaceFragment)
                 && (((SystemSpaceFragment) getVisibleFragment()).getCurrentPath()
-                             .startsWith(FileOperationHelper.RECYCLE_PATH1)
+                .startsWith(FileOperationHelper.RECYCLE_PATH1)
                 || ((SystemSpaceFragment) getVisibleFragment()).getCurrentPath()
-                             .startsWith(FileOperationHelper.RECYCLE_PATH2)
+                .startsWith(FileOperationHelper.RECYCLE_PATH2)
                 || ((SystemSpaceFragment) getVisibleFragment()).getCurrentPath()
-                             .startsWith(FileOperationHelper.RECYCLE_PATH3));
+                .startsWith(FileOperationHelper.RECYCLE_PATH3));
     }
 
     public void cut() {
@@ -1149,14 +1153,14 @@ public class MainActivity extends BaseActivity
             public void run() {
                 super.run();
                 ArrayList<FileInfo> list = ((BaseFragment) getVisibleFragment())
-                                                      .mFileViewInteractionHub.getSelectedFileList();
+                        .mFileViewInteractionHub.getSelectedFileList();
                 StringBuffer stringBuffer = new StringBuffer();
                 if (!list.isEmpty()) {
                     for (int i = 0; i < list.size(); i++) {
                         stringBuffer.append(Constants.EXTRA_CROP_FILE_HEADER + list.get(i).filePath);
                     }
                     mHandler.sendMessage(Message.obtain(mHandler,
-                                             Constants.SET_CLIPBOARD_TEXT, stringBuffer.toString()));
+                            Constants.SET_CLIPBOARD_TEXT, stringBuffer.toString()));
                 }
             }
         }.start();
@@ -1165,10 +1169,10 @@ public class MainActivity extends BaseActivity
     public void paste() {
         String sourcePath = "";
         String destPath =
-                    ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.getCurrentPath();
+                ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.getCurrentPath();
         try {
             sourcePath =
-               (String) ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE)).getText();
+                    (String) ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE)).getText();
         } catch (ClassCastException e) {
             sourcePath = "";
         }
@@ -1178,7 +1182,7 @@ public class MainActivity extends BaseActivity
         if (!TextUtils.isEmpty(sourcePath) && sourcePath.startsWith(Constants.EXTRA_FILE_HEADER)) {
             new CopyThread(sourcePath, destPath).start();
         } else if (!TextUtils.isEmpty(sourcePath)
-                                        && sourcePath.startsWith(Constants.EXTRA_CROP_FILE_HEADER)) {
+                && sourcePath.startsWith(Constants.EXTRA_CROP_FILE_HEADER)) {
             new CropThread(sourcePath, destPath).start();
         }
     }
@@ -1187,12 +1191,12 @@ public class MainActivity extends BaseActivity
         String sourcePath = "";
         try {
             sourcePath =
-                (String) ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE)).getText();
+                    (String) ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE)).getText();
         } catch (ClassCastException e) {
             sourcePath = "";
         }
         if (!TextUtils.isEmpty(sourcePath)
-               && sourcePath.startsWith(Constants.EXTRA_CROP_FILE_HEADER)) {
+                && sourcePath.startsWith(Constants.EXTRA_CROP_FILE_HEADER)) {
             ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE)).setText("");
         }
     }
@@ -1232,7 +1236,7 @@ public class MainActivity extends BaseActivity
             super.run();
             for (int i = 1; i < mSrcCropPaths.length; i++) {
                 FileOperationHelper.MoveFile(
-                    mSrcCropPaths[i].replace(Constants.EXTRA_CROP_FILE_HEADER, ""), mDestPath, true);
+                        mSrcCropPaths[i].replace(Constants.EXTRA_CROP_FILE_HEADER, ""), mDestPath, true);
             }
         }
     }
@@ -1243,14 +1247,14 @@ public class MainActivity extends BaseActivity
             public void run() {
                 super.run();
                 ArrayList<FileInfo> list = ((BaseFragment) getVisibleFragment())
-                                                      .mFileViewInteractionHub.getSelectedFileList();
+                        .mFileViewInteractionHub.getSelectedFileList();
                 StringBuffer stringBuffer = new StringBuffer();
                 if (!list.isEmpty()) {
                     for (int i = 0; i < list.size(); i++) {
                         stringBuffer.append(Constants.EXTRA_FILE_HEADER + list.get(i).filePath);
                     }
                     mHandler.sendMessage(Message.obtain(mHandler, Constants.SET_CLIPBOARD_TEXT,
-                                                                          stringBuffer.toString()));
+                            stringBuffer.toString()));
                 }
             }
         }.start();
@@ -1315,7 +1319,7 @@ public class MainActivity extends BaseActivity
             mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_enable));
         }
 
-        if (mFragmentIndex ==  mUserOperationFragments.size() - 1) {
+        if (mFragmentIndex == mUserOperationFragments.size() - 1) {
             mIv_forward.setImageDrawable(getDrawable(R.mipmap.forward_disable));
         }
     }
@@ -1477,7 +1481,7 @@ public class MainActivity extends BaseActivity
     }
 
 
-    private void setSelectedBackground(int id) {
+    protected void setSelectedBackground(int id) {
         switch (id) {
             case R.id.tv_computer:
             case R.id.tv_desk:
@@ -1536,7 +1540,7 @@ public class MainActivity extends BaseActivity
     private void showPopWindow(String menu_tag) {
         mPopWinShare = null;
         PopOnClickLintener paramOnClickListener = new PopOnClickLintener(menu_tag,
-                                                      MainActivity.this, mManager);
+                MainActivity.this, mManager);
         if (SETTING_POPWINDOW_TAG.equals(menu_tag)) {
             mPopWinShare = new PopWinShare(MainActivity.this, paramOnClickListener,
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -1552,7 +1556,7 @@ public class MainActivity extends BaseActivity
             mPopWinShare.setFocusable(true);
             //mPopWinShare.setWindowLayoutType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
             mPopWinShare.showAsDropDown(ll_usb.getChildAt(getUsbPosition(mUsbPath)),
-                     USB_POPWINDOW_X, USB_POPWINDOW_Y);
+                    USB_POPWINDOW_X, USB_POPWINDOW_Y);
         }
         mPopWinShare.update();
         mPopWinShare.getContentView().setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -1599,7 +1603,7 @@ public class MainActivity extends BaseActivity
                 setCurPath(currentPath);
                 setNavigationPath(currentPath);
                 if (mCurFragment.getTag() != null &&
-                    mCurFragment.getTag().equals(Constants.PERSONALSYSTEMSPACE_TAG)) {
+                        mCurFragment.getTag().equals(Constants.PERSONALSYSTEMSPACE_TAG)) {
                     if (mPersonalSpaceFragment.canGoBack()) {
                         mPersonalSpaceFragment.goBack();
                     } else if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
@@ -1617,7 +1621,7 @@ public class MainActivity extends BaseActivity
                         returnToSeafileDir();
                     }
                 } else if (mCurFragment.getTag() != null &&
-                          mCurFragment.getTag().equals(Constants.SDSSYSTEMSPACE_TAG)) {
+                        mCurFragment.getTag().equals(Constants.SDSSYSTEMSPACE_TAG)) {
                     if (mSdStorageFragment.canGoBack()) {
                         mSdStorageFragment.goBack();
                     } else if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
@@ -1626,7 +1630,7 @@ public class MainActivity extends BaseActivity
                         returnToRootDir();
                     }
                 } else if (mCurFragment.getTag() != null &&
-                          mCurFragment.getTag().equals(Constants.USBFRAGMENT_TAG)) {
+                        mCurFragment.getTag().equals(Constants.USBFRAGMENT_TAG)) {
                     if (mUsbStorageFragment.canGoBack()) {
                         mUsbStorageFragment.goBack();
                     } else if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
@@ -1635,7 +1639,7 @@ public class MainActivity extends BaseActivity
                         returnToRootDir();
                     }
                 } else if (mCurFragment.getTag() != null
-                               && mCurFragment.getTag().equals(Constants.DESKFRAGMENT_TAG)) {
+                        && mCurFragment.getTag().equals(Constants.DESKFRAGMENT_TAG)) {
                     if (mDeskFragment.canGoBack()) {
                         mDeskFragment.goBack();
                     } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
@@ -1646,7 +1650,7 @@ public class MainActivity extends BaseActivity
                         returnToRootDir();
                     }
                 } else if (mCurFragment.getTag() != null
-                               && mCurFragment.getTag().equals(Constants.MUSICFRAGMENT_TAG)) {
+                        && mCurFragment.getTag().equals(Constants.MUSICFRAGMENT_TAG)) {
                     if (mMusicFragment.canGoBack()) {
                         mMusicFragment.goBack();
                     } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
@@ -1657,7 +1661,7 @@ public class MainActivity extends BaseActivity
                         returnToRootDir();
                     }
                 } else if (mCurFragment.getTag() != null
-                               && mCurFragment.getTag().equals(Constants.VIDEOFRAGMENT_TAG)) {
+                        && mCurFragment.getTag().equals(Constants.VIDEOFRAGMENT_TAG)) {
                     if (mVideoFragment.canGoBack()) {
                         mVideoFragment.goBack();
                     } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
@@ -1668,7 +1672,7 @@ public class MainActivity extends BaseActivity
                         returnToRootDir();
                     }
                 } else if (mCurFragment.getTag() != null
-                               && mCurFragment.getTag().equals(Constants.PICTRUEFRAGMENT_TAG)) {
+                        && mCurFragment.getTag().equals(Constants.PICTRUEFRAGMENT_TAG)) {
                     if (mPictrueFragment.canGoBack()) {
                         mPictrueFragment.goBack();
                     } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
@@ -1679,7 +1683,7 @@ public class MainActivity extends BaseActivity
                         returnToRootDir();
                     }
                 } else if (mCurFragment.getTag() != null
-                               && mCurFragment.getTag().equals(Constants.DOCUMENTFRAGMENT_TAG)) {
+                        && mCurFragment.getTag().equals(Constants.DOCUMENTFRAGMENT_TAG)) {
                     if (mDocumentFragment.canGoBack()) {
                         mDocumentFragment.goBack();
                     } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
@@ -1690,7 +1694,7 @@ public class MainActivity extends BaseActivity
                         returnToRootDir();
                     }
                 } else if (mCurFragment.getTag() != null
-                               && mCurFragment.getTag().equals(Constants.DOWNLOADFRRAGMENT_TAG)) {
+                        && mCurFragment.getTag().equals(Constants.DOWNLOADFRRAGMENT_TAG)) {
                     if (mDownloadFragment.canGoBack()) {
                         mDownloadFragment.goBack();
                     } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
@@ -1701,7 +1705,7 @@ public class MainActivity extends BaseActivity
                         returnToRootDir();
                     }
                 } else if (mCurFragment.getTag() != null
-                               && mCurFragment.getTag().equals(Constants.RECYCLEFRAGMENT_TAG)) {
+                        && mCurFragment.getTag().equals(Constants.RECYCLEFRAGMENT_TAG)) {
                     if (mRecycleFragment.canGoBack()) {
                         mRecycleFragment.goBack();
                     } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
@@ -1712,7 +1716,7 @@ public class MainActivity extends BaseActivity
                         returnToRootDir();
                     }
                 } else if (mCurFragment.getTag() != null
-                               && mCurFragment.getTag().equals(Constants.SEARCHSYSTEMSPACE_TAG)) {
+                        && mCurFragment.getTag().equals(Constants.SEARCHSYSTEMSPACE_TAG)) {
                     SystemSpaceFragment searchSysFragment = (SystemSpaceFragment) mCurFragment;
                     if (searchSysFragment.canGoBack()) {
                         searchSysFragment.goBack();
@@ -1722,7 +1726,7 @@ public class MainActivity extends BaseActivity
                         returnToSearchFragment();
                     }
                 } else if (mCurFragment.getTag() != null
-                               && mCurFragment.getTag().equals(Constants.ADDRESSFRAGMENT_TAG)) {
+                        && mCurFragment.getTag().equals(Constants.ADDRESSFRAGMENT_TAG)) {
                     SystemSpaceFragment addressFragment = (SystemSpaceFragment) mCurFragment;
                     if (addressFragment.canGoBack()) {
                         addressFragment.goBack();
@@ -1782,7 +1786,7 @@ public class MainActivity extends BaseActivity
         FragmentTransaction fragmentTransaction = mManager.beginTransaction();
         fragmentTransaction.hide(getVisibleFragment());
         mSearchFragment = (SearchFragment) mManager
-                              .findFragmentByTag(Constants.SEARCHFRAGMENT_TAG);
+                .findFragmentByTag(Constants.SEARCHFRAGMENT_TAG);
         fragmentTransaction.show(mSearchFragment);
         fragmentTransaction.commitAllowingStateLoss();
         mCurFragment = mSearchFragment;
@@ -1927,6 +1931,11 @@ public class MainActivity extends BaseActivity
                 }
             }
         }
+    }
+
+    @Override
+    protected void setMode() {
+        mMode = Mode.VIEW;
     }
 
     public void setNavigationPath(String displayPath) {
@@ -2098,14 +2107,14 @@ public class MainActivity extends BaseActivity
                     if (System.currentTimeMillis() - mPreTime >= 1000) {
                         mHandler.removeMessages(Constants.ONLY_REFRESH);
                         mHandler.sendMessage(Message.obtain(mHandler, Constants.ONLY_REFRESH,
-                                         ((BaseFragment) getVisibleFragment())
-                                                       .mFileViewInteractionHub.getCurrentPath()));
+                                ((BaseFragment) getVisibleFragment())
+                                        .mFileViewInteractionHub.getCurrentPath()));
                         mPreTime = System.currentTimeMillis();
                     } else {
                         mHandler.removeMessages(Constants.ONLY_REFRESH);
                         mHandler.sendMessageDelayed(Message.obtain(mHandler, Constants.ONLY_REFRESH,
-                                         ((BaseFragment) getVisibleFragment())
-                                                    .mFileViewInteractionHub.getCurrentPath()), 1000);
+                                ((BaseFragment) getVisibleFragment())
+                                        .mFileViewInteractionHub.getCurrentPath()), 1000);
                     }
                     break;
                 default:
@@ -2218,12 +2227,12 @@ public class MainActivity extends BaseActivity
                         && view.getTag() instanceof PathAdapter.ViewHolder) {
                     int pos = (int) ((PathAdapter.ViewHolder) view.getTag()).path.getTag();
                     if (pos == 0 && !Build.TYPE.equals("eng")
-                           && mPath[pos].equals(Constants.SD_PATH)) {
+                            && mPath[pos].equals(Constants.SD_PATH)) {
                         return true;
                     }
                     if (pos == mPath.length - 1) {
                         ((IFileInteractionListener) getVisibleFragment()).
-                            onRefreshFileList(mCurPath, getFileSortHelper());
+                                onRefreshFileList(mCurPath, getFileSortHelper());
                     } else {
                         mClickPath = "";
                         for (int j = 0; j <= pos; j++) {
@@ -2234,9 +2243,9 @@ public class MainActivity extends BaseActivity
                             }
                         }
                         mClickPath = mClickPath.replaceAll(
-                            getResources().getString(R.string.path_sd_eng), Util.getSdDirectory());
+                                getResources().getString(R.string.path_sd_eng), Util.getSdDirectory());
                         ((SystemSpaceFragment) getVisibleFragment()).
-                            mFileViewInteractionHub.openSelectFolder(mClickPath);
+                                mFileViewInteractionHub.openSelectFolder(mClickPath);
                     }
                 } else {
                     mCurTabIndext = 6;
@@ -2312,7 +2321,7 @@ public class MainActivity extends BaseActivity
             arg = "";
         }
         Util.exec(new String[]{"su", "-c", command + arg + "-o rw "
-                                 + "/dev/block/" + v.getBlock() + " " + v.getPath()});
+                + "/dev/block/" + v.getBlock() + " " + v.getPath()});
         v.setIsMount(true);
         mSdStorageFragment.initMountData();
     }

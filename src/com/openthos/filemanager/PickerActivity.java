@@ -2,6 +2,8 @@ package com.openthos.filemanager;
 
 import android.app.Activity;
 
+import com.openthos.filemanager.bean.Mode;
+
 /**
  * Created by root on 12/20/16.
  */
@@ -16,5 +18,10 @@ public class PickerActivity extends MainActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void setMode() {
+        mMode = Mode.PICK;
     }
 }

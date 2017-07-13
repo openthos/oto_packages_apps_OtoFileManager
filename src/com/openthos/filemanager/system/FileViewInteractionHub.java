@@ -23,6 +23,7 @@ import android.widget.ListView;
 
 import com.openthos.filemanager.BaseActivity;
 import com.openthos.filemanager.MainActivity;
+import com.openthos.filemanager.bean.Mode;
 import com.openthos.filemanager.component.MenuDialog;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.component.CompressDialog;
@@ -47,7 +48,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     private static final int FILE_NAME_WARNING = 3;
     private static final String LOG_TAG = "FileViewInteractionHub";
     private IFileInteractionListener mFileViewListener;
-    public static Map<String, Integer> saveMulti = new HashMap<>();
     private ArrayList<FileInfo> mCheckedFileNameList = new ArrayList<>();
     private FileOperationHelper mFileOperationHelper;
     private FileSortHelper mFileSortHelper;
@@ -64,10 +64,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     private int mCompressFileState;
     private boolean mConfirm;
 
-    public enum Mode {
-        View, Pick
-    }
-
     public enum CopyOrMove {
         Copy, Move
     }
@@ -80,6 +76,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         mContext = mFileViewListener.getContext();
         mFileSortHelper = ((BaseActivity) mContext).getFileSortHelper();
         mMainActivity = (MainActivity) mContext;
+        setMode(mMainActivity.mMode);
     }
 
     private void showProgress(String msg) {
@@ -94,15 +91,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     public void sortCurrentList() {
         mFileViewListener.sortCurrentList(mFileSortHelper);
     }
-
-    public boolean canShowCheckBox() {
-//        mConfirmOperationBar.getVisibility() != View.VISIBLE
-        return true;
-    }
-//
-//    private void showConfirmOperationBar(boolean show) {
-//        mConfirmOperationBar.setVisibility(show ? View.VISIBLE : View.GONE);
-//    }
 
     public void addDialogSelectedItem(FileInfo fileInfo) {
         mCheckedFileNameList.add(fileInfo);
@@ -274,7 +262,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 
     public void onOperationShowSysFiles() {
         Settings.instance().setShowDotAndHiddenFiles(!Settings.instance()
-                                                     .getShowDotAndHiddenFiles());
+                .getShowDotAndHiddenFiles());
         refreshFileList();
     }
 
@@ -309,32 +297,32 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 
     public void onOperationCreateFolder() {
         TextInputDialog dialog = new TextInputDialog(
-                                 mContext,
-                                 mContext.getString(R.string.operation_create_folder),
-                                 mContext.getString(R.string.operation_create_folder_message),
-                                 mContext.getString(R.string.new_folder_name),
-                                 new TextInputDialog.OnFinishListener() {
-                                     @Override
-                                     public boolean onFinish(String text) {
-                                         return doCreateFolder(text);
-                                     }
-                                 }
+                mContext,
+                mContext.getString(R.string.operation_create_folder),
+                mContext.getString(R.string.operation_create_folder_message),
+                mContext.getString(R.string.new_folder_name),
+                new TextInputDialog.OnFinishListener() {
+                    @Override
+                    public boolean onFinish(String text) {
+                        return doCreateFolder(text);
+                    }
+                }
         );
         dialog.show();
     }
 
     public void onOperationCreateFile() {
         CreateFileDialog dialog = new CreateFileDialog(
-                                 mContext,
-                                 mContext.getString(R.string.operation_create_file),
-                                 mContext.getString(R.string.operation_create_file_message),
-                                 mContext.getString(R.string.new_file_name),
-                                 new CreateFileDialog.OnFinishListener() {
-                                     @Override
-                                     public boolean onFinish(String text) {
-                                         return doCreateFile(text);
-                                     }
-                                 }
+                mContext,
+                mContext.getString(R.string.operation_create_file),
+                mContext.getString(R.string.operation_create_file_message),
+                mContext.getString(R.string.new_file_name),
+                new CreateFileDialog.OnFinishListener() {
+                    @Override
+                    public boolean onFinish(String text) {
+                        return doCreateFile(text);
+                    }
+                }
         );
         dialog.show();
     }
@@ -540,15 +528,15 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         final FileInfo f = getSelectedFileList().get(0);
 
         TextInputDialog dialog = new TextInputDialog(mContext,
-                                     mContext.getString(R.string.operation_rename),
-                                     mContext.getString(R.string.operation_rename_message),
-                                     f.fileName,
-                                     new TextInputDialog.OnFinishListener() {
-                                         @Override
-                                         public boolean onFinish(String text) {
-                                             return doRename(f, text);
-                                         }
-                                     }
+                mContext.getString(R.string.operation_rename),
+                mContext.getString(R.string.operation_rename_message),
+                f.fileName,
+                new TextInputDialog.OnFinishListener() {
+                    @Override
+                    public boolean onFinish(String text) {
+                        return doRename(f, text);
+                    }
+                }
         );
 
         dialog.show();
@@ -630,7 +618,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             if (f.isDirectory()) {
                 intent = new Intent(Intent.ACTION_MEDIA_MOUNTED);
                 intent.setClassName("com.android.providers.media",
-                                    "com.android.providers.media.MediaScannerReceiver");
+                        "com.android.providers.media.MediaScannerReceiver");
                 intent.setData(Uri.fromFile(Environment.getExternalStorageDirectory()));
                 Log.v(LOG_TAG, "directory changed, send broadcast:" + intent.toString());
             } else {
@@ -704,8 +692,8 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             super.run();
             for (String[] info : mFileInfo) {
                 FileOperationHelper.MoveFile(
-                         new File(FileOperationHelper.RECYCLE_PATH1, info[1]).getAbsolutePath(),
-                                           info[0], false);
+                        new File(FileOperationHelper.RECYCLE_PATH1, info[1]).getAbsolutePath(),
+                        info[0], false);
             }
         }
     }
@@ -993,48 +981,33 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         }
     }
 
-    private FileViewInteractionHub.Mode mCurrentMode;
+    private Mode mCurrentMode;
     private String mCurrentPath;
     private String mRoot;
     private SystemSpaceFragment.SelectFilesCallback mSelectFilesCallback;
+
     public boolean isFileSelected(String filePath) {
         return mFileOperationHelper.isFileSelected(filePath);
     }
 
-    public void onListItemClick(int position, String doubleTag,
-                                MotionEvent event, FileInfo fileInfo) {
+    public void onListItemClick(int position, MotionEvent event, FileInfo fileInfo) {
         if (fileInfo == null) {
             Log.e(LOG_TAG, "file does not exist on position:" + position);
             return;
         }
-
-//        if (isInSelection()) {
-//            boolean selected = lFileInfo.Selected;
-//
-////            ImageView checkBox = (ImageView) view.findViewById(R.id.file_checkbox);
-//            LinearLayout ll_grid_item_bg = (LinearLayout) view.findViewById
-//                                                          (R.id.ll_grid_item_bg);
-//            if (selected) {
-//                mCheckedFileNameList.remove(lFileInfo);
-//                ll_grid_item_bg.setSelected(false);
-////                checkBox.setImageResource(R.mipmap.btn_check_off_holo_light);
-//            } else {
-//                mCheckedFileNameList.add(lFileInfo);
-//                ll_grid_item_bg.setSelected(false);
-////                checkBox.setImageResource(R.mipmap.btn_check_on_holo_light);
-//            }
-//            lFileInfo.Selected = !selected;
-//            return;
-//        }
-
-        if (!fileInfo.IsDir && doubleTag != null) {
-            if ("PickerActivity".equals(mContext.getClass().getSimpleName())) {
-                mFileViewListener.onPick(fileInfo);
-            } else {
-                viewFile(fileInfo, event);
+        if (!fileInfo.IsDir) {
+            switch (getMode()){
+                case PICK:
+                    mFileViewListener.onPick(fileInfo);
+                    break;
+                case VIEW:
+                    viewFile(fileInfo, event);
+                    break;
+                case SETWALLPAPER:
+                    mFileViewListener.setWallpaper(fileInfo);
+                    break;
             }
-        } else if (doubleTag != null && Constants.DOUBLE_TAG.equals(doubleTag)) {
-//            mCheckedFileNameList.remove(lFileInfo);  //
+        } else {
             openSelectFolder(getAbsoluteName(mCurrentPath, fileInfo.fileName));
             mMainActivity.mUserOperationFragments.remove(
                     mMainActivity.mUserOperationFragments.size() - 1);
@@ -1055,7 +1028,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     public void onOperationOpen(MotionEvent event) {
         if (getSelectedFileList().size() != 0) {
             FileInfo fileInfo = getSelectedFileList().get(0);
-            onListItemClick(selectedDialogItem, Constants.DOUBLE_TAG, event, fileInfo);
+            onListItemClick(selectedDialogItem, event, fileInfo);
         }
     }
 
@@ -1130,7 +1103,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 
     public boolean isSelectedAll() {
         return mFileViewListener.getItemCount() != 0
-               && mCheckedFileNameList.size() == mFileViewListener.getItemCount();
+                && mCheckedFileNameList.size() == mFileViewListener.getItemCount();
     }
 
     public void clearSelection() {
@@ -1195,7 +1168,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     }
 
     public void showContextDialog(FileViewInteractionHub fileViewInteractionHub,
-                                   MotionEvent event) {
+                                  MotionEvent event) {
         menuDialog = new MenuDialog(mContext, fileViewInteractionHub, event);
         menuDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
     }

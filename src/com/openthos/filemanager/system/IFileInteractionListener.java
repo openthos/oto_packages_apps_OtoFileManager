@@ -12,6 +12,7 @@ public interface IFileInteractionListener {
     public void startActivity(Intent intent);
     public void onDataChanged();
     public void onPick(FileInfo f);
+    public void setWallpaper(FileInfo f);
     public boolean shouldShowOperationPane();
 
     /**
