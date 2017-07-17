@@ -51,6 +51,7 @@ import com.openthos.filemanager.fragment.OnlineNeighborFragment;
 import com.openthos.filemanager.fragment.SdStorageFragment;
 import com.openthos.filemanager.fragment.PersonalSpaceFragment;
 import com.openthos.filemanager.fragment.SearchFragment;
+import com.openthos.filemanager.system.AutoMountReceiver;
 import com.openthos.filemanager.system.Util;
 import com.openthos.filemanager.system.FileListAdapter;
 import com.openthos.filemanager.utils.L;
@@ -618,7 +619,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private void getMountData() {
         String data = getSharedPreferences("automount", Context.MODE_PRIVATE)
-                .getString("automount", "[]");
+                .getString("automount", "ERROR");
+        if (data.equals("ERROR")) {
+            data = AutoMountReceiver.refreshAutoMountData(this);
+            getSharedPreferences("automount", Context.MODE_PRIVATE)
+                    .edit().putString("automount", data).commit();
+        }
         try {
             JSONArray array = new JSONArray(data);
             for (int i = 0; i < array.length(); i++) {

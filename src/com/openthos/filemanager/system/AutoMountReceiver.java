@@ -17,12 +17,19 @@ import com.openthos.filemanager.bean.Volume;
  */
 
 public class AutoMountReceiver extends BroadcastReceiver{
-    ArrayList<Volume> mVolumes = new ArrayList<>();
-
-    ArrayList<Disk> mDisks = new ArrayList<>();
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        String result = refreshAutoMountData(context);
+        if (!result.equals("[]")) {
+            context.getSharedPreferences("automount", Context.MODE_PRIVATE)
+                    .edit().putString("automount", result).commit();
+        }
+    }
+
+    public static String refreshAutoMountData(Context context){
+        ArrayList<Volume> mVolumes = new ArrayList<>();
+        ArrayList<Disk> mDisks = new ArrayList<>();
         Process pro;
         BufferedReader in = null;
         try {
@@ -126,7 +133,6 @@ public class AutoMountReceiver extends BroadcastReceiver{
             result = result.substring(0, result.length() - 1);
         }
         result = result + "]";
-        context.getSharedPreferences("automount", Context.MODE_PRIVATE)
-                                                   .edit().putString("automount", result).commit();
+        return result;
     }
 }

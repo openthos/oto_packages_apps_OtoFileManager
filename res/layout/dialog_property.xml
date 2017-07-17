@@ -133,6 +133,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="7"
                 android:maxLines="2"
+                android:ellipsize="end"
                 android:textColor="@color/black"
                 android:textSize="@dimen/dialog_property_font_size" />
         </LinearLayout>

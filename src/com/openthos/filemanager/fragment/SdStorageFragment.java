@@ -42,11 +42,7 @@ public class SdStorageFragment extends BaseFragment {
     public LinearLayout mPersonalSpace;
     private TextView mSystemTotal;
     private TextView mSystemAvail;
-    private LinearLayout mSdInfo;
     private ProgressBar mPbSystem;
-    private TextView mSdTotal;
-    private TextView mSdAvail;
-    private ProgressBar mPbSd;
     private View mMountView;
     public BaseFragment mCurFragment;
     private long lastBackTime = 0;
@@ -128,12 +124,7 @@ public class SdStorageFragment extends BaseFragment {
         mAndroidService = (LinearLayout) inflate.findViewById(R.id.rl_android_service);
         mSystemTotal = (TextView) inflate.findViewById(R.id.tv_system_total);
         mSystemAvail = (TextView) inflate.findViewById(R.id.tv_system_avail);
-        mSdTotal = (TextView) inflate.findViewById(R.id.tv_sd_total);
-        mSdAvail = (TextView) inflate.findViewById(R.id.tv_sd_avail);
-        mSdInfo = (LinearLayout) inflate.findViewById(R.id.tv_sd_info);
-        mSdInfo.setVisibility(View.GONE);
         mPbSystem = (ProgressBar) inflate.findViewById(R.id.pb_system);
-        mPbSd = (ProgressBar) inflate.findViewById(R.id.pb_sd);
     }
 
     private void setVolumSize() {
