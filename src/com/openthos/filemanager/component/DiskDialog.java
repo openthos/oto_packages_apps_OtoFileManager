@@ -26,29 +26,40 @@ import static android.R.color.holo_purple;
 import static android.R.color.transparent;
 
 public class DiskDialog extends BaseDialog implements ListView.OnItemClickListener{
-    private boolean mIsUSB;
     private View mView;
     private MotionEvent mMotionEvent;
+    private String mDiskTag;
 
-    public DiskDialog(Context context, boolean isUSB) {
+    public DiskDialog(Context context, String tag) {
         super(context);
         mActivity = (MainActivity) context;
-        mIsUSB = isUSB;
+        mDiskTag = tag;
     }
 
     public void initData() {
-        String[] diskMeun = new String[] {
-                mActivity.getString(R.string.operation_open),
-        };
-
-        String[] uDiskMeun = new String[] {
-                mActivity.getString(R.string.operation_open),
-                mActivity.getString(R.string.umount),
-                mActivity.getString(R.string.format_usb_device)
-        };
-
+        String[] diskMenu = null;
+        switch (mDiskTag) {
+            case Constants.TAG_SYSTEM:
+                diskMenu = new String[] {
+                        mActivity.getString(R.string.operation_open)
+                };
+                break;
+            case Constants.TAG_USB:
+                diskMenu = new String[] {
+                        mActivity.getString(R.string.operation_open),
+                        mActivity.getString(R.string.umount),
+                        mActivity.getString(R.string.format_usb_device)
+                };
+                break;
+            case Constants.TAG_AUTO_MOUNT:
+                diskMenu = new String[] {
+                        mActivity.getString(R.string.operation_open),
+                        mActivity.getString(R.string.umount)
+                };
+                break;
+        }
         mDatas = new ArrayList();
-        prepareData(mIsUSB ? uDiskMeun : diskMeun);
+        prepareData(diskMenu);
 
         BaseDialogAdapter mAdapter = new BaseDialogAdapter(mActivity, mDatas);
         mListView.setAdapter(mAdapter);
@@ -68,8 +79,13 @@ public class DiskDialog extends BaseDialog implements ListView.OnItemClickListen
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         String content = (String) view.getTag();
         if (mActivity.getString(R.string.umount).equals(content)) {
-            ((SdStorageFragment) (((MainActivity)
-                                           mActivity).getVisibleFragment())).uninstallUSB();
+            if (mDiskTag.equals(Constants.TAG_USB)) {
+                ((SdStorageFragment) (((MainActivity)
+                        mActivity).getVisibleFragment())).uninstallUSB();
+            } else if (mDiskTag.equals(Constants.TAG_AUTO_MOUNT)) {
+                ((SdStorageFragment) (((MainActivity)
+                        mActivity).getVisibleFragment())).uninstallUmount();
+            }
         } else if (mActivity.getString(R.string.operation_open).equals(content)) {
             ((SdStorageFragment) (((MainActivity) mActivity).getVisibleFragment())).enter();
         } else if (mActivity.getString(R.string.format_usb_device).equals(content)) {

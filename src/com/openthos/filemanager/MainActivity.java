@@ -2326,7 +2326,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mSdStorageFragment.initMountData();
     }
 
-    private void umountVolume(Volume v) {
+    public void umountVolume(Volume v) {
         Util.exec(new String[]{"su", "-c", "umount " + v.getPath()});
         v.setIsMount(false);
         mSdStorageFragment.initMountData();

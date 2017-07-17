@@ -100,6 +100,10 @@ public abstract class Constants {
     public static final int USB_INIT = 19;
     public static final int USB_READY = 20;
 
+    public static final String TAG_SYSTEM = "system_default_tag";
+    public static final String TAG_USB = "usb_device_tag";
+    public static final String TAG_AUTO_MOUNT = "auto_mount_tag";
+
     public static final long LONG_PRESS_TIME = 500;
 
     public static final int LIMIT_FILES_NUM = 5;

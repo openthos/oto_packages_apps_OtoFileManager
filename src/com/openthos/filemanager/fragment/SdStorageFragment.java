@@ -401,10 +401,13 @@ public class SdStorageFragment extends BaseFragment {
             case R.id.usb_grid_ll:
                 mCurId = -1;
                 mCurrentPath = (String) view.getTag();
-                showDiskDialog(view, event, true);
+                showDiskDialog(view, event, Constants.TAG_USB);
                 view.setSelected(true);
                 break;
             case R.id.mount_grid_ll:
+                mCurId = -1;
+                mCurrentPath = ((Volume) view.getTag()).getPath();
+                showDiskDialog(view, event, Constants.TAG_AUTO_MOUNT);
                 view.setSelected(true);
                 break;
             case R.id.grid_auto_mount_device:
@@ -414,14 +417,24 @@ public class SdStorageFragment extends BaseFragment {
                 break;
             default:
                 mCurId = view.getId();
-                showDiskDialog(view, event, false);
+                showDiskDialog(view, event, Constants.TAG_SYSTEM);
                 view.setSelected(true);
                 break;
         }
     }
 
-    private void showDiskDialog(View view, MotionEvent event, boolean isUSB) {
-        DiskDialog diskDialog = new DiskDialog(context, isUSB);
+    public void uninstallUmount() {
+        for (int i = 0; i < mMountDevices.getChildCount(); i++) {
+            if (mMountDevices.getChildAt(i).isSelected()) {
+                Volume v = (Volume) mMountDevices.getChildAt(i).getTag();
+                mMainActivity.umountVolume(v);
+                return;
+            }
+        }
+    }
+
+    private void showDiskDialog(View view, MotionEvent event, String tag) {
+        DiskDialog diskDialog = new DiskDialog(context, tag);
         diskDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         diskDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
     }
@@ -593,7 +606,7 @@ public class SdStorageFragment extends BaseFragment {
     @Override
     public void showMenu() {
         if (mIsUsb) {
-            showDiskDialog(mLongPressView, mLongPressEvent, true);
+            showDiskDialog(mLongPressView, mLongPressEvent, Constants.TAG_USB);
         } else {
             secondaryClick(mLongPressView, mLongPressEvent);
         }
