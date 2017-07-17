@@ -45,6 +45,7 @@ public class DragListView extends ListView {
     private OnChanageListener onChanageListener;
     private int tempPosition;
     private int mPaddingLeft, mPaddingTop, mColumnWidth;
+    private int mWidth, mHeight;
 
     public DragListView(Context context) {
         this(context, null);
@@ -263,7 +264,17 @@ public class DragListView extends ListView {
         if (childView == null) {
             return 0;
         }
+        setChildWidthAndHeight(childView.getWidth(), childView.getHeight());
         return mPaddingTop - childView.getTop() + getFirstVisiblePosition()
                 * (childView.getHeight());
+    }
+
+    private void setChildWidthAndHeight(int width, int height) {
+        mWidth = width;
+        mHeight = height;
+    }
+
+    public int[] getChildWidthAndHeight() {
+       return new int[] {mWidth, mHeight};
     }
 }

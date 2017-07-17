@@ -1084,7 +1084,7 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     public void calculateFileGridLocation(int fixY) {
         int[] gridViewParams = file_path_grid.getParams();
-        int[] itemParams = mAdapter.getParams();
+        int[] itemParams = file_path_grid.getChildWidthAndHeight();
         for (int i = 0; i < mFileListInfo.size(); i++) {
             mFileListInfo.get(i).left = gridViewParams[GRID_LEFT_POS]
                     + (i % gridViewParams[GRID_NUMCOLUMNS_POS]) * (
@@ -1104,7 +1104,7 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     public void calculateFileListLocation(int fixY) {
         int[] listViewParams = file_path_list.getParams();
-        int[] itemParams = mAdapter.getParams();
+        int[] itemParams = file_path_list.getChildWidthAndHeight();
         for (int i = 0; i < mFileListInfo.size(); i++) {
             mFileListInfo.get(i).left = listViewParams[GRID_LEFT_POS];
             mFileListInfo.get(i).top = listViewParams[GRID_TOP_POS]

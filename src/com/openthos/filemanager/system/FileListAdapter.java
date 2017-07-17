@@ -30,7 +30,6 @@ public class FileListAdapter extends BaseAdapter {
     private List<FileInfo> fileInfoList;
     private List<Integer> selectFileInfoListIndex = new ArrayList<>();
     private View.OnTouchListener mMotionListener;
-    private int mWidth, mHeight;
     private IconHolder mIconHolder;
 
     public FileListAdapter(Context context, int resource,
@@ -87,7 +86,6 @@ public class FileListAdapter extends BaseAdapter {
             convertView.setTag(viewHolder);
             convertView.setOnTouchListener(mMotionListener);
             ViewGroup.LayoutParams params = convertView.getLayoutParams();
-            setParams(params.width, params.height);
         }
         viewHolder = (ViewHolder) convertView.getTag();
         viewHolder.name.setTag(position);
@@ -112,15 +110,6 @@ public class FileListAdapter extends BaseAdapter {
             name = (TextView) view.findViewById(R.id.file_name);
             icon = (ImageView) view.findViewById(R.id.file_image);
         }
-    }
-
-    private void setParams(int width, int height) {
-        mWidth = width;
-        mHeight = height;
-    }
-
-    public int[] getParams() {
-        return new int[] {mWidth, mHeight};
     }
 
     public void dispose() {

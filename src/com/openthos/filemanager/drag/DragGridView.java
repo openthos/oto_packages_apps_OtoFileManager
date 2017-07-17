@@ -48,6 +48,7 @@ public class DragGridView extends GridView {
     private int tempPosition;
     private int mPaddingLeft, mPaddingTop, mColumnWidth,
                 mVerticalSpace, mNumColumns, mHorizontalSpace;
+    private int mWidth, mHeight;
 
     public DragGridView(Context context) {
         this(context, null);
@@ -276,7 +277,17 @@ public class DragGridView extends GridView {
         if (childView == null) {
             return 0;
         }
+        setChildWidthAndHeight(childView.getWidth(), childView.getHeight());
         return mPaddingTop - childView.getTop() + (getFirstVisiblePosition() / mNumColumns)
                 * (childView.getHeight() + mVerticalSpace);
+    }
+
+    private void setChildWidthAndHeight(int width, int height) {
+        mWidth = width;
+        mHeight = height;
+    }
+
+    public int[] getChildWidthAndHeight() {
+        return new int[] {mWidth, mHeight};
     }
 }
