@@ -36,7 +36,6 @@ import com.openthos.filemanager.system.FileCategoryHelper;
 import com.openthos.filemanager.system.FileIconHelper;
 import com.openthos.filemanager.system.FileInfo;
 import com.openthos.filemanager.system.FileListAdapter;
-import com.openthos.filemanager.system.FileManagerPreferenceActivity;
 import com.openthos.filemanager.system.FileSortHelper;
 import com.openthos.filemanager.system.FileViewInteractionHub;
 import com.openthos.filemanager.system.FileOperationHelper;
@@ -253,7 +252,6 @@ public class SystemSpaceFragment extends BaseFragment implements
         mFileCagetoryHelper = new FileCategoryHelper(mActivity);
         mFileViewInteractionHub = new FileViewInteractionHub(this);
         Intent intent = getActivity().getIntent();
-        //TODO  delete
         mFileIconHelper = new FileIconHelper(mActivity);
         mViewMotionListener = new ViewOnGenericMotionListener();
         if ("list".equals(LocalCache.getViewTag())) {
@@ -264,42 +262,18 @@ public class SystemSpaceFragment extends BaseFragment implements
             mAdapter = new FileListAdapter(mActivity, R.layout.file_browser_item_grid,
                     mFileNameList, mFileViewInteractionHub, mFileIconHelper, mViewMotionListener);
         }
-        boolean baseSd = intent.getBooleanExtra(Constants.KEY_BASE_SD,
-                !FileManagerPreferenceActivity.isReadRoot(mActivity));
-        String rootDir = intent.getStringExtra(ROOT_DIRECTORY);
-        if (!TextUtils.isEmpty(rootDir)) {
-            if (baseSd && sdDir.startsWith(rootDir)) {
-                rootDir = sdDir;
-            }
-        } else {
-            rootDir = baseSd ? sdDir : Constants.ROOT_PATH;
-        }
-        mFileViewInteractionHub.setRootPath("/");
-
-        String currentDir = FileManagerPreferenceActivity
-                .getPrimaryFolder(mActivity, sdOrSystem, directorPath);
+        mFileViewInteractionHub.setRootPath(directorPath);
         if (!mIsLeftItem) {
-            mMainActivity.setCurPath(currentDir);
+            mMainActivity.setCurPath(directorPath);
         }
-        Uri uri = intent.getData();
-        if (uri != null) {
-            if (baseSd && sdDir.startsWith(uri.getPath())) {
-                currentDir = sdDir;
-            } else {
-                currentDir = uri.getPath();
-            }
-        }
-        mFileViewInteractionHub.setCurrentPath(currentDir);
-        curRootDir = currentDir;
-        Log.i(TAG, "CurrentDir = " + currentDir);
-        operatorData();
+        curRootDir = directorPath;
 
         if (mFileInfoList != null && mFileInfoList.size() > 0) {
             mFileViewInteractionHub.setCheckedFileList(mFileInfoList, mCopyOrMove);
         }
-
         initReciever();
         updateUI();
+        operatorData();
         setHasOptionsMenu(true);
         mFileListInfo = mAdapter.getFileInfoList();
     }
@@ -968,8 +942,7 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     @Override
     public String getDisplayPath(String path) {
-        if (path != null && path.startsWith(this.sdDir)
-                && !FileManagerPreferenceActivity.showRealPath(mActivity)) {
+        if (path != null && path.startsWith(this.sdDir)) {
             return getString(R.string.path_sd_eng) + path.substring(this.sdDir.length());
         } else {
             return path;

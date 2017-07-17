@@ -125,7 +125,7 @@ public class Util {
             if (path.equalsIgnoreCase(path1))
                 return true;
 
-            if (path.equals(Constants.ROOT_PATH))
+            if (path.equals(Constants.SDCARD_PATH))
                 break;
             path = new File(path).getParent();
         }

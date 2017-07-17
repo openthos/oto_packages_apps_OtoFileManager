@@ -138,7 +138,7 @@ public class SearchFragment extends BaseFragment{
                 String fileAbsolutePath = mSearchList.get(i).fileAbsolutePath;
                 String filePath = mSearchList.get(i).filePath;
                 fileAbsolutePath = fileAbsolutePath.substring(0,
-                                       fileAbsolutePath.lastIndexOf(Constants.SD_PATH));
+                                       fileAbsolutePath.lastIndexOf(Constants.ROOT_PATH));
                 search_file_path.setText(fileAbsolutePath);
                 boolean isDirectory = new File(filePath).isDirectory();
                 int fileIcon = FileIconHelper.getFileIcon(Util.getExtFromFilename(filePath));

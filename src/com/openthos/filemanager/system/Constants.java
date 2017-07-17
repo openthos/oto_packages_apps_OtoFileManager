@@ -25,7 +25,6 @@ public abstract class Constants {
     public static final String PERSONALSYSTEMSPACE_TAG = "personalsystemspace_tag";
     public static final String SDSSYSTEMSPACE_TAG = "sdssystemspace_tag";
     public static final String SEARCHSYSTEMSPACE_TAG = "searchsystemspace_tag";
-    public static final String DOUBLE_TAG = "double_tag";
     public static final String PERSONAL_TAG = "MY_SPACE";
     public static final String SEAFILESYSTEMSPACE_TAG = "seafilesystemspace_tag";
 
@@ -38,24 +37,19 @@ public abstract class Constants {
 
 
     private static String TAG = "Constants";
-    public static final String KEY_BASE_SD = "key_base_sd";
-    public static final String KEY_SHOW_CATEGORY = "key_show_category";
-    public static final String INTENT_EXTRA_TAB = "TAB";
-    public static final String ROOT_PATH = "/storage/emulated/0/";
-    public static final String SD_PATH = "/";
-    public static final String DESKTOP_PATH = ROOT_PATH + "Desktop";
-    public static final String MUSIC_PATH = ROOT_PATH + "Music";
-    public static final String VIDEOS_PATH = ROOT_PATH + "Movies";
-    public static final String PICTURES_PATH = ROOT_PATH + "Pictures";
-    public static final String DOCUMENT_PATH = ROOT_PATH + "documents";
-    public static final String DOWNLOAD_PATH = ROOT_PATH + "Download";
-    public static final String RECYCLE_PATH = ROOT_PATH + "Recycle";
-    public static final String QQ_IMAGE_PATH = Constants.ROOT_PATH + "Tencent/QQ_Images";
-    public static final String QQ_FILE_PATH = Constants.ROOT_PATH + "Tencent/QQfile_recv";
-    public static final String WEIXIN_IMG_PATH = Constants.ROOT_PATH + "Tencent/MicroMsg/WeiXin";
-    public static final String BAIDU_PAN_PATH = Constants.ROOT_PATH + "BaiduNetdisk";
-    public static final String PERMISS_DIR_STORAGE_USB = "/storage/usb";
-    public static final String PERMISS_DIR_SEAFILE = "/data/sea/data";
+    public static final String SDCARD_PATH = "/storage/emulated/0";
+    public static final String ROOT_PATH = "/";
+    public static final String DESKTOP_PATH = SDCARD_PATH + "/Desktop";
+    public static final String MUSIC_PATH = SDCARD_PATH + "/Music";
+    public static final String VIDEOS_PATH = SDCARD_PATH + "/Movies";
+    public static final String PICTURES_PATH = SDCARD_PATH + "/Pictures";
+    public static final String DOCUMENT_PATH = SDCARD_PATH + "/documents";
+    public static final String DOWNLOAD_PATH = SDCARD_PATH + "/Download";
+    public static final String RECYCLE_PATH = SDCARD_PATH + "/Recycle";
+    public static final String QQ_IMAGE_PATH = SDCARD_PATH + "/Tencent/QQ_Images";
+    public static final String QQ_FILE_PATH = SDCARD_PATH + "/Tencent/QQfile_recv";
+    public static final String WEIXIN_IMG_PATH = SDCARD_PATH + "/Tencent/MicroMsg/WeiXin";
+    public static final String BAIDU_PAN_PATH = SDCARD_PATH + "/BaiduNetdisk";
     public static final String USER_PERMISSION_PATH = "/storage";
 
     public static final String COMPRESS_FILES = "com.openthos.compress.compress";
@@ -66,7 +60,6 @@ public abstract class Constants {
     public static final int OPERATION_UP_LEVEL = 3;
     public static final int SEAFILE_DATA_OK = 6;
 
-    //public static final int BAR_Y = 25;
     public static final int RETURN_TO_WHITE = -2;
     public static final int LIMIT_LENGTH = 10;
     public static final int LIMIT_OWNER_READ = 1;
@@ -594,8 +587,6 @@ public abstract class Constants {
     public static final String SUFFIX_TAR_GZIP = ".gz";
     public static final String SUFFIX_TAR_BZIP2 = ".bz2";
 
-    public static final String ACTION_DESKTOP_SHOW_FILE = "android.intent.action.DESKTOP_SHOW_FILE";
-    public static final String ACTION_DESKTOP_DELETE_FILE = "android.intent.action.DESKTOP_DELETE_FILE";
     public static final String PATH_TAG = "path";
     public static final String EXTRA_CROP_FILE_HEADER = "OtoCropFile:///";
     public static final String EXTRA_FILE_HEADER = "OtoFile:///";

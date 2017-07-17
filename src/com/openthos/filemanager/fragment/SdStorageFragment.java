@@ -336,11 +336,12 @@ public class SdStorageFragment extends BaseFragment {
         mMainActivity.clearNivagateFocus();
         switch (view.getId()) {
             case R.id.rl_android_system:
-                setDiskClickInfo(R.id.rl_android_system, Constants.SYSTEM_SPACE_FRAGMENT, null);
+                setDiskClickInfo(R.id.rl_android_system, Constants.SYSTEM_SPACE_FRAGMENT,
+                        Constants.SDCARD_PATH);
                 break;
             case R.id.rl_sd_space:
                 setDiskClickInfo(R.id.rl_sd_space, Constants.SD_SPACE_FRAGMENT,
-                        Constants.SD_PATH + "storage/");
+                        Constants.ROOT_PATH + "storage");
                 break;
             case R.id.rl_android_service:
                 setDiskClickInfo(R.id.rl_android_service, Constants.YUN_SPACE_FRAGMENT, null);

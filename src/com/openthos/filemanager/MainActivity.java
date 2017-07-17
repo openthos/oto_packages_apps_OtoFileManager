@@ -749,8 +749,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
         if (path.startsWith(getString(R.string.path_sd_eng))) {
             path = path.replaceAll(getString(R.string.path_sd_eng), Util.getSdDirectory());
-        } else if (!path.startsWith(Constants.SD_PATH)) {
-            path = Constants.SD_PATH + path;
+        } else if (!path.startsWith(Constants.ROOT_PATH)) {
+            path = Constants.ROOT_PATH + path;
         }
         File file = new File(path);
         try {
@@ -1954,18 +1954,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void updateAddressButton(String displayPath) {
-        if (displayPath.equals(Constants.SD_PATH)) {
-            mPath = new String[]{Constants.SD_PATH};
-            mPathList.add(Constants.SD_PATH);
+        if (displayPath.equals(Constants.ROOT_PATH)) {
+            mPath = new String[]{Constants.ROOT_PATH};
+            mPathList.add(Constants.ROOT_PATH);
         } else {
-            mPath = displayPath.split(Constants.SD_PATH);
+            mPath = displayPath.split(Constants.ROOT_PATH);
             for (String s : mPath) {
                 mPathList.add(s);
             }
         }
         if (!mPathList.get(0).equals(getString(R.string.path_sd_eng))) {
-            mPath[0] = Constants.SD_PATH;
-            mPathList.set(0, Constants.SD_PATH);
+            mPath[0] = Constants.ROOT_PATH;
+            mPathList.set(0, Constants.ROOT_PATH);
         }
     }
 
@@ -2139,7 +2139,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             String sdfolder = getResources().getString(R.string.path_sd_eng);
             String path = editable.toString();
             if (path.startsWith(sdfolder)) {
-                path = Constants.ROOT_PATH + path.substring(1, path.length());
+                path = Constants.SDCARD_PATH + path.substring(1, path.length());
             }
             if (mCustomFileObserver != null) {
                 mCustomFileObserver.stopWatching();
@@ -2227,7 +2227,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         && view.getTag() instanceof PathAdapter.ViewHolder) {
                     int pos = (int) ((PathAdapter.ViewHolder) view.getTag()).path.getTag();
                     if (pos == 0 && !Build.TYPE.equals("eng")
-                            && mPath[pos].equals(Constants.SD_PATH)) {
+                            && mPath[pos].equals(Constants.ROOT_PATH)) {
                         return true;
                     }
                     if (pos == mPath.length - 1) {
@@ -2236,10 +2236,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     } else {
                         mClickPath = "";
                         for (int j = 0; j <= pos; j++) {
-                            if ((j == 0 && mPath[0].equals(Constants.SD_PATH)) || j == pos) {
+                            if ((j == 0 && mPath[0].equals(Constants.ROOT_PATH)) || j == pos) {
                                 mClickPath += mPath[j];
                             } else {
-                                mClickPath += mPath[j] + Constants.SD_PATH;
+                                mClickPath += mPath[j] + Constants.ROOT_PATH;
                             }
                         }
                         mClickPath = mClickPath.replaceAll(

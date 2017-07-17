@@ -250,16 +250,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         refreshFileList();
     }
 
-    private void onOperationSetting() {
-        Intent intent = new Intent(mContext, FileManagerPreferenceActivity.class);
-        try {
-            mContext.startActivity(intent);
-            clearSelection();
-        } catch (ActivityNotFoundException e) {
-            Log.e(LOG_TAG, "fail to start setting: " + e.toString());
-        }
-    }
-
     public void onOperationShowSysFiles() {
         Settings.instance().setShowDotAndHiddenFiles(!Settings.instance()
                 .getShowDotAndHiddenFiles());
@@ -1078,7 +1068,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     }
 
     private String getAbsoluteName(String path, String name) {
-        return path.equals(Constants.SD_PATH) ? path + name : path + File.separator + name;
+        return path.equals(Constants.ROOT_PATH) ? path + name : path + File.separator + name;
     }
 
     // check or uncheck

@@ -100,10 +100,10 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
     public void enter() {
         switch (mCurId) {
             case R.id.rl_android_system:
-                enter(Constants.SYSTEM_SPACE_FRAGMENT, null);
+                enter(Constants.SYSTEM_SPACE_FRAGMENT, Constants.SDCARD_PATH);
                 break;
             case R.id.rl_sd_space:
-                enter(Constants.SD_SPACE_FRAGMENT, Constants.SD_PATH);
+                enter(Constants.SD_SPACE_FRAGMENT, Constants.ROOT_PATH);
                 break;
             case R.id.rl_android_service:
                 enter(Constants.YUN_SPACE_FRAGMENT, null);

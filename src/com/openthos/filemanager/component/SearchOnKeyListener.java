@@ -61,13 +61,13 @@ public class SearchOnKeyListener implements TextView.OnKeyListener {
             case KeyEvent.KEYCODE_NUMPAD_ENTER:
                 v.clearFocus();
                 if (mMainActivity.mCurFragment instanceof SdStorageFragment) {
-                    mCurPath = Constants.SD_PATH;
-                } else if (mMainActivity.mCurFragment instanceof PersonalSpaceFragment) {
                     mCurPath = Constants.ROOT_PATH;
+                } else if (mMainActivity.mCurFragment instanceof PersonalSpaceFragment) {
+                    mCurPath = Constants.SDCARD_PATH;
                 } else {
                     mCurPath = mMainActivity.getCurPath();
                 }
-                if (Constants.SD_PATH.equals(mCurPath)) {
+                if (Constants.ROOT_PATH.equals(mCurPath)) {
                     MainActivity.mHandler.sendEmptyMessage(Constants.MENU_SHOWHIDE);
                 } else {
                     excuSearch((TextView) v);
