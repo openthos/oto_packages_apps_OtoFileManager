@@ -1,5 +1,6 @@
 package com.openthos.filemanager.system;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -16,6 +17,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,7 @@ public class FileOperationHelper {
     private static final String SUFFIX_TXT = "txt";
     private static final String SUFFIX_DOC = "doc";
     private static final String SUFFIX_XLS = "xls";
+    private static final String SUFFIX_PPT = "ppt";
     private static final String TAG = FileOperationHelper.class.getSimpleName();
     private final ArrayList<FileInfo> mCurFileNameList = new ArrayList<>();
     private boolean mMoving;
@@ -50,30 +53,45 @@ public class FileOperationHelper {
 
     public boolean CreateFolder(String path, String name) {
         Log.v(LOG_TAG, "CreateFolder >>> " + path + "," + name);
-        File f = new File(Util.makePath(path, name));
-        if (f.exists())
+        File f = new File(path, name);
+        if (f.exists()) {
             return false;
-
+        }
         return f.mkdir();
     }
 
-    public boolean CreateFile(String path, String name) {
+    public boolean CreateFile(Activity activity, String path, String name) {
         Log.v(LOG_TAG, "CreateFile >>> " + path);
-        File dir = new File(Util.makePath(path, name));
+        File dir = new File(path, name);
         if (!dir.exists()) {
-            String end = name.substring(name.lastIndexOf(".") + 1, name.length()).toLowerCase();
-            if (SUFFIX_TXT.equals(end)) {
-                Util.exec(new String[]{"cp", "-i", "/data/create/ben.txt",
-                                        dir.getAbsolutePath()});
-            } else if (SUFFIX_DOC.equals(end)) {
-                Util.exec(new String[]{"cp", "-i", "/data/create/wen.doc",
-                                        dir.getAbsolutePath()});
-            } else if (SUFFIX_XLS.equals(end)) {
-                Util.exec(new String[]{"cp", "-i", "/data/create/biao.xls",
-                                        dir.getAbsolutePath()});
-            } else {
-                Util.exec(new String[]{"cp", "-i", "/data/create/yan.ppt",
-                                        dir.getAbsolutePath()});
+            try {
+                InputStream inputStream = null;
+                FileOutputStream outputStream = new FileOutputStream(dir);
+                byte[] buffer = new byte[1024];
+                int count = 0;
+                String end = name.substring(name.lastIndexOf(".") + 1, name.length()).toLowerCase();
+                switch (end) {
+                    case SUFFIX_TXT:
+                        inputStream = activity.getAssets().open("t.txt");
+                        break;
+                    case SUFFIX_DOC:
+                        inputStream = activity.getAssets().open("d.doc");
+                        break;
+                    case SUFFIX_XLS:
+                        inputStream = activity.getAssets().open("x.xls");
+                        break;
+                    case SUFFIX_PPT:
+                        inputStream = activity.getAssets().open("p.ppt");
+                        break;
+                }
+                while ((count = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, count);
+                }
+                outputStream.flush();
+                inputStream.close();
+                outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         } else {
             return false;

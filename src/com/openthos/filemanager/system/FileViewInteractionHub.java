@@ -393,7 +393,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     }
 
     private boolean createFile(String text) {
-        if (mFileOperationHelper.CreateFile(mCurrentPath, text)) {
+        if (mFileOperationHelper.CreateFile(mMainActivity, mCurrentPath, text)) {
             mFileViewListener.addSingleFile(Util.GetFileInfo(Util.makePath(mCurrentPath, text)));
             clearSelection();
         } else {
