@@ -30,7 +30,6 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
     public HashMap<String, List<String>> mGruopMap;
     public List<ImageBean> list;
     public int index;
-    public int mCurId;
 
     public ArrayList<SearchInfo> mSearchList = new ArrayList<>();
     public String sdOrSystem;
@@ -97,22 +96,7 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
         this.directorPath = directPath;
     }
 
-    public void enter() {
-        switch (mCurId) {
-            case R.id.rl_android_system:
-                enter(Constants.SYSTEM_SPACE_FRAGMENT, Constants.SDCARD_PATH);
-                break;
-            case R.id.rl_sd_space:
-                enter(Constants.SD_SPACE_FRAGMENT, Constants.ROOT_PATH);
-                break;
-            case R.id.rl_android_service:
-                enter(Constants.YUN_SPACE_FRAGMENT, null);
-                break;
-            case R.id.rl_personal_space:
-                enter(Constants.PERSONAL_TAG, null);
-                break;
-        }
-    }
+    public void enter() { }
 
     protected abstract void enter(String tag, String path);
 

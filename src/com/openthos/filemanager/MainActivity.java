@@ -459,8 +459,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 if (TextUtils.isEmpty(getCurPath())) {
                     mManager.beginTransaction().remove(mSdStorageFragment).commitAllowingStateLoss();
                     mManager.beginTransaction().hide(mCurFragment).commitAllowingStateLoss();
-                    mSdStorageFragment = new SdStorageFragment(
-                            mManager, mUsbLists, MainActivity.this);
+                    mSdStorageFragment = new SdStorageFragment(mManager, MainActivity.this);
                     setSelectedBackground(R.id.tv_computer);
                     mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment,
                             Constants.SDSTORAGEFRAGMENT_TAG).show(mSdStorageFragment)
@@ -469,8 +468,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 } else {
                     BaseFragment visibleFragment = (BaseFragment) getVisibleFragment();
                     mManager.beginTransaction().remove(mSdStorageFragment).commitAllowingStateLoss();
-                    mSdStorageFragment = new SdStorageFragment(
-                            mManager, mUsbLists, MainActivity.this);
+                    mSdStorageFragment = new SdStorageFragment(mManager, MainActivity.this);
                     mManager.beginTransaction().add(R.id.fl_mian, mSdStorageFragment,
                             Constants.SDSTORAGEFRAGMENT_TAG).hide(mSdStorageFragment)
                             .commitAllowingStateLoss();
@@ -542,7 +540,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mReceiver = new UsbConnectReceiver(this);
         FragmentTransaction transaction = mManager.beginTransaction();
         if (mSdStorageFragment == null) {
-            mSdStorageFragment = new SdStorageFragment(mManager, mUsbLists, MainActivity.this);
+            mSdStorageFragment = new SdStorageFragment(mManager, MainActivity.this);
             transaction.add(R.id.fl_mian, mSdStorageFragment, Constants.SDSTORAGEFRAGMENT_TAG)
                     .hide(mSdStorageFragment);
         }
@@ -923,7 +921,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     mTv_desk.setBackgroundColor(Color.TRANSPARENT);
                     mSdStorageFragment.mPersonalSpace.requestFocus();
                     mSdStorageFragment.mPersonalSpace.setSelected(true);
-                    mSdStorageFragment.mCurId = R.id.rl_personal_space;
                     mSdStorageFragment.mCurView = mSdStorageFragment.mPersonalSpace;
                 } else if (mCurFragment instanceof SystemSpaceFragment) {
                     SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) this.mCurFragment;

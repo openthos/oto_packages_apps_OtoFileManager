@@ -41,6 +41,7 @@ public class PersonalSpaceFragment extends BaseFragment {
     FileViewInteractionHub.CopyOrMove mCopyOrMove = null;
     private PersonalMenuDialog mPersonalDialog;
     private int mPos;
+    private int mCurId;
 
     @Override
     protected void initData() {

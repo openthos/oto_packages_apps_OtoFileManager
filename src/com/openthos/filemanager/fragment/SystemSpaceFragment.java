@@ -501,14 +501,12 @@ public class SystemSpaceFragment extends BaseFragment implements
                                 Toast.makeText(mMainActivity, getString(R.string.fail_open_recycle),
                                         Toast.LENGTH_SHORT).show();
                             } else {
-                                mFileViewInteractionHub.onListItemClick(mPos, motionEvent, fileInfo);
+                                enter();
                                 mPos = -1;
                                 mLastClickId = -1;
                                 mIntegerList.clear();
                                 mFileViewInteractionHub.clearSelection();
                             }
-                            mMainActivity.mHandler.removeCallbacks(
-                                    mMainActivity.mLongPressRunnable);
                         } else {
                             mLastClickTime = System.currentTimeMillis();
                             mLastClickId = mPos;
@@ -1059,6 +1057,7 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     @Override
     public void enter() {
+        mMainActivity.mHandler.removeCallbacks(mMainActivity.mLongPressRunnable);
         mFileViewInteractionHub.onOperationOpen(null);
     }
 

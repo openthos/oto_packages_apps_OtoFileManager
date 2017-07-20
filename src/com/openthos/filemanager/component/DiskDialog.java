@@ -26,8 +26,6 @@ import static android.R.color.holo_purple;
 import static android.R.color.transparent;
 
 public class DiskDialog extends BaseDialog implements ListView.OnItemClickListener{
-    private View mView;
-    private MotionEvent mMotionEvent;
     private String mDiskTag;
 
     public DiskDialog(Context context, String tag) {
