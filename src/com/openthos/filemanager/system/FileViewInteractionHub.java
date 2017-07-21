@@ -26,7 +26,6 @@ import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.bean.Mode;
 import com.openthos.filemanager.component.MenuDialog;
 import com.openthos.filemanager.R;
-import com.openthos.filemanager.component.CompressDialog;
 import com.openthos.filemanager.component.CreateFileDialog;
 import com.openthos.filemanager.component.PropertyDialog;
 import com.openthos.filemanager.utils.L;
@@ -119,26 +118,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 
     public ArrayList<FileInfo> getCheckedFileList() {
         return mFileOperationHelper.getFileList();
-    }
-
-    public void onOperationDragConfirm(String filePath) {
-        if (isSelectingFiles()) {
-            mSelectFilesCallback.selected(mCheckedFileNameList);
-            mSelectFilesCallback = null;
-            clearSelection();
-        } else if (mFileOperationHelper.isMoveState()) {
-            if (mFileOperationHelper.EndMove(filePath)) {
-                showProgress(mContext.getString(R.string.operation_moving));
-            }
-        } else {
-            onOperationDragPaste(filePath);
-        }
-    }
-
-    public void onOperationDragPaste(String filePath) {
-        if (mFileOperationHelper.Paste(filePath)) {
-            showProgress(mContext.getString(R.string.operation_pasting));
-        }
     }
 
     public void setCheckedFileList(ArrayList<FileInfo> fileInfoList, CopyOrMove copyOrMove) {
@@ -437,12 +416,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         ClipboardManager cm = (ClipboardManager) mContext.getSystemService(
                 Context.CLIPBOARD_SERVICE);
         cm.setText(text);
-    }
-
-    public void onOperationPaste() {
-        if (mFileOperationHelper.Paste(mCurrentPath)) {
-            showProgress(mContext.getString(R.string.operation_pasting));
-        }
     }
 
     public void onOperationMove() {
@@ -859,20 +832,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         propertyDialog.showDialog();
     }
 
-    public void onOperationButtonConfirm() {
-        if (isSelectingFiles()) {
-            mSelectFilesCallback.selected(mCheckedFileNameList);
-            mSelectFilesCallback = null;
-            clearSelection();
-        } else if (mFileOperationHelper.isMoveState()) {
-            if (mFileOperationHelper.EndMove(mCurrentPath)) {
-                showProgress(mContext.getString(R.string.operation_moving));
-            }
-        } else {
-            onOperationPaste();
-        }
-    }
-
     public void onOperationCompress() {
         if (getSelectedFileList().size() == 0) {
             return;
@@ -902,60 +861,10 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         if (file == null) {
             return;
         }
-        /*String[] files = FileOperationHelper.list(file.filePath);
-        for (String s : files) {
-            for (FileInfo info : ((SystemSpaceFragment) mFileViewListener).getAllFiles()) {
-                if (info.fileName.equals(s)) {
-                    DialogInterface.OnClickListener ok = new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            new Thread(){
-                                @Override
-                                public void run() {
-                                    super.run();
-                                    FileOperationHelper.decompress(file.filePath);
-                                }
-                            }.start();
-                        }
-                    };
-                    DialogInterface.OnClickListener cancel = new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int i) {
-                            dialog.cancel();
-                        }
-                    };
-                    OperateUtils.showChooseAlertDialog(
-                            mContext, R.string.dialog_decompress_text, ok, cancel);
-                    return;
-                }
-            }
-        }*/
         Intent intent = new Intent(Constants.DECOMPRESS_FILE);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Constants.COMPRESS_PATH_TAG, file.filePath);
         mContext.startActivity(intent);
-        /*new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                FileOperationHelper.decompress(file.filePath);
-            }
-        }.start();*/
-    }
-
-    public void onOperationButtonCancel() {
-        mFileOperationHelper.clear();
-//        showConfirmOperationBar(false);
-        if (isSelectingFiles()) {
-            mSelectFilesCallback.selected(null);
-            mSelectFilesCallback = null;
-        } else if (mFileOperationHelper.isMoveState()) {
-            // refresh to show previously selected hidden files
-            mFileOperationHelper.EndMove(null);
-            refreshFileList();
-        } else {
-            refreshFileList();
-        }
     }
 
     // File List view setup

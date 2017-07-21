@@ -33,8 +33,8 @@
     <dimen name="dialog_property_button_height">32sp</dimen>
     <dimen name="dialog_property_font_size">12sp</dimen>
 
-    <dimen name="home_item_length">300dp</dimen>
-    <dimen name="home_item_height">100dp</dimen>
+    <dimen name="home_item_length">380dp</dimen>
+    <dimen name="home_item_height">120dp</dimen>
     <dimen name="home_item_padding">80dp</dimen>
     <dimen name="home_pic_text">10dp</dimen>
 </resources>

@@ -103,29 +103,6 @@ public class FileOperationHelper {
         copyFileList(files);
     }
 
-    public boolean Paste(String path) {
-        if (mCurFileNameList.size() == 0)
-            return false;
-
-        final String _path = path;
-        asnycExecute(new Runnable() {
-            @Override
-            public void run() {
-                for (FileInfo f : mCurFileNameList) {
-                    CopyFile(f, _path);
-                }
-
-                mOperationListener.onFileChanged(Environment
-                        .getExternalStorageDirectory()
-                        .getAbsolutePath());
-
-                clear();
-            }
-        });
-
-        return true;
-    }
-
     public boolean canPaste() {
         return mCurFileNameList.size() != 0;
     }
@@ -160,52 +137,8 @@ public class FileOperationHelper {
         }
     }
 
-    public boolean EndMove(String path) {
-        if (!mMoving)
-            return false;
-        mMoving = false;
-
-        if (TextUtils.isEmpty(path))
-            return false;
-
-        final String _path = path;
-        asnycExecute(new Runnable() {
-            @Override
-            public void run() {
-                for (FileInfo f : mCurFileNameList) {
-                    MoveFile(f, _path);
-                }
-
-                mOperationListener.onFileChanged(Environment
-                        .getExternalStorageDirectory()
-                        .getAbsolutePath());
-
-                clear();
-            }
-        });
-
-        return true;
-    }
-
     public ArrayList<FileInfo> getFileList() {
         return mCurFileNameList;
-    }
-
-    private void asnycExecute(Runnable r) {
-        final Runnable _r = r;
-        new AsyncTask() {
-            @Override
-            protected Object doInBackground(Object... params) {
-                synchronized (mCurFileNameList) {
-                    _r.run();
-                }
-                if (mOperationListener != null) {
-                    mOperationListener.onFinish();
-                }
-
-                return null;
-            }
-        }.execute();
     }
 
     public boolean isFileSelected(String path) {
@@ -242,25 +175,6 @@ public class FileOperationHelper {
             }
         }
         return false;
-    }
-
-    public boolean Delete(ArrayList<FileInfo> files) {
-        copyFileList(files);
-        asnycExecute(new Runnable() {
-            @Override
-            public void run() {
-                for (FileInfo f : mCurFileNameList) {
-                    DeleteFile(f);
-                }
-
-                mOperationListener.onFileChanged(Environment
-                        .getExternalStorageDirectory()
-                        .getAbsolutePath());
-
-                clear();
-            }
-        });
-        return true;
     }
 
     protected void DeleteFile(FileInfo f) {
@@ -329,10 +243,13 @@ public class FileOperationHelper {
                     destFile.getAbsolutePath()});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
-            MainActivity.mHandler.removeMessages(Constants.COPY_INFO_HIDE);
-            MainActivity.mHandler.sendEmptyMessage(srcFile.equals(RECYCLE_PATH1)
-                || srcFile.equals(RECYCLE_PATH2) || srcFile.equals(RECYCLE_PATH3)?
-                    Constants.DELETE_INFO_SHOW : Constants.COPY_INFO_SHOW);
+            if (MainActivity.mHandler.hasMessages(Constants.COPY_INFO_HIDE)) {
+                MainActivity.mHandler.removeMessages(Constants.COPY_INFO_HIDE);
+            } else {
+                MainActivity.mHandler.sendEmptyMessage(srcFile.equals(RECYCLE_PATH1)
+                        || srcFile.equals(RECYCLE_PATH2) || srcFile.equals(RECYCLE_PATH3)?
+                        Constants.DELETE_INFO_SHOW : Constants.COPY_INFO_SHOW);
+            }
             int i = 0;
             while ((line = in.readLine()) != null) {
                 if (i == 0) {
@@ -355,14 +272,6 @@ public class FileOperationHelper {
                 }
             }
         }
-        //if (isRefreah) {
-        //    MainActivity.mHandler.sendMessage(
-        //                       Message.obtain(MainActivity.mHandler, Constants.REFRESH, destDir));
-        //} else {
-        //    MainActivity.mHandler.sendMessage(
-        //            Message.obtain(MainActivity.mHandler, Constants.REFRESH,
-        //                    new File(srcFile).getParent()));
-        //}
         if (isRecycle) {
             if (destFile.exists()) {
                 ContentValues contentValues = new ContentValues();
@@ -376,43 +285,6 @@ public class FileOperationHelper {
             MainActivity.getResolver().delete(
                     MainActivity.getUri(), "filename = \"" + sourceFile.getName() + "\"", null);
         }
-    }
-
-    private void CopyFile(FileInfo f, String dest) {
-        String command = "/system/bin/cp";
-        String arg = "-v";
-        File file = new File(f.filePath);
-        if (file.isDirectory()) {
-            arg = "-rv";
-        }
-        copyOrMoveFile(command, arg, f.filePath, dest, true);
-//        if (f == null || dest == null) {
-//            Log.e(LOG_TAG, "CopyFile: null parameter");
-//            return;
-//        }
-
-//        File file = new File(f.filePath);
-//        if (file.isDirectory()) {
-
-            // directory exists in destination, rename it
-//            String destPath = Util.makePath(dest, f.fileName);
-//            File destFile = new File(destPath);
-//            int i = 1;
-//            while (destFile.exists()) {
-//                destPath = Util.makePath(dest, f.fileName + " " + i++);
-//                destFile = new File(destPath);
-//            }
-
-//            for (File child : file.listFiles(mFilter)) {
-//                if (!child.isHidden() && Util.isNormalFile(child.getAbsolutePath())) {
-//                    CopyFile(Util.GetFileInfo(child, mFilter,
-//                                  Settings.instance().getShowDotAndHiddenFiles()), destPath);
-//                }
-//            }
-//        } else {
-//            String destFile = Util.copyFile(f.filePath, dest);
-//        }
-//        Log.v(LOG_TAG, "CopyFile >>> " + f.filePath + "," + dest);
     }
 
     private void copyFileList(ArrayList<FileInfo> files) {
@@ -476,13 +348,6 @@ public class FileOperationHelper {
         copyOrMoveFile(command, arg, sourcefile, dest, true);
     }
 
-    private boolean MoveFile(FileInfo f, String dest) {
-        String command = "/system/bin/mv";
-        String arg = "-v";
-        copyOrMoveFile(command, arg, f.filePath, dest, true);
-        return false;
-    }
-
     public static boolean MoveFile(String sourcefile, String dest, boolean isRefreah) {
         MoveFile(sourcefile, dest, isRefreah, false);
         return false;
@@ -506,19 +371,15 @@ public class FileOperationHelper {
                     || path.equals(RECYCLE_PATH2)
                     || path.equals(RECYCLE_PATH3)) {
                 //clean Recycle
-                MainActivity.mHandler.removeMessages(Constants.COPY_INFO_HIDE);
-                MainActivity.mHandler.sendEmptyMessage(Constants.DELETE_INFO_SHOW);
                 delete(new File(path), true);
             } else if (path.contains(RECYCLE_PATH1)
                     || path.contains(RECYCLE_PATH2)
                     || path.contains(RECYCLE_PATH3)
                     || (path.split("/").length > 3 && path.startsWith("/storage/usb"))) {
                 //delete file
-                MainActivity.mHandler.sendEmptyMessage(Constants.DELETE_INFO_SHOW);
                 delete(new File(path), false);
             } else {
                 //move to Recycle
-                MainActivity.mHandler.sendEmptyMessage(Constants.DELETE_INFO_SHOW);
                 MoveFile(path, RECYCLE_PATH1, false, true);
             }
         }
@@ -554,8 +415,11 @@ public class FileOperationHelper {
                 pro = Runtime.getRuntime().exec(new String[]{command, arg, file.getAbsolutePath()});
                 in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
                 String line;
-                MainActivity.mHandler.removeMessages(Constants.COPY_INFO_HIDE);
-                MainActivity.mHandler.sendEmptyMessage(Constants.DELETE_INFO_SHOW);
+                if (MainActivity.mHandler.hasMessages(Constants.COPY_INFO_HIDE)) {
+                    MainActivity.mHandler.removeMessages(Constants.COPY_INFO_HIDE);
+                } else {
+                    MainActivity.mHandler.sendEmptyMessage(Constants.DELETE_INFO_SHOW);
+                }
                 int i = 0;
                 while ((line = in.readLine()) != null) {
                     if (i == 0) {
@@ -596,105 +460,6 @@ public class FileOperationHelper {
                         MainActivity.getUri(), "filename = \"" + file.getName() + "\"", null);
             }
 
-        }
-    }
-
-    public static void compress(String path, CompressFormatType type) {
-        File f = new File(path);
-        String arg = "";
-        String suffix = "";
-        BufferedReader in = null;
-        boolean isOk = false;
-        switch (type) {
-            case TAR:
-                arg = "-r";
-                suffix = Constants.SUFFIX_TAR;
-                break;
-            case GZIP:
-                arg = "-w";
-                suffix = Constants.SUFFIX_TAR_GZIP;
-                break;
-            case BZIP2:
-                arg = "-w";
-                suffix = Constants.SUFFIX_TAR_BZIP2;
-                break;
-            case ZIP:
-                arg = "-w";
-                suffix = Constants.SUFFIX_ZIP;
-                break;
-        }
-        String tarPath = path + suffix;
-        try {
-            Process pro = Runtime.getRuntime().exec(
-                    new String[]{"/system/bin/7za", "a", tarPath, arg, path, "-bb3", "-y"});
-            in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
-            MainActivity.mHandler.removeMessages(Constants.COPY_INFO_HIDE);
-            MainActivity.mHandler.sendEmptyMessage(Constants.COMPRESS_INFO_SHOW);
-            String line;
-            int i = 0;
-            while ((line = in.readLine()) != null) {
-                if (i == 0) {
-                    MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
-                            Constants.COPY_INFO, line));
-                    i = 10;
-                } else {
-                    i--;
-                }
-            }
-            MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
-        } catch (IOException e) {
-            e.printStackTrace();
-            MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    // command
-    public static void decompress(String path) {
-        File f = new File(path);
-        BufferedReader in = null;
-        Process pro;
-        try {
-            if (path.toLowerCase().endsWith(Constants.SUFFIX_RAR)) {
-                pro = Runtime.getRuntime().exec(new String[]{"/system/bin/unrar", "x", "-y", path},
-                        null, new File(f.getParent()));
-            } else {
-                pro = Runtime.getRuntime().exec(new String[]{"/system/bin/7za", "x",
-                                                        path, "-o" + f.getParent(), "-bb3", "-y"});
-            }
-            in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
-            MainActivity.mHandler.removeMessages(Constants.COPY_INFO_HIDE);
-            MainActivity.mHandler.sendEmptyMessage(Constants.DECOMPRESS_INFO_SHOW);
-            String line;
-            int i = 0;
-            while ((line = in.readLine()) != null) {
-                if (i == 0) {
-                    MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
-                            Constants.COPY_INFO, line));
-                    i = 10;
-                } else {
-                    i--;
-                }
-            }
-            MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
-        } catch (IOException e) {
-            e.printStackTrace();
-            MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 

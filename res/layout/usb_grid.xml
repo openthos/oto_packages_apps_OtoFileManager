@@ -51,12 +51,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/text_size"
+                    android:singleLine="true"
                     android:textSize="13sp"/>
 
                 <TextView
                     android:id="@+id/usb_grid_total_size"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:singleLine="true"
                     android:textSize="13sp"/>
 
                 <TextView
@@ -64,12 +66,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
                     android:text="@string/text_available"
+                    android:singleLine="true"
                     android:textSize="13sp"/>
 
                 <TextView
                     android:id="@+id/usb_grid_available_size"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:singleLine="true"
                     android:textSize="13sp"/>
             </LinearLayout>
         </LinearLayout>

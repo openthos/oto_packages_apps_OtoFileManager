@@ -168,11 +168,6 @@ public class SystemSpaceFragment extends BaseFragment implements
                 }
                 T.showShort(mActivity, getString(R.string.select_file_to_copy));
                 break;
-            case "pop_delete":
-                if (mFileViewInteractionHub.getSelectedFileList() != null) {
-                    //mFileViewInteractionHub.onOperationDelete();
-                }
-                break;
             case "pop_send":
                 if (mFileViewInteractionHub.getSelectedFileList() != null) {
                     mFileViewInteractionHub.onOperationSend();
@@ -187,12 +182,6 @@ public class SystemSpaceFragment extends BaseFragment implements
                 break;
             case "pop_cut":
                 mFileViewInteractionHub.onOperationMove();
-                break;
-            case "pop_paste":
-                mFileViewInteractionHub.onOperationButtonConfirm();
-                break;
-            case "pop_cacel":
-                mFileViewInteractionHub.onOperationButtonCancel();
                 break;
             case "grid":
             case "list":
