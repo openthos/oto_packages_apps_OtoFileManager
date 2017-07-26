@@ -6,7 +6,7 @@
     android:nextFocusRight="@id/ll_grid_item_bg"
     android:nextFocusDown="@id/ll_grid_item_bg"
     android:layout_width="135dp"
-    android:layout_height="130dp"
+    android:layout_height="wrap_content"
     android:background="@drawable/list_item_bg_selector"
     android:gravity="center_horizontal"
     android:orientation="vertical"

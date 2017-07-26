@@ -72,7 +72,8 @@ public class PersonalSpaceFragment extends BaseFragment {
         mPathMap.put(getString(R.string.recycle), Constants.RECYCLE_PATH);
         mPathMap.put(getString(R.string.qq_image), Constants.QQ_IMAGE_PATH);
         mPathMap.put(getString(R.string.qq_file), Constants.QQ_FILE_PATH);
-        mPathMap.put(getString(R.string.winxin), Constants.WEIXIN_IMG_PATH);
+        mPathMap.put(getString(R.string.winxin_image), Constants.WEIXIN_IMG_PATH);
+        mPathMap.put(getString(R.string.winxin_file), Constants.WEIXIN_FILE_PATH);
         mPathMap.put(getString(R.string.baidu_disk), Constants.BAIDU_PAN_PATH);
         Iterator iterator = mPathMap.entrySet().iterator();
         while (iterator.hasNext()) {

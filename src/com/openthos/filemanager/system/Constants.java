@@ -49,6 +49,7 @@ public abstract class Constants {
     public static final String QQ_IMAGE_PATH = SDCARD_PATH + "/Tencent/QQ_Images";
     public static final String QQ_FILE_PATH = SDCARD_PATH + "/Tencent/QQfile_recv";
     public static final String WEIXIN_IMG_PATH = SDCARD_PATH + "/Tencent/MicroMsg/WeiXin";
+    public static final String WEIXIN_FILE_PATH = SDCARD_PATH + "/Tencent/MicroMsg/Download";
     public static final String BAIDU_PAN_PATH = SDCARD_PATH + "/BaiduNetdisk";
     public static final String USER_PERMISSION_PATH = "/storage";
 

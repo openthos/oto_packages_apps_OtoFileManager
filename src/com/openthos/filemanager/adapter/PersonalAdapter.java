@@ -100,10 +100,11 @@ public class PersonalAdapter extends BaseAdapter {
             icon.setImageResource(R.mipmap.ic_personal_qq_pic);
         } else if (mContext.getString(R.string.qq_file).equals(s)) {
             icon.setImageResource(R.mipmap.ic_personal_qq_file);
-        } else if (mContext.getString(R.string.winxin).equals(s)) {
-            icon.setImageResource(R.mipmap.ic_personal_weixin);
         } else if (mContext.getString(R.string.baidu_disk).equals(s)) {
             icon.setImageResource(R.mipmap.ic_personal_baiduyun);
+        } else if (mContext.getString(R.string.winxin_image).equals(s)
+                || mContext.getString(R.string.winxin_file).equals(s)) {
+            icon.setImageResource(R.mipmap.ic_personal_weixin);
         }
 
     }
