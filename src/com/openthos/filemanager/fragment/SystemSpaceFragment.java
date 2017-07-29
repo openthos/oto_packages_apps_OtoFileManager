@@ -24,6 +24,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.media.MediaScannerConnection;
 
 import com.openthos.filemanager.BaseFragment;
 import com.openthos.filemanager.MainActivity;
@@ -64,15 +65,15 @@ public class SystemSpaceFragment extends BaseFragment implements
     private List<FileInfo> mFileListInfo;
     private Activity mActivity;
     private MainActivity mMainActivity;
-//    private View view;
+    //    private View view;
     private DragListView file_path_list;
     private DragGridView file_path_grid;
     private FrameLayout mFragmentSysFl;
     private static final String sdDir = Util.getSdDirectory();
-//    private String sdOrSystem;
+    //    private String sdOrSystem;
 //    private String directorPath;
     private String curRootDir = "";
-//    private ArrayList<FileInfo> fileInfoList = null;
+    //    private ArrayList<FileInfo> fileInfoList = null;
 //    FileViewInteractionHub.CopyOrMove copyOrMove = null;
     private boolean isCtrlPress;
     private String mouseRightTag = "mouse";
@@ -880,7 +881,7 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     @Override
     public void setWallpaper(FileInfo f) {
-        WallpaperManager wpm = WallpaperManager.getInstance(mMainActivity);
+        final WallpaperManager wpm = WallpaperManager.getInstance(mMainActivity);
         Uri uri = Uri.fromFile(new File(f.filePath));
         String path = uri.getEncodedPath();
         if (path != null) {
@@ -904,17 +905,37 @@ public class SystemSpaceFragment extends BaseFragment implements
             }
             cur.close();
             if (index != 0) {
-                Uri uri_temp = Uri
-                        .parse("content://media/external/images/media/"
-                                + index);
+                Uri uri_temp = Uri.parse("content://media/external/images/media/" + index);
                 if (uri_temp != null) {
                     uri = uri_temp;
                 }
+                Intent intent = wpm.getCropAndSetWallpaperIntent(uri);
+                startActivity(intent);
+                mMainActivity.finish();
+            } else {
+                MediaScannerConnection.scanFile(mMainActivity,
+                        new String[]{f.filePath}, new String[]{"image/*"},
+                        new MediaScannerConnection.OnScanCompletedListener() {
+                            @Override
+                            public void onScanCompleted(String path, Uri uri) {
+                                if (uri.getEncodedPath().startsWith("/external/images/media/")) {
+                                    Intent intent = wpm.getCropAndSetWallpaperIntent(uri);
+                                    startActivity(intent);
+                                    mMainActivity.finish();
+                                } else {
+                                    mMainActivity.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(mMainActivity,
+                                                    getString(R.string.check_right_image),
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            }
+                        });
             }
         }
-        Intent intent = wpm.getCropAndSetWallpaperIntent(uri);
-        startActivity(intent);
-        mMainActivity.finish();
     }
 
     @Override
