@@ -2482,4 +2482,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             return false;
         }
     }
+
+    public void setUsbPath(String path) {
+        mUsbPath = path;
+    }
 }

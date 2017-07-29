@@ -320,6 +320,7 @@ public class SdStorageFragment extends BaseFragment {
                 break;
             case R.id.usb_grid_ll:
                 mCurrentPath = (String) view.getTag();
+                mMainActivity.setUsbPath(mCurrentPath);
                 if (!view.isSelected()) {
                     setUnselectAll();
                     view.setSelected(true);
