@@ -319,71 +319,75 @@ public class SystemSpaceFragment extends BaseFragment implements
     @Override
     public void processDirectionKey(int keyCode) {
         int size = mFileNameList.size();
-        if (mPos < 0 || mPos >= size) {
-            return;
-        }
-        boolean isGrid = "grid".equals(LocalCache.getViewTag());
-        int numColumns = file_path_grid.getNumColumns();
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_DPAD_LEFT:
+        if ( mPos < size && size != 0) {
+            List integerList = mAdapter.getSelectFileInfoList();
+            integerList.clear();
+            mFileViewInteractionHub.clearSelection();
+            if (mPos == -1) {
+                mPos = 0;
+            } else {
+                boolean isGrid = "grid".equals(LocalCache.getViewTag());
+                int numColumns = file_path_grid.getNumColumns();
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_DPAD_LEFT:
+                        if (isGrid) {
+                            mPos = isGrid && mPos > 0 ? mPos - 1 : mPos;
+                        } else {
+                            mPos = mPos > 0 ? mPos - 1 : mPos;
+                        }
+                        break;
+                    case KeyEvent.KEYCODE_DPAD_UP:
+                        if (isGrid) {
+                            mPos = mPos > numColumns - 1 ? mPos - numColumns : mPos;
+                        } else {
+                            mPos = mPos > 0 ? mPos - 1 : mPos;
+                        }
+                        break;
+                    case KeyEvent.KEYCODE_DPAD_RIGHT:
+                        if (isGrid) {
+                            mPos = isGrid && mPos < size - 1 ? mPos + 1 : mPos;
+                        } else {
+                            mPos = mPos < size - 1 ? mPos + 1 : mPos;
+                        }
+                        break;
+                    case KeyEvent.KEYCODE_DPAD_DOWN:
+                        if (isGrid) {
+                            mPos = mPos < size - numColumns ? mPos + numColumns :
+                                       mPos < size - size % numColumns ? size - 1 : mPos;
+                        } else {
+                            mPos = mPos < size - 1 ? mPos + 1 : mPos;
+                        }
+                        break;
+                }
                 if (isGrid) {
-                    mPos = isGrid && mPos > 0 ? mPos - 1 : mPos;
+                    int firstVisiblePos = file_path_grid.getFirstVisiblePosition();
+                    int lastVisiblePos = file_path_grid.getLastVisiblePosition();
+                    if (mPos < numColumns
+                            || (mPos <= size - 1 && mPos >= size - (size % numColumns))) {
+                        if (size > lastVisiblePos - firstVisiblePos + 1) {
+                            file_path_grid.setSelection(mPos);
+                        } else {
+                            file_path_grid.smoothScrollToPosition(mPos);
+                        }
+                    } else if (mPos < firstVisiblePos
+                            || mPos > lastVisiblePos - numColumns) {
+                        file_path_grid.setSelection(mPos);
+                    }
                 } else {
-                    mPos = mPos > 0 ? mPos - 1 : mPos;
+                    if (mPos == 0 || mPos == size - 1) {
+                        file_path_list.smoothScrollToPosition(mPos);
+                    } else if (mPos < file_path_list.getFirstVisiblePosition()
+                            || mPos > file_path_list.getLastVisiblePosition() - 3) {
+                        file_path_list.setSelection(mPos);
+                    }
                 }
-                break;
-            case KeyEvent.KEYCODE_DPAD_UP:
-                if (isGrid) {
-                    mPos = mPos > numColumns - 1 ? mPos - numColumns : mPos;
-                } else {
-                    mPos = mPos > 0 ? mPos - 1 : mPos;
-                }
-                break;
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                if (isGrid) {
-                    mPos = isGrid && mPos < size - 1 ? mPos + 1 : mPos;
-                } else {
-                    mPos = mPos < size - 1 ? mPos + 1 : mPos;
-                }
-                break;
-            case KeyEvent.KEYCODE_DPAD_DOWN:
-                if (isGrid) {
-                    mPos = mPos < size - numColumns ?
-                            mPos + numColumns : mPos < size - size % numColumns ? size - 1 : mPos;
-                } else {
-                    mPos = mPos < size - 1 ? mPos + 1 : mPos;
-                }
-                break;
-        }
-        if (isGrid) {
-            int firstVisiblePos = file_path_grid.getFirstVisiblePosition();
-            int lastVisiblePos = file_path_grid.getLastVisiblePosition();
-            if (mPos < numColumns || (mPos <= size - 1 && mPos >= size - (size % numColumns))) {
-                if (size > lastVisiblePos - firstVisiblePos + 1) {
-                    file_path_grid.setSelection(mPos);
-                } else {
-                    file_path_grid.smoothScrollToPosition(mPos);
-                }
-            } else if (mPos < firstVisiblePos
-                    || mPos > lastVisiblePos - numColumns) {
-                file_path_grid.setSelection(mPos);
             }
-        } else {
-            if (mPos == 0 || mPos == size - 1) {
-                file_path_list.smoothScrollToPosition(mPos);
-            } else if (mPos < file_path_list.getFirstVisiblePosition()
-                    || mPos > file_path_list.getLastVisiblePosition() - 3) {
-                file_path_list.setSelection(mPos);
-            }
+            FileInfo fileInfo = mAdapter.getFileInfoList().get(mPos);
+            fileInfo.Selected = true;
+            integerList.add(mPos);
+            mFileViewInteractionHub.addDialogSelectedItem(fileInfo);
+            onDataChanged();
         }
-        List integerList = mAdapter.getSelectFileInfoList();
-        integerList.clear();
-        mFileViewInteractionHub.clearSelection();
-        FileInfo fileInfo = mAdapter.getFileInfoList().get(mPos);
-        fileInfo.Selected = true;
-        integerList.add(mPos);
-        mFileViewInteractionHub.addDialogSelectedItem(fileInfo);
-        onDataChanged();
     }
 
     @Override

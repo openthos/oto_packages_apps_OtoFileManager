@@ -782,6 +782,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             transaction.show(mAddressFragment).commitAllowingStateLoss();
             setFileInfo(R.id.et_nivagation, path, mAddressFragment);
             mHashMap.put(Constants.ADDRESSFRAGMENT_TAG, R.id.tv_computer);
+            mCurTabIndext = 9;
+            mCurFragment = mAddressFragment;
         } else {
             Toast.makeText(this, "" + getResources().getString(R.string.address_search_false),
                     Toast.LENGTH_SHORT).show();
