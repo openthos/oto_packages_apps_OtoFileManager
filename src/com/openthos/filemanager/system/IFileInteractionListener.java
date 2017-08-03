@@ -21,8 +21,6 @@ public interface IFileInteractionListener {
      * @return true: indicate have operated it; false: otherwise.
      */
     public boolean onOperation(int id);
-    public String getDisplayPath(String path);
-    public String getRealPath(String displayPath);
     public void runOnUiThread(Runnable r);
     // return true indicates the navigation has been handled
     public boolean onNavigation(String path);

@@ -429,11 +429,15 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         copyOrMoveMode = CopyOrMove.Move;
     }
 
-    public void refreshFileList() {
+    public void initFileList() {
         clearSelection();
         ((SystemSpaceFragment) mFileViewListener).clearSelect();
-        updateNavigationPane();
         mFileViewListener.onRefreshFileList(mCurrentPath, mFileSortHelper);
+    }
+
+    public void refreshFileList() {
+        updateNavigationPane();
+        initFileList();
 
         // update move operation button state
 //        updateConfirmButtons();
@@ -457,7 +461,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 //    }
 
     private void updateNavigationPane() {
-        ((MainActivity) mContext).setNavigationBar(mFileViewListener.getDisplayPath(mCurrentPath));
+        ((MainActivity) mContext).setNavigationBar(Util.getDisplayPath(mContext, mCurrentPath));
     }
 
     public void onOperationSend() {
@@ -654,7 +658,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         public void run() {
             super.run();
             for (String[] info : mFileInfo) {
-                FileOperationHelper.MoveFile(
+                FileOperationHelper.MoveFile(mMainActivity,
                         new File(FileOperationHelper.RECYCLE_PATH1, info[1]).getAbsolutePath(),
                         info[0], false);
             }
@@ -759,7 +763,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         dialog.show();
     }
 
-    class DeleteDirectClickListener implements DialogInterface.OnClickListener {
+    private class DeleteDirectClickListener implements DialogInterface.OnClickListener {
         ArrayList<FileInfo> mFiles;
 
         public DeleteDirectClickListener(ArrayList<FileInfo> selectedFiles) {
@@ -773,7 +777,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         }
     }
 
-    class DeleteDirectThread extends Thread {
+    private class DeleteDirectThread extends Thread {
         ArrayList<FileInfo> mFiles;
 
         public DeleteDirectThread(ArrayList<FileInfo> selectedFiles) {
@@ -784,11 +788,11 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         @Override
         public void run() {
             super.run();
-            mFileOperationHelper.deleteDirectFile(mFiles);
+            mFileOperationHelper.deleteDirectFile(mMainActivity, mFiles);
         }
     }
 
-    class DeleteClickListener implements DialogInterface.OnClickListener {
+    private class DeleteClickListener implements DialogInterface.OnClickListener {
         ArrayList<FileInfo> mFiles;
 
         public DeleteClickListener(ArrayList<FileInfo> selectedFiles) {
@@ -802,7 +806,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         }
     }
 
-    class DeleteThread extends Thread {
+    private class DeleteThread extends Thread {
         ArrayList<FileInfo> mFiles;
 
         public DeleteThread(ArrayList<FileInfo> selectedFiles) {
@@ -813,7 +817,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         @Override
         public void run() {
             super.run();
-            mFileOperationHelper.deleteFile(mFiles);
+            mFileOperationHelper.deleteFile(mMainActivity, mFiles);
         }
     }
 
@@ -895,7 +899,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
             return;
         }
         if (!fileInfo.IsDir) {
-            switch (getMode()){
+            switch (getMode()) {
                 case PICK:
                     mFileViewListener.onPick(fileInfo);
                     break;

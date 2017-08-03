@@ -49,7 +49,7 @@ public class Util {
             if (!(usbPath.equals("/storage/emulated") || usbPath.equals("/storage/sdcard0")
                     || usbPath.equals("/storage/sdcard1") || usbPath.equals("/storage/self")
                     || usbPath.startsWith("/storage/disk"))
-                && isNormalFile(usbPath) && shouldShowFile(usbPath) && child.canRead()) {
+                    && isNormalFile(usbPath) && shouldShowFile(usbPath) && child.canRead()) {
                 list.add(usbPath);
             }
         }
@@ -57,7 +57,7 @@ public class Util {
     }
 
     public static String[] execDisk(String[] args) {
-        String []strs = null;
+        String[] strs = null;
         ProcessBuilder processBuilder = new ProcessBuilder(args);
         Process process = null;
         InputStream inIs = null;
@@ -65,14 +65,14 @@ public class Util {
             process = processBuilder.start();
             inIs = process.getInputStream();
             InputStreamReader inputStreamReader = new InputStreamReader(inIs);
-            BufferedReader buff= new BufferedReader(inputStreamReader);
-            String line=null;
+            BufferedReader buff = new BufferedReader(inputStreamReader);
+            String line = null;
             while ((line = buff.readLine()) != null) {
-                Log.e("line:",line);
+                Log.e("line:", line);
 
-                if (line.startsWith("/storage/disk")){
+                if (line.startsWith("/storage/disk")) {
                     strs = line.split("\\s+");
-                    L.d(LOG_TAG, Arrays.toString(strs) +"");
+                    L.d(LOG_TAG, Arrays.toString(strs) + "");
                 }
             }
             buff.close();
@@ -364,12 +364,16 @@ public class Util {
 
     // storage, G M K B
     public static String convertStorage(long size) {
-        long kb = 1024;
-        long mb = kb * 1024;
-        long gb = mb * 1024;
+        long kb = 1024L;
+        long mb = kb * 1024L;
+        long gb = mb * 1024L;
+        long tb = gb * 1024L;
 
-        if (size >= gb) {
-            return String.format("%.1f GB", (float) size / gb);
+        if (size >= tb) {
+            return String.format("%.1f TB", (float) size / tb);
+        } else if (size >= gb) {
+            float f = (float) size / gb;
+            return String.format(f > 100 ? "%.0f GB" : "%.1f GB", f);
         } else if (size >= mb) {
             float f = (float) size / mb;
             return String.format(f > 100 ? "%.0f MB" : "%.1f MB", f);
@@ -402,21 +406,21 @@ public class Util {
 //        String sDcString = Environment.getExternalStorageState();
 //
 //        if (sDcString.equals(Environment.MEDIA_MOUNTED)) {
-            File pathFile = Environment.getExternalStorageDirectory();
-            try {
-                android.os.StatFs statfs = new android.os.StatFs(pathFile.getPath());
-                long nTotalBlocks = statfs.getBlockCount();
-                long nBlocSize = statfs.getBlockSize();
-                long nAvailaBlock = statfs.getAvailableBlocks();
-                long nFreeBlock = statfs.getFreeBlocks();
-                SDCardInfo info = new SDCardInfo();
-                info.total = nTotalBlocks * nBlocSize;
-                info.free = nAvailaBlock * nBlocSize;
+        File pathFile = Environment.getExternalStorageDirectory();
+        try {
+            android.os.StatFs statfs = new android.os.StatFs(pathFile.getPath());
+            long nTotalBlocks = statfs.getBlockCount();
+            long nBlocSize = statfs.getBlockSize();
+            long nAvailaBlock = statfs.getAvailableBlocks();
+            long nFreeBlock = statfs.getFreeBlocks();
+            SDCardInfo info = new SDCardInfo();
+            info.total = nTotalBlocks * nBlocSize;
+            info.free = nAvailaBlock * nBlocSize;
 
-                return info;
-            } catch (IllegalArgumentException e) {
-                Log.e(LOG_TAG, e.toString());
-            }
+            return info;
+        } catch (IllegalArgumentException e) {
+            Log.e(LOG_TAG, e.toString());
+        }
 //        }
         return null;
     }
@@ -487,7 +491,7 @@ public class Util {
         }
     };
 
-   public static String formatFileSize(long fileSize) {
+    public static String formatFileSize(long fileSize) {
         DecimalFormat df = new DecimalFormat("#.00");
         String fileSizeString = "";
         if (fileSize < Constants.SIZE_KB) {
@@ -496,9 +500,9 @@ public class Util {
             fileSizeString = df.format((double) fileSize / Constants.SIZE_KB) + "K";
         } else if (fileSize < Constants.SIZE_GB) {
             fileSizeString = df.format((double) fileSize / Constants.SIZE_MB) + "M";
-        } else if (fileSize < Constants.SIZE_TB){
+        } else if (fileSize < Constants.SIZE_TB) {
             fileSizeString = df.format((double) fileSize / Constants.SIZE_GB) + "G";
-        }else {
+        } else {
             fileSizeString = df.format((double) fileSize / Constants.SIZE_TB) + "T";
         }
         if (fileSizeString.equals(".00B")) {
@@ -538,4 +542,22 @@ public class Util {
 
     public static int CATEGORY_TAB_INDEX = 0;
     public static int SDCARD_TAB_INDEX = 1;
+
+    public static String getDisplayPath(Context context, String path) {
+        if (path.startsWith(Util.getSdDirectory())) {
+            return context.getString(R.string.path_sd_eng)
+                    + path.substring(Util.getSdDirectory().length());
+        } else {
+            return path;
+        }
+    }
+
+    public static String getRealPath(Context context, String displayPath) {
+        final String perfixName = context.getString(R.string.path_sd_eng);
+        if (displayPath.startsWith(perfixName)) {
+            return Util.getSdDirectory() + displayPath.substring(perfixName.length());
+        } else {
+            return displayPath;
+        }
+    }
 }

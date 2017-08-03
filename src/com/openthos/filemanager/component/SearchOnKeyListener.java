@@ -68,7 +68,7 @@ public class SearchOnKeyListener implements TextView.OnKeyListener {
                     mCurPath = mMainActivity.getCurPath();
                 }
                 if (Constants.ROOT_PATH.equals(mCurPath)) {
-                    MainActivity.mHandler.sendEmptyMessage(Constants.MENU_SHOWHIDE);
+                    mMainActivity.mHandler.sendEmptyMessage(Constants.MENU_SHOWHIDE);
                 } else {
                     excuSearch((TextView) v);
                 }

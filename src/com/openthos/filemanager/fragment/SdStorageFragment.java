@@ -417,6 +417,7 @@ public class SdStorageFragment extends BaseFragment {
             transaction.add(R.id.fl_mian, mCurFragment,
                     Constants.SDSSYSTEMSPACE_TAG).commitAllowingStateLoss();
             ((SystemSpaceFragment) mCurFragment).mPos = 0;
+            mMainActivity.setNavigationPath(Util.getDisplayPath(mMainActivity, path));
         }
         mMainActivity.mCurFragment = mCurFragment;
         mCurView = null;

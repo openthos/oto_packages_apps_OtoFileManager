@@ -82,6 +82,8 @@ public class IntentBuilder {
             TextSelectDialog dialog = new TextSelectDialog(context, filePath);
             if (event != null) {
                 dialog.showDialog((int) event.getRawX(), (int) event.getRawY());
+            } else {
+                dialog.showDialog();
             }
         }
     }

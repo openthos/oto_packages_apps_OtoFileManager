@@ -1,5 +1,6 @@
 package com.openthos.filemanager;
 
+import android.app.Activity;
 import android.os.Environment;
 
 import com.openthos.filemanager.bean.Mode;
@@ -15,6 +16,15 @@ public class SetWallpaperActivity extends PickerActivity {
     @Override
     protected void setMode() {
         mMode = Mode.SETWALLPAPER;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mCurFragment == mSdStorageFragment) {
+             finish();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override

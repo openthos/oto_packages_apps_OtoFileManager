@@ -197,13 +197,13 @@ public class FileOperationHelper {
         Log.v(LOG_TAG, "DeleteFile >>> " + f.filePath);
     }
 
-    private static void copyOrMoveFile(String command, String arg,
+    private static void copyOrMoveFile(MainActivity activity, String command, String arg,
                                        String srcFile, String destDir, boolean isRefreah) {
-        copyOrMoveFile(command, arg, srcFile, destDir, isRefreah, false);
+        copyOrMoveFile(activity, command, arg, srcFile, destDir, isRefreah, false);
     }
 
-    private static void copyOrMoveFile(String command, String arg, String srcFile,
-                                       String destDir, boolean isRefreah, boolean isRecycle) {
+    private static void copyOrMoveFile(MainActivity activity, String command, String arg,
+            String srcFile, String destDir, boolean isRefreah, boolean isRecycle) {
         Process pro;
         BufferedReader in = null;
         File f = new File(destDir, new File(srcFile).getName());
@@ -243,26 +243,26 @@ public class FileOperationHelper {
                     destFile.getAbsolutePath()});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
-            if (MainActivity.mHandler.hasMessages(Constants.COPY_INFO_HIDE)) {
-                MainActivity.mHandler.removeMessages(Constants.COPY_INFO_HIDE);
+            if (activity.mHandler.hasMessages(Constants.COPY_INFO_HIDE)) {
+                activity.mHandler.removeMessages(Constants.COPY_INFO_HIDE);
             } else {
-                MainActivity.mHandler.sendEmptyMessage(srcFile.equals(RECYCLE_PATH1)
+                activity.mHandler.sendEmptyMessage(srcFile.equals(RECYCLE_PATH1)
                         || srcFile.equals(RECYCLE_PATH2) || srcFile.equals(RECYCLE_PATH3)?
                         Constants.DELETE_INFO_SHOW : Constants.COPY_INFO_SHOW);
             }
             int i = 0;
             while ((line = in.readLine()) != null) {
                 if (i == 0) {
-                    MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
+                    activity.mHandler.sendMessage(Message.obtain(activity.mHandler,
                             Constants.COPY_INFO, line));
                     i = 10;
                 } else {
                     i--;
                 }
             }
-            MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
+            activity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
         } catch (IOException e) {
-            MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
+            activity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
         } finally {
             if (in != null) {
                 try {
@@ -335,7 +335,7 @@ public class FileOperationHelper {
         }
     }
 
-    public static void CopyFile(String sourcefile, String dest) {
+    public static void CopyFile(MainActivity activity, String sourcefile, String dest) {
         if (sourcefile.equals(dest)) {
             return;
         }
@@ -345,62 +345,63 @@ public class FileOperationHelper {
         if (file.isDirectory()) {
             arg = "-rv";
         }
-        copyOrMoveFile(command, arg, sourcefile, dest, true);
+        copyOrMoveFile(activity, command, arg, sourcefile, dest, true);
     }
 
-    public static boolean MoveFile(String sourcefile, String dest, boolean isRefreah) {
-        MoveFile(sourcefile, dest, isRefreah, false);
+    public static boolean MoveFile(MainActivity activity, String sourcefile, String dest,
+            boolean isRefreah) {
+        MoveFile(activity, sourcefile, dest, isRefreah, false);
         return false;
     }
 
-    public static boolean MoveFile(String sourcefile, String dest,
+    public static boolean MoveFile(MainActivity activity, String sourcefile, String dest,
                                    boolean isRefreah, boolean isRecycle) {
         if (new File(sourcefile).getParent().equals(dest)) {
             return false;
         }
         String command = "/system/bin/mv";
         String arg = "-v";
-        copyOrMoveFile(command, arg, sourcefile, dest, isRefreah, isRecycle);
+        copyOrMoveFile(activity, command, arg, sourcefile, dest, isRefreah, isRecycle);
         return false;
     }
 
-    public void deleteFile(ArrayList<FileInfo> selectedFiles) {
+    public void deleteFile(MainActivity activity, ArrayList<FileInfo> selectedFiles) {
         for (int i = 0; i < selectedFiles.size(); i++) {
             String path = selectedFiles.get(i).filePath;
             if (path.equals(RECYCLE_PATH1)
                     || path.equals(RECYCLE_PATH2)
                     || path.equals(RECYCLE_PATH3)) {
                 //clean Recycle
-                delete(new File(path), true);
+                delete(activity, new File(path), true);
             } else if (path.contains(RECYCLE_PATH1)
                     || path.contains(RECYCLE_PATH2)
                     || path.contains(RECYCLE_PATH3)
                     || (path.split("/").length > 3 && path.startsWith("/storage/usb"))) {
                 //delete file
-                delete(new File(path), false);
+                delete(activity, new File(path), false);
             } else {
                 //move to Recycle
-                MoveFile(path, RECYCLE_PATH1, false, true);
+                MoveFile(activity, path, RECYCLE_PATH1, false, true);
             }
         }
     }
 
-    public void deleteDirectFile(ArrayList<FileInfo> selectedFiles) {
+    public void deleteDirectFile(MainActivity activity, ArrayList<FileInfo> selectedFiles) {
         for (int i = 0; i < selectedFiles.size(); i++) {
             String path = selectedFiles.get(i).filePath;
             if (path.equals(RECYCLE_PATH1)
                     || path.equals(RECYCLE_PATH2)
                     || path.equals(RECYCLE_PATH3)) {
                 //clean Recycle
-                delete(new File(path), true);
+                delete(activity, new File(path), true);
             } else {
                 //delete file
-                delete(new File(path), false);
+                delete(activity, new File(path), false);
             }
         }
     }
 
-    private static void delete(File file, boolean isReCreate) {
+    private static void delete(MainActivity activity, File file, boolean isReCreate) {
         if (file.exists()) {
             Process pro;
             BufferedReader in = null;
@@ -415,25 +416,25 @@ public class FileOperationHelper {
                 pro = Runtime.getRuntime().exec(new String[]{command, arg, file.getAbsolutePath()});
                 in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
                 String line;
-                if (MainActivity.mHandler.hasMessages(Constants.COPY_INFO_HIDE)) {
-                    MainActivity.mHandler.removeMessages(Constants.COPY_INFO_HIDE);
+                if (activity.mHandler.hasMessages(Constants.COPY_INFO_HIDE)) {
+                    activity.mHandler.removeMessages(Constants.COPY_INFO_HIDE);
                 } else {
-                    MainActivity.mHandler.sendEmptyMessage(Constants.DELETE_INFO_SHOW);
+                    activity.mHandler.sendEmptyMessage(Constants.DELETE_INFO_SHOW);
                 }
                 int i = 0;
                 while ((line = in.readLine()) != null) {
                     if (i == 0) {
-                        MainActivity.mHandler.sendMessage(Message.obtain(MainActivity.mHandler,
+                        activity.mHandler.sendMessage(Message.obtain(activity.mHandler,
                                 Constants.COPY_INFO, line));
                         i = 10;
                     } else {
                         i--;
                     }
                 }
-                MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
+                activity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
             } catch (IOException e) {
                 e.printStackTrace();
-                MainActivity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
+                activity.mHandler.sendEmptyMessageDelayed(Constants.COPY_INFO_HIDE, 500);
             } finally {
                 if (in != null) {
                     try {

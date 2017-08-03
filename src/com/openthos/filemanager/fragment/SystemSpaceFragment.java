@@ -262,7 +262,8 @@ public class SystemSpaceFragment extends BaseFragment implements
             mFileViewInteractionHub.setCheckedFileList(mFileInfoList, mCopyOrMove);
         }
         initReciever();
-        updateUI();
+//        updateUI();
+        mFileViewInteractionHub.initFileList();
         operatorData();
         setHasOptionsMenu(true);
         mFileListInfo = mAdapter.getFileInfoList();
@@ -319,7 +320,7 @@ public class SystemSpaceFragment extends BaseFragment implements
     @Override
     public void processDirectionKey(int keyCode) {
         int size = mFileNameList.size();
-        if ( mPos < size && size != 0) {
+        if (mPos < size && size != 0) {
             List integerList = mAdapter.getSelectFileInfoList();
             integerList.clear();
             mFileViewInteractionHub.clearSelection();
@@ -353,7 +354,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                     case KeyEvent.KEYCODE_DPAD_DOWN:
                         if (isGrid) {
                             mPos = mPos < size - numColumns ? mPos + numColumns :
-                                       mPos < size - size % numColumns ? size - 1 : mPos;
+                                    mPos < size - size % numColumns ? size - 1 : mPos;
                         } else {
                             mPos = mPos < size - 1 ? mPos + 1 : mPos;
                         }
@@ -495,7 +496,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                                 Toast.makeText(mMainActivity, getString(R.string.fail_open_recycle),
                                         Toast.LENGTH_SHORT).show();
                             } else {
-                                enter();
+                                enter(motionEvent);
                                 mPos = -1;
                                 mLastClickId = -1;
                                 mIntegerList.clear();
@@ -824,7 +825,6 @@ public class SystemSpaceFragment extends BaseFragment implements
         } else if ("grid".equals(LocalCache.getViewTag())) {
             file_path_grid.setVisibility(mSdCardReady ? View.VISIBLE : View.GONE);
         }
-
         if (mSdCardReady) {
             mFileViewInteractionHub.refreshFileList();
         }
@@ -902,8 +902,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                     new String[]{MediaStore.Images.ImageColumns._ID},
                     buff.toString(), null, null);
             int index = 0;
-            for (cur.moveToFirst(); !cur.isAfterLast(); cur
-                    .moveToNext()) {
+            for (cur.moveToFirst(); !cur.isAfterLast(); cur.moveToNext()) {
                 index = cur.getColumnIndex(MediaStore.Images.ImageColumns._ID);
                 index = cur.getInt(index);
             }
@@ -950,25 +949,6 @@ public class SystemSpaceFragment extends BaseFragment implements
     @Override
     public boolean onOperation(int id) {
         return false;
-    }
-
-    @Override
-    public String getDisplayPath(String path) {
-        if (path != null && path.startsWith(this.sdDir)) {
-            return getString(R.string.path_sd_eng) + path.substring(this.sdDir.length());
-        } else {
-            return path;
-        }
-    }
-
-    @Override
-    public String getRealPath(String displayPath) {
-        final String perfixName = getString(R.string.sd_folder);
-        if (displayPath.startsWith(perfixName)) {
-            return sdDir + displayPath.substring(perfixName.length());
-        } else {
-            return displayPath;
-        }
     }
 
     @Override
@@ -1071,8 +1051,12 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     @Override
     public void enter() {
+        enter(null);
+    }
+
+    public void enter(MotionEvent event) {
         mMainActivity.mHandler.removeCallbacks(mMainActivity.mLongPressRunnable);
-        mFileViewInteractionHub.onOperationOpen(null);
+        mFileViewInteractionHub.onOperationOpen(event);
     }
 
     @Override

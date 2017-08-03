@@ -177,7 +177,7 @@ public class SeafileDialog extends BaseDialog implements View.OnClickListener {
         seafileLibrary.libraryName = text;
         seafileLibrary.isSync = isSync;
         mMainActivity.mAccount.mLibrarys.add(seafileLibrary);
-        MainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
+        mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
         if (isSync == SeafileUtils.SYNC) {
             SeafileUtils.sync(id, new File(mMainActivity.mAccount.mFile, text)
                     .getAbsolutePath());

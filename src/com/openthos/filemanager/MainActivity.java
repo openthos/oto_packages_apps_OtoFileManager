@@ -25,15 +25,14 @@ import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.support.v4.app.FragmentTransaction;
-import android.widget.RelativeLayout;
 import android.widget.LinearLayout;
 import android.app.ProgressDialog;
 import android.os.Build;
@@ -41,7 +40,6 @@ import android.os.Build;
 import com.openthos.filemanager.bean.Mode;
 import com.openthos.filemanager.bean.SeafileAccount;
 import com.openthos.filemanager.bean.SeafileLibrary;
-import com.openthos.filemanager.bean.Disk;
 import com.openthos.filemanager.bean.Volume;
 import com.openthos.filemanager.component.CopyInfoDialog;
 import com.openthos.filemanager.component.PopOnClickLintener;
@@ -54,7 +52,6 @@ import com.openthos.filemanager.fragment.SearchFragment;
 import com.openthos.filemanager.system.AutoMountReceiver;
 import com.openthos.filemanager.system.Util;
 import com.openthos.filemanager.system.FileListAdapter;
-import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.utils.T;
 import com.openthos.filemanager.fragment.SystemSpaceFragment;
@@ -125,7 +122,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private Editor mEditor;
     public boolean mIsSdStorageFragment;
 
-    public static Handler mHandler;
+    public Handler mHandler;
     private HomeLeftOnTouchListener mHomeLeftOnTouchListener;
     private HomeLeftOnHoverListener mHomeLeftOnHoverListener;
     private boolean mIsFirst = true;
@@ -141,7 +138,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public String mCurPath;
     public SeafileAccount mAccount;
     public SeafileUtils.SeafileSQLConsole mConsole;
-    public CustomFileObserver mCustomFileObserver;
+    private CustomFileObserver mCustomFileObserver;
     private InitSeafileThread mInitSeafileThread;
     private SeafileThread mSeafileThread;
     private String mUsbPath;
@@ -272,7 +269,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                         .getAbsolutePath());
                     }
                 }
-                MainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
+                mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
             }
             File settingSeafile = new File(SeafileUtils.SETTING_SEAFILE_PATH);
             if (!settingSeafile.exists()) {
@@ -294,6 +291,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     protected void initView() {
+        ((FileManagerApplication) getApplication()).addActivity(this);
         //mInitSeafileThread = new InitSeafileThread();
         //mInitSeafileThread.start();
         mLlCollection = (LinearLayout) findViewById(R.id.ll_collection);
@@ -355,9 +353,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mHashMap.put(Constants.DETAILFRAGMENT_TAG, R.id.tv_picture);
         mCopyInfoDialog = CopyInfoDialog.getInstance(MainActivity.this);
         mHandler = new Handler() {
+            long mPreTime = 0L;
+
             @Override
             public void handleMessage(Message msg) {
-                if (!Thread.currentThread().isInterrupted()) {
+                if (!Thread.currentThread().isInterrupted() && !isDestroyed()) {
                     switch (msg.what) {
                         case Constants.SET_CLIPBOARD_TEXT:
                             ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE))
@@ -439,6 +439,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         case Constants.SEAFILE_DATA_OK:
                             mSeafileFragment.setData(mAccount.mLibrarys);
                             mSeafileFragment.getAdapter().notifyDataSetChanged();
+                            break;
+                        case Constants.REFRESH_BY_OBSERVER:
+                            if (System.currentTimeMillis() - mPreTime >= 1000) {
+                                mHandler.removeMessages(Constants.ONLY_REFRESH);
+                                mHandler.sendMessage(Message.obtain(
+                                                mHandler,
+                                                Constants.ONLY_REFRESH,
+                                                ((BaseFragment) getVisibleFragment())
+                                                        .mFileViewInteractionHub.getCurrentPath()));
+                                mPreTime = System.currentTimeMillis();
+                            } else {
+                                mHandler.removeMessages(Constants.ONLY_REFRESH);
+                                mHandler.sendMessageDelayed(Message.obtain(
+                                                mHandler,
+                                                Constants.ONLY_REFRESH,
+                                                ((BaseFragment) getVisibleFragment())
+                                                        .mFileViewInteractionHub.getCurrentPath()), 1000);
+                            }
                             break;
                     }
                 }
@@ -601,7 +619,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     protected void initData() {
         initFragment();
-        checkFolder(null);
+        checkFolder();
         mContentResolver = getContentResolver();
         mUri = Uri.parse("content://com.openthos.filemanager/recycle");
         mPathList = new ArrayList<>();
@@ -638,24 +656,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    private void checkFolder(Fragment fragment) {
-        List<String> fileList = new ArrayList<>();
-        fileList.add(Constants.DESKTOP_PATH);
-        fileList.add(Constants.MUSIC_PATH);
-        fileList.add(Constants.VIDEOS_PATH);
-        fileList.add(Constants.PICTURES_PATH);
-        fileList.add(Constants.DOCUMENT_PATH);
-        fileList.add(Constants.DOWNLOAD_PATH);
-        fileList.add(Constants.RECYCLE_PATH);
-        for (int i = 0; i < fileList.size(); i++) {
-            File file = new File(fileList.get(i));
-            if (!file.exists() && !file.isDirectory()) {
-                file.mkdir();
+    private List<File> mDafaultFileList = new ArrayList<>();
+
+    private void checkFolder() {
+        if (mDafaultFileList.size() == 0) {
+            mDafaultFileList.add(new File(Constants.DESKTOP_PATH));
+            mDafaultFileList.add(new File(Constants.MUSIC_PATH));
+            mDafaultFileList.add(new File(Constants.VIDEOS_PATH));
+            mDafaultFileList.add(new File(Constants.PICTURES_PATH));
+            mDafaultFileList.add(new File(Constants.DOCUMENT_PATH));
+            mDafaultFileList.add(new File(Constants.DOWNLOAD_PATH));
+            mDafaultFileList.add(new File(Constants.RECYCLE_PATH));
+        }
+        for (File f : mDafaultFileList) {
+            if (!f.exists() && !f.isDirectory()) {
+                f.mkdirs();
             }
         }
-        if (fragment != null) {
-            ((SystemSpaceFragment) fragment).refreshUI();
-        }
+//
+//        if (fragment != null) {
+//            ((SystemSpaceFragment) fragment).refreshUI();
+//        }
     }
 
     @Override
@@ -682,7 +703,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         NivagationOnKeyLinstener nivagationOnKeyLinstener = new NivagationOnKeyLinstener();
         mEt_nivagation.setOnTouchListener(mEditTextTouchListener);
         mEt_nivagation.setOnKeyListener(nivagationOnKeyLinstener);
-        mEt_nivagation.addTextChangedListener(new TextChangeListener());
+        TextChangeListener textChangeListener = new TextChangeListener();
+        mEt_nivagation.addTextChangedListener(textChangeListener);
         mEt_nivagation.setOnFocusChangeListener(new AddressOnFocusChangeListener());
         mAddressListView.setOnTouchListener(mAddressTouchListener);
         initUsb(Constants.USB_INIT);
@@ -709,7 +731,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         initFirstPage();
     }
 
-    protected void initFirstPage(){
+    protected void initFirstPage() {
         Intent intent = getIntent();
         String path = intent.getStringExtra(Constants.PATH_TAG);
         if (path != null) {
@@ -780,6 +802,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             transaction.add(R.id.fl_mian, mAddressFragment, Constants.ADDRESSFRAGMENT_TAG);
             //transaction.show(mAddressFragment).addToBackStack(null).commitAllowingStateLoss();
             transaction.show(mAddressFragment).commitAllowingStateLoss();
+            setNavigationPath(Util.getDisplayPath(this, path));
             setFileInfo(R.id.et_nivagation, path, mAddressFragment);
             mHashMap.put(Constants.ADDRESSFRAGMENT_TAG, R.id.tv_computer);
             mCurTabIndext = 9;
@@ -788,12 +811,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             Toast.makeText(this, "" + getResources().getString(R.string.address_search_false),
                     Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @Override
-    protected void onStart() {
-        mReceiver.registerReceiver();
-        super.onStart();
     }
 
     public class UsbConnectReceiver extends BroadcastReceiver {
@@ -1088,31 +1105,31 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.tv_desk:
                 setFileInfo(R.id.tv_desk, Constants.DESKTOP_PATH, mDeskFragment);
-                checkFolder(mDeskFragment);
+                checkFolder();
                 break;
             case R.id.tv_music:
                 setFileInfo(R.id.tv_music, Constants.MUSIC_PATH, mMusicFragment);
-                checkFolder(mMusicFragment);
+                checkFolder();
                 break;
             case R.id.tv_video:
                 setFileInfo(R.id.tv_video, Constants.VIDEOS_PATH, mVideoFragment);
-                checkFolder(mVideoFragment);
+                checkFolder();
                 break;
             case R.id.tv_picture:
                 setFileInfo(R.id.tv_picture, Constants.PICTURES_PATH, mPictrueFragment);
-                checkFolder(mPictrueFragment);
+                checkFolder();
                 break;
             case R.id.tv_document:
                 setFileInfo(R.id.tv_document, Constants.DOCUMENT_PATH, mDocumentFragment);
-                checkFolder(mDocumentFragment);
+                checkFolder();
                 break;
             case R.id.tv_download:
                 setFileInfo(R.id.tv_download, Constants.DOWNLOAD_PATH, mDownloadFragment);
-                checkFolder(mDownloadFragment);
+                checkFolder();
                 break;
             case R.id.tv_recycle:
                 setFileInfo(R.id.tv_recycle, Constants.RECYCLE_PATH, mRecycleFragment);
-                checkFolder(mRecycleFragment);
+                checkFolder();
                 break;
             case R.id.tv_computer:
                 clickComputer();
@@ -1220,7 +1237,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         public void run() {
             super.run();
             for (int i = 1; i < mSrcCopyPaths.length; i++) {
-                FileOperationHelper.CopyFile(
+                FileOperationHelper.CopyFile(MainActivity.this,
                         mSrcCopyPaths[i].replace(Constants.EXTRA_FILE_HEADER, ""), mDestPath);
             }
         }
@@ -1240,7 +1257,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         public void run() {
             super.run();
             for (int i = 1; i < mSrcCropPaths.length; i++) {
-                FileOperationHelper.MoveFile(
+                FileOperationHelper.MoveFile(MainActivity.this,
                         mSrcCropPaths[i].replace(Constants.EXTRA_CROP_FILE_HEADER, ""), mDestPath, true);
             }
         }
@@ -1447,9 +1464,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             IBinder iBinder = ServiceManager.getService("mount");
             if (iBinder != null) {
                 mountService = IMountService.Stub.asInterface(iBinder);
-                if (mountService == null) {
-                    L.e("ljh", "Unable to connect to mount service! - is it running yet?");
-                }
             }
         }
         return mountService;
@@ -1470,7 +1484,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             }
         }
         setSelectedBackground(id);
-        setNavigationPath(path);
+//        setNavigationPath(path);
         setCurPath(path);
         FragmentTransaction transaction = mManager.beginTransaction();
         if (mCurFragment != null) {
@@ -1915,27 +1929,67 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     protected void onDestroy() {
-        mReceiver.unregisterReceiver();
-        if (mCustomFileObserver != null) {
-            mCustomFileObserver.stopWatching();
-            mCustomFileObserver = null;
-        }
+        android.util.Log.i("wwwwww", getComponentName().getClassName() + " Destory");
+        ((FileManagerApplication) getApplication()).removeActivity(this);
         super.onDestroy();
+    }
+
+    boolean isRestart = false;
+    @Override
+    protected void onPause() {
+        android.util.Log.i("wwwwww", getComponentName().getClassName() + " Pause");
+        isRestart = true;
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        //mReceiver.unregisterReceiver();
+        //if (mCustomFileObserver != null) {
+        //    mCustomFileObserver.stopWatching();
+        //    mCustomFileObserver = null;
+        //}
+        android.util.Log.i("wwwwww", getComponentName().getClassName() + " Stop");
+        super.onStop();
+    }
+
+    @Override
+    protected void onResume() {
+        android.util.Log.i("wwwwww", getComponentName().getClassName() + " Resume");
+        //if (isRestart) {
+        //    super.onStart();
+        //    isRestart = false;
+        //}
+        super.onResume();
+    }
+
+    @Override
+    public void onStart() {
+        mReceiver.registerReceiver();
+        android.util.Log.i("wwwwww", getComponentName().getClassName() + " Start");
+        super.onStart();
+    }
+
+    @Override
+    public void onRestart() {
+        android.util.Log.i("wwwwww", getComponentName().getClassName() + " ReStart");
+        super.onRestart();
     }
 
     @Override
     public void setNavigationBar(String displayPath) {
-        if (displayPath != null) {
-            if (mCurFragment == mSdStorageFragment && mSdStorageFragment.mCurFragment != null) {
-                setNavigationPath(displayPath);
-            } else {
-                if (mCurFragment instanceof SystemSpaceFragment) {
-                    setNavigationPath(displayPath);
-                } else {
-                    setNavigationPath(null);
-                }
-            }
-        }
+        setNavigationPath(displayPath);
+//        if (displayPath != null) {
+//            if (mCurFragment == mSdStorageFragment && mSdStorageFragment.mCurFragment != null) {
+//                setNavigationPath(displayPath);
+//            } else {
+//                if (mCurFragment instanceof SystemSpaceFragment) {
+//                    setNavigationPath(displayPath);
+//                } else {
+//                    setNavigationPath(null);
+//                }
+//            }
+//        }
     }
 
     @Override
@@ -2095,8 +2149,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         return -1;
     }
 
-    class CustomFileObserver extends FileObserver {
-        private long mPreTime = 0;
+    private class CustomFileObserver extends FileObserver {
+
         public CustomFileObserver(String path) {
             super(path);
         }
@@ -2109,18 +2163,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 case FileObserver.DELETE:
                 case FileObserver.MOVED_FROM:
                 case FileObserver.MOVED_TO:
-                    if (System.currentTimeMillis() - mPreTime >= 1000) {
-                        mHandler.removeMessages(Constants.ONLY_REFRESH);
-                        mHandler.sendMessage(Message.obtain(mHandler, Constants.ONLY_REFRESH,
-                                ((BaseFragment) getVisibleFragment())
-                                        .mFileViewInteractionHub.getCurrentPath()));
-                        mPreTime = System.currentTimeMillis();
-                    } else {
-                        mHandler.removeMessages(Constants.ONLY_REFRESH);
-                        mHandler.sendMessageDelayed(Message.obtain(mHandler, Constants.ONLY_REFRESH,
-                                ((BaseFragment) getVisibleFragment())
-                                        .mFileViewInteractionHub.getCurrentPath()), 1000);
-                    }
+                    ((FileManagerApplication) getApplication()).handler
+                            .sendMessage(Message.obtain(
+                                    ((FileManagerApplication) getApplication()).handler,
+                                    Constants.ONLY_REFRESH,
+                                    ((BaseFragment) getVisibleFragment())
+                                            .mFileViewInteractionHub.getCurrentPath()));
                     break;
                 default:
                     break;
@@ -2141,11 +2189,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         @Override
         public void afterTextChanged(Editable editable) {
-            String sdfolder = getResources().getString(R.string.path_sd_eng);
             String path = editable.toString();
-            if (path.startsWith(sdfolder)) {
-                path = Constants.SDCARD_PATH + path.substring(1, path.length());
+            if (TextUtils.isEmpty(path)) {
+                return;
             }
+            path = Util.getRealPath(MainActivity.this, path);
             if (mCustomFileObserver != null) {
                 mCustomFileObserver.stopWatching();
                 mCustomFileObserver = null;
