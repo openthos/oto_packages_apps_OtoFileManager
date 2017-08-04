@@ -25,7 +25,7 @@ public class FileManagerApplication extends Application {
                 super.handleMessage(msg);
                 if (msg.what == Constants.ONLY_REFRESH) {
                     for (MainActivity activity : activities) {
-                        if (activity.mCurPath.equals(msg.obj)) {
+                        if (activity.mCurPath != null && activity.mCurPath.equals(msg.obj)) {
                             activity.mHandler.sendMessage(Message.obtain(activity.mHandler,
                                     Constants.REFRESH_BY_OBSERVER, msg.obj));
                         }
