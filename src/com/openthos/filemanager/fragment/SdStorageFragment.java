@@ -119,9 +119,8 @@ public class SdStorageFragment extends BaseFragment {
     }
 
     private void setVolumSize() {
-        Util.SystemInfo systemInfo = Util.getRomMemory();
         Util.SDCardInfo sdCardInfo = Util.getSDCardInfo();
-        if (null != systemInfo) {
+        if (null != sdCardInfo) {
             mSystemTotal.setText(Util.convertStorage(sdCardInfo.total));
             mSystemAvail.setText(Util.convertStorage(sdCardInfo.free));
             int maxOne = 1000;
