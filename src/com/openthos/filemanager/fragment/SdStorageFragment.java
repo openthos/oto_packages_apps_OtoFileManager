@@ -120,7 +120,7 @@ public class SdStorageFragment extends BaseFragment {
 
     private void setVolumSize() {
         Util.SDCardInfo sdCardInfo = Util.getSDCardInfo();
-        if (null != sdCardInfo) {
+        if (null != sdCardInfo && sdCardInfo.total != 0 && sdCardInfo.free != 0) {
             mSystemTotal.setText(Util.convertStorage(sdCardInfo.total));
             mSystemAvail.setText(Util.convertStorage(sdCardInfo.free));
             int maxOne = 1000;
@@ -505,8 +505,11 @@ public class SdStorageFragment extends BaseFragment {
         availSize.setText(Util.convertStorage(usbInfo.usbFree));
         usbName.setText(Util.getUsbName(getActivity(), usbData));
         int maxOne = 1000;
-        int progressOne = (int) ((usbInfo.usbTotal - usbInfo.usbFree)
-                * 1000 / (usbInfo.usbTotal));
+        int progressOne = 0;
+        if (usbInfo.usbTotal != 0 && usbInfo.usbFree != 0) {
+            progressOne = (int) ((usbInfo.usbTotal - usbInfo.usbFree)
+                    * 1000 / (usbInfo.usbTotal));
+        }
         diskResidue.setMax(maxOne);
         diskResidue.setProgress(progressOne);
         inflate.setTag(usbLayout);

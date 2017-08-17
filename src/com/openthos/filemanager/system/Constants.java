@@ -2,6 +2,7 @@ package com.openthos.filemanager.system;
 
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.os.Environment;
 
 import com.openthos.filemanager.utils.L;
 
@@ -37,7 +38,8 @@ public abstract class Constants {
 
 
     private static String TAG = "Constants";
-    public static final String SDCARD_PATH = "/storage/emulated/0";
+//    public static final String SDCARD_PATH = "/storage/emulated/0";
+    public static final String SDCARD_PATH = Environment.getExternalStorageDirectory().getPath();
     public static final String ROOT_PATH = "/";
     public static final String DESKTOP_PATH = SDCARD_PATH + "/Desktop";
     public static final String MUSIC_PATH = SDCARD_PATH + "/Music";
@@ -51,7 +53,8 @@ public abstract class Constants {
     public static final String WEIXIN_IMG_PATH = SDCARD_PATH + "/Tencent/MicroMsg/WeiXin";
     public static final String WEIXIN_FILE_PATH = SDCARD_PATH + "/Tencent/MicroMsg/Download";
     public static final String BAIDU_PAN_PATH = SDCARD_PATH + "/BaiduNetdisk";
-    public static final String USER_PERMISSION_PATH = "/storage";
+//    public static final String USER_PERMISSION_PATH = "/storage";
+    public static final String USER_PERMISSION_PATH = "/" + SDCARD_PATH.split("\\/")[1];
 
     public static final String COMPRESS_FILES = "com.openthos.compress.compress";
     public static final String DECOMPRESS_FILE = "com.openthos.compress.decompress";
