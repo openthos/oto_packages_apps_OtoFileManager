@@ -58,7 +58,7 @@ public final class MimeUtils {
         add("application/pgp-keys", "key");
         add("application/pgp-signature", "pgp");
         add("application/pics-rules", "prf");
-        add("application/rar", "rar");
+        add("application/ocelet-stream", "rar");
         add("application/rdf+xml", "rdf");
         add("application/rss+xml", "rss");
         add("application/zip", "zip");
@@ -354,6 +354,7 @@ public final class MimeUtils {
         add("video/x-sgi-movie", "movie");
         add("x-conference/x-cooltalk", "ice");
         add("x-epoc/x-sisx-app", "sisx");
+        add("application/x-7z-compressed", "7z");
         applyOverrides();
     }
 

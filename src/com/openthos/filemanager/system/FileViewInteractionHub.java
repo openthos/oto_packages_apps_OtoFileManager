@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ClipboardManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -867,7 +868,11 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         }
         Intent intent = new Intent(Constants.DECOMPRESS_FILE);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(Constants.COMPRESS_PATH_TAG, file.filePath);
+        intent.setDataAndType(Uri.fromFile(new File(file.filePath)),
+                IntentBuilder.getMimeType(file.filePath));
+        ComponentName cn = new ComponentName(
+                "com.openthos.compress", "com.openthos.compress.DecompressActivity");
+        intent.setComponent(cn);
         mContext.startActivity(intent);
     }
 

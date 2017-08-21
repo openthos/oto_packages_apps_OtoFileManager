@@ -80,7 +80,7 @@ public class IntentBuilder {
         return intent;
     }
 
-    private static String getMimeType(String filePath) {
+    public static String getMimeType(String filePath) {
         int dotPosition = filePath.lastIndexOf('.');
         if (dotPosition == -1)
             return "*/*";

@@ -29,6 +29,7 @@ import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.system.FileInfo;
 import com.openthos.filemanager.system.FileViewInteractionHub;
+import com.openthos.filemanager.system.IntentBuilder;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -96,7 +97,7 @@ public class OpenWithDialog extends BaseDialog implements AdapterView.OnItemClic
     private void initList() {
         mResolveList = new ArrayList<>();
         if (TextUtils.isEmpty(mFileType)){
-            mFileType = Constants.getMIMEType(new File(mFilePath));
+            mFileType = IntentBuilder.getMimeType(mFilePath);
         }
         Intent intent = new Intent();
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
