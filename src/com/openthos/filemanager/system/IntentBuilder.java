@@ -32,53 +32,13 @@ public class IntentBuilder {
             resolveInfoList = manager.queryIntentActivities(intent,
                                                PackageManager.MATCH_DEFAULT_ONLY);
             if (resolveInfoList.size() > 0) {
-                Intent intents = new Intent();
-                intents.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intents.setAction(Intent.ACTION_VIEW);
-                intents.setDataAndType(Uri.fromFile(new File(filePath)), type);
-                intents.putExtra(Constants.PACKAGENAME_TAG, Constants.APPNAME_OTO_LAUNCHER);
-                context.startActivity(intents);
+                intent.putExtra(Constants.PACKAGENAME_TAG, Constants.APPNAME_OTO_LAUNCHER);
+                context.startActivity(intent);
             } else {
                 OpenWithDialog openWithDialog = new OpenWithDialog(context, filePath);
                 openWithDialog.showDialog();
             }
         } else {
-            // unknown MimeType
-//            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-//            dialogBuilder.setTitle(R.string.dialog_select_type);
-//
-//            CharSequence[] menuItemArray = new CharSequence[]{
-//                    context.getString(R.string.dialog_type_text),
-//                    context.getString(R.string.dialog_type_audio),
-//                    context.getString(R.string.dialog_type_video),
-//                    context.getString(R.string.dialog_type_image)};
-//            dialogBuilder.setItems(menuItemArray,
-//                    new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            String selectType = "*/*";
-//                            switch (which) {
-//                                case 0:
-//                                    selectType = "text/plain";
-//                                    break;
-//                                case 1:
-//                                    selectType = "audio/*";
-//                                    break;
-//                                case 2:
-//                                    selectType = "video/*";
-//                                    break;
-//                                case 3:
-//                                    selectType = "image/*";
-//                                    break;
-//                            }
-//                            Intent intent = new Intent();
-//                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                            intent.setAction(Intent.ACTION_VIEW);
-//                            intent.setDataAndType(Uri.fromFile(new File(filePath)), selectType);
-//                            context.startActivity(intent);
-//                        }
-//                    });
-
             TextSelectDialog dialog = new TextSelectDialog(context, filePath);
             if (event != null) {
                 dialog.showDialog((int) event.getRawX(), (int) event.getRawY());

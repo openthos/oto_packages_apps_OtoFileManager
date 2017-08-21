@@ -21,6 +21,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.text.TextUtils;
 
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.BaseDialog;
@@ -46,6 +47,11 @@ public class OpenWithDialog extends BaseDialog implements AdapterView.OnItemClic
         super(context);
         mActivity = (MainActivity) context;
         mFilePath = filePath;
+    }
+
+    public OpenWithDialog(Context context, String filePath, String fileType) {
+        this(context, filePath);
+        mFileType = fileType;
     }
 
     @Override
@@ -89,7 +95,9 @@ public class OpenWithDialog extends BaseDialog implements AdapterView.OnItemClic
 
     private void initList() {
         mResolveList = new ArrayList<>();
-        mFileType = Constants.getMIMEType(new File(mFilePath));
+        if (TextUtils.isEmpty(mFileType)){
+            mFileType = Constants.getMIMEType(new File(mFilePath));
+        }
         Intent intent = new Intent();
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(Intent.ACTION_VIEW);

@@ -12,6 +12,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.TextView;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.pm.ApplicationInfo;
 
 import com.openthos.filemanager.BaseDialog;
@@ -21,6 +23,7 @@ import com.openthos.filemanager.adapter.BaseDialogAdapter;
 import com.openthos.filemanager.system.Constants;
 
 import java.io.File;
+import java.util.List;
 import java.util.ArrayList;
 
 public class TextSelectDialog extends BaseDialog implements AdapterView.OnItemClickListener {
@@ -61,12 +64,21 @@ public class TextSelectDialog extends BaseDialog implements AdapterView.OnItemCl
         } else if (mActivity.getString(R.string.dialog_type_video).equals(content)) {
             selectType = "video/*";
         }
-        dismiss();
+        List<ResolveInfo> resolveInfoList = new ArrayList<>();
+        PackageManager manager = mActivity.getPackageManager();
         Intent intent = new Intent();
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(Intent.ACTION_VIEW);
         intent.setDataAndType(Uri.fromFile(new File(filePath)), selectType);
-        intent.putExtra(Constants.PACKAGENAME_TAG, Constants.APPNAME_OTO_LAUNCHER);
-        mActivity.startActivity(intent);
+        resolveInfoList = manager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        dismiss();
+        if (resolveInfoList.size() > 0) {
+            intent.putExtra(Constants.PACKAGENAME_TAG, Constants.APPNAME_OTO_LAUNCHER);
+            mActivity.startActivity(intent);
+        } else {
+            OpenWithDialog openWithDialog = new OpenWithDialog(mActivity, filePath, selectType);
+            openWithDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            openWithDialog.showDialog();
+        }
     }
 }
