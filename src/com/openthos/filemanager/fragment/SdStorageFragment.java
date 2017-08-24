@@ -2,6 +2,7 @@ package com.openthos.filemanager.fragment;
 
 import android.annotation.SuppressLint;
 import android.os.StatFs;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -501,6 +502,14 @@ public class SdStorageFragment extends BaseFragment {
         TextView totalSize = (TextView) inflate.findViewById(R.id.usb_grid_total_size);
         TextView availSize = (TextView) inflate.findViewById(R.id.usb_grid_available_size);
         Util.UsbMemoryInfo usbInfo = Util.getUsbMemoryInfo(usbData);
+        if (usbInfo == null) {
+            inflate.setTag(usbLayout);
+            usbLayout.setTag(usbData);
+            usbLayout.setVisibility(View.INVISIBLE);
+            mMainActivity.mHandler.sendMessage(Message.obtain(mMainActivity.mHandler,
+                    Constants.USB_HIDE, usbData));
+            return inflate;
+        }
         totalSize.setText(Util.convertStorage(usbInfo.usbTotal));
         availSize.setText(Util.convertStorage(usbInfo.usbFree));
         usbName.setText(Util.getUsbName(getActivity(), usbData));

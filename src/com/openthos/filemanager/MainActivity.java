@@ -376,7 +376,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             ll_usb.removeAllViews();
                             mUsbViews.clear();
                             for (int i = 0; i < mUsbLists.size(); i++) {
-                                View v = getUsbView(i);
+                                View v = getUsbView(mUsbLists.get(i));
                                 ll_usb.addView(v);
                                 mUsbViews.add(v);
                             }
@@ -385,6 +385,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             }
                             if (TextUtils.isEmpty(getCurPath())) {
                                 mTv_computer.performClick();
+                            }
+                            break;
+                        case Constants.USB_HIDE:
+                            String usbPath = (String) msg.obj;
+                            for (View tempUsbView : mUsbViews) {
+                                if (tempUsbView.getTag().equals(usbPath)) {
+                                    ll_usb.removeView(tempUsbView);
+                                    mUsbViews.remove(tempUsbView);
+                                    break;
+                                }
                             }
                             break;
                         case Constants.REFRESH:
@@ -2125,11 +2135,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         view.setBackground(getResources().getDrawable(android.R.color.holo_purple));
     }
 
-    private View getUsbView(int position) {
+    private View getUsbView(String usbPath) {
         View inflate = View.inflate(this, R.layout.usb_list, null);
         TextView name = (TextView) inflate.findViewById(R.id.usb_list_usb_name);
         ImageView uninstall = (ImageView) inflate.findViewById(R.id.usb_list_uninstall);
-        String usbPath = mUsbLists.get(position);
         name.setText(Util.getUsbName(this, usbPath));
         uninstall.setTag(usbPath);
         inflate.setTag(usbPath);
