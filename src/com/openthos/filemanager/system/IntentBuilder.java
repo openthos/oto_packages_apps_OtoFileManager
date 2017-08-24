@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class IntentBuilder {
     private static final int TEXT_TYPE = 2;
     public static void viewFile(final Context context, final String filePath, MotionEvent event) {
-        String type = getMimeType(filePath);
+        String type = Constants.getMIMEType(new File(filePath));
         if (!TextUtils.isEmpty(type) && !TextUtils.equals(type, "*/*")) {
             List<ResolveInfo> resolveInfoList = new ArrayList<>();
             PackageManager manager = context.getPackageManager();
@@ -57,7 +57,7 @@ public class IntentBuilder {
                 continue;
 
             File fileIn = new File(file.filePath);
-            mimeType = getMimeType(file.fileName);
+            mimeType = Constants.getMIMEType(fileIn);
             Uri u = Uri.fromFile(fileIn);
             uris.add(u);
         }
@@ -80,13 +80,13 @@ public class IntentBuilder {
         return intent;
     }
 
-    public static String getMimeType(String filePath) {
+    private static String getMimeType(String filePath) {
         int dotPosition = filePath.lastIndexOf('.');
         if (dotPosition == -1)
             return "*/*";
 
         String ext = filePath.substring(dotPosition + 1, filePath.length()).toLowerCase();
-        String mimeType = MimeUtils.guessMimeTypeFromExtension(ext);
+        String mimeType = Constants.getMIMEType(new File(filePath));
         if (ext.equals("mtz")) {
             mimeType = "application/miui-mtz";
         }

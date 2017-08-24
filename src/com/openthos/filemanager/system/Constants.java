@@ -387,7 +387,7 @@ public abstract class Constants {
             {"r3t", "text/vnd.rn-realtext3d"},
             {"ra", "audio/x-pn-realaudio"},
             {"ram", "audio/x-pn-realaudio"},
-            {"rar", "application/x-rar-compressed"},
+            {"rar", "application/ocelet-stream"},
             {"ras", "image/x-cmu-raster"},
             {"rc", "text/plain"},
             {"rdf", "application/rdf+xml"},
@@ -565,6 +565,7 @@ public abstract class Constants {
             {"z", "application/x-compress"},
             {"zac", "application/x-zaurus-zac"},
             {"zip", "application/zip"},
+            {"7z", "application/x-7z-compressed"},
             {"", "*/*"}
     };
 

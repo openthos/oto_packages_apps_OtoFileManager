@@ -869,7 +869,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         Intent intent = new Intent(Constants.DECOMPRESS_FILE);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setDataAndType(Uri.fromFile(new File(file.filePath)),
-                IntentBuilder.getMimeType(file.filePath));
+                Constants.getMIMEType(new File(file.filePath)));
         ComponentName cn = new ComponentName(
                 "com.openthos.compress", "com.openthos.compress.DecompressActivity");
         intent.setComponent(cn);
