@@ -61,6 +61,7 @@ public class SdStorageFragment extends BaseFragment {
     private HomeItemAdapter mUsbAdapter;
     private HomeOnTouchListener homeOnTouchListener;
     private List<View> mFastAccessViews, mLocatStorageViews, mMountViews, mUsbViews;
+    private String mPervousUserDataAvail = "";
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public SdStorageFragment(FragmentManager manager, MainActivity context) {
@@ -123,7 +124,8 @@ public class SdStorageFragment extends BaseFragment {
         Util.SDCardInfo sdCardInfo = Util.getSDCardInfo();
         if (null != sdCardInfo && sdCardInfo.total != 0 && sdCardInfo.free != 0) {
             mSystemTotal.setText(Util.convertStorage(sdCardInfo.total));
-            mSystemAvail.setText(Util.convertStorage(sdCardInfo.free));
+            mPervousUserDataAvail = Util.convertStorage(sdCardInfo.free);
+            mSystemAvail.setText(mPervousUserDataAvail);
             int maxOne = 1000;
             int progressOne = (int) ((sdCardInfo.total - sdCardInfo.free)
                     * 1000 / (sdCardInfo.total));
@@ -209,6 +211,7 @@ public class SdStorageFragment extends BaseFragment {
         mMountDevices.setOnTouchListener(homeOnTouchListener);
         mLocalStorage.setOnTouchListener(homeOnTouchListener);
         mFastAccess.setOnTouchListener(homeOnTouchListener);
+        mMainActivity.mHandler.post(mRunnable);
     }
 
     private View getMountView(Volume v) {
@@ -541,6 +544,32 @@ public class SdStorageFragment extends BaseFragment {
                     showDiskDialog(mLongPressEvent, Constants.TAG_SYSTEM);
                     break;
             }
+        }
+    }
+
+    Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mMainActivity.mHandler.sendEmptyMessage(Constants.REFRESH_HOME_UI);
+            mMainActivity.mHandler.postDelayed(mRunnable, 2000);
+        }
+    };
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (mMainActivity != null) {
+            if (hidden) {
+                mMainActivity.mHandler.removeCallbacks(mRunnable);
+            } else {
+                mMainActivity.mHandler.post(mRunnable);
+            }
+        }
+    }
+
+    public void refreshHomeUI() {
+        if (!mPervousUserDataAvail.equals(Util.convertStorage(Util.getSDCardInfo().free))) {
+            setVolumSize();
         }
     }
 }

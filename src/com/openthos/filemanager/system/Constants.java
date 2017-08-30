@@ -97,6 +97,7 @@ public abstract class Constants {
     public static final int USB_INIT = 19;
     public static final int USB_READY = 20;
     public static final int USB_HIDE = 21;
+    public static final int REFRESH_HOME_UI = 30;
 
     public static final String TAG_SYSTEM = "system_default_tag";
     public static final String TAG_USB = "usb_device_tag";

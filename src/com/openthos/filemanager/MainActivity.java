@@ -468,6 +468,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                                         .mFileViewInteractionHub.getCurrentPath()), 1000);
                             }
                             break;
+                        case Constants.REFRESH_HOME_UI:
+                            if (mSdStorageFragment != null) {
+                                mSdStorageFragment.refreshHomeUI();
+                            }
+                            break;
                     }
                 }
                 super.handleMessage(msg);
