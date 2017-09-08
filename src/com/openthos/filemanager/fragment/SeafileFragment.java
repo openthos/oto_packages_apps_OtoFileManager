@@ -185,7 +185,7 @@ public class SeafileFragment extends BaseFragment {
     }
 
     @Override
-    protected void enter(String tag, String path) {
+    public void enter(String tag, String path) {
         FragmentTransaction transaction = mManager.beginTransaction();
         if (TextUtils.isEmpty(path)) {
             return;
@@ -228,5 +228,9 @@ public class SeafileFragment extends BaseFragment {
 
     @Override
     public void showMenu() {
+    }
+
+    @Override
+    public void clearSelectList() {
     }
 }

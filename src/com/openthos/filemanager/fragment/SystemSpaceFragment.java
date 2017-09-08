@@ -811,10 +811,9 @@ public class SystemSpaceFragment extends BaseFragment implements
                 }
             });
         }
-        mAdapter.getSelectFileInfoList().clear();
         mFileViewInteractionHub.getSelectedFileList().clear();
         onDataChanged();
-        clearSelect();
+        clearSelectList();
         return true;
     }
 
@@ -1060,7 +1059,7 @@ public class SystemSpaceFragment extends BaseFragment implements
     }
 
     @Override
-    protected void enter(String tag, String path) {
+    public void enter(String tag, String path) {
     }
 
     public FileListAdapter getAdapter() {
@@ -1114,14 +1113,16 @@ public class SystemSpaceFragment extends BaseFragment implements
         }
     }
 
-    public void clearSelect() {
-        mShiftPos = -1;
-        mPos = -1;
-    }
-
     public boolean isRecycle() {
         return getCurrentPath().startsWith(FileOperationHelper.RECYCLE_PATH1)
                 || getCurrentPath().startsWith(FileOperationHelper.RECYCLE_PATH2)
                 || getCurrentPath().startsWith(FileOperationHelper.RECYCLE_PATH3);
+    }
+
+    @Override
+    public void clearSelectList() {
+        mAdapter.getSelectFileInfoList().clear();
+        mShiftPos = -1;
+        mPos = -1;
     }
 }

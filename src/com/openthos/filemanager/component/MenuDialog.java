@@ -167,6 +167,7 @@ public class MenuDialog extends BaseDialog implements ListView.OnItemClickListen
         } else if (mActivity.getString(R.string.recycle_cut).equals(content)) {
         } else if (mActivity.getString(R.string.recycle_detail).equals(content)) {
         }
+
         dismiss();
     }
 

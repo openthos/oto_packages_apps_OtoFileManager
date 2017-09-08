@@ -23,6 +23,7 @@ import android.widget.GridView;
 import android.widget.ListView;
 
 import com.openthos.filemanager.BaseActivity;
+import com.openthos.filemanager.BaseFragment;
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.bean.Mode;
 import com.openthos.filemanager.component.MenuDialog;
@@ -432,16 +433,17 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 
     public void initFileList() {
         clearSelection();
-        ((SystemSpaceFragment) mFileViewListener).clearSelect();
+        ((BaseFragment) mFileViewListener).clearSelectList();
         mFileViewListener.onRefreshFileList(mCurrentPath, mFileSortHelper);
     }
 
     public void refreshFileList() {
-        updateNavigationPane();
-        initFileList();
-
-        // update move operation button state
-//        updateConfirmButtons();
+        if (mFileViewListener instanceof SystemSpaceFragment) {
+            updateNavigationPane();
+            initFileList();
+        } else {
+            mFileViewListener.onRefreshFileList(null, null);
+        }
     }
 
 //    private void updateConfirmButtons() {
@@ -916,21 +918,24 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
                     break;
             }
         } else {
-            openSelectFolder(getAbsoluteName(mCurrentPath, fileInfo.fileName));
+            openSelectFolder(fileInfo.filePath);
             mMainActivity.mUserOperationFragments.remove(
                     mMainActivity.mUserOperationFragments.size() - 1);
             mMainActivity.mUserOperationFragments.add(mMainActivity.mCurFragment);
-            mMainActivity.mIv_up.setImageDrawable(
-                    mMainActivity.getResources().getDrawable(R.mipmap.up_enable));
         }
     }
 
     public void openSelectFolder(String filePath) {
-        ((SystemSpaceFragment) mFileViewListener).getAdapter().getSelectFileInfoList().clear();
-        clearSelection();
-        mCurrentPath = filePath;
-        refreshFileList();
-        mMainActivity.setCurPath(mCurrentPath);
+        if (mFileViewListener instanceof SystemSpaceFragment) {
+            mMainActivity.mIv_up.setImageDrawable(
+                    mMainActivity.getResources().getDrawable(R.mipmap.up_enable));
+            mCurrentPath = filePath;
+            refreshFileList();
+            mMainActivity.setCurPath(filePath);
+        } else {
+            clearSelection();
+            ((BaseFragment) mFileViewListener).enter(null, filePath);
+        }
     }
 
     public void onOperationOpen(MotionEvent event) {

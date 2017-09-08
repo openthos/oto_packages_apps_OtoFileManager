@@ -6,7 +6,7 @@
     <com.openthos.filemanager.drag.DragListView
         android:id="@+id/lv_mian_search"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:nextFocusUp="@id/lv_mian_search"
         android:nextFocusLeft="@id/lv_mian_search"
         android:nextFocusRight="@id/lv_mian_search"

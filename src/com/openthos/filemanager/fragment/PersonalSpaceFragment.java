@@ -186,7 +186,7 @@ public class PersonalSpaceFragment extends BaseFragment {
     }
 
     @Override
-    protected void enter(String tag, String path) {
+    public void enter(String tag, String path) {
         if (mCurFragment != null) {
             mFileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
             mCopyOrMove = ((SystemSpaceFragment) mCurFragment).getCurCopyOrMoveMode();
@@ -238,5 +238,9 @@ public class PersonalSpaceFragment extends BaseFragment {
 
     @Override
     public void showMenu() {
+    }
+
+    @Override
+    public void clearSelectList() {
     }
 }

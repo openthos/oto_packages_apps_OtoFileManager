@@ -38,7 +38,7 @@ public class OnlineNeighborFragment extends BaseFragment{
     }
 
     @Override
-    protected void enter(String tag, String path) {
+    public void enter(String tag, String path) {
     }
 
     @Override
@@ -47,5 +47,9 @@ public class OnlineNeighborFragment extends BaseFragment{
 
     @Override
     public void showMenu() {
+    }
+
+    @Override
+    public void clearSelectList() {
     }
 }

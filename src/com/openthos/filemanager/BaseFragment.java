@@ -31,7 +31,7 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
     public List<ImageBean> list;
     public int index;
 
-    public ArrayList<SearchInfo> mSearchList = new ArrayList<>();
+    public ArrayList<FileInfo> mSearchList = new ArrayList<>();
     public String sdOrSystem;
     public String directorPath;
     public ArrayList<FileInfo> mFileInfoList;
@@ -82,7 +82,7 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
     }
 
     @SuppressLint({"NewApi", "ValidFragment"})
-    public BaseFragment(FragmentManager manager, ArrayList<SearchInfo> mFileList) {
+    public BaseFragment(FragmentManager manager, ArrayList<FileInfo> mFileList) {
         this.mSearchList = mFileList;
         mManager = manager;
     }
@@ -98,7 +98,7 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
 
     public void enter() { }
 
-    protected abstract void enter(String tag, String path);
+    public abstract void enter(String tag, String path);
 
     protected abstract void initData();
     protected abstract void initListener();
@@ -106,4 +106,6 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
     public abstract int getLayoutId();
     public abstract void processDirectionKey(int keyCode);
     public abstract void showMenu();
+    public abstract void clearSelectList();
+
 }

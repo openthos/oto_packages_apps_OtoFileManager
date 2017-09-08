@@ -393,7 +393,7 @@ public class SdStorageFragment extends BaseFragment {
     }
 
     @Override
-    protected void enter(String tag, String path) {
+    public void enter(String tag, String path) {
         if (mCurFragment != null) {
             if (mCurFragment instanceof SystemSpaceFragment) {
                 mFileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
@@ -571,5 +571,9 @@ public class SdStorageFragment extends BaseFragment {
         if (!mPervousUserDataAvail.equals(Util.convertStorage(Util.getSDCardInfo().free))) {
             setVolumSize();
         }
+    }
+
+    @Override
+    public void clearSelectList() {
     }
 }
