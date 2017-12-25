@@ -27,7 +27,7 @@ public class SeafileUtils {
     public static final String SEAFILE_PROOT_BASEPATH = "/data";
     public static final String SEAFILE_CONFIG_PATH = "/data/seafile-config";
     public static final String SEAFILE_DATA_PATH = "/sdcard/.seafile-data";
-    public static final String SEAFILE_PATH = "/system/sea.tar.bz";
+    public static final String SEAFILE_PATH = "/system/opt/sea.tar.bz";
     public static final String SEAFILE_DATA_PATH_REAlLY = "/data/sea/data";
 
     public static final String SEAFILE_NET_NAME = ".ccnet";
