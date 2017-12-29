@@ -31,7 +31,7 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
     public List<ImageBean> list;
     public int index;
 
-    public ArrayList<FileInfo> mSearchList = new ArrayList<>();
+
     public String sdOrSystem;
     public String directorPath;
     public ArrayList<FileInfo> mFileInfoList;
@@ -83,7 +83,6 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public BaseFragment(FragmentManager manager, ArrayList<FileInfo> mFileList) {
-        this.mSearchList = mFileList;
         mManager = manager;
     }
 

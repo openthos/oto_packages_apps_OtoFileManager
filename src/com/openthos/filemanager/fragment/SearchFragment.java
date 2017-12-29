@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.openthos.filemanager.BaseFragment;
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
@@ -38,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class SearchFragment extends BaseFragment implements IFileInteractionListener{
+public class SearchFragment extends BaseFragment implements IFileInteractionListener {
     private static final String TAG = Constants.LEFT_FAVORITES;
     private Fragment mCurFragment;
     private ListView mListView;
@@ -55,6 +56,7 @@ public class SearchFragment extends BaseFragment implements IFileInteractionList
     private int mShiftPos;
     private boolean mIsRightButton;
     private boolean mIsItem;
+    private ArrayList<FileInfo> mSearchList = new ArrayList<>();
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public SearchFragment(SearchOnKeyListener listener, FragmentManager manager,
@@ -101,7 +103,6 @@ public class SearchFragment extends BaseFragment implements IFileInteractionList
     }
 
 
-
     private class SearchAdapter extends BaseAdapter {
 
         @Override
@@ -124,7 +125,7 @@ public class SearchFragment extends BaseFragment implements IFileInteractionList
             if (mSearchList != null) {
                 ViewHolder viewHolder;
                 if (view == null) {
-                    view = View.inflate(getActivity(), R.layout.search_file_item,null);
+                    view = View.inflate(getActivity(), R.layout.search_file_item, null);
                     viewHolder = new ViewHolder(view);
                     view.setTag(viewHolder);
                     view.setOnTouchListener(mOnTouchListener);
@@ -147,10 +148,11 @@ public class SearchFragment extends BaseFragment implements IFileInteractionList
             }
         }
 
-        class ViewHolder{
+        class ViewHolder {
             TextView name;
             TextView path;
             ImageView icon;
+
             public ViewHolder(View view) {
                 name = (TextView) view.findViewById(R.id.search_file_name);
                 path = (TextView) view.findViewById(R.id.search_file_path);
@@ -280,9 +282,10 @@ public class SearchFragment extends BaseFragment implements IFileInteractionList
 
     @Override
     public void enter() {
-        String fileRealPath = mSearchList.get(mPosition).filePath;
-        enter(null, fileRealPath);
-
+        if (mSelectedList.size() != 0) {
+            String fileRealPath = mSearchList.get(mPosition).filePath;
+            enter(null, fileRealPath);
+        }
     }
 
     @Override
@@ -290,9 +293,9 @@ public class SearchFragment extends BaseFragment implements IFileInteractionList
         if (!new File(path).isDirectory()) {
             Context context = getActivity();
             try {
-                IntentBuilder.viewFile(context,path,null);
+                IntentBuilder.viewFile(context, path, null);
             } catch (Exception e) {
-                Toast.makeText(context,getString(
+                Toast.makeText(context, getString(
                         R.string.found_no_corresponding_application_to_open),
                         Toast.LENGTH_SHORT).show();
             }
@@ -302,7 +305,7 @@ public class SearchFragment extends BaseFragment implements IFileInteractionList
             }
             mActivity = (MainActivity) getActivity();
             mManager.beginTransaction().hide(mActivity.getVisibleFragment()).commitAllowingStateLoss();
-            mCurFragment = new SystemSpaceFragment(TAG, path, null,null, false);
+            mCurFragment = new SystemSpaceFragment(TAG, path, null, null, false);
             mManager.beginTransaction().add(R.id.fl_mian, mCurFragment,
                     Constants.SEARCHSYSTEMSPACE_TAG).commitAllowingStateLoss();
             mActivity.mCurFragment = mCurFragment;
