@@ -2262,6 +2262,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             switch (motionEvent.getButtonState()) {
                 case MotionEvent.BUTTON_PRIMARY:
                     mCurTabIndext = 8;
+                    mCurLeftItem = view;
                     disSelectPreView();
                     setSelectView(view);
                     leftEnter(view);
