@@ -212,7 +212,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     || TextUtils.isEmpty(SeafileUtils.mUserPassword)) {
                 return;
             }
-            String librarys = SeafileUtils.listRemote();
+            String librarys = getLibrarys();
             mAccount = new SeafileAccount();
             mAccount.mUserName = SeafileUtils.mUserId;
             mConsole = new SeafileUtils.SeafileSQLConsole(MainActivity.this);
@@ -222,7 +222,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mAccount.mFile.mkdirs();
             }
             try {
-                if (librarys.equals("]")) {
+                if (librarys == null || TextUtils.isEmpty(librarys)) {
                     librarys = getSharedPreferences(SeafileUtils.SEAFILE_DATA,
                             Context.MODE_PRIVATE).getString(SeafileUtils.SEAFILE_DATA, "");
                 }
@@ -1150,6 +1150,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 clickComputer();
                 break;
             case R.id.tv_cloud_service:
+                if (!SeafileUtils.isNetworkOn(this)) {
+                    T.showShort(this, getResources().getString(R.string.network_down));
+                }
                 setFileInfo(R.id.tv_cloud_service, "", mSeafileFragment);
                 break;
             case R.id.usb:
@@ -1959,7 +1962,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     protected void onStop() {
-        //mReceiver.unregisterReceiver();
+        mReceiver.unregisterReceiver();
         //if (mCustomFileObserver != null) {
         //    mCustomFileObserver.stopWatching();
         //    mCustomFileObserver = null;
@@ -2550,5 +2553,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     public void setUsbPath(String path) {
         mUsbPath = path;
+    }
+
+    private String getLibrarys() {
+        if (!SeafileUtils.isNetworkOn(this)) {
+            return null;
+        }
+        String token = SeafileUtils.getToken(this);
+        if (token == null || TextUtils.isEmpty(token)) {
+            return "";
+        }
+        return SeafileUtils.getResult(token);
     }
 }

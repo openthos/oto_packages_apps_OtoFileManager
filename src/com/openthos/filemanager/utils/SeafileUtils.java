@@ -2,11 +2,17 @@ package com.openthos.filemanager.utils;
 
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 import android.text.TextUtils;
+import android.provider.Settings;
 
 import com.openthos.filemanager.system.SeafileSQLiteHelper;
 import com.openthos.filemanager.system.Constants;
@@ -16,6 +22,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.io.IOException;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import static android.R.attr.id;
 
@@ -405,5 +416,77 @@ public class SeafileUtils {
             db.close();
             return isSync;
         }
+    }
+
+    public static boolean isNetworkOn(Context context) {
+        ConnectivityManager connMgr =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if(wifi != null && wifi.isAvailable()
+                && wifi.getDetailedState() == NetworkInfo.DetailedState.CONNECTED) {
+            return true;
+        }
+        NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if(mobile != null && mobile.isAvailable()
+                && mobile.getDetailedState() == NetworkInfo.DetailedState.CONNECTED) {
+            return true;
+        }
+        return false;
+    }
+
+    public static String getResult(String token) {
+        HttpRequest ret = null;
+        try {
+            ret = HttpRequest.get("https://dev.openthos.org/api2/repos/", null, false);
+            ret.readTimeout(30000)
+                    .connectTimeout(15000)
+                    .followRedirects(false)
+                    .header("Authorization", "Token " + token);
+            try {
+                return new String(ret.bytes(), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        } catch (HttpRequest.HttpRequestException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static String getToken(Context context) {
+        HttpRequest rep = null;
+        try {
+            rep = HttpRequest.post("https://dev.openthos.org/api2/auth-token/", null, false)
+                    .followRedirects(true)
+                    .connectTimeout(15000);
+            rep.form("username", mUserId);
+            rep.form("password", mUserPassword);
+            PackageInfo packageInfo = null;
+            try {
+                packageInfo = context.getPackageManager().
+                        getPackageInfo(context.getPackageName(), 0);
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+            String deviceId = Settings.Secure.getString(context.getContentResolver(),
+                                                        Settings.Secure.ANDROID_ID);
+            rep.form("platform", "android");
+            rep.form("device_id", deviceId);
+            rep.form("device_name", Build.MODEL);
+            rep.form("client_version", packageInfo.versionName);
+            rep.form("platform_version", Build.VERSION.RELEASE);
+            String contentAsString = null;
+            try {
+                contentAsString = new String(rep.bytes(), "UTF-8");
+                return new JSONObject(contentAsString).getString("token");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } catch (HttpRequest.HttpRequestException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }

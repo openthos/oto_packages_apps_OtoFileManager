@@ -275,4 +275,5 @@
     <string name="item_selected">"%d" items selected</string>
     <string name="items">items</string>
     <string name="check_right_image">Please select a picture file</string>
+    <string name="network_down">No network connection</string>
 </resources>
