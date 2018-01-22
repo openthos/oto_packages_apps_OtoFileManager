@@ -276,4 +276,7 @@
     <string name="items">items</string>
     <string name="check_right_image">Please select a picture file</string>
     <string name="network_down">No network connection</string>
+    <string name="input_samba_account">Please enter your username and password!</string>
+    <string name="samba_account">User Name:</string>
+    <string name="samba_password">Password:</string>
 </resources>

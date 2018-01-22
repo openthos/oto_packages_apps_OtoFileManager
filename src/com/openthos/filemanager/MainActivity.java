@@ -46,6 +46,7 @@ import com.openthos.filemanager.component.PopOnClickLintener;
 import com.openthos.filemanager.component.PopWinShare;
 import com.openthos.filemanager.component.SearchOnKeyListener;
 import com.openthos.filemanager.fragment.OnlineNeighborFragment;
+import com.openthos.filemanager.fragment.SambaFragment;
 import com.openthos.filemanager.fragment.SdStorageFragment;
 import com.openthos.filemanager.fragment.PersonalSpaceFragment;
 import com.openthos.filemanager.fragment.SearchFragment;
@@ -53,6 +54,7 @@ import com.openthos.filemanager.system.AutoMountReceiver;
 import com.openthos.filemanager.system.Util;
 import com.openthos.filemanager.system.FileListAdapter;
 import com.openthos.filemanager.utils.LocalCache;
+import com.openthos.filemanager.utils.SambaUtils;
 import com.openthos.filemanager.utils.T;
 import com.openthos.filemanager.fragment.SystemSpaceFragment;
 import com.openthos.filemanager.system.IFileInteractionListener;
@@ -116,6 +118,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private SystemSpaceFragment mDeskFragment, mMusicFragment, mVideoFragment, mPictrueFragment,
             mAddressFragment, mDocumentFragment, mDownloadFragment, mRecycleFragment;
     public SeafileFragment mSeafileFragment;
+    private SambaFragment mSambaFragment;
     private UsbConnectReceiver mReceiver;
     private boolean mIsMutiSelect;
     private SharedPreferences mSharedPreferences;
@@ -123,8 +126,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public boolean mIsSdStorageFragment;
 
     public Handler mHandler;
-    private HomeLeftOnTouchListener mHomeLeftOnTouchListener;
-    private HomeLeftOnHoverListener mHomeLeftOnHoverListener;
+    private LeftTouchListener mLeftTouchListener;
+    private LeftHoverListener mLeftHoverListener;
     private boolean mIsFirst = true;
     private HashMap<String, Integer> mHashMap;
     private SearchOnKeyListener mSearchOnKeyListener;
@@ -322,7 +325,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         ll_usb = (LinearLayout) findViewById(R.id.ll_usb);
         mAddressListView = (HorizontalListView) findViewById(R.id.lv_address);
         mLeftTexts = new TextView[]{mTv_music, mTv_desk, mTv_video, mTv_computer, mTv_picture,
-                mTv_net_service, mTv_document, mTv_download, mTv_recycle, mTv_cloud_service};
+                mTv_document, mTv_download, mTv_recycle, mTv_cloud_service, mTv_net_service};
         if (LocalCache.getViewTag() != null && "list".equals(LocalCache.getViewTag())) {
             mIv_grid_view.setSelected(false);
             mIv_list_view.setSelected(true);
@@ -454,18 +457,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             if (System.currentTimeMillis() - mPreTime >= 1000) {
                                 mHandler.removeMessages(Constants.ONLY_REFRESH);
                                 mHandler.sendMessage(Message.obtain(
-                                                mHandler,
-                                                Constants.ONLY_REFRESH,
-                                                ((BaseFragment) getVisibleFragment())
-                                                        .mFileViewInteractionHub.getCurrentPath()));
+                                        mHandler,
+                                        Constants.ONLY_REFRESH,
+                                        ((BaseFragment) getVisibleFragment())
+                                                .mFileViewInteractionHub.getCurrentPath()));
                                 mPreTime = System.currentTimeMillis();
                             } else {
                                 mHandler.removeMessages(Constants.ONLY_REFRESH);
                                 mHandler.sendMessageDelayed(Message.obtain(
-                                                mHandler,
-                                                Constants.ONLY_REFRESH,
-                                                ((BaseFragment) getVisibleFragment())
-                                                        .mFileViewInteractionHub.getCurrentPath()), 1000);
+                                        mHandler,
+                                        Constants.ONLY_REFRESH,
+                                        ((BaseFragment) getVisibleFragment())
+                                                .mFileViewInteractionHub.getCurrentPath()), 1000);
                             }
                             break;
                         case Constants.REFRESH_HOME_UI:
@@ -629,6 +632,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             transaction.add(R.id.fl_mian, mSeafileFragment, Constants.SEAFILESYSTEMSPACE_TAG)
                     .hide(mSeafileFragment);
         }
+        if (mSambaFragment == null) {
+            mSambaFragment = new SambaFragment();
+            transaction.add(R.id.fl_mian, mSambaFragment, Constants.SAMBA_FRAGMENT_TAG)
+                    .hide(mSambaFragment);
+        }
         transaction.commitAllowingStateLoss();
     }
 
@@ -696,12 +704,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     protected void initListener() {
-        mHomeLeftOnTouchListener = new HomeLeftOnTouchListener();
-        mHomeLeftOnHoverListener = new HomeLeftOnHoverListener();
+        mLeftTouchListener = new LeftTouchListener();
+        mLeftHoverListener = new LeftHoverListener();
         mEditTextTouchListener = new EditTextTouchListener();
         for (int i = 0; i < mLeftTexts.length; i++) {
-            mLeftTexts[i].setOnTouchListener(mHomeLeftOnTouchListener);
-            mLeftTexts[i].setOnHoverListener(mHomeLeftOnHoverListener);
+            mLeftTexts[i].setOnTouchListener(mLeftTouchListener);
+            mLeftTexts[i].setOnHoverListener(mLeftHoverListener);
         }
         mIv_list_view.setOnClickListener(this);
         mIv_grid_view.setOnClickListener(this);
@@ -728,8 +736,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             View inflate = View.inflate(this, R.layout.mount_list, null);
             TextView name = (TextView) inflate.findViewById(R.id.usb_list_usb_name);
             name.setText(v.getBlock());
-            inflate.setOnHoverListener(mHomeLeftOnHoverListener);
-            inflate.setOnTouchListener(mHomeLeftOnTouchListener);
+            inflate.setOnHoverListener(mLeftHoverListener);
+            inflate.setOnTouchListener(mLeftTouchListener);
             inflate.setTag(v);
             SystemSpaceFragment mountFragment = new SystemSpaceFragment(
                     v.getBlock(), "/storage/disk" + i, null, null, true);
@@ -1155,6 +1163,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 }
                 setFileInfo(R.id.tv_cloud_service, "", mSeafileFragment);
                 break;
+            case R.id.tv_net_service:
+                setFileInfo(R.id.tv_net_service, "", mSambaFragment);
+                break;
             case R.id.usb:
                 mUsbPath = (String) view.getTag();
                 enter(mUsbPath);
@@ -1502,7 +1513,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             }
         }
         setSelectedBackground(id);
-//        setNavigationPath(path);
         setCurPath(path);
         FragmentTransaction transaction = mManager.beginTransaction();
         if (mCurFragment != null) {
@@ -1787,6 +1797,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         .commitAllowingStateLoss();
                 mCurFragment = mStartSearchFragment;
                 mStartSearchFragment = null;
+            } else if (mCurFragment instanceof SambaFragment
+                    && !((SambaFragment) mCurFragment).canGoBack()) {
+                ((SambaFragment) mCurFragment).goBack();
             } else {
                 returnToRootDir();
             }
@@ -1953,6 +1966,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     boolean isRestart = false;
+
     @Override
     protected void onPause() {
         android.util.Log.i("wwwwww", getComponentName().getClassName() + " Pause");
@@ -1963,10 +1977,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onStop() {
         mReceiver.unregisterReceiver();
-        //if (mCustomFileObserver != null) {
-        //    mCustomFileObserver.stopWatching();
-        //    mCustomFileObserver = null;
-        //}
         android.util.Log.i("wwwwww", getComponentName().getClassName() + " Stop");
         super.onStop();
     }
@@ -1974,10 +1984,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onResume() {
         android.util.Log.i("wwwwww", getComponentName().getClassName() + " Resume");
-        //if (isRestart) {
-        //    super.onStart();
-        //    isRestart = false;
-        //}
         super.onResume();
     }
 
@@ -1997,17 +2003,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public void setNavigationBar(String displayPath) {
         setNavigationPath(displayPath);
-//        if (displayPath != null) {
-//            if (mCurFragment == mSdStorageFragment && mSdStorageFragment.mCurFragment != null) {
-//                setNavigationPath(displayPath);
-//            } else {
-//                if (mCurFragment instanceof SystemSpaceFragment) {
-//                    setNavigationPath(displayPath);
-//                } else {
-//                    setNavigationPath(null);
-//                }
-//            }
-//        }
     }
 
     @Override
@@ -2151,8 +2146,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         uninstall.setTag(usbPath);
         inflate.setTag(usbPath);
         uninstall.setOnClickListener(new UsbUninstallListener());
-        inflate.setOnTouchListener(mHomeLeftOnTouchListener);
-        inflate.setOnHoverListener(mHomeLeftOnHoverListener);
+        inflate.setOnTouchListener(mLeftTouchListener);
+        inflate.setOnHoverListener(mLeftHoverListener);
         return inflate;
     }
 
@@ -2233,7 +2228,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    private class HomeLeftOnHoverListener implements View.OnHoverListener {
+    private class LeftHoverListener implements View.OnHoverListener {
         @Override
         public boolean onHover(View view, MotionEvent motionEvent) {
             int action = motionEvent.getAction();
@@ -2258,7 +2253,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         setFileInfo(R.id.tv_computer, "", mSdStorageFragment);
     }
 
-    private class HomeLeftOnTouchListener implements View.OnTouchListener {
+    private class LeftTouchListener implements View.OnTouchListener {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             clearNivagateFocus();

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item"
+    android:layout_width="@dimen/grid_item_width"
+    android:layout_height="@dimen/grid_item_height"
+    android:background="@drawable/list_item_bg_selector"
+    android:nextFocusDown="@id/item"
+    android:nextFocusLeft="@id/item"
+    android:nextFocusRight="@id/item"
+    android:nextFocusUp="@id/item"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+    <RelativeLayout
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="1dp"
+        android:gravity="center"
+        android:padding="5dp">
+
+        <ImageView
+            android:id="@+id/iv_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:src="@mipmap/icon_computer" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_icon"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="@string/downloads"
+        android:textSize="16sp" />
+</LinearLayout>

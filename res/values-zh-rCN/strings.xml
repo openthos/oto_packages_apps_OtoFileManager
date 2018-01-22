@@ -278,4 +278,7 @@
     <string name="items">项</string>
     <string name="check_right_image">请选择图片文件</string>
     <string name="network_down">无网络连接</string>
+    <string name="input_samba_account">请输入用户名和密码!</string>
+    <string name="samba_account">用户名:</string>
+    <string name="samba_password">密码:</string>
 </resources>
