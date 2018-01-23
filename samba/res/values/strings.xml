@@ -1,0 +1,7 @@
+<resources xmlns:xliff="http://schemas.android.com/tools">
+    <string name="input_samba_account">Please enter your username and password!</string>
+    <string name="samba_account">User Name:</string>
+    <string name="samba_password">Password:</string>
+    <string name="samba_downloading">Downloading...</string>
+    <string name="download_falut">Download failed!</string>
+</resources>

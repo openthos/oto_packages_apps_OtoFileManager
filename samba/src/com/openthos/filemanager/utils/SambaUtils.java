@@ -1,5 +1,6 @@
 package com.openthos.filemanager.utils;
 
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -24,6 +25,9 @@ import jcifs.smb.SmbFileOutputStream;
  */
 
 public class SambaUtils {
+
+    public final static File BASE_DIRECTORY
+            = new File(Environment.getExternalStorageDirectory(), "samba");
 
     private void upload() {
         try {
@@ -55,11 +59,14 @@ public class SambaUtils {
 
     }
 
-    private void download() {
+    public static boolean download(String acconut, String password, String path) {
         try {
-            SmbFile smbFile = new SmbFile("smb://testking: @DESKTOP-M45K4DV/hello/nihao.txt");
-
-            File f = new File("/sdcard/nihao.txt");
+            SmbFile smbFile = new SmbFile("smb://" + acconut + ":" + password + "@" + path);
+            File f = new File(BASE_DIRECTORY, path);
+            File parent = new File(f.getParent());
+            if (!parent.exists()) {
+                parent.mkdirs();
+            }
             SmbFileInputStream in = new SmbFileInputStream(smbFile);
             BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(f));
             int fileLength = 1024 * 1024 * 8;
@@ -67,11 +74,11 @@ public class SambaUtils {
             byte buffer[] = new byte[fileLength];
             while ((length = in.read(buffer)) != -1) {
                 out.write(buffer, 0, length);
-
             }
             in.close();
             out.flush();
             out.close();
+            return true;
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (UnknownHostException e) {
@@ -83,7 +90,7 @@ public class SambaUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        return false;
     }
 
     public static ArrayList<String> scanNet() {
@@ -93,8 +100,6 @@ public class SambaUtils {
             SmbFile[] groups = mainSmb.listFiles();
             for (int i = 0; i < groups.length; i++) {
                 SmbFile workgroupSmb = new SmbFile("smb://" + groups[i].getName());
-//                SmbFile workgroupSmb = new SmbFile("smb://testking: @DESKTOP-M45K4DV/");
-//                SmbFile workgroupSmb = new SmbFile("smb://WORKGROUP/");
                 SmbFile[] points = workgroupSmb.listFiles();
                 for (int j = 0; j < points.length; j++) {
                     list.add(points[j].getName());
@@ -117,7 +122,6 @@ public class SambaUtils {
         list.clear();
         try {
             SmbFile point = new SmbFile("smb://" + acconut + ":" + password + "@" + path);
-            Log.i("wwww smb", point.getPath());
             SmbFile[] files = point.listFiles();
             for (int i = 0; i < files.length; i++) {
                 list.add(files[i].getName());
@@ -136,22 +140,4 @@ public class SambaUtils {
         }
         return SAMBA_OK;
     }
-
-    private void listFile() {
-        String path = "smb://testking: @192.168.0.60/hello/";
-        SmbFile sFile;
-        try {
-            sFile = new SmbFile(path);
-            for (int i = 0; i < sFile.listFiles().length; i++) {
-                Log.i("wwww", sFile.listFiles()[i].getName());
-                Log.i("wwww", sFile.listFiles()[i].length() + "");
-                Log.i("wwww", sFile.listFiles()[i].getPath());
-            }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (SmbException e) {
-            e.printStackTrace();
-        }
-    }
-
 }

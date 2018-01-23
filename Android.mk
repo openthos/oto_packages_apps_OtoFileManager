@@ -32,7 +32,8 @@ LOCAL_SRC_FILES := $(call all-java-files-under, src) \
     $(call all-proto-files-under, protos) \
     $(call all-subdir-Java-files)
 
-LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
+LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/samba/res $(LOCAL_PATH)/res
+LOCAL_AAPT_FLAGS := --auto-add-overlay
 
 LOCAL_PROTOC_OPTIMIZE_TYPE := nano
 

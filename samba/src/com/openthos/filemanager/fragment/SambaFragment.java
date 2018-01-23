@@ -3,10 +3,12 @@ package com.openthos.filemanager.fragment;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -16,13 +18,16 @@ import android.widget.Button;
 import android.widget.DialerFilter;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.openthos.filemanager.BaseFragment;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.adapter.SambaAdapter;
 import com.openthos.filemanager.system.Constants;
+import com.openthos.filemanager.system.IntentBuilder;
 import com.openthos.filemanager.utils.SambaUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 
 @SuppressLint("ValidFragment")
@@ -96,7 +101,8 @@ public class SambaFragment extends BaseFragment {
     public void goBack() {
         mSuffix = "";
         if (mPath.substring(0, mPath.lastIndexOf("/")).contains("/")) {
-            mPath = mPath.substring(0, mPath.substring(0, mPath.length() - 1).lastIndexOf("/")) + "/";
+            mPath = mPath.substring(0, mPath.substring(0, mPath.length() - 1).lastIndexOf("/"))
+                    + "/";
             enter();
         } else {
             mPath = "";
@@ -171,43 +177,76 @@ public class SambaFragment extends BaseFragment {
     @Override
     public void enter() {
         super.enter();
-        mPath = mPath + mSuffix;
-        mFiles.clear();
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                int result = SambaUtils.connect(mFiles, mAccount, mPassword, mPath);
-                switch (result) {
-                    case SambaUtils.SAMBA_OK:
-                        mList.clear();
-                        mList.addAll(mFiles);
-                        mAdapter.setIsPointPage(false);
-                        mGv.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                mAdapter.notifyDataSetChanged();
-                            }
-                        });
+        if (mSuffix.endsWith("/")) {
+            new Thread() {
+                @Override
+                public void run() {
+                    super.run();
+                    mPath = mPath + mSuffix;
+                    mFiles.clear();
+                    int result = SambaUtils.connect(mFiles, mAccount, mPassword, mPath);
+                    switch (result) {
+                        case SambaUtils.SAMBA_OK:
+                            mList.clear();
+                            mList.addAll(mFiles);
+                            mAdapter.setIsPointPage(false);
+                            mGv.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mAdapter.notifyDataSetChanged();
+                                }
+                            });
 
-                        break;
-                    case SambaUtils.SAMBA_WRONG_ACCOUNT:
+                            break;
+                        case SambaUtils.SAMBA_WRONG_ACCOUNT:
+                            mMainActivity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    InputAccountDialog dialog
+                                            = new InputAccountDialog(mMainActivity);
+                                    dialog.show();
+                                }
+                            });
+                            break;
+                        case SambaUtils.SAMBA_WRONG_NETWORK:
+                            break;
+                        case SambaUtils.SAMBA_NOT_FOUND:
+                            break;
+
+                    }
+                }
+            }.start();
+        } else {
+            final File f = new File(SambaUtils.BASE_DIRECTORY, mPath + mSuffix);
+            if (f.exists()) {
+                IntentBuilder.viewFile(mMainActivity, f.getAbsolutePath(), null);
+            } else {
+                final ProgressDialog dialog = new ProgressDialog(getActivity());
+                dialog.setCancelable(false);
+                dialog.setTitle(mMainActivity.getString(R.string.samba_downloading));
+                dialog.show();
+                new Thread() {
+                    @Override
+                    public void run() {
+                        super.run();
+                        final boolean isOk
+                                = SambaUtils.download(mAccount, mPassword, mPath + mSuffix);
                         mMainActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                InputAccountDialog dialog = new InputAccountDialog(mMainActivity);
-                                dialog.show();
+                                dialog.dismiss();
+                                if (isOk) {
+                                    IntentBuilder.viewFile(mMainActivity, f.getAbsolutePath(), null);
+                                } else {
+                                    Toast.makeText(mMainActivity, mMainActivity.getString(
+                                            R.string.download_falut), Toast.LENGTH_SHORT).show();
+                                }
                             }
                         });
-                        break;
-                    case SambaUtils.SAMBA_WRONG_NETWORK:
-                        break;
-                    case SambaUtils.SAMBA_NOT_FOUND:
-                        break;
-
-                }
+                    }
+                }.start();
             }
-        }.start();
+        }
     }
 
     @Override
@@ -268,12 +307,11 @@ public class SambaFragment extends BaseFragment {
                     mAccount = mEtAccount.getText().toString();
                     mPassword = mEtPassword.getText().toString();
                     if (mPath.substring(0, mPath.lastIndexOf("/")).contains("/")) {
-                        mPath = mPath.substring(0, mPath.lastIndexOf("/")).substring(0, mPath.lastIndexOf("/"));
+                        mPath = mPath.substring(0,
+                                mPath.lastIndexOf("/")).substring(0, mPath.lastIndexOf("/"));
                     } else {
                         mPath = "";
                     }
-//                    mPath = mPath.replace(mSuffix ,"");
-                    Log.i("wwww", mPath);
                     enter();
                     dismiss();
                 }
