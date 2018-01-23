@@ -80,5 +80,6 @@
             android:name=".sql.RecycleConentProvider"
             android:exported="true"
             android:enabled="true"/>
+
     </application>
 </manifest>

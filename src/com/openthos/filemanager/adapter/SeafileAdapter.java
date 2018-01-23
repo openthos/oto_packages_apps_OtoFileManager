@@ -9,7 +9,6 @@ import android.widget.ImageView;
 
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
-import com.openthos.filemanager.bean.SeafileAccount;
 import com.openthos.filemanager.bean.SeafileLibrary;
 import com.openthos.filemanager.utils.SeafileUtils;
 import com.openthos.filemanager.fragment.SeafileFragment;

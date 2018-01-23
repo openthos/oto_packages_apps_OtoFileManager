@@ -126,7 +126,6 @@
             android:id="@+id/tv_cloud_service"
             style="@style/textSet"
             android:drawableLeft="@drawable/left_cloud_selector"
-            android:visibility="gone"
             android:text="@string/cloud" />
 
         <TextView

@@ -14,7 +14,6 @@ import android.view.Window;
 import com.openthos.filemanager.BaseFragment;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.adapter.SeafileAdapter;
-import com.openthos.filemanager.bean.SeafileAccount;
 import com.openthos.filemanager.bean.SeafileLibrary;
 import com.openthos.filemanager.component.SeafileDialog;
 import com.openthos.filemanager.system.Constants;
@@ -85,8 +84,8 @@ public class SeafileFragment extends BaseFragment {
 
     public void setData(ArrayList<SeafileLibrary> librarys) {
         if (librarys.size() > 0) {
-            mTimer.schedule(new LiftLimitTask(SeafileUtils.SEAFILE_DATA_PATH_REAlLY),
-                    DELAY_TIME, SLEEP_TIME);
+//            mTimer.schedule(new LiftLimitTask(SeafileUtils.SEAFILE_DATA_PATH_REAlLY),
+//                    DELAY_TIME, SLEEP_TIME);
         }
         mList = librarys;
         mAdapter.setData(librarys);
@@ -180,7 +179,7 @@ public class SeafileFragment extends BaseFragment {
     public void enter() {
         super.enter();
         enter("hello", SeafileUtils.SEAFILE_DATA_PATH_REAlLY
-                + mMainActivity.mAccount.mFile.getAbsolutePath()
+                + mMainActivity.mFile.getAbsolutePath()
                 + "/" + mList.get(mPos).libraryName);
     }
 

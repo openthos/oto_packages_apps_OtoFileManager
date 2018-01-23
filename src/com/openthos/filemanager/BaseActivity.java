@@ -5,16 +5,24 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.content.Context;
+import android.content.Intent;
+import android.os.IBinder;
+import android.content.ServiceConnection;
+import android.content.ComponentName;
 
 import com.openthos.filemanager.bean.Mode;
 import com.openthos.filemanager.component.AppManager;
 import com.openthos.filemanager.system.FileSortHelper;
+import com.openthos.seafile.ISeafileService;
 
 public abstract class BaseActivity extends FragmentActivity {
 
     private FileSortHelper mFileSortHelper;
     public ViewGroup mInflate;
     public Mode mMode;
+    public ISeafileService mISeafileService;
+    public SeafileServiceConnection mSeafileServiceConnection;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -23,6 +31,12 @@ public abstract class BaseActivity extends FragmentActivity {
         mInflate = (ViewGroup) View.inflate(this, getLayoutId(), null);
        // setContentView(getLayoutId());
         setContentView(mInflate);
+        mSeafileServiceConnection = new SeafileServiceConnection();
+        Intent intent = new Intent();
+        intent.setAction("com.openthos.seafile.Seafile_Service");
+        intent.setComponent(new ComponentName("com.openthos.seafile",
+                    "com.openthos.seafile.SeafileService"));
+        bindService(intent, mSeafileServiceConnection, Context.BIND_AUTO_CREATE);
         AppManager.getAppManager().addActivity(this);
         mFileSortHelper = new FileSortHelper();
         setMode();
@@ -41,6 +55,15 @@ public abstract class BaseActivity extends FragmentActivity {
 
     public FileSortHelper getFileSortHelper() {
         return mFileSortHelper;
+    }
+
+    public class SeafileServiceConnection implements ServiceConnection {
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mISeafileService = ISeafileService.Stub.asInterface(service);
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+        }
     }
 
     protected abstract void setMode();

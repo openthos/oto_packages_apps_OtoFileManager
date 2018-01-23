@@ -14,11 +14,11 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.RemoteException;
 
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.BaseDialog;
 import com.openthos.filemanager.R;
-import com.openthos.filemanager.bean.SeafileAccount;
 import com.openthos.filemanager.bean.SeafileLibrary;
 import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.system.TextInputDialog;
@@ -75,8 +75,7 @@ public class SeafileDialog extends BaseDialog implements View.OnClickListener {
             mTvSync.setTextColor(Color.LTGRAY);
             mTvDesync.setTextColor(Color.LTGRAY);
         }
-        if (!SeafileUtils.isExistsAccount() || mMainActivity.isInitSeafile()
-                                                                     || mMainActivity.isSeafile()){
+        if (!SeafileUtils.isExistsAccount()){
             mTvCreate.setTextColor(Color.LTGRAY);
         }
         mLinearLayout = (LinearLayout) findViewById(R.id.cloud_ll);
@@ -87,8 +86,7 @@ public class SeafileDialog extends BaseDialog implements View.OnClickListener {
 
     private void initLisener() {
         mTvCreate.setVisibility(View.GONE);
-        if (!SeafileUtils.isExistsAccount() || mMainActivity.isInitSeafile()
-                                                                 || mMainActivity.isSeafile()){
+        if (!SeafileUtils.isExistsAccount()){
             return;
         }
         mTvCreate.setOnClickListener(this);
@@ -110,8 +108,8 @@ public class SeafileDialog extends BaseDialog implements View.OnClickListener {
                             @Override
                             public boolean onFinish(final String text) {
                                 for (int i = 0;
-                                              i < mMainActivity.mAccount.mLibrarys.size(); i++) {
-                                    if (mMainActivity.mAccount.mLibrarys.get(i)
+                                              i < mMainActivity.mLibrarys.size(); i++) {
+                                    if (mMainActivity.mLibrarys.get(i)
                                                                        .libraryName.equals(text)) {
                                         OperateUtils.showConfirmAlertDialog(mMainActivity,
                                                                          R.string.fail_seafile_name);
@@ -137,10 +135,13 @@ public class SeafileDialog extends BaseDialog implements View.OnClickListener {
                 dialog.show();
                 break;
             case R.id.cloud_sync:
-                mMainActivity.mConsole.updateSync(mMainActivity.mAccount.mUserId,
-                        mLibrary.libraryId,
-                        mLibrary.libraryName,
-                        SeafileUtils.SYNC);
+                try {
+                    mMainActivity.mISeafileService.updateSync(mMainActivity.mUserId,
+                            mLibrary.libraryId,
+                            mLibrary.libraryName,
+                            SeafileUtils.SYNC);
+                } catch (RemoteException e) {
+                }
                 mLibrary.isSync = SeafileUtils.SYNC;
                 new Thread() {
                     @Override
@@ -151,10 +152,13 @@ public class SeafileDialog extends BaseDialog implements View.OnClickListener {
                 }.start();
                 break;
             case R.id.cloud_desync:
-                mMainActivity.mConsole.updateSync(mMainActivity.mAccount.mUserId,
-                        mLibrary.libraryId,
-                        mLibrary.libraryName,
-                        SeafileUtils.UNSYNC);
+                try {
+                    mMainActivity.mISeafileService.updateSync(mMainActivity.mUserId,
+                            mLibrary.libraryId,
+                            mLibrary.libraryName,
+                            SeafileUtils.UNSYNC);
+                } catch (RemoteException e) {
+                }
                 mLibrary.isSync = SeafileUtils.UNSYNC;
                 new Thread() {
                     @Override
@@ -169,46 +173,48 @@ public class SeafileDialog extends BaseDialog implements View.OnClickListener {
     }
 
     private void create(String text) {
-        String id = SeafileUtils.create(text);
-        int isSync = mMainActivity.mConsole.insertLibrary(
-                                                      mMainActivity.mAccount.mUserId, id, text);
-        SeafileLibrary seafileLibrary = new SeafileLibrary();
-        seafileLibrary.libraryId = id;
-        seafileLibrary.libraryName = text;
-        seafileLibrary.isSync = isSync;
-        mMainActivity.mAccount.mLibrarys.add(seafileLibrary);
-        mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
-        if (isSync == SeafileUtils.SYNC) {
-            SeafileUtils.sync(id, new File(mMainActivity.mAccount.mFile, text)
-                    .getAbsolutePath());
+        try {
+            String id = mMainActivity.mISeafileService.create(text);
+            int isSync = mMainActivity.mISeafileService.insertLibrary(mMainActivity.mUserId, id, text);
+            SeafileLibrary seafileLibrary = new SeafileLibrary();
+            seafileLibrary.libraryId = id;
+            seafileLibrary.libraryName = text;
+            seafileLibrary.isSync = isSync;
+            mMainActivity.mLibrarys.add(seafileLibrary);
+            mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
+            if (isSync == SeafileUtils.SYNC) {
+                mMainActivity.mISeafileService.sync(id, new File(mMainActivity.mFile, text)
+                        .getAbsolutePath());
+            }
+        } catch (RemoteException e) {
         }
     }
 
     private void sync() {
-        SeafileUtils.sync((String) mLibrary.libraryId, new File(mMainActivity.mAccount.mFile,
-                                                 mLibrary.libraryName).getAbsolutePath());
-        mMainActivity.mAccount.mLibrarys.set(mPos, mLibrary);
-        mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
+        try {
+            mMainActivity.mISeafileService.sync((String) mLibrary.libraryId, new File(mMainActivity.mFile,
+                                                     mLibrary.libraryName).getAbsolutePath());
+            mMainActivity.mLibrarys.set(mPos, mLibrary);
+            mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
+        } catch (RemoteException e) {
+        }
     }
 
     private void desync() {
-        SeafileUtils.desync(new File(mMainActivity.mAccount.mFile,
-                                                 mLibrary.libraryName).getAbsolutePath());
-        mMainActivity.mAccount.mLibrarys.set(mPos, mLibrary);
-        mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
+        try {
+            mMainActivity.mISeafileService.desync(new File(mMainActivity.mFile,
+                                                     mLibrary.libraryName).getAbsolutePath());
+            mMainActivity.mLibrarys.set(mPos, mLibrary);
+            mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
+        } catch (RemoteException e) {
+        }
     }
 
     public void showDialog(int x, int y) {
         super.showDialog(x, y);
-        if (mMainActivity.isInitSeafile()) {
+        if (!SeafileUtils.isExistsAccount()) {
            Toast.makeText(mMainActivity,
-                                     mMainActivity.getString(R.string.init_seafile), 0).show();
-        } else if (!SeafileUtils.isExistsAccount()) {
-           Toast.makeText(mMainActivity,
-                                     mMainActivity.getString(R.string.bind_openthosid), 0).show();
-        } else if (mMainActivity.isSeafile()) {
-           Toast.makeText(mMainActivity,
-                                     mMainActivity.getString(R.string.init_seafile_data), 0).show();
+                   mMainActivity.getString(R.string.bind_openthosid), 0).show();
         }
     }
 }

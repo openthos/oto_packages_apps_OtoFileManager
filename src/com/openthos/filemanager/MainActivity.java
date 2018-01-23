@@ -38,7 +38,6 @@ import android.app.ProgressDialog;
 import android.os.Build;
 
 import com.openthos.filemanager.bean.Mode;
-import com.openthos.filemanager.bean.SeafileAccount;
 import com.openthos.filemanager.bean.SeafileLibrary;
 import com.openthos.filemanager.bean.Volume;
 import com.openthos.filemanager.component.CopyInfoDialog;
@@ -139,11 +138,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public BaseFragment mStartSearchFragment;
     private SearchFragment mSearchFragment;
     public String mCurPath;
-    public SeafileAccount mAccount;
-    public SeafileUtils.SeafileSQLConsole mConsole;
+    public int mUserId;
+    public File mFile;
+    public ArrayList<SeafileLibrary> mLibrarys = new ArrayList<>();
     private CustomFileObserver mCustomFileObserver;
-    private InitSeafileThread mInitSeafileThread;
-    private SeafileThread mSeafileThread;
     private String mUsbPath;
     private ExecutorService mUsbSingleExecutor;
     private TextView[] mLeftTexts;
@@ -173,62 +171,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public int mCurTabIndext = 0;
     private View mCurLeftItem, mPreView;
     private EditTextTouchListener mEditTextTouchListener;
+    private boolean mSeafileInit = false;
 
     protected int getLayoutId() {
         return R.layout.activity_main;
     }
 
-    private class InitSeafileThread extends Thread {
-        @Override
-        public void run() {
-            super.run();
-            SeafileUtils.init();
-            SeafileUtils.start();
-            mSeafileThread = new SeafileThread();
-            mSeafileThread.start();
-        }
-    }
-
-    private class SeafileThread extends Thread {
-        private boolean isExistsSetting = false;
-        private boolean isExistsFileManager = false;
-        private String id = "";
-        private String settingId = "";
-
-        @Override
-        public void run() {
-            super.run();
-            ContentResolver mResolver = MainActivity.this.getContentResolver();
-            Uri uriQuery = Uri.parse(Constants.OPENTHOS_URI);
-            Cursor cursor = mResolver.query(uriQuery, null, null, null, null);
-            if (cursor != null) {
-                while (cursor.moveToNext()) {
-                    //current openthos id and password
-                    SeafileUtils.mUserId = cursor.getString(cursor.getColumnIndex("openthosID"));
-                    SeafileUtils.mUserPassword =
-                            cursor.getString(cursor.getColumnIndex("password"));
-                    break;
-                }
-                cursor.close();
-            }
+    private void initSeafile() {
+        try {
+            //mUserId = mISeafileService.getUserId();
+            SeafileUtils.mUserId = mISeafileService.getUserName();
+            SeafileUtils.mUserPassword = mISeafileService.getUserPassword();
             if (TextUtils.isEmpty(SeafileUtils.mUserId)
                     || TextUtils.isEmpty(SeafileUtils.mUserPassword)) {
                 return;
             }
-            String librarys = getLibrarys();
-            mAccount = new SeafileAccount();
-            mAccount.mUserName = SeafileUtils.mUserId;
-            mConsole = new SeafileUtils.SeafileSQLConsole(MainActivity.this);
-            mAccount.mUserId = mConsole.queryAccountId(mAccount.mUserName);
-            mAccount.mFile = new File(SeafileUtils.SEAFILE_DATA_PATH, mAccount.mUserName);
-            if (!mAccount.mFile.exists()) {
-                mAccount.mFile.mkdirs();
-            }
+            String librarys = mISeafileService.getLibrary();
+            mFile = new File(SeafileUtils.SEAFILE_DATA_PATH, SeafileUtils.mUserId);
             try {
-                if (librarys == null || TextUtils.isEmpty(librarys)) {
-                    librarys = getSharedPreferences(SeafileUtils.SEAFILE_DATA,
-                            Context.MODE_PRIVATE).getString(SeafileUtils.SEAFILE_DATA, "");
-                }
                 JSONArray jsonArray = new JSONArray(librarys);
                 JSONObject jsonObject = null;
                 for (int i = 0; i < jsonArray.length(); i++) {
@@ -236,67 +196,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     jsonObject = jsonArray.getJSONObject(i);
                     seafileLibrary.libraryName = jsonObject.getString("name");
                     seafileLibrary.libraryId = jsonObject.getString("id");
-                    if (seafileLibrary.libraryName.equals(SeafileUtils.SETTING_SEAFILE_NAME)) {
-                        isExistsSetting = true;
-                        settingId = seafileLibrary.libraryId;
-                        continue;
+                    seafileLibrary.isSync = mISeafileService.isSync(
+                            seafileLibrary.libraryId, seafileLibrary.libraryName);
+                    if (seafileLibrary.libraryName.equals(SeafileUtils.FILEMANAGER_SEAFILE_NAME)) {
+                        mLibrarys.add(seafileLibrary);
                     }
-                    if (!seafileLibrary.libraryName.equals(SeafileUtils.FILEMANAGER_SEAFILE_NAME)) {
-                        continue;
-                    }
-                    isExistsFileManager = true;
-                    id = seafileLibrary.libraryId;
-                    mAccount.mLibrarys.add(seafileLibrary);
                 }
-                getSharedPreferences(SeafileUtils.SEAFILE_DATA, Context.MODE_PRIVATE).edit()
-                        .putString(SeafileUtils.SEAFILE_DATA, librarys).commit();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            if (!isExistsFileManager) {
-                SeafileLibrary seafileLibrary = new SeafileLibrary();
-                seafileLibrary.libraryName = SeafileUtils.FILEMANAGER_SEAFILE_NAME;
-                seafileLibrary.libraryId
-                        = SeafileUtils.create(SeafileUtils.FILEMANAGER_SEAFILE_NAME);
-                mAccount.mLibrarys.add(seafileLibrary);
-            }
-            if (mAccount.mLibrarys.size() > 0) {
-                for (SeafileLibrary seafileLibrary : mAccount.mLibrarys) {
-                    String name = seafileLibrary.libraryName;
-                    int isSync = mConsole.queryFile(mAccount.mUserId,
-                            seafileLibrary.libraryId, seafileLibrary.libraryName);
-                    seafileLibrary.isSync = isSync;
-                    if (isSync == SeafileUtils.SYNC) {
-                        SeafileUtils.sync(seafileLibrary.libraryId,
-                                new File(mAccount.mFile, seafileLibrary.libraryName)
-                                        .getAbsolutePath());
-                    }
-                }
-                mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
-            }
-            File settingSeafile = new File(SeafileUtils.SETTING_SEAFILE_PATH);
-            if (!settingSeafile.exists()) {
-                settingSeafile.mkdirs();
-            }
-            if (!isExistsSetting) {
-                settingId = SeafileUtils.create(SeafileUtils.SETTING_SEAFILE_NAME);
-            }
-            SeafileUtils.sync(settingId, SeafileUtils.SETTING_SEAFILE_PROOT_PATH);
+            mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
-    }
-
-    public boolean isInitSeafile() {
-        return mInitSeafileThread.isAlive();
-    }
-
-    public boolean isSeafile() {
-        return mSeafileThread.isAlive();
+        mSeafileInit = true;
     }
 
     protected void initView() {
         ((FileManagerApplication) getApplication()).addActivity(this);
-        //mInitSeafileThread = new InitSeafileThread();
-        //mInitSeafileThread.start();
         mLlCollection = (LinearLayout) findViewById(R.id.ll_collection);
         mLlMount = (LinearLayout) findViewById(R.id.ll_mount);
         mSharedPreferences = getSharedPreferences(VIEW_TAG, Context.MODE_PRIVATE);
@@ -450,7 +367,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                     Toast.LENGTH_SHORT).show();
                             break;
                         case Constants.SEAFILE_DATA_OK:
-                            mSeafileFragment.setData(mAccount.mLibrarys);
+                            mSeafileFragment.setData(mLibrarys);
                             mSeafileFragment.getAdapter().notifyDataSetChanged();
                             break;
                         case Constants.REFRESH_BY_OBSERVER:
@@ -637,6 +554,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             transaction.add(R.id.fl_mian, mSambaFragment, Constants.SAMBA_FRAGMENT_TAG)
                     .hide(mSambaFragment);
         }
+
         transaction.commitAllowingStateLoss();
     }
 
@@ -1160,6 +1078,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.tv_cloud_service:
                 if (!SeafileUtils.isNetworkOn(this)) {
                     T.showShort(this, getResources().getString(R.string.network_down));
+                }
+                if (!mSeafileInit) {
+                    initSeafile();
                 }
                 setFileInfo(R.id.tv_cloud_service, "", mSeafileFragment);
                 break;
@@ -1966,7 +1887,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     boolean isRestart = false;
-
     @Override
     protected void onPause() {
         android.util.Log.i("wwwwww", getComponentName().getClassName() + " Pause");
@@ -2548,16 +2468,5 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     public void setUsbPath(String path) {
         mUsbPath = path;
-    }
-
-    private String getLibrarys() {
-        if (!SeafileUtils.isNetworkOn(this)) {
-            return null;
-        }
-        String token = SeafileUtils.getToken(this);
-        if (token == null || TextUtils.isEmpty(token)) {
-            return "";
-        }
-        return SeafileUtils.getResult(token);
     }
 }
