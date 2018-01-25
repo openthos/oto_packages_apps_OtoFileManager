@@ -4,4 +4,5 @@
     <string name="samba_password">Password:</string>
     <string name="samba_downloading">Downloading...</string>
     <string name="download_falut">Download failed!</string>
+    <string name="no_samba_server">Can not connect to samba server!</string>
 </resources>

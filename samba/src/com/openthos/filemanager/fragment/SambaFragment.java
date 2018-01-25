@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -43,7 +44,7 @@ public class SambaFragment extends BaseFragment {
     private String mPassword = "";
     private String mPath = "";
     private String mSuffix = "";
-    private ArrayList<String> mPonits = new ArrayList<>();
+    private ArrayList<String> mPoints = new ArrayList<>();
     private ArrayList<String> mFiles = new ArrayList<>();
 
     @Override
@@ -105,8 +106,6 @@ public class SambaFragment extends BaseFragment {
                     + "/";
             enter();
         } else {
-            mPath = "";
-            mAdapter.setIsPointPage(true);
             scanNet();
         }
     }
@@ -177,7 +176,37 @@ public class SambaFragment extends BaseFragment {
     @Override
     public void enter() {
         super.enter();
-        if (mSuffix.endsWith("/")) {
+        if (!TextUtils.isEmpty(mSuffix) && !mSuffix.endsWith("/")) {
+            final File f = new File(SambaUtils.BASE_DIRECTORY, mPath + mSuffix);
+            if (f.exists()) {
+                IntentBuilder.viewFile(mMainActivity, f.getAbsolutePath(), null);
+            } else {
+                final ProgressDialog dialog = new ProgressDialog(getActivity());
+                dialog.setCancelable(false);
+                dialog.setTitle(mMainActivity.getString(R.string.samba_downloading));
+                dialog.show();
+                new Thread() {
+                    @Override
+                    public void run() {
+                        super.run();
+                        final boolean isOk
+                                = SambaUtils.download(mAccount, mPassword, mPath + mSuffix);
+                        mMainActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dialog.dismiss();
+                                if (isOk) {
+                                    IntentBuilder.viewFile(mMainActivity, f.getAbsolutePath(), null);
+                                } else {
+                                    Toast.makeText(mMainActivity, mMainActivity.getString(
+                                            R.string.download_falut), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                }.start();
+            }
+        } else {
             new Thread() {
                 @Override
                 public void run() {
@@ -216,36 +245,6 @@ public class SambaFragment extends BaseFragment {
                     }
                 }
             }.start();
-        } else {
-            final File f = new File(SambaUtils.BASE_DIRECTORY, mPath + mSuffix);
-            if (f.exists()) {
-                IntentBuilder.viewFile(mMainActivity, f.getAbsolutePath(), null);
-            } else {
-                final ProgressDialog dialog = new ProgressDialog(getActivity());
-                dialog.setCancelable(false);
-                dialog.setTitle(mMainActivity.getString(R.string.samba_downloading));
-                dialog.show();
-                new Thread() {
-                    @Override
-                    public void run() {
-                        super.run();
-                        final boolean isOk
-                                = SambaUtils.download(mAccount, mPassword, mPath + mSuffix);
-                        mMainActivity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                dialog.dismiss();
-                                if (isOk) {
-                                    IntentBuilder.viewFile(mMainActivity, f.getAbsolutePath(), null);
-                                } else {
-                                    Toast.makeText(mMainActivity, mMainActivity.getString(
-                                            R.string.download_falut), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-                    }
-                }.start();
-            }
         }
     }
 
@@ -267,17 +266,27 @@ public class SambaFragment extends BaseFragment {
     }
 
     private void scanNet() {
+        mAdapter.setIsPointPage(true);
+        mPath = "";
+        mSuffix = "";
+        mAccount = "";
+        mPassword = "";
         new Thread() {
             @Override
             public void run() {
                 super.run();
-                mPonits = SambaUtils.scanNet();
-                mList.clear();
-                mList.addAll(mPonits);
+                mPoints = SambaUtils.scanNet();
                 mGv.post(new Runnable() {
                     @Override
                     public void run() {
-                        mAdapter.notifyDataSetChanged();
+                        if (mPoints != null) {
+                            mList.clear();
+                            mList.addAll(mPoints);
+                            mAdapter.notifyDataSetChanged();
+                        } else {
+                            Toast.makeText(mMainActivity, mMainActivity.getString(
+                                    R.string.no_samba_server), Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
             }

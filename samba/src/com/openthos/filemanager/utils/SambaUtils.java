@@ -61,7 +61,9 @@ public class SambaUtils {
 
     public static boolean download(String acconut, String password, String path) {
         try {
-            SmbFile smbFile = new SmbFile("smb://" + acconut + ":" + password + "@" + path);
+            String tempPath = "smb://" + acconut + ":" + password + "@" + path;
+            tempPath = tempPath.replace("smb://:@", "smb://");
+            SmbFile smbFile = new SmbFile(tempPath);
             File f = new File(BASE_DIRECTORY, path);
             File parent = new File(f.getParent());
             if (!parent.exists()) {
@@ -109,6 +111,9 @@ public class SambaUtils {
             e.printStackTrace();
         } catch (SmbException e) {
             e.printStackTrace();
+            if (e.getLocalizedMessage().contains("MSBROWSER")) {
+                return null;
+            }
         }
         return list;
     }
@@ -121,7 +126,9 @@ public class SambaUtils {
     public static int connect(ArrayList<String> list, String acconut, String password, String path) {
         list.clear();
         try {
-            SmbFile point = new SmbFile("smb://" + acconut + ":" + password + "@" + path);
+            String tempPath = "smb://" + acconut + ":" + password + "@" + path;
+            tempPath = tempPath.replace("smb://:@", "smb://");
+            SmbFile point = new SmbFile(tempPath);
             SmbFile[] files = point.listFiles();
             for (int i = 0; i < files.length; i++) {
                 list.add(files[i].getName());
