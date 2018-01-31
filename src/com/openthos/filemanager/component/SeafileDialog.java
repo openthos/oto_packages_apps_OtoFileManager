@@ -125,7 +125,7 @@ public class SeafileDialog extends BaseDialog implements View.OnClickListener {
                                     @Override
                                     public void run() {
                                         super.run();
-                                        create(text);
+                                        //create(text);
                                     }
                                 }.start();
                                 return true;
@@ -135,13 +135,6 @@ public class SeafileDialog extends BaseDialog implements View.OnClickListener {
                 dialog.show();
                 break;
             case R.id.cloud_sync:
-                try {
-                    mMainActivity.mISeafileService.updateSync(mMainActivity.mUserId,
-                            mLibrary.libraryId,
-                            mLibrary.libraryName,
-                            SeafileUtils.SYNC);
-                } catch (RemoteException e) {
-                }
                 mLibrary.isSync = SeafileUtils.SYNC;
                 new Thread() {
                     @Override
@@ -152,13 +145,6 @@ public class SeafileDialog extends BaseDialog implements View.OnClickListener {
                 }.start();
                 break;
             case R.id.cloud_desync:
-                try {
-                    mMainActivity.mISeafileService.updateSync(mMainActivity.mUserId,
-                            mLibrary.libraryId,
-                            mLibrary.libraryName,
-                            SeafileUtils.UNSYNC);
-                } catch (RemoteException e) {
-                }
                 mLibrary.isSync = SeafileUtils.UNSYNC;
                 new Thread() {
                     @Override
@@ -172,28 +158,28 @@ public class SeafileDialog extends BaseDialog implements View.OnClickListener {
         dismiss();
     }
 
-    private void create(String text) {
-        try {
-            String id = mMainActivity.mISeafileService.create(text);
-            int isSync = mMainActivity.mISeafileService.insertLibrary(mMainActivity.mUserId, id, text);
-            SeafileLibrary seafileLibrary = new SeafileLibrary();
-            seafileLibrary.libraryId = id;
-            seafileLibrary.libraryName = text;
-            seafileLibrary.isSync = isSync;
-            mMainActivity.mLibrarys.add(seafileLibrary);
-            mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
-            if (isSync == SeafileUtils.SYNC) {
-                mMainActivity.mISeafileService.sync(id, new File(mMainActivity.mFile, text)
-                        .getAbsolutePath());
-            }
-        } catch (RemoteException e) {
-        }
-    }
+//    private void create(String text) {
+//        try {
+//            String id = mMainActivity.mISeafileService.create(text);
+//            int isSync = mMainActivity.mISeafileService.insertLibrary(mMainActivity.mUserId, id, text);
+//            SeafileLibrary seafileLibrary = new SeafileLibrary();
+//            seafileLibrary.libraryId = id;
+//            seafileLibrary.libraryName = text;
+//            seafileLibrary.isSync = isSync;
+//            mMainActivity.mLibrarys.add(seafileLibrary);
+//            mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
+//            if (isSync == SeafileUtils.SYNC) {
+//                mMainActivity.mISeafileService.sync(id, new File(mMainActivity.mFile, text)
+//                        .getAbsolutePath());
+//            }
+//        } catch (RemoteException e) {
+//        }
+//    }
 
     private void sync() {
         try {
-            mMainActivity.mISeafileService.sync((String) mLibrary.libraryId, new File(mMainActivity.mFile,
-                                                     mLibrary.libraryName).getAbsolutePath());
+            mMainActivity.mISeafileService.sync((String) mLibrary.libraryId, mLibrary.libraryName,
+                    SeafileUtils.mUserId + mLibrary.libraryName);
             mMainActivity.mLibrarys.set(mPos, mLibrary);
             mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
         } catch (RemoteException e) {
@@ -202,8 +188,8 @@ public class SeafileDialog extends BaseDialog implements View.OnClickListener {
 
     private void desync() {
         try {
-            mMainActivity.mISeafileService.desync(new File(mMainActivity.mFile,
-                                                     mLibrary.libraryName).getAbsolutePath());
+            mMainActivity.mISeafileService.desync((String) mLibrary.libraryId, mLibrary.libraryName,
+                    SeafileUtils.mUserId + mLibrary.libraryName);
             mMainActivity.mLibrarys.set(mPos, mLibrary);
             mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
         } catch (RemoteException e) {

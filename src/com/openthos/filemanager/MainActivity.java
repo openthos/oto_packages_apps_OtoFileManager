@@ -139,7 +139,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private SearchFragment mSearchFragment;
     public String mCurPath;
     public int mUserId;
-    public File mFile;
     public ArrayList<SeafileLibrary> mLibrarys = new ArrayList<>();
     private CustomFileObserver mCustomFileObserver;
     private String mUsbPath;
@@ -181,13 +180,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         try {
             //mUserId = mISeafileService.getUserId();
             SeafileUtils.mUserId = mISeafileService.getUserName();
-            SeafileUtils.mUserPassword = mISeafileService.getUserPassword();
-            if (TextUtils.isEmpty(SeafileUtils.mUserId)
-                    || TextUtils.isEmpty(SeafileUtils.mUserPassword)) {
+            if (TextUtils.isEmpty(SeafileUtils.mUserId)) {
                 return;
             }
             String librarys = mISeafileService.getLibrary();
-            mFile = new File(SeafileUtils.SEAFILE_DATA_PATH, SeafileUtils.mUserId);
             try {
                 JSONArray jsonArray = new JSONArray(librarys);
                 JSONObject jsonObject = null;
@@ -2229,7 +2225,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             }
                         }
                         mClickPath = mClickPath.replaceAll(
-                                getResources().getString(R.string.path_sd_eng), Util.getSdDirectory());
+                                getResources().getString(R.string.path_sd_eng),
+                                Util.getSdDirectory());
                         ((SystemSpaceFragment) getVisibleFragment()).
                                 mFileViewInteractionHub.openSelectFolder(mClickPath);
                     }

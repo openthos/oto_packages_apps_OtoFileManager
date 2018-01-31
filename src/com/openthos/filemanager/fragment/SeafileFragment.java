@@ -179,7 +179,7 @@ public class SeafileFragment extends BaseFragment {
     public void enter() {
         super.enter();
         enter("hello", SeafileUtils.SEAFILE_DATA_PATH_REAlLY
-                + mMainActivity.mFile.getAbsolutePath()
+                + "/" + SeafileUtils.mUserId
                 + "/" + mList.get(mPos).libraryName);
     }
 

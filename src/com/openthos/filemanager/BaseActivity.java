@@ -33,7 +33,6 @@ public abstract class BaseActivity extends FragmentActivity {
         setContentView(mInflate);
         mSeafileServiceConnection = new SeafileServiceConnection();
         Intent intent = new Intent();
-        intent.setAction("com.openthos.seafile.Seafile_Service");
         intent.setComponent(new ComponentName("com.openthos.seafile",
                     "com.openthos.seafile.SeafileService"));
         bindService(intent, mSeafileServiceConnection, Context.BIND_AUTO_CREATE);
