@@ -265,13 +265,17 @@ public class SambaFragment extends BaseFragment {
     public void clearSelectList() {
     }
 
+    private Thread scan;
     private void scanNet() {
+        if (scan != null && scan.isAlive()) {
+            return;
+        }
         mAdapter.setIsPointPage(true);
         mPath = "";
         mSuffix = "";
         mAccount = "";
         mPassword = "";
-        new Thread() {
+        scan = new Thread() {
             @Override
             public void run() {
                 super.run();
@@ -290,7 +294,8 @@ public class SambaFragment extends BaseFragment {
                     }
                 });
             }
-        }.start();
+        };
+        scan.start();
     }
 
     private class InputAccountDialog extends Dialog {

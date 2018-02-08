@@ -5,14 +5,23 @@ import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 import jcifs.smb.SmbAuthException;
 import jcifs.smb.SmbException;
@@ -95,7 +104,7 @@ public class SambaUtils {
         return false;
     }
 
-    public static ArrayList<String> scanNet() {
+    public static ArrayList<String> scanNet2() {
         ArrayList<String> list = new ArrayList<>();
         try {
             SmbFile mainSmb = new SmbFile("smb://");
@@ -118,6 +127,95 @@ public class SambaUtils {
         return list;
     }
 
+    private static ArrayList<String> sambaPoints = new ArrayList<>();
+
+    public static ArrayList<String> scanNet() {
+        String ip = getLocAddress();
+        String newip = "";
+        ArrayList<UDPThread> udpLists = new ArrayList();
+        ArrayList<SambaThread> sambaLists = new ArrayList<>();
+        ArrayList<String> points = new ArrayList<>();
+        sambaPoints.clear();
+        if (!ip.equals("")) {
+            String ipseg = ip.substring(0, ip.lastIndexOf(".") + 1);
+            for (int i = 2; i < 255; i++) {
+                newip = ipseg + String.valueOf(i);
+                if (newip.equals(ip)) continue;
+                udpLists.add(new UDPThread(newip));
+            }
+            for (UDPThread thread : udpLists)
+                thread.start();
+            while (!udpLists.isEmpty()) {
+                for (UDPThread ut : udpLists) {
+                    if (!ut.isAlive()) {
+                        udpLists.remove(ut);
+                        break;
+                    }
+                }
+            }
+            Process pro;
+            BufferedReader in = null;
+            try {
+                pro = Runtime.getRuntime().exec(new String[]{"su", "-c", "more /proc/net/arp"});
+                in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+                String line;
+                while ((line = in.readLine()) != null) {
+                    if (line.contains("00:00:00:00:00:00") || line.contains("address")) {
+                        continue;
+                    }
+                    //192.168.0.2      0x1         0x2         a0:63:91:d4:f9:87     *        wlan0
+                    points.add(line.split("\\s+")[0]);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        for (String point : points)
+            sambaLists.add(new SambaThread(point));
+        for (SambaThread thread : sambaLists)
+            thread.start();
+        while (!sambaLists.isEmpty()) {
+            for (SambaThread thread : sambaLists) {
+                if (!thread.isAlive()) {
+                    sambaLists.remove(thread);
+                    break;
+                }
+            }
+        }
+        return sambaPoints;
+    }
+
+    private static String getLocAddress() {
+        String ipaddress = "";
+
+        try {
+            Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
+            while (en.hasMoreElements()) {
+                NetworkInterface networks = en.nextElement();
+                Enumeration<InetAddress> address = networks.getInetAddresses();
+                while (address.hasMoreElements()) {
+                    InetAddress ip = address.nextElement();
+                    if (!ip.isLoopbackAddress() && ip instanceof Inet4Address) {
+                        ipaddress = ip.getHostAddress();
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return ipaddress;
+    }
+
+    public static final int SAMBA_INIT = 0x10000001;
     public static final int SAMBA_OK = 0x00000000;
     public static final int SAMBA_WRONG_ACCOUNT = 0x00000001;
     public static final int SAMBA_WRONG_NETWORK = 0x00000002;
@@ -147,4 +245,91 @@ public class SambaUtils {
         }
         return SAMBA_OK;
     }
+
+
+    private static class SambaThread extends Thread {
+        private String target_ip;
+        private int result = SAMBA_INIT;
+
+        public SambaThread(String target_ip) {
+            this.target_ip = target_ip;
+        }
+
+        @Override
+        public synchronized void run() {
+            try {
+                String tempPath = "smb://" + target_ip + "/";
+                SmbFile point = new SmbFile(tempPath);
+                SmbFile[] files = point.listFiles();
+                for (int i = 0; i < files.length; i++) {
+//                    Log.i("wwww", files[i].getName());
+                }
+                result = SAMBA_OK;
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (SmbException e) {
+                e.printStackTrace();
+                if (e.getLocalizedMessage().contains("Logon failure: unknown user name or bad password")) {
+                    result = SAMBA_WRONG_ACCOUNT;
+                } else if (e.getLocalizedMessage().contains("Failed to connect to server")) {
+                    result = SAMBA_WRONG_NETWORK;
+                } else if (e.getLocalizedMessage().contains("The system cannot find the file specified")) {
+                    result = SAMBA_WRONG_NETWORK;
+                } else if (e.getLocalizedMessage().contains("recvfrom failed: ECONNRESET (Connection reset by peer)")) {
+                    result = SAMBA_WRONG_NETWORK;
+                } else if (e.getLocalizedMessage().contains("Connection timeout")) {
+                    result = SAMBA_WRONG_NETWORK;
+                }
+            }
+            if (result == SAMBA_OK || result == SAMBA_WRONG_ACCOUNT) {
+                sambaPoints.add(target_ip + "/");
+            }
+        }
+    }
+
+
+    private static class UDPThread extends Thread {
+        private String target_ip = "";
+
+        public final byte[] NBREQ = {(byte) 0x82, (byte) 0x28, (byte) 0x0, (byte) 0x0, (byte) 0x0,
+                (byte) 0x1, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0,
+                (byte) 0x20, (byte) 0x43, (byte) 0x4B, (byte) 0x41, (byte) 0x41, (byte) 0x41,
+                (byte) 0x41, (byte) 0x41, (byte) 0x41, (byte) 0x41, (byte) 0x41, (byte) 0x41,
+                (byte) 0x41, (byte) 0x41, (byte) 0x41, (byte) 0x41, (byte) 0x41, (byte) 0x41,
+                (byte) 0x41, (byte) 0x41, (byte) 0x41, (byte) 0x41, (byte) 0x41, (byte) 0x41,
+                (byte) 0x41, (byte) 0x41, (byte) 0x41, (byte) 0x41, (byte) 0x41, (byte) 0x41,
+                (byte) 0x41, (byte) 0x41, (byte) 0x41, (byte) 0x0, (byte) 0x0, (byte) 0x21,
+                (byte) 0x0, (byte) 0x1};
+
+        public static final short NBUDPP = 137;
+
+        public UDPThread(String target_ip) {
+            this.target_ip = target_ip;
+        }
+
+        @Override
+        public synchronized void run() {
+            if (target_ip == null || target_ip.equals("")) return;
+            DatagramSocket socket = null;
+            InetAddress address = null;
+            DatagramPacket packet = null;
+            try {
+                address = InetAddress.getByName(target_ip);
+                packet = new DatagramPacket(NBREQ, NBREQ.length, address, NBUDPP);
+                socket = new DatagramSocket();
+                socket.setSoTimeout(200);
+                socket.send(packet);
+                socket.close();
+            } catch (SocketException se) {
+            } catch (UnknownHostException e) {
+            } catch (IOException e) {
+            } finally {
+                if (socket != null) {
+                    socket.close();
+                }
+            }
+        }
+    }
+
+
 }
