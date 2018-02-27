@@ -5,4 +5,6 @@
     <string name="samba_downloading">Downloading...</string>
     <string name="download_falut">Download failed!</string>
     <string name="no_samba_server">Can not connect to samba server!</string>
+    <string name="dialog_scan">Scan Network</string>
+    <string name="text_scanning">Scanning in progress ...</string>
 </resources>

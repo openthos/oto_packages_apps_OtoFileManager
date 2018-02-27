@@ -1,28 +1,30 @@
 package com.openthos.filemanager.fragment;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.DialerFilter;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.openthos.filemanager.BaseDialog;
 import com.openthos.filemanager.BaseFragment;
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.adapter.BaseDialogAdapter;
 import com.openthos.filemanager.adapter.SambaAdapter;
 import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.system.IntentBuilder;
@@ -30,11 +32,13 @@ import com.openthos.filemanager.utils.SambaUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Stack;
 
 @SuppressLint("ValidFragment")
 public class SambaFragment extends BaseFragment {
     private GridView mGv;
     private SambaAdapter mAdapter;
+    private TextView mTextSacan;
     private ArrayList<String> mList = new ArrayList<>();
     private GridViewOnGenericMotionListener mMotionListener;
     public Fragment mCurFragment;
@@ -42,10 +46,11 @@ public class SambaFragment extends BaseFragment {
     private int mPos = -1;
     private String mAccount = "";
     private String mPassword = "";
-    private String mPath = "";
+    private String mCurrentPath = "";
     private String mSuffix = "";
     private ArrayList<String> mPoints = new ArrayList<>();
     private ArrayList<String> mFiles = new ArrayList<>();
+    private Stack<String> mPaths = new Stack<>();
 
     @Override
     public int getLayoutId() {
@@ -65,7 +70,8 @@ public class SambaFragment extends BaseFragment {
         mMotionListener = new GridViewOnGenericMotionListener();
         mAdapter = new SambaAdapter(mMainActivity, mList, mMotionListener);
         mGv.setAdapter(mAdapter);
-        scanNet();
+        mTextSacan = (TextView) rootView.findViewById(R.id.text_scan);
+//        scanNet();
     }
 
     protected void initData() {
@@ -86,12 +92,11 @@ public class SambaFragment extends BaseFragment {
 
     public void setData(ArrayList<String> librarys) {
         mList = librarys;
-//        mAdapter.setData(librarys);
     }
 
     @Override
     public boolean canGoBack() {
-        if (mPath.contains("/")) {
+        if (mPaths.size() > 0) {
             return false;
         } else {
             return true;
@@ -101,12 +106,18 @@ public class SambaFragment extends BaseFragment {
     @Override
     public void goBack() {
         mSuffix = "";
-        if (mPath.substring(0, mPath.lastIndexOf("/")).contains("/")) {
-            mPath = mPath.substring(0, mPath.substring(0, mPath.length() - 1).lastIndexOf("/"))
-                    + "/";
+        if (mPaths.size() > 1) {
+            mAdapter.setIsPointPage(false);
+            mPaths.pop();
             enter();
-        } else {
-            scanNet();
+        } else if (mPaths.size() == 1) {
+            mPaths.pop();
+            if (!mPoints.isEmpty()) {
+                mAdapter.setIsPointPage(true);
+                mList.clear();
+                mList.addAll(mPoints);
+                mAdapter.notifyDataSetChanged();
+            }
         }
     }
 
@@ -166,18 +177,22 @@ public class SambaFragment extends BaseFragment {
     }
 
     private void showItemDialog(MotionEvent motionEvent, int pos) {
-        scanNet();
+//        new MenuDialog().showDialog(motionEvent);
     }
 
     private void showDialog(MotionEvent motionEvent) {
-        scanNet();
+
+        new MenuDialog(getActivity()).showDialog((int)motionEvent.getRawX(),(int)motionEvent.getRawY());
     }
 
     @Override
     public void enter() {
         super.enter();
+        mCurrentPath = "";
+        for (String path : mPaths)
+            mCurrentPath += path;
         if (!TextUtils.isEmpty(mSuffix) && !mSuffix.endsWith("/")) {
-            final File f = new File(SambaUtils.BASE_DIRECTORY, mPath + mSuffix);
+            final File f = new File(SambaUtils.BASE_DIRECTORY, mCurrentPath + mSuffix);
             if (f.exists()) {
                 IntentBuilder.viewFile(mMainActivity, f.getAbsolutePath(), null);
             } else {
@@ -190,7 +205,7 @@ public class SambaFragment extends BaseFragment {
                     public void run() {
                         super.run();
                         final boolean isOk
-                                = SambaUtils.download(mAccount, mPassword, mPath + mSuffix);
+                                = SambaUtils.download(mAccount, mPassword, mCurrentPath + mSuffix);
                         mMainActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -211,11 +226,14 @@ public class SambaFragment extends BaseFragment {
                 @Override
                 public void run() {
                     super.run();
-                    mPath = mPath + mSuffix;
+                    mCurrentPath += mSuffix;
                     mFiles.clear();
-                    int result = SambaUtils.connect(mFiles, mAccount, mPassword, mPath);
+                    int result = SambaUtils.connect(mFiles, mAccount, mPassword, mCurrentPath);
                     switch (result) {
                         case SambaUtils.SAMBA_OK:
+                            if (!TextUtils.isEmpty(mSuffix)) {
+                                mPaths.add(mSuffix);
+                            }
                             mList.clear();
                             mList.addAll(mFiles);
                             mAdapter.setIsPointPage(false);
@@ -225,7 +243,6 @@ public class SambaFragment extends BaseFragment {
                                     mAdapter.notifyDataSetChanged();
                                 }
                             });
-
                             break;
                         case SambaUtils.SAMBA_WRONG_ACCOUNT:
                             mMainActivity.runOnUiThread(new Runnable() {
@@ -266,15 +283,21 @@ public class SambaFragment extends BaseFragment {
     }
 
     private Thread scan;
+
     private void scanNet() {
         if (scan != null && scan.isAlive()) {
             return;
         }
+        mTextSacan.setVisibility(View.VISIBLE);
+        mGv.setVisibility(View.GONE);
+        final boolean isVisible = isVisible();
+        final ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog.setMessage(getString(R.string.text_scanning));
+        if (isVisible)
+            dialog.show();
         mAdapter.setIsPointPage(true);
-        mPath = "";
-        mSuffix = "";
-        mAccount = "";
-        mPassword = "";
+        mList.clear();
+        mAdapter.notifyDataSetChanged();
         scan = new Thread() {
             @Override
             public void run() {
@@ -283,6 +306,8 @@ public class SambaFragment extends BaseFragment {
                 mGv.post(new Runnable() {
                     @Override
                     public void run() {
+                        mTextSacan.setVisibility(View.GONE);
+                        mGv.setVisibility(View.VISIBLE);
                         if (mPoints != null) {
                             mList.clear();
                             mList.addAll(mPoints);
@@ -291,6 +316,8 @@ public class SambaFragment extends BaseFragment {
                             Toast.makeText(mMainActivity, mMainActivity.getString(
                                     R.string.no_samba_server), Toast.LENGTH_SHORT).show();
                         }
+                        if (isVisible)
+                            dialog.cancel();
                     }
                 });
             }
@@ -320,12 +347,6 @@ public class SambaFragment extends BaseFragment {
                 public void onClick(View v) {
                     mAccount = mEtAccount.getText().toString();
                     mPassword = mEtPassword.getText().toString();
-                    if (mPath.substring(0, mPath.lastIndexOf("/")).contains("/")) {
-                        mPath = mPath.substring(0,
-                                mPath.lastIndexOf("/")).substring(0, mPath.lastIndexOf("/"));
-                    } else {
-                        mPath = "";
-                    }
                     enter();
                     dismiss();
                 }
@@ -333,6 +354,7 @@ public class SambaFragment extends BaseFragment {
             mBtCancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    mSuffix = "";
                     dismiss();
                 }
             });
@@ -341,6 +363,39 @@ public class SambaFragment extends BaseFragment {
         @Override
         public void show() {
             super.show();
+        }
+    }
+
+    private class MenuDialog extends BaseDialog implements ListView.OnItemClickListener {
+        private Context mContext;
+
+
+        public MenuDialog(Context context) {
+            super(context);
+            mContext = context;
+        }
+
+        @Override
+        protected void initData() {
+            mDatas = new ArrayList();
+            mDatas.add(mContext.getString(R.string.dialog_scan));
+            mListView.setAdapter(new BaseDialogAdapter(getContext(), mDatas, null, false));
+        }
+
+        @Override
+        protected void initListener() {
+            mListView.setOnItemClickListener(this);
+        }
+
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            scanNet();
+            dismiss();
+        }
+
+        @Override
+        public void showDialog(int x, int y) {
+            super.showDialog(x, y);
         }
     }
 }

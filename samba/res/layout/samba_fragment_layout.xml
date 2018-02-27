@@ -19,4 +19,12 @@
         android:stretchMode="columnWidth"
         android:scrollbars="none"/>
 
+    <TextView
+        android:id="@+id/text_scan"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="30dp"
+        android:gravity="center"
+        android:text="@string/text_scanning"
+        android:visibility="gone"/>
 </FrameLayout>

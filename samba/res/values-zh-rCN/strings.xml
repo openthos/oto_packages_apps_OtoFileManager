@@ -5,4 +5,6 @@
     <string name="samba_downloading">正在下载...</string>
     <string name="download_falut">下载失败!</string>
     <string name="no_samba_server">未能连接到SMB服务器!</string>
+    <string name="dialog_scan">扫描</string>
+    <string name="text_scanning">正在扫描中...</string>
 </resources>

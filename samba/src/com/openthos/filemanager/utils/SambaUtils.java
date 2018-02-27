@@ -120,9 +120,9 @@ public class SambaUtils {
             e.printStackTrace();
         } catch (SmbException e) {
             e.printStackTrace();
-            if (e.getLocalizedMessage().contains("MSBROWSER")) {
-                return null;
-            }
+//            if (e.getLocalizedMessage().contains("MSBROWSER")) {
+//                return list;
+//            }
         }
         return list;
     }
