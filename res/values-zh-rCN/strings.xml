@@ -29,6 +29,7 @@
     <string name="operation_cancel_selectall">取消全选</string>
     <string name="operation_show_sys">显示隐藏文件</string>
     <string name="operation_hide_sys">隐藏点文件和隐藏文件</string>
+    <string name="operation_cloud_info">云服务信息</string>
     <string name="cancel">取消</string>
     <string name="no_file">没有文件</string>
     <string name="tab_system_category">用户数据</string>
@@ -163,6 +164,8 @@
     <string name="text_file_path">文件路径</string>
     <string name="text_input_content">请输入搜索内容</string>
     <string name="text_no_video_found">没有发现视频...</string>
+    <string name="text_account">Openthos\n账号： </string>
+    <string name="text_status">状态： </string>
     <string name="group_count">5</string>
     <string name="group_title">Camera</string>
     <string name="USB_device_connected">USB设备已连接</string>
@@ -278,4 +281,5 @@
     <string name="items">项</string>
     <string name="check_right_image">请选择图片文件</string>
     <string name="network_down">无网络连接</string>
+    <string name="account_non">未绑定Openthos账号</string>
 </resources>

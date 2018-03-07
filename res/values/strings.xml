@@ -26,6 +26,7 @@
     <string name="operation_selectall_or_cancel">Select All(Cancel)</string>
     <string name="operation_cancel_selectall">Cancel Select All</string>
     <string name="operation_show_sys">Show hidden files</string>
+    <string name="operation_cloud_info">Cloud service info</string>
     <string name="operation_hide_sys">Hidden point file and Hidden file</string>
     <string name="operation_delete_permanent">Delete permanent</string>
     <string name="cancel">Cancel</string>
@@ -162,6 +163,8 @@
     <string name="text_file_path">Path</string>
     <string name="text_input_content">Please input search content</string>
     <string name="text_no_video_found">No Video...</string>
+    <string name="text_account">Openthos ID: </string>
+    <string name="text_status">Status: </string>
     <string name="group_count">5</string>
     <string name="group_title">Camera</string>
     <string name="USB_device_connected">USB device is connected</string>
@@ -276,4 +279,5 @@
     <string name="items">items</string>
     <string name="check_right_image">Please select a picture file</string>
     <string name="network_down">No network connection</string>
+    <string name="account_non">Unbound Openthos account</string>
 </resources>

@@ -36,11 +36,14 @@ import android.support.v4.app.FragmentTransaction;
 import android.widget.LinearLayout;
 import android.app.ProgressDialog;
 import android.os.Build;
+import android.content.ServiceConnection;
+import android.content.ComponentName;
 
 import com.openthos.filemanager.bean.Mode;
 import com.openthos.filemanager.bean.SeafileLibrary;
 import com.openthos.filemanager.bean.Volume;
 import com.openthos.filemanager.component.CopyInfoDialog;
+import com.openthos.filemanager.component.CloudInfoDialog;
 import com.openthos.filemanager.component.PopOnClickLintener;
 import com.openthos.filemanager.component.PopWinShare;
 import com.openthos.filemanager.component.SearchOnKeyListener;
@@ -65,6 +68,7 @@ import com.openthos.filemanager.utils.SeafileUtils;
 import com.openthos.filemanager.component.UsbPropertyDialog;
 import com.openthos.filemanager.adapter.PathAdapter;
 import com.openthos.filemanager.component.HorizontalListView;
+import com.openthos.seafile.ISeafileService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -170,42 +174,61 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public int mCurTabIndext = 0;
     private View mCurLeftItem, mPreView;
     private EditTextTouchListener mEditTextTouchListener;
-    private boolean mSeafileInit = false;
+    private CloudInfoDialog mCloudInfoDialog;
+    private PopOnClickLintener mParamOnClickListener;
+    private SeafileThread mSeafileThread;
+    private SeafileServiceConnection mSeafileServiceConnection;
+    public ISeafileService mISeafileService;
 
     protected int getLayoutId() {
         return R.layout.activity_main;
     }
 
-    private void initSeafile() {
-        try {
-            //mUserId = mISeafileService.getUserId();
-            SeafileUtils.mUserId = mISeafileService.getUserName();
-            if (TextUtils.isEmpty(SeafileUtils.mUserId)) {
-                return;
-            }
-            String librarys = mISeafileService.getLibrary();
-            try {
-                JSONArray jsonArray = new JSONArray(librarys);
-                JSONObject jsonObject = null;
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    SeafileLibrary seafileLibrary = new SeafileLibrary();
-                    jsonObject = jsonArray.getJSONObject(i);
-                    seafileLibrary.libraryName = jsonObject.getString("name");
-                    seafileLibrary.libraryId = jsonObject.getString("id");
-                    seafileLibrary.isSync = mISeafileService.isSync(
-                            seafileLibrary.libraryId, seafileLibrary.libraryName);
-                    if (seafileLibrary.libraryName.equals(SeafileUtils.FILEMANAGER_SEAFILE_NAME)) {
-                        mLibrarys.add(seafileLibrary);
-                    }
+    private class SeafileThread extends Thread {
+
+        @Override
+        public void run() {
+            super.run();
+            synchronized (SeafileUtils.TAG) {
+                try {
+                    SeafileUtils.TAG.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
+                try {
+                    //mUserId = mISeafileService.getUserId();
+                    SeafileUtils.mUserId = mISeafileService.getUserName();
+                    if (TextUtils.isEmpty(SeafileUtils.mUserId)) {
+                        return;
+                    }
+                    String librarys = mISeafileService.getLibrary();
+                    try {
+                        JSONArray jsonArray = new JSONArray(librarys);
+                        JSONObject jsonObject = null;
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            SeafileLibrary seafileLibrary = new SeafileLibrary();
+                            jsonObject = jsonArray.getJSONObject(i);
+                            seafileLibrary.libraryName = jsonObject.getString("name");
+                            seafileLibrary.libraryId = jsonObject.getString("id");
+                            seafileLibrary.isSync = mISeafileService.isSync(
+                                    seafileLibrary.libraryId, seafileLibrary.libraryName);
+                            if (seafileLibrary.libraryName.
+                                    equals(SeafileUtils.FILEMANAGER_SEAFILE_NAME)) {
+                                mLibrarys.add(seafileLibrary);
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                if (mCloudInfoDialog != null && mCloudInfoDialog.isShowing()) {
+                    mCloudInfoDialog.refreshView();
+                }
             }
-            mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
-        } catch (RemoteException e) {
-            e.printStackTrace();
         }
-        mSeafileInit = true;
     }
 
     protected void initView() {
@@ -251,6 +274,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             file.mkdir();
         }
 
+        mSeafileServiceConnection = new SeafileServiceConnection();
+        Intent intent = new Intent();
+        intent.setComponent(new ComponentName("com.openthos.seafile",
+                    "com.openthos.seafile.SeafileService"));
+        bindService(intent, mSeafileServiceConnection, Context.BIND_AUTO_CREATE);
+        mSeafileThread = new SeafileThread();
+        mSeafileThread.start();
         mUsbSingleExecutor = Executors.newSingleThreadExecutor();
         mHashMap = new HashMap<>();
         mHashMap.put(Constants.DESKFRAGMENT_TAG, R.id.tv_desk);
@@ -1075,9 +1105,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 if (!SeafileUtils.isNetworkOn(this)) {
                     T.showShort(this, getResources().getString(R.string.network_down));
                 }
-                if (!mSeafileInit) {
-                    initSeafile();
-                }
                 setFileInfo(R.id.tv_cloud_service, "", mSeafileFragment);
                 break;
             case R.id.tv_net_service:
@@ -1503,10 +1530,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private void showPopWindow(String menu_tag) {
         mPopWinShare = null;
-        PopOnClickLintener paramOnClickListener = new PopOnClickLintener(menu_tag,
-                MainActivity.this, mManager);
+        mParamOnClickListener = new PopOnClickLintener(menu_tag, MainActivity.this, mManager);
         if (SETTING_POPWINDOW_TAG.equals(menu_tag)) {
-            mPopWinShare = new PopWinShare(MainActivity.this, paramOnClickListener,
+            mPopWinShare = new PopWinShare(MainActivity.this, mParamOnClickListener,
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     menu_tag);
@@ -2465,5 +2491,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     public void setUsbPath(String path) {
         mUsbPath = path;
+    }
+
+    public class SeafileServiceConnection implements ServiceConnection {
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mISeafileService = ISeafileService.Stub.asInterface(service);
+            synchronized (SeafileUtils.TAG) {
+                SeafileUtils.TAG.notify();
+            }
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+        }
+    }
+
+    public void showCloudInfoDialog() {
+        mCloudInfoDialog = new CloudInfoDialog(this);
+        mCloudInfoDialog.showDialog();
+        DismissPopwindow();
     }
 }

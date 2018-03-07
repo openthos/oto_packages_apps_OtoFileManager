@@ -13,6 +13,7 @@ import static android.R.attr.id;
  */
 
 public class SeafileUtils {
+    public static final String TAG = "SeafileUtils";
     public static final String SEAFILE_DATA_PATH_REAlLY = "/data/sea/data";
 
     public static String mUserId = "";

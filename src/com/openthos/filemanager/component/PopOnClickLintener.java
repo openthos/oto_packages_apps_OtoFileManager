@@ -33,6 +33,9 @@ public class PopOnClickLintener implements View.OnClickListener {
                     sendBroadcastMessage("iv_menu", VIEW_OR_DISMISS);
                     mMainActivity.DismissPopwindow();
                     break;
+                case R.id.pop_cloud_view:
+                    mMainActivity.showCloudInfoDialog();
+                    break;
                 default:
                     break;
             }

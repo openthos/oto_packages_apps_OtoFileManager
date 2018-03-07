@@ -19,7 +19,7 @@ public class PopWinShare extends PopupWindow {
     private static final String MOUNT_POPWINDOW_TAG = "MOUNT_POPWINDOW_TAG";
 
     private View mMainView;
-    private TextView mPop_setting_view, mPop_usb_view, mPop_usb_info;
+    private TextView mPop_setting_view, mPop_cloud_view, mPop_usb_view, mPop_usb_info;
     private TextView mPopFormatUsb;
     private LinearLayout  mLl_setting, mLl_usb;
     private LinearLayout mLlMount;
@@ -41,8 +41,10 @@ public class PopWinShare extends PopupWindow {
             mLl_usb.setVisibility(View.GONE);
             mLl_setting.setVisibility(View.VISIBLE);
             mPop_setting_view = (TextView) mMainView.findViewById(R.id.pop_setting_view);
+            mPop_cloud_view = (TextView) mMainView.findViewById(R.id.pop_cloud_view);
             if (paramOnClickListener != null) {
                 mPop_setting_view.setOnClickListener(paramOnClickListener);
+                mPop_cloud_view.setOnClickListener(paramOnClickListener);
             }
         } else if (IV_USB_TAG.equals(menu_tag)) {
             mLl_setting.setVisibility(View.GONE);
