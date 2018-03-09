@@ -17,11 +17,17 @@
             android:id="@+id/pop_setting_view"
             style="@style/textDialog"
             android:text="@string/operation_show_sys" />
-
         <TextView
             android:id="@+id/pop_cloud_view"
             style="@style/textDialog"
             android:text="@string/operation_cloud_info" />
+        <TextView
+            android:id="@+id/pop_share_toggle"
+            style="@style/textDialog"/>
+        <TextView
+            android:id="@+id/pop_add_users"
+            style="@style/textDialog"
+            android:text="@string/operation_add_users" />
     </LinearLayout>
 
     <LinearLayout

@@ -7,4 +7,15 @@
     <string name="no_samba_server">未能连接到SMB服务器!</string>
     <string name="dialog_scan">扫描</string>
     <string name="text_scanning">正在扫描中...</string>
+    <string name="operation_open_share">开启共享</string>
+    <string name="operation_stop_share">关闭共享</string>
+    <string name="operation_add_users">添加用户</string>
+    <string name="dialog_share_directory">共享文件夹</string>
+    <string name="dialog_workgroup">工作组</string>
+    <string name="dialog_share_name">共享名</string>
+    <string name="dialog_share_comment">注释</string>
+    <string name="dialog_share_allow_anonymous_access">允许匿名访问</string>
+    <string name="dialog_add_users_account">帐号</string>
+    <string name="dialog_add_users_passward">密码</string>
+    <string name="toast_open_share">请先开启共享</string>
 </resources>

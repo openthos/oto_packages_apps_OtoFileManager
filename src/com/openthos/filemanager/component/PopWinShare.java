@@ -13,13 +13,16 @@ import com.openthos.filemanager.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.File;
+ 
 public class PopWinShare extends PopupWindow {
     private static final String IV_SETTING_TAG = "iv_setting";
     private static final String IV_USB_TAG = "iv_usb";
     private static final String MOUNT_POPWINDOW_TAG = "MOUNT_POPWINDOW_TAG";
 
     private View mMainView;
-    private TextView mPop_setting_view, mPop_cloud_view, mPop_usb_view, mPop_usb_info;
+    private TextView mPop_setting_view, mPop_cloud_view, mPop_usb_view,
+            mPop_add_users, mPop_usb_info, mPop_share_toggle;
     private TextView mPopFormatUsb;
     private LinearLayout  mLl_setting, mLl_usb;
     private LinearLayout mLlMount;
@@ -42,9 +45,18 @@ public class PopWinShare extends PopupWindow {
             mLl_setting.setVisibility(View.VISIBLE);
             mPop_setting_view = (TextView) mMainView.findViewById(R.id.pop_setting_view);
             mPop_cloud_view = (TextView) mMainView.findViewById(R.id.pop_cloud_view);
+            mPop_share_toggle = (TextView) mMainView.findViewById(R.id.pop_share_toggle);
+            mPop_add_users = (TextView) mMainView.findViewById(R.id.pop_add_users);
+            // judge smb is open ?
+            File smbRunFile = new File("/data/data/samba/var/run/smbd.pid");
+            mPop_share_toggle.setText(smbRunFile.exists()
+                    ? mainActivity.getString(R.string.operation_stop_share)
+                    : mainActivity.getString(R.string.operation_open_share));
             if (paramOnClickListener != null) {
                 mPop_setting_view.setOnClickListener(paramOnClickListener);
                 mPop_cloud_view.setOnClickListener(paramOnClickListener);
+                mPop_share_toggle.setOnClickListener(paramOnClickListener);
+                mPop_add_users.setOnClickListener(paramOnClickListener);
             }
         } else if (IV_USB_TAG.equals(menu_tag)) {
             mLl_setting.setVisibility(View.GONE);

@@ -30,6 +30,7 @@ import com.openthos.filemanager.component.MenuDialog;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.component.CreateFileDialog;
 import com.openthos.filemanager.component.PropertyDialog;
+import com.openthos.filemanager.component.ShareDialog;
 import com.openthos.filemanager.utils.L;
 import com.openthos.filemanager.utils.LocalCache;
 import com.openthos.filemanager.utils.OperateUtils;
@@ -837,6 +838,18 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         //dialog.show();
         PropertyDialog propertyDialog = new PropertyDialog(mContext, file.filePath);
         propertyDialog.showDialog();
+    }
+
+    public void onOperationShare() {
+        if (getSelectedFileList().size() == 0)
+            return;
+
+        FileInfo file = getSelectedFileList().get(0);
+        if (file == null)
+            return;
+
+        ShareDialog shareDialog = new ShareDialog(mContext, file.filePath);
+        shareDialog.showDialog();
     }
 
     public void onOperationCompress() {

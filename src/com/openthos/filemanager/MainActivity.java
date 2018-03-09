@@ -52,7 +52,7 @@ import com.openthos.filemanager.fragment.SambaFragment;
 import com.openthos.filemanager.fragment.SdStorageFragment;
 import com.openthos.filemanager.fragment.PersonalSpaceFragment;
 import com.openthos.filemanager.fragment.SearchFragment;
-import com.openthos.filemanager.system.AutoMountReceiver;
+import com.openthos.filemanager.system.BootCompleteReceiver;
 import com.openthos.filemanager.system.Util;
 import com.openthos.filemanager.system.FileListAdapter;
 import com.openthos.filemanager.utils.LocalCache;
@@ -604,7 +604,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         String data = getSharedPreferences("automount", Context.MODE_PRIVATE)
                 .getString("automount", "ERROR");
         if (data.equals("ERROR")) {
-            data = AutoMountReceiver.refreshAutoMountData(this);
+            data = BootCompleteReceiver.refreshAutoMountData(this);
             getSharedPreferences("automount", Context.MODE_PRIVATE)
                     .edit().putString("automount", data).commit();
         }
