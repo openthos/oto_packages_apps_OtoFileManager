@@ -164,7 +164,7 @@
     <string name="text_file_path">文件路径</string>
     <string name="text_input_content">请输入搜索内容</string>
     <string name="text_no_video_found">没有发现视频...</string>
-    <string name="text_account">Openthos\n账号： </string>
+    <string name="text_account">账号</string>
     <string name="text_status">状态： </string>
     <string name="group_count">5</string>
     <string name="group_title">Camera</string>

@@ -163,7 +163,7 @@
     <string name="text_file_path">Path</string>
     <string name="text_input_content">Please input search content</string>
     <string name="text_no_video_found">No Video...</string>
-    <string name="text_account">Openthos ID: </string>
+    <string name="text_account">Account: </string>
     <string name="text_status">Status: </string>
     <string name="group_count">5</string>
     <string name="group_title">Camera</string>

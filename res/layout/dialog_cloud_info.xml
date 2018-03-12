@@ -88,28 +88,30 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/dialog_property_font_size" />
 
-           <RadioGroup
-               android:layout_width="0dp"
-               android:layout_height="wrap_content"
-               android:orientation="horizontal"
-               android:layout_weight="3">
+            <RadioGroup
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_weight="3">
 
-               <RadioButton
-                   android:id="@+id/rb_sync"
-                   android:layout_width="0dp"
-                   android:layout_height="wrap_content"
-                   android:layout_weight="1"
-                   android:text="@string/cloud_sync"
-                   android:textSize="@dimen/dialog_property_font_size" />
+                <RadioButton
+                    android:id="@+id/rb_sync"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/cloud_sync"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/dialog_property_font_size" />
 
-               <RadioButton
-                   android:id="@+id/rb_desync"
-                   android:layout_width="0dp"
-                   android:layout_height="wrap_content"
-                   android:layout_weight="1"
-                   android:text="@string/cloud_desync"
-                   android:textSize="@dimen/dialog_property_font_size" />
-           </RadioGroup>
+                <RadioButton
+                    android:id="@+id/rb_desync"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/cloud_desync"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/dialog_property_font_size" />
+            </RadioGroup>
         </LinearLayout>
 
         <LinearLayout

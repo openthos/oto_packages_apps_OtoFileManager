@@ -13,6 +13,7 @@ import android.widget.RadioButton;
 
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.MainActivity;
+import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.utils.SeafileUtils;
 
 public class CloudInfoDialog extends Dialog {
@@ -75,6 +76,7 @@ public class CloudInfoDialog extends Dialog {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.rb_sync:
+                    ((MainActivity) mContext).mLibrarys.get(0).isSync = SeafileUtils.SYNC;
                     try {
                         ((MainActivity) mContext).mISeafileService.sync(
                                 (String) (((MainActivity) mContext).mLibrarys.get(0).libraryId),
@@ -84,8 +86,10 @@ public class CloudInfoDialog extends Dialog {
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
+                    ((MainActivity) mContext).mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
                     break;
                 case R.id.rb_desync:
+                    ((MainActivity) mContext).mLibrarys.get(0).isSync = SeafileUtils.UNSYNC;
                     try {
                         ((MainActivity) mContext).mISeafileService.desync(
                                 (String) (((MainActivity) mContext).mLibrarys.get(0).libraryId),
@@ -95,6 +99,7 @@ public class CloudInfoDialog extends Dialog {
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
+                    ((MainActivity) mContext).mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
                     break;
                 case R.id.tv_confirm:
                     dismiss();
