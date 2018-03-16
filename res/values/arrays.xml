@@ -7,7 +7,7 @@
         <item>.txt</item>
     </string-array>
     <string-array name="common_folder_menu">
-        <item>@string/operation_open_share</item>
+        <item>@string/operation_share</item>
         <item>@string/operation_open</item>
         <item>@string/operation_copy</item>
         <item>@string/operation_move</item>

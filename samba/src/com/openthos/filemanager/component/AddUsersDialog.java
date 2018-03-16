@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.BaseDialog;
+import com.openthos.filemanager.utils.SambaUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -73,7 +74,7 @@ public class AddUsersDialog extends BaseDialog{
     private void initTitle() {
         ImageView titleImage = (ImageView) findViewById(R.id.title_image);
         TextView titleText = (TextView) findViewById(R.id.title_text);
-        titleText.setText((mContext.getResources().getString(R.string.operation_add_user)));
+        titleText.setText((mContext.getResources().getString(R.string.operation_add_share_user)));
     }
 
     private void initBody() {
@@ -89,15 +90,8 @@ public class AddUsersDialog extends BaseDialog{
             public void onClick(View v) {
                 switch (v.getId()) {
                     case R.id.confirm:
-                        try {
-                            Runtime.getRuntime().exec(new String[] {
-                                    "su", "-c", "chmod 777 /data/data/samba/smbpasswd.sh"});
-                            Runtime.getRuntime().exec(new String[] {
-                                    "su", "-c", "/data/data/samba/smbpasswd.sh" + " " +
-                                    mEtAccount.getText() + " " + mEtPassward.getText()});
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        SambaUtils.addUserAndPasswd(mEtAccount.getText().toString(),
+                                mEtPassward.getText().toString());
                         break;
                     case R.id.cancel:
                         break;

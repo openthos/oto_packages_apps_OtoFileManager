@@ -14,6 +14,7 @@ import com.openthos.filemanager.R;
 import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.system.Util;
 import com.openthos.filemanager.utils.OperateUtils;
+import com.openthos.filemanager.utils.SambaUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -95,16 +96,22 @@ public class ShareDialog extends BaseDialog {
                 switch (v.getId()) {
                     case R.id.confirm:
                         // judge smb is open ?
-                        File smbRunFile = new File("/data/data/samba/var/run/smbd.pid");
+                        String writePath = mPath;
+                        if (Constants.SDCARD_PATH.contains("0")) {
+                            writePath = Constants.SDCARD_PATH.replace("0", "legacy")
+                                    + mPath.substring(Constants.SDCARD_PATH.length(),
+                                    mPath.length());
+                        }
                         boolean allowAnonymousAccess = mAllowCheckBox.isChecked();
-                        if (smbRunFile.exists()) {
+                        BufferedWriter writer = null;
+                        if (SambaUtils.SAMBA_RUNNING_FILE.exists()) {
                             // write conf to file
                             try {
                                 Process pro = Runtime.getRuntime().exec(new String[] {"su", "-c"});
                                 File sambaDir = new File("/data/data/samba/");
                                 File sambaConfDir = new File("/data/data/samba/etc/");
                                 File sambaConfFile = new File(sambaConfDir, "smb.conf");
-                                BufferedWriter writer = new BufferedWriter(
+                                writer = new BufferedWriter(
                                         new FileWriter(sambaConfFile));
                                 writer.write("[global]");
                                 writer.newLine();
@@ -126,7 +133,7 @@ public class ShareDialog extends BaseDialog {
                                 writer.newLine();
                                 writer.write("comment = share");
                                 writer.newLine();
-                                writer.write("path = " + mPath.replace("/0/", "/legacy/"));
+                                writer.write("path = " + writePath);
                                 writer.newLine();
                                 writer.write("public = yes");
                                 writer.newLine();
@@ -138,15 +145,19 @@ public class ShareDialog extends BaseDialog {
                                     writer.write("guest ok = yes");
                                     writer.newLine();
                                 }
-                                writer.close();
-                                Runtime.getRuntime().exec(new String[] {
-                                        "su", "-c", "chmod 777 /data/data/samba/samba.sh"});
-                                Runtime.getRuntime().exec(new String[] {
-                                        "su", "-c", "/data/data/samba/samba.sh restart"});
+                                SambaUtils.restartLocalNetworkShare();
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             } catch (IOException e) {
                                 e.printStackTrace();
+                            } finally {
+                                if (writer != null) {
+                                    try {
+                                        writer.close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
                             }
                         } else {
                             android.widget.Toast.makeText(mContext, mContext.getResources()

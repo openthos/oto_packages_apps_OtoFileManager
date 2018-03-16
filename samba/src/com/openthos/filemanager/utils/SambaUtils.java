@@ -37,6 +37,7 @@ public class SambaUtils {
 
     public final static File BASE_DIRECTORY
             = new File(Environment.getExternalStorageDirectory(), "samba");
+    public static final File SAMBA_RUNNING_FILE = new File("/data/data/samba/var/run/smbd.pid");
 
     private void upload() {
         try {
@@ -331,5 +332,47 @@ public class SambaUtils {
         }
     }
 
+    public static void changePermissionToRoot(String path) {
+        try {
+            Runtime.getRuntime().exec(new String[] {"su", "-c", "chmod 777 " + path});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public static void addUserAndPasswd(String userName, String pwd) {
+        try {
+            Runtime.getRuntime().exec(new String[] {
+                    "su", "-c", "/data/data/samba/smbpasswd.sh" + " " + userName + " " + pwd});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void startLocalNetworkShare() {
+        try {
+            Runtime.getRuntime().exec(new String[] {
+                    "su", "-c", "/data/data/samba/samba.sh start"});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void stopLocalNetworkShare() {
+        try {
+            Runtime.getRuntime().exec(new String[] {
+                    "su", "-c", "/data/data/samba/samba.sh stop"});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void restartLocalNetworkShare() {
+        try {
+            Runtime.getRuntime().exec(new String[] {
+                    "su", "-c", "/data/data/samba/samba.sh restart"});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

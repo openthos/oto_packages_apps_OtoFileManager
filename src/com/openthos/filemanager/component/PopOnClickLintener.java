@@ -14,6 +14,7 @@ import java.io.IOException;
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
 import com.openthos.filemanager.utils.T;
+import com.openthos.filemanager.utils.SambaUtils;
 
 public class PopOnClickLintener implements View.OnClickListener {
     private static final String VIEW_OR_DISMISS = "view_or_dismiss";
@@ -53,17 +54,13 @@ public class PopOnClickLintener implements View.OnClickListener {
                             deCompressSamba();
                         }
 
-                        Runtime.getRuntime().exec(new String[] {
-                                "su", "-c", "chmod 777 /data/data/samba/samba.sh"});
                         TextView tv = (TextView) view;
                         String text = (String) tv.getText();
                         if (text.equals(mMainActivity.getString(R.string.operation_open_share))) {
-                            Runtime.getRuntime().exec(new String[] {
-                                    "su", "-c", "/data/data/samba/samba.sh restart"});
+                            SambaUtils.restartLocalNetworkShare();
                             tv.setText(mMainActivity.getString(R.string.operation_stop_share));
                         } else {
-                            Runtime.getRuntime().exec(new String[] {
-                                    "su", "-c", "/data/data/samba/samba.sh stop"});
+                            SambaUtils.stopLocalNetworkShare();
                             tv.setText(mMainActivity.getString(R.string.operation_open_share));
                         }
                     } catch (IOException e) {
@@ -85,9 +82,10 @@ public class PopOnClickLintener implements View.OnClickListener {
     private void deCompressSamba() {
         String outputDirectory = "/data/data/";
         File file = new File(outputDirectory);
+        ZipInputStream zipInputStream = null;
         try {
             InputStream inputStream = mMainActivity.getAssets().open("samba.zip");
-            ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+            zipInputStream = new ZipInputStream(inputStream);
             ZipEntry entry = zipInputStream.getNextEntry();
             byte[] buffer = new byte[1024 * 1024];
             int count = 0;
@@ -106,9 +104,17 @@ public class PopOnClickLintener implements View.OnClickListener {
                 }
                 entry = zipInputStream.getNextEntry();
             }
-            zipInputStream.close();
+            SambaUtils.changePermissionToRoot("/data/data/samba/samba.sh");
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (zipInputStream != null) {
+                try {
+                    zipInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

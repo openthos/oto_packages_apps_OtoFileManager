@@ -7,10 +7,11 @@
     <string name="no_samba_server">Can not connect to samba server!</string>
     <string name="dialog_scan">Scan Network</string>
     <string name="text_scanning">Scanning in progress ...</string>
+    <string name="operation_share">Share</string>
     <string name="operation_open_share">Open share</string>
     <string name="operation_stop_share">Stop share</string>
-    <string name="operation_add_user">Add user</string>
-    <string name="dialog_share_directoryy">Share the directory</string>
+    <string name="operation_add_share_user">Add share user</string>
+    <string name="dialog_share_directory">Share the directory</string>
     <string name="dialog_workgroup">Workgroup</string>
     <string name="dialog_share_name">Share name</string>
     <string name="dialog_share_comment">Comment</string>

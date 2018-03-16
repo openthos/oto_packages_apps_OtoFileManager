@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import com.openthos.filemanager.bean.Disk;
 import com.openthos.filemanager.bean.Volume;
+import com.openthos.filemanager.utils.SambaUtils;
 /**
  * Created by Wang Zhixu on 4/18/17.
  */
@@ -34,18 +35,10 @@ public class BootCompleteReceiver extends BroadcastReceiver {
     }
 
     private void initSamba() {
-        try {
             // judge smb is open last shutdown ?
-            File smbRunFile = new File("/data/data/samba/var/run/smbd.pid");
-            if (smbRunFile.exists()) {
-                Runtime.getRuntime().exec(new String[] {
-                        "su", "-c", "chmod 777 /data/data/samba/samba.sh"});
-                Runtime.getRuntime().exec(new String[] {
-                        "su", "-c", "/data/data/samba/samba.sh start"});
+            if (SambaUtils.SAMBA_RUNNING_FILE.exists()) {
+                SambaUtils.startLocalNetworkShare();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public static String refreshAutoMountData(Context context) {

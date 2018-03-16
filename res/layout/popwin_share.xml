@@ -27,7 +27,7 @@
         <TextView
             android:id="@+id/pop_add_users"
             style="@style/textDialog"
-            android:text="@string/operation_add_users" />
+            android:text="@string/operation_add_share_user" />
     </LinearLayout>
 
     <LinearLayout

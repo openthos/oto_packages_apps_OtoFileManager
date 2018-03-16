@@ -110,7 +110,7 @@ public class MenuDialog extends BaseDialog implements ListView.OnItemClickListen
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         String content = (String) view.getTag();
-        if (mActivity.getString(R.string.operation_open_share).equals(content)) {
+        if (mActivity.getString(R.string.operation_share).equals(content)) {
             mFileViewInteractionHub.onOperationShare();
         } else if (mActivity.getString(R.string.operation_open).equals(content)) {
             mFileViewInteractionHub.onOperationOpen(mMotionEvent);

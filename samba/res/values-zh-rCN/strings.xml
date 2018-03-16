@@ -7,9 +7,10 @@
     <string name="no_samba_server">未能连接到SMB服务器!</string>
     <string name="dialog_scan">扫描</string>
     <string name="text_scanning">正在扫描中...</string>
+    <string name="operation_share">共享</string>
     <string name="operation_open_share">开启共享</string>
     <string name="operation_stop_share">关闭共享</string>
-    <string name="operation_add_users">添加用户</string>
+    <string name="operation_add_share_user">添加共享用户</string>
     <string name="dialog_share_directory">共享文件夹</string>
     <string name="dialog_workgroup">工作组</string>
     <string name="dialog_share_name">共享名</string>

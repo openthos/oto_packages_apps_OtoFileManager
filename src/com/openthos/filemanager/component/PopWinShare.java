@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.openthos.filemanager.MainActivity;
 import com.openthos.filemanager.R;
+import com.openthos.filemanager.utils.SambaUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +49,7 @@ public class PopWinShare extends PopupWindow {
             mPop_share_toggle = (TextView) mMainView.findViewById(R.id.pop_share_toggle);
             mPop_add_users = (TextView) mMainView.findViewById(R.id.pop_add_users);
             // judge smb is open ?
-            File smbRunFile = new File("/data/data/samba/var/run/smbd.pid");
-            mPop_share_toggle.setText(smbRunFile.exists()
+            mPop_share_toggle.setText(SambaUtils.SAMBA_RUNNING_FILE.exists()
                     ? mainActivity.getString(R.string.operation_stop_share)
                     : mainActivity.getString(R.string.operation_open_share));
             if (paramOnClickListener != null) {
