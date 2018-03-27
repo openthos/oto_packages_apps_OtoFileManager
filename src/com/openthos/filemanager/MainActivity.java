@@ -1129,6 +1129,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 || getVisibleFragment() instanceof SdStorageFragment
                 || getVisibleFragment() instanceof OnlineNeighborFragment
                 || getVisibleFragment() instanceof SeafileFragment
+                || getVisibleFragment() instanceof SambaFragment
                 || mEt_nivagation.isFocused() || mEt_search_view.isFocused();
     }
 
