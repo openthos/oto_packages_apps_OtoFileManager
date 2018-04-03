@@ -695,6 +695,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             mCurTabIndext = -1;
             mDynamicFragments.add(mountFragment);
         }
+        mLeftViewList.add(mTv_cloud_service);
+        mLeftViewList.add(mTv_net_service);
         initFirstPage();
     }
 
@@ -949,12 +951,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN
-                || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
+                || keyCode == KeyEvent.KEYCODE_DPAD_LEFT
+                || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
                 && !(mEt_nivagation.isFocused() || mEt_search_view.isFocused())) {
             if (mCurTabIndext == 8) {
                 if (mLeftIndex > mLlCollection.getChildCount() - 1) {
                     if (mUsbViews.size() != 0) {
-                        mLeftViewList.addAll(mLeftViewList.size() - mLlMount.getChildCount(), mUsbViews);
+                        mLeftViewList.addAll(
+                                mLeftViewList.size() - mLlMount.getChildCount() - 2, mUsbViews);
                     }
                 }
                 processLeftDirectionKey(keyCode);
