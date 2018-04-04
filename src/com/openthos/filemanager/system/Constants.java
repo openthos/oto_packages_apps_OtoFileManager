@@ -24,6 +24,7 @@ public abstract class Constants {
     public static final long DOUBLE_CLICK_INTERVAL_TIME = 1000; // 1.0 second
     public static final String USBFRAGMENT_TAG = "usbfragment_tag";
     public static final String PERSONALSYSTEMSPACE_TAG = "personalsystemspace_tag";
+    public static final String SAMBA_TAG = "samba_tag";
     public static final String SDSSYSTEMSPACE_TAG = "sdssystemspace_tag";
     public static final String SEARCHSYSTEMSPACE_TAG = "searchsystemspace_tag";
     public static final String PERSONAL_TAG = "MY_SPACE";

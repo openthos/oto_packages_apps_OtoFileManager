@@ -297,6 +297,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mHashMap.put(Constants.USBFRAGMENT_TAG, R.id.tv_computer);
         mHashMap.put(Constants.PERSONAL_TAG, R.id.tv_computer);
         mHashMap.put(Constants.DETAILFRAGMENT_TAG, R.id.tv_picture);
+        mHashMap.put(Constants.SAMBA_TAG, R.id.tv_net_service);
         mCopyInfoDialog = CopyInfoDialog.getInstance(MainActivity.this);
         mHandler = new Handler() {
             long mPreTime = 0L;
@@ -1730,6 +1731,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     } else {
                         returnToRootDir();
                     }
+                } else if (mCurFragment.getTag() != null
+                        && mCurFragment.getTag().equals(Constants.SAMBA_TAG)) {
+                    SystemSpaceFragment sambaFragment = (SystemSpaceFragment) mCurFragment;
+                    if (sambaFragment.canGoBack()) {
+                        sambaFragment.goBack();
+                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        mManager.popBackStack();
+                    } else {
+                        returnToSambaDir();
+                    }
                 } else if (mCurFragment.getTag() != null) {
                     SystemSpaceFragment dynamicfragment = (SystemSpaceFragment) mCurFragment;
                     if (dynamicfragment.canGoBack()) {
@@ -1901,6 +1912,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         setNavigationPath(null);
         setSelectedBackground(R.id.tv_cloud_service);
         mCurFragment = mSeafileFragment;
+    }
+
+    private void returnToSambaDir() {
+        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
+        fragmentTransaction.hide(getVisibleFragment());
+        fragmentTransaction.show(mSambaFragment);
+        fragmentTransaction.commitAllowingStateLoss();
+        setNavigationPath(null);
+        setSelectedBackground(R.id.tv_net_service);
+        mCurFragment = mSambaFragment;
     }
 
     public interface IBackPressedListener {

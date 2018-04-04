@@ -7,8 +7,10 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -30,8 +32,12 @@ import com.openthos.filemanager.system.Constants;
 import com.openthos.filemanager.system.IntentBuilder;
 import com.openthos.filemanager.utils.SambaUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Stack;
 
 @SuppressLint("ValidFragment")
@@ -44,13 +50,22 @@ public class SambaFragment extends BaseFragment {
     public Fragment mCurFragment;
     private long mCurrentTime = 0L;
     private int mPos = -1;
-    private String mAccount = "";
-    private String mPassword = "";
     private String mCurrentPath = "";
     private String mSuffix = "";
     private ArrayList<String> mPoints = new ArrayList<>();
     private ArrayList<String> mFiles = new ArrayList<>();
     private Stack<String> mPaths = new Stack<>();
+    private HashMap<String, Key> mKeys = new HashMap();
+
+    private class Key {
+        String username;
+        String password;
+
+        Key(String username, String password) {
+            this.username = username;
+            this.password = password;
+        }
+    }
 
     @Override
     public int getLayoutId() {
@@ -181,8 +196,8 @@ public class SambaFragment extends BaseFragment {
     }
 
     private void showDialog(MotionEvent motionEvent) {
-
-        new MenuDialog(getActivity()).showDialog((int)motionEvent.getRawX(),(int)motionEvent.getRawY());
+        new MenuDialog(getActivity()).showDialog(
+                (int) motionEvent.getRawX(), (int) motionEvent.getRawY());
     }
 
     @Override
@@ -191,6 +206,18 @@ public class SambaFragment extends BaseFragment {
         mCurrentPath = "";
         for (String path : mPaths)
             mCurrentPath += path;
+        String point;
+        if (mPaths.size() == 0) {
+            point = mSuffix;
+        } else {
+            point = mPaths.get(0);
+        }
+        Key key = mKeys.get(point);
+        if (key == null) {
+            key = new Key("", "");
+        }
+
+        final Key finalKey = key;
         if (!TextUtils.isEmpty(mSuffix) && !mSuffix.endsWith("/")) {
             final File f = new File(SambaUtils.BASE_DIRECTORY, mCurrentPath + mSuffix);
             if (f.exists()) {
@@ -200,12 +227,13 @@ public class SambaFragment extends BaseFragment {
                 dialog.setCancelable(false);
                 dialog.setTitle(mMainActivity.getString(R.string.samba_downloading));
                 dialog.show();
+
                 new Thread() {
                     @Override
                     public void run() {
                         super.run();
-                        final boolean isOk
-                                = SambaUtils.download(mAccount, mPassword, mCurrentPath + mSuffix);
+                        final boolean isOk = SambaUtils.download(
+                                finalKey.username, finalKey.password, mCurrentPath + mSuffix);
                         mMainActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -226,9 +254,90 @@ public class SambaFragment extends BaseFragment {
                 @Override
                 public void run() {
                     super.run();
+                    if (mPaths.size() == 1) {
+                        Process pro;
+                        BufferedReader in = null;
+                        boolean isMounted = false;
+                        String localPath = mPaths.get(0) + mSuffix;
+                        File localFile = new File(Environment.getExternalStorageDirectory(),
+                                "SAMBA/" + localPath);
+                        try {
+                            pro = Runtime.getRuntime().exec(
+                                    new String[]{"su", "-c", "mount"});
+                            in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+                            String line;
+                            String tempPath = localPath.substring(
+                                    0, localPath.length() - 1).replace(" ", "\\040") + " ";
+                            while ((line = in.readLine()) != null) {
+                                if (line.contains(tempPath)) {
+                                    isMounted = true;
+                                    break;
+                                }
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } finally {
+                            if (in != null) {
+                                try {
+                                    in.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        if (!isMounted) {
+                            if (!localFile.exists()) {
+                                localFile.mkdirs();
+                            }
+                            try {
+                                pro = Runtime.getRuntime().exec(
+                                        new String[]{"su", "-c", "busybox mount -t cifs //"
+                                                + localPath.substring(0, localPath.length() - 1)
+                                                .replace(" ", "\\ ")
+                                                + " " + localFile.getAbsolutePath()
+                                                .replace("/storage/emulated/0", "/sdcard")
+                                                .replace(" ", "\\ ")
+                                                + " -o user=" + finalKey.username + ",password="
+                                                + finalKey.password + ","});
+                                in = new BufferedReader(new InputStreamReader(pro.getErrorStream()));
+                                String line;
+                                while ((line = in.readLine()) != null) {
+                                    if (line.contains("Device or resource busy")) {
+                                        isMounted = true;
+                                    } else if (line.contains("Permission denied")) {
+                                        mMainActivity.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                InputAccountDialog dialog
+                                                        = new InputAccountDialog(mMainActivity);
+                                                dialog.show();
+                                            }
+                                        });
+                                        return;
+                                    }
+                                }
+                                isMounted = true;
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } finally {
+                                if (in != null) {
+                                    try {
+                                        in.close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                        if (isMounted) {
+                            showFragment(localFile.getAbsolutePath());
+                        }
+                        return;
+                    }
                     mCurrentPath += mSuffix;
                     mFiles.clear();
-                    int result = SambaUtils.connect(mFiles, mAccount, mPassword, mCurrentPath);
+                    int result = SambaUtils.connect(
+                            mFiles, finalKey.username, finalKey.password, mCurrentPath);
                     switch (result) {
                         case SambaUtils.SAMBA_OK:
                             if (!TextUtils.isEmpty(mSuffix)) {
@@ -245,6 +354,7 @@ public class SambaFragment extends BaseFragment {
                             });
                             break;
                         case SambaUtils.SAMBA_WRONG_ACCOUNT:
+                        case SambaUtils.SAMBA_ACCESS_DENIED:
                             mMainActivity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -263,6 +373,21 @@ public class SambaFragment extends BaseFragment {
                 }
             }.start();
         }
+    }
+
+    private void showFragment(final String path) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                SystemSpaceFragment fragment
+                        = new SystemSpaceFragment(path, path, null, mCopyOrMove, false);
+                FragmentTransaction transaction = mManager.beginTransaction();
+                transaction.hide(mMainActivity.mCurFragment);
+                transaction.add(R.id.fl_mian, fragment, Constants.SAMBA_TAG)
+                        .commitAllowingStateLoss();
+                mMainActivity.mCurFragment = fragment;
+            }
+        });
     }
 
     @Override
@@ -297,6 +422,7 @@ public class SambaFragment extends BaseFragment {
             dialog.show();
         mAdapter.setIsPointPage(true);
         mList.clear();
+        mPaths.clear();
         mAdapter.notifyDataSetChanged();
         scan = new Thread() {
             @Override
@@ -345,8 +471,14 @@ public class SambaFragment extends BaseFragment {
             mBtConfirm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mAccount = mEtAccount.getText().toString();
-                    mPassword = mEtPassword.getText().toString();
+                    String point;
+                    if (mPaths.size() == 0) {
+                        point = mSuffix;
+                    } else {
+                        point = mPaths.get(0);
+                    }
+                    mKeys.put(point, new Key(mEtAccount.getText().toString(),
+                            mEtPassword.getText().toString()));
                     enter();
                     dismiss();
                 }

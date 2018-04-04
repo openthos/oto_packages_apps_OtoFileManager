@@ -221,6 +221,7 @@ public class SambaUtils {
     public static final int SAMBA_WRONG_ACCOUNT = 0x00000001;
     public static final int SAMBA_WRONG_NETWORK = 0x00000002;
     public static final int SAMBA_NOT_FOUND = 0x00000003;
+    public static final int SAMBA_ACCESS_DENIED = 0x00000004;
 
     public static int connect(ArrayList<String> list, String acconut, String password, String path) {
         list.clear();
@@ -242,6 +243,8 @@ public class SambaUtils {
                 return SAMBA_WRONG_NETWORK;
             } else if (e.getLocalizedMessage().contains("The system cannot find the file specified")){
                 return SAMBA_NOT_FOUND;
+            } else if (e.getLocalizedMessage().contains("Access is denied")){
+                return SAMBA_ACCESS_DENIED;
             }
         }
         return SAMBA_OK;
