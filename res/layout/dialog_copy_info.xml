@@ -14,7 +14,7 @@
             android:textColor="@color/black"
             android:textSize="20sp"
             android:padding="10dp"/>
-        <com.openthos.filemanager.component.GifView
+        <org.openthos.filemanager.component.GifView
             android:id="@+id/gif"
             android:layout_width="380dp"
             android:layout_height="wrap_content"

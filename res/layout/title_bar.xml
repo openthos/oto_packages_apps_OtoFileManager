@@ -79,14 +79,14 @@
             android:layout_marginTop="2dp">
 
 
-            <com.openthos.filemanager.component.HorizontalListView
+            <org.openthos.filemanager.component.HorizontalListView
                 android:id="@+id/lv_address"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="1dp"
                 android:background="@color/top_search_bg_color"
                 android:visibility="gone">
-            </com.openthos.filemanager.component.HorizontalListView>
+            </org.openthos.filemanager.component.HorizontalListView>
 
 
             <EditText

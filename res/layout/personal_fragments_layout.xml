@@ -6,7 +6,7 @@
     android:layout_marginRight="16dp"
     android:orientation="vertical">
 
-    <com.openthos.filemanager.drag.DragGridView
+    <org.openthos.filemanager.drag.DragGridView
         android:id="@+id/personal_fragment_grid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

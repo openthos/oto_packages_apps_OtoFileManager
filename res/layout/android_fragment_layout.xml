@@ -28,7 +28,7 @@
                 android:layout_marginTop="20dp"
                 android:background="#E6E6E6"/>
         </LinearLayout>
-        <com.openthos.filemanager.drag.HomeGridView
+        <org.openthos.filemanager.drag.HomeGridView
             android:id="@+id/grid_fast_access"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
                 android:layout_marginTop="20dp"
                 android:background="#E6E6E6"/>
         </LinearLayout>
-        <com.openthos.filemanager.drag.HomeGridView
+        <org.openthos.filemanager.drag.HomeGridView
             android:id="@+id/grid_local_storage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -98,7 +98,7 @@
                 android:layout_marginTop="20dp"
                 android:background="#E6E6E6"/>
         </LinearLayout>
-        <com.openthos.filemanager.drag.HomeGridView
+        <org.openthos.filemanager.drag.HomeGridView
             android:id="@+id/grid_usb_device"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -133,7 +133,7 @@
                 android:layout_marginTop="20dp"
                 android:background="#E6E6E6"/>
         </LinearLayout>
-            <com.openthos.filemanager.drag.HomeGridView
+            <org.openthos.filemanager.drag.HomeGridView
             android:id="@+id/grid_auto_mount_device"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

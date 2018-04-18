@@ -22,7 +22,7 @@
     public void set*(...);
 }
 
--keep class com.openthos.filemanager {
+-keep class org.openthos.filemanager {
   public void previousScreen(android.view.View);
   public void nextScreen(android.view.View);
   public void launchHotSeat(android.view.View);
