@@ -335,9 +335,11 @@ public class SambaUtils {
         }
     }
 
-    public static void changePermissionToRoot(String path) {
+    public static void initSambaPermission() {
         try {
-            Runtime.getRuntime().exec(new String[] {"su", "-c", "chmod 777 " + path});
+            Runtime.getRuntime().exec(new String[] {"su", "-c", "chmod 777 "
+                    + "/data/data/samba /data/data/samba/samba.sh "
+                    + "/data/data/samba/var /data/data/samba/var/run "});
         } catch (IOException e) {
             e.printStackTrace();
         }

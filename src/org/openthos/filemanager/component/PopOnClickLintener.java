@@ -10,11 +10,14 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 import org.openthos.filemanager.MainActivity;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.utils.T;
 import org.openthos.filemanager.utils.SambaUtils;
+import org.openthos.filemanager.system.Constants;
 
 public class PopOnClickLintener implements View.OnClickListener {
     private static final String VIEW_OR_DISMISS = "view_or_dismiss";
@@ -80,10 +83,17 @@ public class PopOnClickLintener implements View.OnClickListener {
     }
 
     private void deCompressSamba() {
-        String outputDirectory = "/data/data/";
-        File file = new File(outputDirectory);
+        BufferedReader in = null;
         ZipInputStream zipInputStream = null;
         try {
+            String outputDirectory = "/data/data/";
+            Process pro = Runtime.getRuntime().exec(
+                    new String[] {"su", "-c", "busybox mkdir -m 777 /data/data/samba"});
+            in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+            String line;
+            while ((line = in.readLine()) != null) {
+            }
+            File file = new File(outputDirectory);
             InputStream inputStream = mMainActivity.getAssets().open("samba.zip");
             zipInputStream = new ZipInputStream(inputStream);
             ZipEntry entry = zipInputStream.getNextEntry();
@@ -104,13 +114,20 @@ public class PopOnClickLintener implements View.OnClickListener {
                 }
                 entry = zipInputStream.getNextEntry();
             }
-            SambaUtils.changePermissionToRoot("/data/data/samba/samba.sh");
+            SambaUtils.initSambaPermission();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             if (zipInputStream != null) {
                 try {
                     zipInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (in != null) {
+                try {
+                    in.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
