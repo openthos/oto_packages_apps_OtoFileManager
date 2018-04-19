@@ -260,7 +260,7 @@ public class SambaFragment extends BaseFragment {
                         boolean isMounted = false;
                         String localPath = mPaths.get(0) + mSuffix;
                         File localFile = new File(Environment.getExternalStorageDirectory(),
-                                "SAMBA/" + localPath);
+                                "samba/" + localPath);
                         try {
                             pro = Runtime.getRuntime().exec(
                                     new String[]{"su", "-c", "mount"});

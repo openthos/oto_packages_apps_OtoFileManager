@@ -335,6 +335,52 @@ public class SambaUtils {
         }
     }
 
+    public static void initSambaClientEnvironment() {
+        Process pro;
+        BufferedReader in = null;
+        boolean isMounted = false;
+        String path = "/storage/samba ";
+        try {
+            pro = Runtime.getRuntime().exec(new String[]{"su", "-c", "mount"});
+            in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+            String line;
+            while ((line = in.readLine()) != null) {
+                if (line.contains(path)) {
+                    isMounted = true;
+                    break;
+                }
+            }
+            in.close();
+            in = null;
+            if (!isMounted) {
+                File f = new File("/sdcard/samba");
+                if (f.exists()) {
+                    pro = Runtime.getRuntime().exec(new String[]{"rm", "-r", f.getAbsolutePath()});
+                    in = new BufferedReader(new InputStreamReader(pro.getErrorStream()));
+                    while ((line = in.readLine()) != null) {
+                    }
+                }
+                f.mkdir();
+                pro = Runtime.getRuntime().exec(new String[]{"su", "-c",
+                        "busybox mount --bind " + f.getAbsolutePath() + " " + path.trim()});
+                in = new BufferedReader(new InputStreamReader(pro.getErrorStream()));
+                while ((line = in.readLine()) != null) {
+                    Log.i("OtoFileManager", line);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     public static void initSambaPermission() {
         try {
             Runtime.getRuntime().exec(new String[] {"su", "-c", "chmod 777 "

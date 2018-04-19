@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 
 import org.openthos.filemanager.system.Constants;
+import org.openthos.filemanager.utils.SambaUtils;
 
 import java.util.ArrayList;
 
@@ -33,6 +34,13 @@ public class FileManagerApplication extends Application {
                 }
             }
         };
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                SambaUtils.initSambaClientEnvironment();
+            }
+        }.start();
     }
 
     public void addActivity(MainActivity activity) {

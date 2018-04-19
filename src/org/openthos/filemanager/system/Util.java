@@ -48,7 +48,7 @@ public class Util {
             usbPath = child.getPath();
             if (!(usbPath.equals("/storage/emulated") || usbPath.equals("/storage/sdcard0")
                     || usbPath.equals("/storage/sdcard1") || usbPath.equals("/storage/self")
-                    || usbPath.startsWith("/storage/disk"))
+                    || usbPath.startsWith("/storage/disk") || usbPath.startsWith("/storage/samba"))
                     && isNormalFile(usbPath) && shouldShowFile(usbPath) && child.canRead()) {
                 list.add(usbPath);
             }
