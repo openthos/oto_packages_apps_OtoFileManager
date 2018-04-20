@@ -179,7 +179,7 @@ public class SeafileDialog extends BaseDialog implements View.OnClickListener {
     private void sync() {
         try {
             mMainActivity.mISeafileService.sync((String) mLibrary.libraryId, mLibrary.libraryName,
-                    "/" + SeafileUtils.mUserId + "/" +  mLibrary.libraryName);
+                    "/sdcard/seafile/" + SeafileUtils.mUserId + "/" +  mLibrary.libraryName);
             mMainActivity.mLibrarys.set(mPos, mLibrary);
             mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
         } catch (RemoteException e) {
@@ -189,7 +189,8 @@ public class SeafileDialog extends BaseDialog implements View.OnClickListener {
     private void desync() {
         try {
             mMainActivity.mISeafileService.desync((String) mLibrary.libraryId, mLibrary.libraryName,
-                    "/" + SeafileUtils.mUserId + "/" + mLibrary.libraryName);
+                    SeafileUtils.SEAFILE_DATA_PATH + "/" + SeafileUtils.mUserId
+                    + "/" + mLibrary.libraryName);
             mMainActivity.mLibrarys.set(mPos, mLibrary);
             mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
         } catch (RemoteException e) {

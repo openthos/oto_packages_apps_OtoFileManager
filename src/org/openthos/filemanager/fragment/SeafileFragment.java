@@ -18,6 +18,7 @@ import org.openthos.filemanager.bean.SeafileLibrary;
 import org.openthos.filemanager.component.SeafileDialog;
 import org.openthos.filemanager.system.Constants;
 import org.openthos.filemanager.system.FileInfo;
+import org.openthos.filemanager.system.FileListAdapter;
 import org.openthos.filemanager.system.FileViewInteractionHub;
 import org.openthos.filemanager.utils.SeafileUtils;
 
@@ -37,11 +38,11 @@ public class SeafileFragment extends BaseFragment {
     private ArrayList<SeafileLibrary> mList;
     private Timer mTimer;
     private GridViewOnGenericMotionListener mMotionListener;
-    public Fragment mCurFragment;
     private long mCurrentTime = 0L;
     private int mPos = -1;
     private static final int DELAY_TIME = 1000;
     private static final int SLEEP_TIME = 10000;
+    private SystemSpaceFragment fragment;
 
 
     @Override
@@ -83,10 +84,6 @@ public class SeafileFragment extends BaseFragment {
     }
 
     public void setData(ArrayList<SeafileLibrary> librarys) {
-        if (librarys.size() > 0) {
-//            mTimer.schedule(new LiftLimitTask(SeafileUtils.SEAFILE_DATA_PATH_REAlLY),
-//                    DELAY_TIME, SLEEP_TIME);
-        }
         mList = librarys;
         mAdapter.setData(librarys);
     }
@@ -94,9 +91,8 @@ public class SeafileFragment extends BaseFragment {
     @Override
     public boolean canGoBack() {
         boolean canGoBack = false;
-        Fragment baseFragment = mCurFragment;
-        if (baseFragment instanceof SystemSpaceFragment) {
-            SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) baseFragment;
+        if (fragment instanceof SystemSpaceFragment) {
+            SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) fragment;
             canGoBack = systemSpaceFragment.canGoBack();
         }
         return canGoBack;
@@ -104,9 +100,8 @@ public class SeafileFragment extends BaseFragment {
 
     @Override
     public void goBack() {
-        Fragment baseFragment = mCurFragment;
-        if (baseFragment instanceof SystemSpaceFragment) {
-            SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) baseFragment;
+        if (fragment instanceof SystemSpaceFragment) {
+            SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) fragment;
             systemSpaceFragment.goBack();
         }
     }
@@ -178,8 +173,7 @@ public class SeafileFragment extends BaseFragment {
     @Override
     public void enter() {
         super.enter();
-        enter("hello", SeafileUtils.SEAFILE_DATA_PATH_REAlLY
-                + "/" + SeafileUtils.mUserId
+        enter(null, SeafileUtils.SEAFILE_DATA_PATH + "/" + SeafileUtils.mUserId
                 + "/" + mList.get(mPos).libraryName);
     }
 
@@ -190,12 +184,22 @@ public class SeafileFragment extends BaseFragment {
             return;
         }
         transaction.hide(mMainActivity.mCurFragment);
-        mCurFragment = new SystemSpaceFragment(
-                Constants.LEFT_FAVORITES, path, null, null, false);
-        transaction.add(R.id.fl_mian, mCurFragment, Constants.SEAFILESYSTEMSPACE_TAG);
-        transaction.show(mCurFragment).commitAllowingStateLoss();
-        mMainActivity.mCurFragment = mCurFragment;
-        //mMainActivity.setFileInfo(R.id.et_nivagation, path, mAddressFragment);
+        if (fragment == null) {
+            fragment = new SystemSpaceFragment(
+                    Constants.LEFT_FAVORITES, path, null, null, false);
+            transaction.add(R.id.fl_mian, fragment, Constants.SEAFILESYSTEMSPACE_TAG);
+        } else {
+            fragment.setPath(path);
+            fragment.getFileViewInteractionHub().setRootPath(path);
+            FileListAdapter adapter = fragment.getAdapter();
+            if (adapter != null) {
+                adapter.getSelectFileInfoList().clear();
+                fragment.getFileViewInteractionHub().clearSelection();
+                fragment.onRefreshFileList(path, mMainActivity.getFileSortHelper());
+            }
+        }
+        transaction.show(fragment).commitAllowingStateLoss();
+        mMainActivity.mCurFragment = fragment;
     }
 
     private class LiftLimitTask extends TimerTask {

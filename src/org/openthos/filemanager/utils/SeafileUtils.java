@@ -4,9 +4,12 @@ package org.openthos.filemanager.utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Environment;
 import android.text.TextUtils;
 
 import static android.R.attr.id;
+
+import java.io.File;
 
 /**
  * Created by Wang Zhixu on 12/23/16.
@@ -14,7 +17,8 @@ import static android.R.attr.id;
 
 public class SeafileUtils {
     public static final String TAG = "SeafileUtils";
-    public static final String SEAFILE_DATA_PATH_REAlLY = "/data/sea/data";
+    public static final String SEAFILE_DATA_PATH
+            = new File(Environment.getExternalStorageDirectory(), "seafile").getAbsolutePath();
 
     public static String mUserId = "";
 
