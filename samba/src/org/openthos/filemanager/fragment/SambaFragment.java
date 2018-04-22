@@ -259,8 +259,7 @@ public class SambaFragment extends BaseFragment {
                         BufferedReader in = null;
                         boolean isMounted = false;
                         String localPath = mPaths.get(0) + mSuffix;
-                        File localFile = new File(Environment.getExternalStorageDirectory(),
-                                "samba/" + localPath);
+                        File localFile = new File("/storage/samba", localPath);
                         try {
                             pro = Runtime.getRuntime().exec(
                                     new String[]{"su", "-c", "mount"});
@@ -295,7 +294,6 @@ public class SambaFragment extends BaseFragment {
                                                 + localPath.substring(0, localPath.length() - 1)
                                                 .replace(" ", "\\ ")
                                                 + " " + localFile.getAbsolutePath()
-                                                .replace("/storage/emulated/0", "/sdcard")
                                                 .replace(" ", "\\ ")
                                                 + " -o user=" + finalKey.username + ",password="
                                                 + finalKey.password + ","});
