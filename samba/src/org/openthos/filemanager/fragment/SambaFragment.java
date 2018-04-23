@@ -296,7 +296,7 @@ public class SambaFragment extends BaseFragment {
                                                 + " " + localFile.getAbsolutePath()
                                                 .replace(" ", "\\ ")
                                                 + " -o user=" + finalKey.username + ",password="
-                                                + finalKey.password + ","});
+                                                + finalKey.password + ",iocharset=utf8,"});
                                 in = new BufferedReader(new InputStreamReader(pro.getErrorStream()));
                                 String line;
                                 while ((line = in.readLine()) != null) {
