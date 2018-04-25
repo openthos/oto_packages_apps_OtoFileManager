@@ -10,9 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.openthos.filemanager.bean.ImageBean;
-import org.openthos.filemanager.bean.SearchInfo;
-import org.openthos.filemanager.system.Constants;
 import org.openthos.filemanager.system.FileInfo;
 import org.openthos.filemanager.system.FileViewInteractionHub;
 
@@ -27,15 +24,11 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
     public String usbDeviceIsAttached;
     public Context context;
     public MainActivity mMainActivity;
-    public HashMap<String, List<String>> mGruopMap;
-    public List<ImageBean> list;
     public int index;
-
 
     public String sdOrSystem;
     public String directorPath;
     public ArrayList<FileInfo> mFileInfoList;
-    public FileViewInteractionHub.CopyOrMove mCopyOrMove;
     public FileViewInteractionHub mFileViewInteractionHub;
 
     @Override
@@ -69,29 +62,15 @@ public abstract class BaseFragment extends Fragment implements UiInterface{
         super();
     }
 
-    @SuppressLint("ValidFragment")
-    public BaseFragment(HashMap<String, List<String>> mGruopMap, List<ImageBean> list, int index) {
-        this.mGruopMap = mGruopMap;
-        this.list = list;
-        this.index = index;
-    }
-
     @SuppressLint({"NewApi", "ValidFragment"})
     public BaseFragment(FragmentManager manager) {
         mManager = manager;
     }
 
     @SuppressLint({"NewApi", "ValidFragment"})
-    public BaseFragment(FragmentManager manager, ArrayList<FileInfo> mFileList) {
-        mManager = manager;
-    }
-
-    @SuppressLint({"NewApi", "ValidFragment"})
-    public BaseFragment(String sdSpaceFragment, String directPath, ArrayList<FileInfo> fileInfoList,
-                                                FileViewInteractionHub.CopyOrMove copyOrMove) {
+    public BaseFragment(String sdSpaceFragment, String directPath, ArrayList<FileInfo> fileInfoList) {
         this.sdOrSystem = sdSpaceFragment;
         mFileInfoList = fileInfoList;
-        mCopyOrMove = copyOrMove;
         this.directorPath = directPath;
     }
 

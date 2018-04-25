@@ -34,7 +34,6 @@ public class CreateFileDialog extends AlertDialog implements View.OnClickListene
     private View mView;
 
     public interface OnFinishListener {
-        // return true to accept and dismiss, false reject
         boolean onFinish(String text);
     }
 
@@ -76,10 +75,6 @@ public class CreateFileDialog extends AlertDialog implements View.OnClickListene
         mListener = listener;
         mInputText = text;
         mContext = context;
-    }
-
-    public String getInputText() {
-        return mInputText;
     }
 
     protected void onCreate(Bundle savedInstanceState) {

@@ -36,12 +36,9 @@ public class SeafileFragment extends BaseFragment {
     private GridView mGvCloud;
     private SeafileAdapter mAdapter;
     private ArrayList<SeafileLibrary> mList;
-    private Timer mTimer;
     private GridViewOnGenericMotionListener mMotionListener;
     private long mCurrentTime = 0L;
     private int mPos = -1;
-    private static final int DELAY_TIME = 1000;
-    private static final int SLEEP_TIME = 10000;
     private SystemSpaceFragment fragment;
 
 
@@ -64,7 +61,6 @@ public class SeafileFragment extends BaseFragment {
         mMotionListener = new GridViewOnGenericMotionListener();
         mAdapter = new SeafileAdapter(mMainActivity, mList, mMotionListener);
         mGvCloud.setAdapter(mAdapter);
-        mTimer = new Timer();
     }
 
     protected void initData() {
@@ -186,7 +182,7 @@ public class SeafileFragment extends BaseFragment {
         transaction.hide(mMainActivity.mCurFragment);
         if (fragment == null) {
             fragment = new SystemSpaceFragment(
-                    Constants.LEFT_FAVORITES, path, null, null, false);
+                    Constants.LEFT_FAVORITES, path, null, false);
             transaction.add(R.id.fl_mian, fragment, Constants.SEAFILESYSTEMSPACE_TAG);
         } else {
             fragment.setPath(path);

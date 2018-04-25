@@ -38,7 +38,6 @@ public class PersonalSpaceFragment extends BaseFragment {
     public Fragment mCurFragment;
     private GridViewOnGenericMotionListener mMotionListener;
     ArrayList<FileInfo> mFileInfoArrayList = null;
-    FileViewInteractionHub.CopyOrMove mCopyOrMove = null;
     private PersonalMenuDialog mPersonalDialog;
     private int mPos;
     private int mCurId;
@@ -189,13 +188,12 @@ public class PersonalSpaceFragment extends BaseFragment {
     public void enter(String tag, String path) {
         if (mCurFragment != null) {
             mFileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
-            mCopyOrMove = ((SystemSpaceFragment) mCurFragment).getCurCopyOrMoveMode();
         }
-        if (mFileInfoArrayList != null && mCopyOrMove != null) {
+        if (mFileInfoArrayList != null ) {
             T.showShort(context,
                     context.getString(R.string.operation_failed_permission_refuse));
         }
-        mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, mCopyOrMove, false);
+        mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, false);
         FragmentTransaction transaction = mManager.beginTransaction();
         transaction.hide(mMainActivity.mCurFragment);
         transaction.add(R.id.fl_mian, mCurFragment, Constants.PERSONALSYSTEMSPACE_TAG)

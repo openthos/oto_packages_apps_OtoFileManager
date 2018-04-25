@@ -25,7 +25,6 @@ import java.io.InputStreamReader;
 
 public class AddUsersDialog extends BaseDialog{
     private Context mContext;
-    private String mPath;
     private EditText mEtAccount, mEtPassward;
 
     public AddUsersDialog(Context context) {
@@ -33,27 +32,10 @@ public class AddUsersDialog extends BaseDialog{
         mContext = context;
     }
 
-    public AddUsersDialog(Context context, String path) {
-        super(context);
-        mContext = context;
-        mPath = path;
-    }
-
-    public AddUsersDialog(Context context, int themeResId) {
-        super(context, themeResId);
-        mContext = context;
-    }
-
-    protected AddUsersDialog(Context context, boolean cancelable, OnCancelListener listener) {
-        super(context, cancelable, listener);
-        mContext = context;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_add_users);
-
         getWindow().setBackgroundDrawable(mContext.getResources().getDrawable(R.color.transparent));
         setCancelable(false);
         initTitle();
@@ -72,7 +54,6 @@ public class AddUsersDialog extends BaseDialog{
     }
 
     private void initTitle() {
-        ImageView titleImage = (ImageView) findViewById(R.id.title_image);
         TextView titleText = (TextView) findViewById(R.id.title_text);
         titleText.setText((mContext.getResources().getString(R.string.operation_add_share_user)));
     }

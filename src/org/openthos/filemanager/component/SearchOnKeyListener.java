@@ -1,18 +1,13 @@
 package org.openthos.filemanager.component;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.os.Environment;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
-import android.os.Handler;
-import android.os.Message;
 import org.openthos.filemanager.MainActivity;
 import org.openthos.filemanager.R;
-import org.openthos.filemanager.bean.SearchInfo;
 import org.openthos.filemanager.fragment.PersonalSpaceFragment;
 import org.openthos.filemanager.fragment.SdStorageFragment;
 import org.openthos.filemanager.fragment.SearchFragment;
@@ -21,18 +16,12 @@ import org.openthos.filemanager.system.FileCategoryHelper;
 import org.openthos.filemanager.system.FileInfo;
 import org.openthos.filemanager.system.Settings;
 import org.openthos.filemanager.system.Util;
-import org.openthos.filemanager.utils.L;
-import org.openthos.filemanager.utils.LocalCache;
-import org.openthos.filemanager.utils.T;
-import android.support.v4.app.Fragment;
 import org.openthos.filemanager.system.Constants;
 import java.io.File;
 import java.util.ArrayList;
 import android.widget.Toast;
 
 public class SearchOnKeyListener implements TextView.OnKeyListener {
-    private String mInputData;
-    private String LOG_TAG = "SearchOnQueryTextListener";
     private static ProgressDialog progressDialog;
     private ArrayList<FileInfo> mFileList = new ArrayList<>();
     private FragmentManager mManager;
@@ -41,16 +30,11 @@ public class SearchOnKeyListener implements TextView.OnKeyListener {
     private String mCurPath;
     private SearchFragment mCurSearchFragment;
 
-    public SearchOnKeyListener(FragmentManager manager,
-                               Editable text, MainActivity context) {
+    public SearchOnKeyListener(FragmentManager manager, MainActivity context) {
         mManager = manager;
         mMainActivity = context;
         progressDialog = new ProgressDialog(context);
         progressDialog.setMessage("search...");
-    }
-
-    public void setInputData(String inputData) {
-        mInputData = inputData;
     }
 
     @Override
@@ -155,7 +139,7 @@ public class SearchOnKeyListener implements TextView.OnKeyListener {
                 mManager.beginTransaction().remove(mCurSearchFragment).commitAllowingStateLoss();
             }
         }
-        mCurSearchFragment = new SearchFragment(this, mManager, mFileList);
+        mCurSearchFragment = new SearchFragment(this, mManager);
         mManager.beginTransaction().add(R.id.fl_mian, mCurSearchFragment,
                                        Constants.SEARCHFRAGMENT_TAG).commitAllowingStateLoss();
         mMainActivity.mCurFragment = mCurSearchFragment;
@@ -177,7 +161,7 @@ public class SearchOnKeyListener implements TextView.OnKeyListener {
                 mManager.beginTransaction().remove(mCurSearchFragment).commitAllowingStateLoss();
             }
         }
-        mCurSearchFragment = new SearchFragment(this, mManager,null);
+        mCurSearchFragment = new SearchFragment(this, mManager);
         mManager.beginTransaction().add(R.id.fl_mian, mCurSearchFragment,
                                        Constants.SEARCHFRAGMENT_TAG).commitAllowingStateLoss();
         mMainActivity.mCurFragment = mCurSearchFragment;

@@ -1,7 +1,6 @@
 package org.openthos.filemanager.system;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ClipboardManager;
@@ -18,29 +17,25 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.widget.GridView;
 import android.widget.ListView;
 
 import org.openthos.filemanager.BaseActivity;
 import org.openthos.filemanager.BaseFragment;
 import org.openthos.filemanager.MainActivity;
-import org.openthos.filemanager.bean.Mode;
-import org.openthos.filemanager.component.MenuDialog;
 import org.openthos.filemanager.R;
+import org.openthos.filemanager.bean.Mode;
 import org.openthos.filemanager.component.CreateFileDialog;
+import org.openthos.filemanager.component.MenuDialog;
 import org.openthos.filemanager.component.PropertyDialog;
 import org.openthos.filemanager.component.ShareDialog;
+import org.openthos.filemanager.fragment.SystemSpaceFragment;
 import org.openthos.filemanager.utils.L;
 import org.openthos.filemanager.utils.LocalCache;
 import org.openthos.filemanager.utils.OperateUtils;
-import org.openthos.filemanager.utils.T;
-import org.openthos.filemanager.fragment.SystemSpaceFragment;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 public class FileViewInteractionHub implements FileOperationHelper.IOperationProgressListener {
@@ -55,7 +50,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     private FileSortHelper mFileSortHelper;
     private ProgressDialog progressDialog;
     private Context mContext;
-    private CopyOrMove copyOrMoveMode;
     private int selectedDialogItem;
     private MenuDialog menuDialog;
     private MainActivity mMainActivity;
@@ -66,9 +60,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     private int mCompressFileState;
     private boolean mConfirm;
 
-    public enum CopyOrMove {
-        Copy, Move
-    }
 
     public FileViewInteractionHub(IFileInteractionListener fileViewListener) {
         assert (fileViewListener != null);
@@ -123,22 +114,10 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         return mFileOperationHelper.getFileList();
     }
 
-    public void setCheckedFileList(ArrayList<FileInfo> fileInfoList, CopyOrMove copyOrMove) {
+    public void setCheckedFileList(ArrayList<FileInfo> fileInfoList) {
         if (fileInfoList != null && fileInfoList.size() > 0)
             mCheckedFileNameList.addAll(fileInfoList);
-        switch (copyOrMove) {
-            case Move:
-                onOperationMove();
-                break;
-            default:
-            case Copy:
-                doOnOperationCopy();
-                break;
-        }
-    }
 
-    public CopyOrMove getCurCopyOrMoveMode() {
-        return copyOrMoveMode;
     }
 
     public boolean canPaste() {
@@ -395,7 +374,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     }
 
     public void doOnOperationCopy() {
-        copyOrMoveMode = CopyOrMove.Copy;
         onOperationCopy(getSelectedFileList());
     }
 
@@ -429,7 +407,6 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 //        confirmButton.setEnabled(false);
         // refresh to hide selected files
         refreshFileList();
-        copyOrMoveMode = CopyOrMove.Move;
     }
 
     public void initFileList() {
@@ -1062,52 +1039,17 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         return true;
     }
 
-//    public void copyFile(ArrayList<FileInfo> files) {
-//        mFileOperationHelper.Copy(files);
-//    }
-//
-//    public void moveFileFrom(ArrayList<FileInfo> files) {
-//        mFileOperationHelper.StartMove(files);
-//        showConfirmOperationBar(true);
-//        updateConfirmButtons();
-//        // refresh to hide selected files
-//        refreshFileList();
-//    }
 
     @Override
     public void onFileChanged(String path) {
         notifyFileSystemChanged(path);
     }
-//
-//    public void startSelectFiles(SystemSpaceFragment.SelectFilesCallback callback) {
-//        mSelectFilesCallback = callback;
-//        showConfirmOperationBar(true);
-//        updateConfirmButtons();
-//    }
 
-    public void MouseScrollAction(MotionEvent event) {
-        if (event.getAxisValue(MotionEvent.AXIS_VSCROLL) < 0.0f) {
-            L.i("fortest::onGenericMotionEvent", "down");
-        } else {
-            L.i("fortest::onGenericMotionEvent", "up");
-        }
-    }
 
     public void showContextDialog(FileViewInteractionHub fileViewInteractionHub,
                                   MotionEvent event) {
         menuDialog = new MenuDialog(mContext, fileViewInteractionHub, event);
         menuDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
-    }
-
-    public void dismissContextDialog() {
-        if (menuDialog != null) {
-            menuDialog.dismiss();
-            menuDialog = null;
-        }
-    }
-
-    public MainActivity getMainActivity() {
-        return mMainActivity;
     }
 
     public void setIsBlank(boolean isBlank) {
@@ -1141,209 +1083,4 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
     public boolean isProtected() {
         return mIsProtected;
     }
-
-//    // menu
-//    private static final int MENU_SEARCH = 1;
-//    //     private static final int MENU_NEW_FOLDER = 2;
-////    MENU_SORT = 3;
-//    private static final int MENU_SORT = 0;
-//    private static final int MENU_SEND = 7;
-//    private static final int MENU_RENAME = 8;
-//    private static final int MENU_DELETE = 9;
-//    private static final int MENU_INFO = 10;
-//    private static final int MENU_SORT_NAME = 11;
-//    private static final int MENU_SORT_SIZE = 12;
-//    private static final int MENU_SORT_DATE = 13;
-//    private static final int MENU_SORT_TYPE = 14;
-//    private static final int MENU_REFRESH = 15;
-//    private static final int MENU_SELECTALL = 16;
-//    private static final int MENU_SETTING = 17;
-//    private static final int MENU_EXIT = 18;
-//
-//    public View.OnCreateContextMenuListener mListViewContextMenuListener
-//                                            = new View.OnCreateContextMenuListener() {
-//        @Override
-//        public void onCreateContextMenu(ContextMenu menu, View v,
-//                                        ContextMenu.ContextMenuInfo menuInfo) {
-//            if (isInSelection() || isMoveState())
-//                return;
-//
-//            AdapterView.AdapterContextMenuInfo info
-//                                               = (AdapterView.AdapterContextMenuInfo) menuInfo;
-//
-//            SubMenu sortMenu = menu.addSubMenu(0, MENU_SORT, 0, R.string.menu_item_sort).setIcon(
-//                    R.drawable.ic_menu_sort);
-//            addMenuItem(sortMenu, MENU_SORT_NAME, 0, R.string.menu_item_sort_name);
-//            addMenuItem(sortMenu, MENU_SORT_SIZE, 1, R.string.menu_item_sort_size);
-//            addMenuItem(sortMenu, MENU_SORT_DATE, 2, R.string.menu_item_sort_date);
-//            addMenuItem(sortMenu, MENU_SORT_TYPE, 3, R.string.menu_item_sort_type);
-//            sortMenu.setGroupCheckable(0, true, true);
-//            sortMenu.getItem(0).setChecked(true);
-//
-//            addMenuItem(menu, Constants.MENU_COPY, 0, R.string.operation_copy);
-//            addMenuItem(menu, Constants.MENU_COPY_PATH, 0, R.string.operation_copy_path);
-//            addMenuItem(menu, Constants.MENU_PASTE, 0,
-//                    R.string.operation_paste);
-//            addMenuItem(menu, Constants.MENU_MOVE, 0, R.string.operation_move);
-//            addMenuItem(menu, MENU_SEND, 0, R.string.operation_send);
-//            addMenuItem(menu, MENU_RENAME, 0, R.string.operation_rename);
-//            addMenuItem(menu, MENU_DELETE, 0, R.string.operation_delete);
-//            addMenuItem(menu, MENU_INFO, 0, R.string.operation_info);
-//            addMenuItem(menu, Constants.MENU_NEW_FOLDER, 0, R.string.operation_folder);
-//            if (!canPaste()) {
-//                MenuItem menuItem = menu.findItem(Constants.MENU_PASTE);
-//                if (menuItem != null)
-//                    menuItem.setEnabled(false);
-//            }
-//        }
-//    };
-//
-//    private void addMenuItem(Menu menu, int itemId, int order, int string) {
-//        addMenuItem(menu, itemId, order, string, -1);
-//    }
-//
-//    private void addMenuItem(Menu menu, int itemId, int order, int string, int iconRes) {
-//        if (!mFileViewListener.shouldHideMenu(itemId)) {
-//            MenuItem item = menu.add(0, itemId, order, string)
-//                                .setOnMenuItemClickListener(menuItemClick);
-//            if (iconRes > 0) {
-//                item.setIcon(iconRes);
-//            }
-//        }
-//    }
-//
-//    private MenuItem.OnMenuItemClickListener menuItemClick
-//                                             = new MenuItem.OnMenuItemClickListener() {
-//
-//        @Override
-//        public boolean onMenuItemClick(MenuItem item) {
-//            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)
-//                                                      item.getMenuInfo();
-//            mListViewContextMenuSelectedItem = info != null ? info.position : -1;
-//
-//            int itemId = item.getItemId();
-//            if (mFileViewListener.onOperation(itemId)) {
-//                return true;
-//            }
-//
-//            addContextMenuSelectedItem();
-//
-//            switch (itemId) {
-//                case Constants.MENU_NEW_FOLDER:
-//                    onOperationCreateFolder();
-//                    break;
-//                case MENU_REFRESH:
-//                    onOperationReferesh();
-//                    break;
-//                case MENU_SELECTALL:
-//                    onOperationSelectAllOrCancel();
-//                    break;
-//                case Constants.MENU_SHOWHIDE:
-//                    onOperationShowSysFiles();
-//                    break;
-//                case MENU_SETTING:
-//                    onOperationSetting();
-//                    break;
-//                case MENU_EXIT:
-//                    ((MainActivity) mContext).finish();
-//                    break;
-//                // sort
-//                case MENU_SORT_NAME:
-//                    item.setChecked(true);
-//                    onSortChanged(FileSortHelper.SortMethod.name);
-//                    break;
-//                case MENU_SORT_SIZE:
-//                    item.setChecked(true);
-//                    onSortChanged(FileSortHelper.SortMethod.size);
-//                    break;
-//                case MENU_SORT_DATE:
-//                    item.setChecked(true);
-//                    onSortChanged(FileSortHelper.SortMethod.date);
-//                    break;
-//                case MENU_SORT_TYPE:
-//                    item.setChecked(true);
-//                    onSortChanged(FileSortHelper.SortMethod.type);
-//                    break;
-//
-//                case Constants.MENU_COPY:
-//                    doOnOperationCopy();
-//                    break;
-//                case Constants.MENU_COPY_PATH:
-//                    onOperationCopyPath();
-//                    break;
-//                case Constants.MENU_PASTE:
-//                    onOperationPaste();
-//                    break;
-//                case Constants.MENU_MOVE:
-//                    onOperationMove();
-//                    break;
-//                case MENU_SEND:
-//                    onOperationSend();
-//                    break;
-//                case MENU_RENAME:
-//                    onOperationRename();
-//                    break;
-//                case MENU_DELETE:
-//                    onOperationDelete();
-//                    break;
-//                case MENU_INFO:
-//                    onOperationInfo();
-//                    break;
-//                default:
-//                    return false;
-//            }
-//
-//            mListViewContextMenuSelectedItem = -1;
-//            return true;
-//        }
-//    };
-//
-//    private int mListViewContextMenuSelectedItem;
-//
-//    public void addContextMenuSelectedItem() {
-//        if (mCheckedFileNameList.size() == 0) {
-//            int pos = mListViewContextMenuSelectedItem;
-//            if (pos != -1) {
-//                FileInfo fileInfo = mFileViewListener.getItem(pos);
-//                if (fileInfo != null) {
-//                    mCheckedFileNameList.add(fileInfo);
-//                }
-//            }
-//        }
-//    }
-//
-//    public void onListItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        FileInfo lFileInfo = mFileViewListener.getItem(position);
-//
-//        if (lFileInfo == null) {
-//            Log.e(LOG_TAG, "file does not exist on position:" + position);
-//            return;
-//        }
-//
-//        if (isInSelection()) {
-//            boolean selected = lFileInfo.Selected;
-//            ImageView checkBox = (ImageView) view.findViewById(R.id.file_checkbox);
-//            if (selected) {
-//                mCheckedFileNameList.remove(lFileInfo);
-//                checkBox.setImageResource(R.mipmap.btn_check_off_holo_light);
-//            } else {
-//                mCheckedFileNameList.add(lFileInfo);
-//                checkBox.setImageResource(R.mipmap.btn_check_on_holo_light);
-//            }
-//            lFileInfo.Selected = !selected;
-//            return;
-//        }
-//
-//        if (!lFileInfo.IsDir) {
-//            if (mCurrentMode == Mode.Pick) {
-//                mFileViewListener.onPick(lFileInfo);
-//            } else {
-//                viewFile(lFileInfo);
-//            }
-//            return;
-//        }
-//
-//        mCurrentPath = getAbsoluteName(mCurrentPath, lFileInfo.fileName);
-//        refreshFileList();
-//    }
 }

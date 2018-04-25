@@ -97,8 +97,7 @@ public class IconHolder {
          * @return Drawable The drawable or null if cannot be extracted
          */
         private Drawable getImageDrawable(String file) {
-            Bitmap thumb = ThumbnailUtils.createImageThumbnail(file,
-                    ThumbnailUtils.TARGET_SIZE_MICRO_THUMBNAIL);
+            Bitmap thumb = null;
             if (thumb == null) {
                 return null;
             }
@@ -112,8 +111,7 @@ public class IconHolder {
          * @return Drawable The drawable or null if cannot be extracted
          */
         private Drawable getVideoDrawable(String file) {
-            Bitmap thumb = ThumbnailUtils.createVideoThumbnail(file,
-                    ThumbnailUtils.TARGET_SIZE_MICRO_THUMBNAIL);
+            Bitmap thumb = null;
             if (thumb == null) {
                 return null;
             }

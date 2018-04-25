@@ -34,7 +34,6 @@ import java.util.List;
 
 public class SdStorageFragment extends BaseFragment {
     private ArrayList<FileInfo> mFileInfoArrayList = null;
-    private FileViewInteractionHub.CopyOrMove copyOrMove = null;
     private LinearLayout mAndroidSystem;
     private LinearLayout mSdSpace;
     private LinearLayout mAndroidService;
@@ -397,10 +396,9 @@ public class SdStorageFragment extends BaseFragment {
         if (mCurFragment != null) {
             if (mCurFragment instanceof SystemSpaceFragment) {
                 mFileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
-                copyOrMove = ((SystemSpaceFragment) mCurFragment).getCurCopyOrMoveMode();
             }
         }
-        if (mFileInfoArrayList != null && copyOrMove != null) {
+        if (mFileInfoArrayList != null) {
             T.showShort(context,
                     context.getString(R.string.operation_failed_permission_refuse));
         }
@@ -416,7 +414,7 @@ public class SdStorageFragment extends BaseFragment {
             mCurFragment = mMainActivity.mSeafileFragment;
         } else {
             mCurFragment = new SystemSpaceFragment(tag, path,
-                    mFileInfoArrayList, copyOrMove, false);
+                    mFileInfoArrayList,  false);
             transaction.add(R.id.fl_mian, mCurFragment,
                     Constants.SDSSYSTEMSPACE_TAG).commitAllowingStateLoss();
             ((SystemSpaceFragment) mCurFragment).mPos = 0;

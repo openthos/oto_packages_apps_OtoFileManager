@@ -1,15 +1,16 @@
 package org.openthos.filemanager;
 
 import android.app.ActivityThread;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.ClipboardManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,13 +20,11 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.ServiceManager;
 import android.os.storage.IMountService;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -47,7 +46,6 @@ import org.openthos.filemanager.component.CloudInfoDialog;
 import org.openthos.filemanager.component.PopOnClickLintener;
 import org.openthos.filemanager.component.PopWinShare;
 import org.openthos.filemanager.component.SearchOnKeyListener;
-import org.openthos.filemanager.fragment.OnlineNeighborFragment;
 import org.openthos.filemanager.fragment.SambaFragment;
 import org.openthos.filemanager.fragment.SdStorageFragment;
 import org.openthos.filemanager.fragment.PersonalSpaceFragment;
@@ -56,7 +54,6 @@ import org.openthos.filemanager.system.BootCompleteReceiver;
 import org.openthos.filemanager.system.Util;
 import org.openthos.filemanager.system.FileListAdapter;
 import org.openthos.filemanager.utils.LocalCache;
-import org.openthos.filemanager.utils.SambaUtils;
 import org.openthos.filemanager.utils.T;
 import org.openthos.filemanager.fragment.SystemSpaceFragment;
 import org.openthos.filemanager.system.IFileInteractionListener;
@@ -79,8 +76,6 @@ import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.io.IOException;
 
 import org.json.JSONArray;
@@ -98,7 +93,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private static final int USB_POPWINDOW_X = 60;
     private static final int USB_POPWINDOW_Y = 10;
     private static final int ACTIVITY_MIN_COUNT_FOR_BACK = 3;
-    private static final String USB_SPACE_FRAGMENT = "usb_space_fragment";
     private static final String VIEW_TAG = "viewtag";
     private static final String VIEW_TAG_GRID = "grid";
     private static final String VIEW_TAG_LIST = "list";
@@ -146,7 +140,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public ArrayList<SeafileLibrary> mLibrarys = new ArrayList<>();
     private CustomFileObserver mCustomFileObserver;
     private String mUsbPath;
-    private ExecutorService mUsbSingleExecutor;
     private TextView[] mLeftTexts;
     private static ContentResolver mContentResolver;
     private static Uri mUri;
@@ -196,7 +189,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     e.printStackTrace();
                 }
                 try {
-                    //mUserId = mISeafileService.getUserId();
                     SeafileUtils.mUserId = mISeafileService.getUserName();
                     if (TextUtils.isEmpty(SeafileUtils.mUserId)) {
                         return;
@@ -281,7 +273,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         bindService(intent, mSeafileServiceConnection, Context.BIND_AUTO_CREATE);
         mSeafileThread = new SeafileThread();
         mSeafileThread.start();
-        mUsbSingleExecutor = Executors.newSingleThreadExecutor();
         mHashMap = new HashMap<>();
         mHashMap.put(Constants.DESKFRAGMENT_TAG, R.id.tv_desk);
         mHashMap.put(Constants.MUSICFRAGMENT_TAG, R.id.tv_music);
@@ -526,43 +517,43 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
         if (mDeskFragment == null) {
             mDeskFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                    Constants.DESKTOP_PATH, null, null, true);
+                    Constants.DESKTOP_PATH, null, true);
             transaction.add(R.id.fl_mian, mDeskFragment, Constants.DESKFRAGMENT_TAG)
                     .hide(mDeskFragment);
         }
         if (mMusicFragment == null) {
             mMusicFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                    Constants.MUSIC_PATH, null, null, true);
+                    Constants.MUSIC_PATH, null, true);
             transaction.add(R.id.fl_mian, mMusicFragment, Constants.MUSICFRAGMENT_TAG)
                     .hide(mMusicFragment);
         }
         if (mVideoFragment == null) {
             mVideoFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                    Constants.VIDEOS_PATH, null, null, true);
+                    Constants.VIDEOS_PATH, null, true);
             transaction.add(R.id.fl_mian, mVideoFragment, Constants.VIDEOFRAGMENT_TAG)
                     .hide(mVideoFragment);
         }
         if (mPictrueFragment == null) {
             mPictrueFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                    Constants.PICTURES_PATH, null, null, true);
+                    Constants.PICTURES_PATH, null, true);
             transaction.add(R.id.fl_mian, mPictrueFragment, Constants.PICTRUEFRAGMENT_TAG)
                     .hide(mPictrueFragment);
         }
         if (mDocumentFragment == null) {
             mDocumentFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                    Constants.DOCUMENT_PATH, null, null, true);
+                    Constants.DOCUMENT_PATH, null, true);
             transaction.add(R.id.fl_mian, mDocumentFragment, Constants.DOCUMENTFRAGMENT_TAG)
                     .hide(mDocumentFragment);
         }
         if (mDownloadFragment == null) {
             mDownloadFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                    Constants.DOWNLOAD_PATH, null, null, true);
+                    Constants.DOWNLOAD_PATH, null, true);
             transaction.add(R.id.fl_mian, mDownloadFragment, Constants.DOWNLOADFRRAGMENT_TAG)
                     .hide(mDownloadFragment);
         }
         if (mRecycleFragment == null) {
             mRecycleFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                    Constants.RECYCLE_PATH, null, null, true);
+                    Constants.RECYCLE_PATH, null, true);
             transaction.add(R.id.fl_mian, mRecycleFragment, Constants.RECYCLEFRAGMENT_TAG)
                     .hide(mRecycleFragment);
         }
@@ -641,10 +632,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 f.mkdirs();
             }
         }
-//
-//        if (fragment != null) {
-//            ((SystemSpaceFragment) fragment).refreshUI();
-//        }
     }
 
     @Override
@@ -663,8 +650,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mIv_forward.setOnClickListener(this);
         mIv_setting.setOnClickListener(this);
         clickComputer();
-        mSearchOnKeyListener = new SearchOnKeyListener(mManager,
-                mEt_search_view.getText(), MainActivity.this);
+        mSearchOnKeyListener = new SearchOnKeyListener(mManager, MainActivity.this);
         mEt_search_view.setOnKeyListener(mSearchOnKeyListener);
         mIv_search_view.setOnClickListener(this);
         mEt_search_view.setOnTouchListener(mEditTextTouchListener);
@@ -685,7 +671,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             inflate.setOnTouchListener(mLeftTouchListener);
             inflate.setTag(v);
             SystemSpaceFragment mountFragment = new SystemSpaceFragment(
-                    v.getBlock(), "/storage/disk" + i, null, null, true);
+                    v.getBlock(), "/storage/disk" + i, null, true);
             mMountMap.put(v.getBlock(), mountFragment);
             mManager.beginTransaction().add(R.id.fl_mian, mMountMap.get(v.getBlock()),
                     v.getBlock()).hide(mMountMap.get(v.getBlock())).commitAllowingStateLoss();
@@ -768,9 +754,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             FragmentTransaction transaction = mManager.beginTransaction();
             transaction.hide(mCurFragment);
             mAddressFragment = new SystemSpaceFragment(
-                    Constants.LEFT_FAVORITES, path, null, null, false);
+                    Constants.LEFT_FAVORITES, path, null, false);
             transaction.add(R.id.fl_mian, mAddressFragment, Constants.ADDRESSFRAGMENT_TAG);
-            //transaction.show(mAddressFragment).addToBackStack(null).commitAllowingStateLoss();
             transaction.show(mAddressFragment).commitAllowingStateLoss();
             setNavigationPath(Util.getDisplayPath(this, path));
             setFileInfo(R.id.et_nivagation, path, mAddressFragment);
@@ -856,7 +841,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         disSelectPreView();
         v.setBackgroundColor(0x68ffffff);
         v.setFocusable(true);
-        //v.setFocusableInTouchMode(true);
         v.requestFocus();
         mPreView = v;
     }
@@ -1132,7 +1116,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private boolean isCopyByHot() {
         return getVisibleFragment() instanceof PersonalSpaceFragment
                 || getVisibleFragment() instanceof SdStorageFragment
-                || getVisibleFragment() instanceof OnlineNeighborFragment
                 || getVisibleFragment() instanceof SeafileFragment
                 || getVisibleFragment() instanceof SambaFragment
                 || mEt_nivagation.isFocused() || mEt_search_view.isFocused();
@@ -1388,7 +1371,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mPopUpProgressDialog.setCancelable(true);
         mPopUpProgressDialog.setCanceledOnTouchOutside(true);
         mPopUpProgressDialog.show();
-        //mUsbSingleExecutor.execute(new UninstallUsbThread(usbPath));
         new UninstallUsbThread(usbPath).start();
     }
 
@@ -1590,7 +1572,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public void onBackPressed() {
-        mSearchOnKeyListener.setInputData(null);
         mManager.findFragmentById(R.id.fl_mian);
         if (mCurFragment != mSdStorageFragment) {
             if (mCurFragment instanceof SystemSpaceFragment) {
@@ -1968,7 +1949,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         super.onRestart();
     }
 
-    @Override
     public void setNavigationBar(String displayPath) {
         setNavigationPath(displayPath);
     }
@@ -2037,7 +2017,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     }
                     break;
                 case R.id.pop_usb_format:
-                    formatVolume();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setMessage(R.string.message_format_usb);
+                    builder.setNegativeButton(R.string.no, null);
+                    builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            formatVolume();
+                        }
+                    });
+                    builder.create().show();
             }
         }
     }
@@ -2404,7 +2393,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mUsbStorageFragment = mUsbFragments.get(usbPath);
         if (mUsbStorageFragment == null || !mUsbStorageFragment.isAdded()) {
             mUsbStorageFragment = new SystemSpaceFragment(
-                    usbPath, usbPath, null, null, false);
+                    usbPath, usbPath, null, false);
             mUsbFragments.put(usbPath, mUsbStorageFragment);
         }
         if (mUsbStorageFragment.getFileViewInteractionHub() != null) {

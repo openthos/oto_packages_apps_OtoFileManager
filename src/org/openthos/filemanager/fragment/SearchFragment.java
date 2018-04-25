@@ -59,9 +59,8 @@ public class SearchFragment extends BaseFragment implements IFileInteractionList
     private ArrayList<FileInfo> mSearchList = new ArrayList<>();
 
     @SuppressLint({"NewApi", "ValidFragment"})
-    public SearchFragment(SearchOnKeyListener listener, FragmentManager manager,
-                          ArrayList<FileInfo> mFileList) {
-        super(manager, mFileList);
+    public SearchFragment(SearchOnKeyListener listener, FragmentManager manager) {
+        super(manager);
         mActivity = (MainActivity) getActivity();
         mSearchOnKeyListener = listener;
     }
@@ -305,7 +304,7 @@ public class SearchFragment extends BaseFragment implements IFileInteractionList
             }
             mActivity = (MainActivity) getActivity();
             mManager.beginTransaction().hide(mActivity.getVisibleFragment()).commitAllowingStateLoss();
-            mCurFragment = new SystemSpaceFragment(TAG, path, null, null, false);
+            mCurFragment = new SystemSpaceFragment(TAG, path, null, false);
             mManager.beginTransaction().add(R.id.fl_mian, mCurFragment,
                     Constants.SEARCHSYSTEMSPACE_TAG).commitAllowingStateLoss();
             mActivity.mCurFragment = mCurFragment;

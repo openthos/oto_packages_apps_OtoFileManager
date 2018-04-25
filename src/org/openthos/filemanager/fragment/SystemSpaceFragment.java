@@ -57,7 +57,6 @@ import java.util.HashMap;
 public class SystemSpaceFragment extends BaseFragment implements
         IFileInteractionListener, MainActivity.IBackPressedListener {
     private static final String TAG = SystemSpaceFragment.class.getSimpleName();
-    public static final String ROOT_DIRECTORY = "root_directory";
     private FileListAdapter mAdapter;
     private FileCategoryHelper mFileCagetoryHelper;
     private FileIconHelper mFileIconHelper;
@@ -65,20 +64,10 @@ public class SystemSpaceFragment extends BaseFragment implements
     private List<FileInfo> mFileListInfo;
     private Activity mActivity;
     private MainActivity mMainActivity;
-    //    private View view;
     private DragListView file_path_list;
     private DragGridView file_path_grid;
     private FrameLayout mFragmentSysFl;
-    private static final String sdDir = Util.getSdDirectory();
-    //    private String sdOrSystem;
-//    private String directorPath;
     private String curRootDir = "";
-    //    private ArrayList<FileInfo> fileInfoList = null;
-//    FileViewInteractionHub.CopyOrMove copyOrMove = null;
-    private boolean isCtrlPress;
-    private String mouseRightTag = "mouse";
-    private boolean isDialogShow = false;
-    private boolean isShow = false;
     private boolean mIsLeftItem;
 
     private boolean mIsShowDialog = false;
@@ -86,17 +75,13 @@ public class SystemSpaceFragment extends BaseFragment implements
     private boolean mIsMove;
     private MotionEvent mEvent;
     private boolean mIsLongPress;
-    // Selected files list
     private List<Integer> mIntegerList = new ArrayList<>();
 
-    // memorize the scroll positions of previous paths
     private ArrayList<PathScrollPositionItem> mScrollPositionList = new ArrayList<>();
     private String mPreviousPath;
     private boolean mSdCardReady;
-    private View mEmptyView;
     private View mNoSdView;
     private HashMap<Enum, Boolean> mSortMap;
-    private long mCurrentTime;
     public int mPos = -1;
     private boolean mNamePositive = true;
     private boolean mSizePositive = true;
@@ -118,9 +103,6 @@ public class SystemSpaceFragment extends BaseFragment implements
                         String pop_menu = intent.getExtras().getString("pop_menu");
                         //selectorMenuId(pop_menu);
                     }
-                    break;
-                case "com.isCtrlPress":
-                    isCtrlPress = intent.getExtras().getBoolean("is_ctrl_press");
                     break;
                 case Intent.ACTION_MEDIA_MOUNTED:
                 case Intent.ACTION_MEDIA_UNMOUNTED:
@@ -194,9 +176,8 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public SystemSpaceFragment(String sdSpaceFragment, String directPath,
-                               ArrayList<FileInfo> fileInfoList,
-                               FileViewInteractionHub.CopyOrMove mCopyOrMove, boolean isLeftItem) {
-        super(sdSpaceFragment, directPath, fileInfoList, mCopyOrMove);
+                               ArrayList<FileInfo> fileInfoList, boolean isLeftItem) {
+        super(sdSpaceFragment, directPath, fileInfoList);
         mIsLeftItem = isLeftItem;
     }
 
@@ -221,7 +202,6 @@ public class SystemSpaceFragment extends BaseFragment implements
         mFragmentSysFl = (FrameLayout) rootView.findViewById(R.id.fragment_sys_fl);
         mFrameSelectView = new FrameSelectView(mMainActivity);
         mFragmentSysFl.addView(mFrameSelectView);
-        mEmptyView = rootView.findViewById(R.id.empty_view);
         mSdCardReady = Util.isSDCardReady();
         mNoSdView = rootView.findViewById(R.id.sd_not_available_page);
         file_path_list = (DragListView) rootView.findViewById(R.id.file_path_list);
@@ -259,7 +239,7 @@ public class SystemSpaceFragment extends BaseFragment implements
         curRootDir = directorPath;
 
         if (mFileInfoList != null && mFileInfoList.size() > 0) {
-            mFileViewInteractionHub.setCheckedFileList(mFileInfoList, mCopyOrMove);
+            mFileViewInteractionHub.setCheckedFileList(mFileInfoList);
         }
         initReciever();
 //        updateUI();
@@ -666,7 +646,6 @@ public class SystemSpaceFragment extends BaseFragment implements
         intentFilter.addAction("com.switchview");
         intentFilter.addAction("com.switchmenu");
         intentFilter.addAction("com.isTouchEvent");
-        intentFilter.addAction("com.isCtrlPress");
         intentFilter.addAction(Intent.ACTION_MEDIA_MOUNTED);
         intentFilter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
         mActivity.registerReceiver(mReceiver, intentFilter);
@@ -1034,10 +1013,6 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     public ArrayList<FileInfo> getFileInfoList() {
         return mFileViewInteractionHub.getCheckedFileList();
-    }
-
-    public FileViewInteractionHub.CopyOrMove getCurCopyOrMoveMode() {
-        return mFileViewInteractionHub.getCurCopyOrMoveMode();
     }
 
     public String getCurrentPath() {

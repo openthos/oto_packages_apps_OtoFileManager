@@ -378,7 +378,7 @@ public class SambaFragment extends BaseFragment {
             @Override
             public void run() {
                 SystemSpaceFragment fragment
-                        = new SystemSpaceFragment(path, path, null, mCopyOrMove, false);
+                        = new SystemSpaceFragment(path, path, null, false);
                 FragmentTransaction transaction = mManager.beginTransaction();
                 transaction.hide(mMainActivity.mCurFragment);
                 transaction.add(R.id.fl_mian, fragment, Constants.SAMBA_TAG)

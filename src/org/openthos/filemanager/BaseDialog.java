@@ -103,7 +103,6 @@ public abstract class BaseDialog extends Dialog{
         Window dialogWindow = getWindow();
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
         lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-        //lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
         lp.dimAmount = 0.0f;
         show();
         dialogWindow.setGravity(Gravity.LEFT | Gravity.TOP);

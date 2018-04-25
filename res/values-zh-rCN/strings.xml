@@ -247,8 +247,6 @@
     <string name="dialog_delete_yes">是</string>
     <string name="dialog_delete_no">否</string>
     <string name="dialog_decompress_text">桌面已存在"%1$s"，是否继续解压缩（将会覆盖重名文件）？</string>
-    <string name="address_sdcard">sdcard</string>
-    <string name="address_sd">sd卡</string>
     <string name="umount">卸载</string>
     <string name="operation_delete_permanent">永久删除</string>
     <string name="bind_openthosid">OpenthosID不存在，请绑定OpenthosID</string>
@@ -282,4 +280,5 @@
     <string name="check_right_image">请选择图片文件</string>
     <string name="network_down">无网络连接</string>
     <string name="account_non">未绑定Openthos账号</string>
+    <string name="message_format_usb">是否要格式化U盘?</string>
 </resources>

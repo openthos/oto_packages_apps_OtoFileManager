@@ -280,4 +280,5 @@
     <string name="check_right_image">Please select a picture file</string>
     <string name="network_down">No network connection</string>
     <string name="account_non">Unbound Openthos account</string>
+    <string name="message_format_usb">Do you want to format this usb device?</string>
 </resources>
