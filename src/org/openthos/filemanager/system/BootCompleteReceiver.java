@@ -35,10 +35,19 @@ public class BootCompleteReceiver extends BroadcastReceiver {
     }
 
     private void initSamba() {
-            // judge smb is open last shutdown ?
-            if (SambaUtils.SAMBA_RUNNING_FILE.exists()) {
-                SambaUtils.startLocalNetworkShare();
+        //samba client
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                SambaUtils.initSambaClientEnvironment();
             }
+        }.start();
+        // samba server
+        // judge smb is open last shutdown ?
+        if (SambaUtils.SAMBA_RUNNING_FILE.exists()) {
+            SambaUtils.startLocalNetworkShare();
+        }
     }
 
     public static String refreshAutoMountData(Context context) {

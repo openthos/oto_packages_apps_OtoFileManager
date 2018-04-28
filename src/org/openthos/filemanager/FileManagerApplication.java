@@ -34,13 +34,6 @@ public class FileManagerApplication extends Application {
                 }
             }
         };
-        new Thread(){
-            @Override
-            public void run() {
-                super.run();
-                SambaUtils.initSambaClientEnvironment();
-            }
-        }.start();
     }
 
     public void addActivity(MainActivity activity) {

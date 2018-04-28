@@ -284,11 +284,18 @@ public class SambaFragment extends BaseFragment {
                                 }
                             }
                         }
-                        if (!isMounted) {
-                            if (!localFile.exists()) {
-                                localFile.mkdirs();
-                            }
+                        if (!isMounted || localFile.isFile()) {
                             try {
+                                String line;
+                                if (localFile.exists()) {
+                                    pro = Runtime.getRuntime().exec(
+                                            new String[]{"rm", "-r", localFile.getAbsolutePath()});
+                                    in = new BufferedReader(
+                                            new InputStreamReader(pro.getErrorStream()));
+                                    while ((line = in.readLine()) != null) {
+                                    }
+                                }
+                                localFile.mkdirs();
                                 pro = Runtime.getRuntime().exec(
                                         new String[]{"su", "-c", "busybox mount -t cifs //"
                                                 + localPath.substring(0, localPath.length() - 1)
@@ -298,7 +305,6 @@ public class SambaFragment extends BaseFragment {
                                                 + " -o user=" + finalKey.username + ",password="
                                                 + finalKey.password + ",iocharset=utf8,"});
                                 in = new BufferedReader(new InputStreamReader(pro.getErrorStream()));
-                                String line;
                                 while ((line = in.readLine()) != null) {
                                     if (line.contains("Device or resource busy")) {
                                         isMounted = true;
