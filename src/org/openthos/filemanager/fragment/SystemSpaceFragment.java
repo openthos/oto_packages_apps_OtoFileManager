@@ -432,7 +432,7 @@ public class SystemSpaceFragment extends BaseFragment implements
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
-            mMainActivity.mCurTabIndext = 9;
+            mMainActivity.mCurTabIndex = 9;
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     mMainActivity.clearNivagateFocus();
@@ -902,7 +902,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                                 if (uri.getEncodedPath().startsWith("/external/images/media/")) {
                                     Intent intent = wpm.getCropAndSetWallpaperIntent(uri);
                                     startActivity(intent);
-                      //              mMainActivity.finish();
+                                    //              mMainActivity.finish();
                                 } else {
                                     mMainActivity.runOnUiThread(new Runnable() {
                                         @Override

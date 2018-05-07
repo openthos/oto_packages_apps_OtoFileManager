@@ -196,7 +196,7 @@
     <string name="file_type_file">文档</string>
     <string name="address_search_false">请检查输入的地址</string>
     <string name="downloads">下载</string>
-    <string name="docement">文档</string>
+    <string name="document">文档</string>
     <string name="recycle">回收站</string>
     <string name="text_personal">个人空间</string>
     <string name="USB_recognising">正在识别...</string>
@@ -281,4 +281,7 @@
     <string name="network_down">无网络连接</string>
     <string name="account_non">未绑定Openthos账号</string>
     <string name="message_format_usb">是否要格式化U盘?</string>
+    <string name="add">添加</string>
+    <string name="cancel_collected">取消收藏</string>
+    <string name="collect">添加到收藏</string>
 </resources>

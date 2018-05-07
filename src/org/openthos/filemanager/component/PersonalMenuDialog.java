@@ -1,47 +1,36 @@
 package org.openthos.filemanager.component;
 
-import android.app.Activity;
-import android.app.Dialog;
-import android.content.ClipboardManager;
 import android.content.Context;
-import android.graphics.Color;
-import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import org.openthos.filemanager.MainActivity;
 import org.openthos.filemanager.BaseDialog;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.adapter.BaseDialogAdapter;
 import org.openthos.filemanager.fragment.PersonalSpaceFragment;
-import org.openthos.filemanager.system.Constants;
-import org.openthos.filemanager.system.FileInfo;
-import org.openthos.filemanager.system.FileViewInteractionHub;
 
 import java.util.ArrayList;
 
-import static android.R.color.holo_purple;
-import static android.R.color.transparent;
-
 public class PersonalMenuDialog extends BaseDialog implements ListView.OnItemClickListener {
 
-    private boolean mIsBlank;
+    private int mEventPosition;
+    private boolean mIsViewCollected;
+    private boolean mIsBlank = true;
 
-    public PersonalMenuDialog(Context context, boolean isBlank) {
+    public PersonalMenuDialog(Context context) {
         super(context);
         mActivity = (MainActivity) context;
-        mIsBlank = isBlank;
+    }
+
+    public PersonalMenuDialog(Context context, int eventPosition, boolean isViewCollected) {
+        super(context);
+        mActivity = (MainActivity) context;
+        mEventPosition = eventPosition;
+        mIsViewCollected = isViewCollected;
+        mIsBlank = false;
     }
 
     protected void initData() {
@@ -50,7 +39,16 @@ public class PersonalMenuDialog extends BaseDialog implements ListView.OnItemCli
             mDatas.add(mActivity.getString(R.string.operation_refresh));
         } else {
             String[] menu = mActivity.getResources().getStringArray(R.array.personal_folder_menu);
+            String strCollect = getContext().getResources().getString(R.string.collect);
+            String strCancelCollected =
+                    getContext().getResources().getString(R.string.cancel_collected);
             for (int i = 0; i < menu.length; i++) {
+                if (menu[i].equals(strCollect) && mIsViewCollected) {
+                    continue;
+                }
+                if (menu[i].equals(strCancelCollected) && !mIsViewCollected) {
+                    continue;
+                }
                 mDatas.add(menu[i]);
             }
         }
@@ -66,13 +64,16 @@ public class PersonalMenuDialog extends BaseDialog implements ListView.OnItemCli
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         String content = (String) view.getTag();
         PersonalSpaceFragment personalSpaceFragment =
-            (PersonalSpaceFragment) ((MainActivity) mActivity).getVisibleFragment();
+                (PersonalSpaceFragment) (mActivity).getVisibleFragment();
         if (mActivity.getString(R.string.operation_open).equals(content)) {
             personalSpaceFragment.enter();
         } else if (mActivity.getString(R.string.operation_copy_path).equals(content)) {
             personalSpaceFragment.copyPath();
         } else if (mActivity.getString(R.string.operation_refresh).equals(content)) {
-            personalSpaceFragment.checkFolder();
+            personalSpaceFragment.refresh();
+        } else if (mActivity.getString(R.string.collect).equals(content)
+                || mActivity.getString(R.string.cancel_collected).equals(content)) {
+            mActivity.handleCollectedChange(mEventPosition);
         }
         if (!TextUtils.isEmpty(content)) {
             dismiss();

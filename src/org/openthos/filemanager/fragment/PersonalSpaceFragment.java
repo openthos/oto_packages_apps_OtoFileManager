@@ -6,13 +6,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.view.Window;
 import android.content.ClipboardManager;
 
 import org.openthos.filemanager.BaseFragment;
+import org.openthos.filemanager.MainActivity;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.adapter.PersonalAdapter;
+import org.openthos.filemanager.bean.FolderBean;
 import org.openthos.filemanager.drag.DragGridView;
 import org.openthos.filemanager.system.Constants;
 import org.openthos.filemanager.system.FileInfo;
@@ -21,71 +21,40 @@ import org.openthos.filemanager.utils.T;
 import org.openthos.filemanager.component.PersonalMenuDialog;
 
 import java.util.ArrayList;
-import java.io.File;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class PersonalSpaceFragment extends BaseFragment {
     private DragGridView mPersonalGrid;
-    private List<String> mPersonalList;
-    private PersonalAdapter mPersonalAdaper;
-    private LinkedHashMap<String, String> mPathMap;
-    private Context mContext;
-    private long mCurrentBackTime;
+    private PersonalAdapter mPersonalAdapter;
+    private List<FolderBean> mFolderBeanList;
+    private Map<Integer, SystemSpaceFragment> mPosAndFragmentMap = new HashMap<>();
     private double mLastBackTime;
     public Fragment mCurFragment;
     private GridViewOnGenericMotionListener mMotionListener;
     ArrayList<FileInfo> mFileInfoArrayList = null;
-    private PersonalMenuDialog mPersonalDialog;
     private int mPos;
-    private int mCurId;
+    private PersonalMenuDialog mPersonalDialog;
 
     @Override
     protected void initData() {
-        mContext = getActivity();
-        mPersonalList = new ArrayList<>();
+        mFolderBeanList = mMainActivity.getFolderBeanList();
         mMotionListener = new GridViewOnGenericMotionListener();
-        mPathMap = new LinkedHashMap<>();
-        mPersonalAdaper = new PersonalAdapter(mContext, mPersonalList, mMotionListener);
-        mPersonalGrid.setAdapter(mPersonalAdaper);
+        mPersonalAdapter = new PersonalAdapter(mMainActivity, mFolderBeanList, mMotionListener);
+        mPersonalGrid.setAdapter(mPersonalAdapter);
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
-            checkFolder();
+            refresh();
         }
     }
 
-    public void checkFolder() {
-        mPersonalList.clear();
-        mPathMap.put(getString(R.string.desk), Constants.DESKTOP_PATH);
-        mPathMap.put(getString(R.string.music), Constants.MUSIC_PATH);
-        mPathMap.put(getString(R.string.video), Constants.VIDEOS_PATH);
-        mPathMap.put(getString(R.string.picture), Constants.PICTURES_PATH);
-        mPathMap.put(getString(R.string.docement), Constants.DOCUMENT_PATH);
-        mPathMap.put(getString(R.string.downloads), Constants.DOWNLOAD_PATH);
-        mPathMap.put(getString(R.string.recycle), Constants.RECYCLE_PATH);
-        mPathMap.put(getString(R.string.qq_image), Constants.QQ_IMAGE_PATH);
-        mPathMap.put(getString(R.string.qq_file), Constants.QQ_FILE_PATH);
-        mPathMap.put(getString(R.string.winxin_image), Constants.WEIXIN_IMG_PATH);
-        mPathMap.put(getString(R.string.winxin_file), Constants.WEIXIN_FILE_PATH);
-        mPathMap.put(getString(R.string.baidu_disk), Constants.BAIDU_PAN_PATH);
-        Iterator iterator = mPathMap.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry entry = (Map.Entry) iterator.next();
-            String path = (String) entry.getValue();
-            File file = new File(path);
-            if (file.exists()) {
-                mPersonalList.add((String) entry.getKey());
-            }
-        }
-        mPersonalAdaper = new PersonalAdapter(mContext, mPersonalList, mMotionListener);
-        mPersonalGrid.setAdapter(mPersonalAdaper);
-        mPersonalAdaper.notifyDataSetChanged();
+    public void refresh() {
+
     }
 
     @Override
@@ -126,41 +95,51 @@ public class PersonalSpaceFragment extends BaseFragment {
 
     public class GridViewOnGenericMotionListener implements View.OnGenericMotionListener {
         List<Integer> integerList;
+
         @Override
         public boolean onGenericMotion(View v, MotionEvent event) {
             mMainActivity.clearNivagateFocus();
-            integerList = mPersonalAdaper.getSelectFileInfoList();
+            integerList = mPersonalAdapter.getSelectFileInfoList();
             switch (event.getButtonState()) {
                 case MotionEvent.BUTTON_PRIMARY:
                     if (v.getTag() instanceof PersonalAdapter.ViewHolder) {
-                        mPos = (int) ((PersonalAdapter.ViewHolder) v.getTag()).name.getTag();
+                        if (mPos != (Integer)
+                                ((PersonalAdapter.ViewHolder) v.getTag()).tvTitle.getTag()) {
+                            mLastBackTime = 0;
+                            mPos = (Integer) ((PersonalAdapter.ViewHolder) v.getTag()).tvTitle.getTag();
+                        }
+                        if (System.currentTimeMillis() - mLastBackTime
+                                < Constants.DOUBLE_CLICK_INTERVAL_TIME) {
+                            enter();
+                            mLastBackTime = 0;
+                        } else {
+                            mLastBackTime = System.currentTimeMillis();
+                        }
                         if (!integerList.contains(mPos)) {
                             integerList.clear();
                             integerList.add(mPos);
                         }
-                        mCurrentBackTime = System.currentTimeMillis();
-                        setDiskClickInfo(Constants.LEFT_FAVORITES, mPos);
-                        mPersonalAdaper.notifyDataSetChanged();
                     } else {
                         integerList.clear();
                     }
-                    mPersonalAdaper.notifyDataSetChanged();
+                    mPersonalAdapter.notifyDataSetChanged();
                     break;
                 case MotionEvent.BUTTON_SECONDARY:
                     if (v.getTag() instanceof PersonalAdapter.ViewHolder) {
-                        int pos = (int) ((PersonalAdapter.ViewHolder) v.getTag()).name.getTag();
-                        if (!integerList.contains(pos)) {
+                        mPos = (Integer) ((PersonalAdapter.ViewHolder) v.getTag()).tvTitle.getTag();
+                        if (!integerList.contains(mPos)) {
                             integerList.clear();
-                            integerList.add(pos);
+                            integerList.add(mPos);
                         }
-                        mCurId = pos;
-                        mPersonalDialog = new PersonalMenuDialog(mContext, false);
+                        mPersonalDialog = new PersonalMenuDialog
+                                (mMainActivity, mPos, mFolderBeanList.get(mPos).isCollected());
+                        mPersonalDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
                     } else {
-                        mPersonalDialog = new PersonalMenuDialog(mContext, true);
+//                        mPersonalDialog = new PersonalMenuDialog(mMainActivity);
                         integerList.clear();
                     }
-                    mPersonalDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
-                    mPersonalAdaper.notifyDataSetChanged();
+//                    mPersonalDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
+                    mPersonalAdapter.notifyDataSetChanged();
                     break;
                 case MotionEvent.BUTTON_TERTIARY:
                     mMainActivity.onUp();
@@ -174,41 +153,39 @@ public class PersonalSpaceFragment extends BaseFragment {
         }
     }
 
-    private void setDiskClickInfo(String tag, int id) {
-        if (mCurrentBackTime - mLastBackTime > Constants.DOUBLE_CLICK_INTERVAL_TIME
-                || id != mCurId) {
-            mCurId = id;
-            mLastBackTime = mCurrentBackTime;
-        } else {
-            enter(tag, mPathMap.get(mPersonalList.get(id)));
-        }
-    }
-
     @Override
-    public void enter(String tag, String path) {
-        if (mCurFragment != null) {
-            mFileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
-        }
-        if (mFileInfoArrayList != null ) {
-            T.showShort(context,
-                    context.getString(R.string.operation_failed_permission_refuse));
-        }
-        mCurFragment = new SystemSpaceFragment(tag, path, mFileInfoArrayList, false);
-        FragmentTransaction transaction = mManager.beginTransaction();
-        transaction.hide(mMainActivity.mCurFragment);
-        transaction.add(R.id.fl_mian, mCurFragment, Constants.PERSONALSYSTEMSPACE_TAG)
-                .commitAllowingStateLoss();
-        mMainActivity.mCurFragment = mCurFragment;
+    public void enter(String tag, String title) {
     }
 
     @Override
     public void enter() {
-        enter(Constants.LEFT_FAVORITES, mPathMap.get(mPersonalList.get(mCurId)));
+        enter(mPos);
+    }
+
+    private void enter(int position) {
+        if (mCurFragment != null) {
+            mFileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
+        }
+        if (mFileInfoArrayList != null) {
+            T.showShort(mMainActivity,
+                    mMainActivity.getString(R.string.operation_failed_permission_refuse));
+        }
+        FragmentTransaction transaction = mManager.beginTransaction();
+        transaction.hide(mMainActivity.mCurFragment);
+        mCurFragment = mPosAndFragmentMap.get(position);
+        if (mCurFragment == null) {
+            mCurFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
+                    mFolderBeanList.get(position).getPath(), null, false);
+            transaction.add(R.id.fl_mian, mCurFragment, Constants.PERSONALSYSTEMSPACE_TAG);
+            mPosAndFragmentMap.put(position, (SystemSpaceFragment) mCurFragment);
+        }
+        transaction.show(mCurFragment).commitAllowingStateLoss();
+        mMainActivity.mCurFragment = mCurFragment;
     }
 
     public void copyPath() {
-        ((ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE))
-                                             .setText(mPathMap.get(mPersonalList.get(mCurId)));
+        ((ClipboardManager) mMainActivity.getSystemService(Context.CLIPBOARD_SERVICE))
+                .setText(mFolderBeanList.get(mPos).getPath());
     }
 
     @Override
@@ -222,16 +199,17 @@ public class PersonalSpaceFragment extends BaseFragment {
                 mPos = mPos > numColumns - 1 ? mPos - numColumns : mPos;
                 break;
             case KeyEvent.KEYCODE_DPAD_RIGHT:
-                mPos = mPos < mPersonalList.size() - 1 ? mPos + 1 : mPos;
+                mPos = mPos < mFolderBeanList.size() - 1 ? mPos + 1 : mPos;
                 break;
             case KeyEvent.KEYCODE_DPAD_DOWN:
-                mPos = mPos < mPersonalList.size() - numColumns ? mPos + numColumns : mPos;
+                mPos = mPos < mFolderBeanList.size() - numColumns ?
+                        mPos + numColumns : mPos;
                 break;
         }
-        List<Integer> integerList = mPersonalAdaper.getSelectFileInfoList();
+        List<Integer> integerList = mPersonalAdapter.getSelectFileInfoList();
         integerList.clear();
         integerList.add(mPos);
-        mPersonalAdaper.notifyDataSetChanged();
+        mPersonalAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -241,4 +219,5 @@ public class PersonalSpaceFragment extends BaseFragment {
     @Override
     public void clearSelectList() {
     }
+
 }

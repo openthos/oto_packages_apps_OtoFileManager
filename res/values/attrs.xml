@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <declare-styleable name="folders">
+        <attr name="titleRes" format="integer" />
+        <attr name="pathRes" format="integer" />
+        <attr name="iconRes" format="integer" />
+        <attr name="isSystemFolder" format="boolean" />
+        <attr name="smallIconRes" format="integer" />
+    </declare-styleable>
 </resources>

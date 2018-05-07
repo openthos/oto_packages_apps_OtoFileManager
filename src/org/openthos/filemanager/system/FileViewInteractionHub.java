@@ -917,7 +917,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
 
     public void openSelectFolder(String filePath) {
         if (mFileViewListener instanceof SystemSpaceFragment) {
-            mMainActivity.mIv_up.setImageDrawable(
+            mMainActivity.mIvUp.setImageDrawable(
                     mMainActivity.getResources().getDrawable(R.mipmap.up_enable));
             mCurrentPath = filePath;
             refreshFileList();

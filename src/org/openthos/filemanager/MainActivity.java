@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.XmlResourceParser;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -38,11 +40,15 @@ import android.os.Build;
 import android.content.ServiceConnection;
 import android.content.ComponentName;
 
+import java.util.Collections;
+import org.openthos.filemanager.bean.FolderBean;
 import org.openthos.filemanager.bean.Mode;
 import org.openthos.filemanager.bean.SeafileLibrary;
 import org.openthos.filemanager.bean.Volume;
 import org.openthos.filemanager.component.CopyInfoDialog;
 import org.openthos.filemanager.component.CloudInfoDialog;
+import org.openthos.filemanager.component.FolderBeanComparator;
+import org.openthos.filemanager.component.FolderCollectionDialog;
 import org.openthos.filemanager.component.PopOnClickLintener;
 import org.openthos.filemanager.component.PopWinShare;
 import org.openthos.filemanager.component.SearchOnKeyListener;
@@ -68,6 +74,7 @@ import org.openthos.filemanager.component.HorizontalListView;
 import org.openthos.seafile.ISeafileService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.io.File;
@@ -76,44 +83,49 @@ import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Map;
 import java.io.IOException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import com.android.internal.os.storage.ExternalStorageFormatter;
 import com.android.internal.os.storage.ExternalStorageMountter;
+
 import android.os.storage.StorageVolume;
 import android.os.RemoteException;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
-    private static final int POPWINDOW_X = -15;
-    private static final int POPWINDOW_Y = 10;
-    private static final int USB_POPWINDOW_X = 60;
-    private static final int USB_POPWINDOW_Y = 10;
     private static final int ACTIVITY_MIN_COUNT_FOR_BACK = 3;
+    private static final String USB_SPACE_FRAGMENT = "usb_space_fragment";
+    private static final String MAIN_SP_TAG = "main_sp_tag";
     private static final String VIEW_TAG = "viewtag";
     private static final String VIEW_TAG_GRID = "grid";
     private static final String VIEW_TAG_LIST = "list";
     private static final String IV_SWITCH_VIEW = "iv_switch_view";
-    private static final String SETTING_POPWINDOW_TAG = "iv_setting";
-    private static final String USB_POPWINDOW_TAG = "iv_usb";
-    private static final String MOUNT_POPWINDOW_TAG = "MOUNT_POPWINDOW_TAG";
-    private TextView mTv_desk, mTv_music, mTv_video, mTv_computer, mTv_picture,
-            mTv_document, mTv_download, mTv_recycle, mTv_cloud_service, mTv_net_service;
-    private ImageView mIv_list_view, mIv_grid_view, mIv_forward, mIv_setting;
-    public ImageView mIv_up, mIv_back;
-    private EditText mEt_nivagation, mEt_search_view;
-    private ImageView mIv_search_view;
-    private LinearLayout ll_usb;
+    public static final String SETTING_POPWINDOW_TAG = "iv_setting";
+    public static final String COLLECTION_ITEM_TAG = "collection_item";
+    public static final String USB_POPWINDOW_TAG = "iv_usb";
+    public static final String MOUNT_POPWINDOW_TAG = "MOUNT_POPWINDOW_TAG";
+    public static final String NAME_SPACE_RES_AUTO = "http://schemas.android.com/apk/res-auto";
+    private TextView mTvComputer;
+    private TextView mTvCloudService;
+    private TextView mTvNetService;
+    private TextView mTvAdd;
+    private View mCurEventView;
+    private ImageView mIvListView, mIvGridView, mIvForward, mIvSetting;
+    public ImageView mIvUp, mIvBack;
+    private EditText mEtNavigation, mEtSearchView;
+    private ImageView mIvSearchView;
+    private LinearLayout mLlUsb;
 
     private FragmentManager mManager = getSupportFragmentManager();
     private PopWinShare mPopWinShare;
     public Fragment mCurFragment;
     public SdStorageFragment mSdStorageFragment;
-    private SystemSpaceFragment mDeskFragment, mMusicFragment, mVideoFragment, mPictrueFragment,
-            mAddressFragment, mDocumentFragment, mDownloadFragment, mRecycleFragment;
     public SeafileFragment mSeafileFragment;
     private SambaFragment mSambaFragment;
     private UsbConnectReceiver mReceiver;
@@ -126,7 +138,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private LeftTouchListener mLeftTouchListener;
     private LeftHoverListener mLeftHoverListener;
     private boolean mIsFirst = true;
-    private HashMap<String, Integer> mHashMap;
+    private HashMap<String, Integer> mLeftViewTagAndIdMap = new HashMap<>();
     private SearchOnKeyListener mSearchOnKeyListener;
     private CopyInfoDialog mCopyInfoDialog;
     private ProgressDialog mProgressDialog;
@@ -136,27 +148,28 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public BaseFragment mStartSearchFragment;
     private SearchFragment mSearchFragment;
     public String mCurPath;
-    public int mUserId;
     public ArrayList<SeafileLibrary> mLibrarys = new ArrayList<>();
     private CustomFileObserver mCustomFileObserver;
     private String mUsbPath;
-    private TextView[] mLeftTexts;
     private static ContentResolver mContentResolver;
     private static Uri mUri;
     private static boolean mIsCtrlPress = false;
     private static boolean mIsShiftPress = false;
-
     private HorizontalListView mAddressListView;
+
     private String[] mPath;
     private String mClickPath;
-    private List<String> mPathList;
+    private List<String> mPathList = new ArrayList<>();
     private PathAdapter mPathAdapter;
     private AddressOnTouchListener mAddressTouchListener;
-    public List<Fragment> mUserOperationFragments;
+    public List<Fragment> mUserOperationFragments = new ArrayList<>();
     public int mFragmentIndex = -1;
     private ArrayList<Volume> mVolumes = new ArrayList<>();
     private HashMap<String, SystemSpaceFragment> mMountMap = new HashMap<>();
-    private List<SystemSpaceFragment> mDynamicFragments;
+    private List<FolderBean> mFolderBeanList = new ArrayList<>();
+    private Map<String, SystemSpaceFragment> mPathAndFragmentMap = new HashMap<>();
+    private Map<View, String> mCollectedFolderViewAndPathMap = new HashMap<>();
+    private List<SystemSpaceFragment> mDynamicFragments = new ArrayList<>();
     private ArrayList<String> mUsbLists = new ArrayList<>();
     private HashMap<String, SystemSpaceFragment> mUsbFragments = new HashMap<>();
     private LinearLayout mLlCollection;
@@ -164,11 +177,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private int mLeftIndex = 0;
     private List<View> mLeftViewList = new ArrayList<>();
     private List<View> mUsbViews = new ArrayList<>();
-    public int mCurTabIndext = 0;
-    private View mCurLeftItem, mPreView;
+    public int mCurTabIndex = 0;
+    private View mCurLeftItem, mPreTabView, mPreSelectedView;
     private EditTextTouchListener mEditTextTouchListener;
     private CloudInfoDialog mCloudInfoDialog;
-    private PopOnClickLintener mParamOnClickListener;
+    private FolderCollectionDialog mFolderCollectionDialog;
     private SeafileThread mSeafileThread;
     private SeafileServiceConnection mSeafileServiceConnection;
     public ISeafileService mISeafileService;
@@ -227,39 +240,31 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         ((FileManagerApplication) getApplication()).addActivity(this);
         mLlCollection = (LinearLayout) findViewById(R.id.ll_collection);
         mLlMount = (LinearLayout) findViewById(R.id.ll_mount);
-        mSharedPreferences = getSharedPreferences(VIEW_TAG, Context.MODE_PRIVATE);
+        mSharedPreferences = getSharedPreferences(MAIN_SP_TAG, Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
         String viewTag = mSharedPreferences.getString(VIEW_TAG, VIEW_TAG_GRID);
         LocalCache.getInstance(MainActivity.this).setViewTag(viewTag);
-        mTv_desk = (TextView) findViewById(R.id.tv_desk);
-        mTv_music = (TextView) findViewById(R.id.tv_music);
-        mTv_video = (TextView) findViewById(R.id.tv_video);
-        mTv_computer = (TextView) findViewById(R.id.tv_computer);
-        mTv_picture = (TextView) findViewById(R.id.tv_picture);
-        mTv_document = (TextView) findViewById(R.id.tv_document);
-        mTv_download = (TextView) findViewById(R.id.tv_download);
-        mTv_recycle = (TextView) findViewById(R.id.tv_recycle);
-        mTv_cloud_service = (TextView) findViewById(R.id.tv_cloud_service);
-        mTv_net_service = (TextView) findViewById(R.id.tv_net_service);
-        mIv_list_view = (ImageView) findViewById(R.id.iv_list_view);
-        mIv_grid_view = (ImageView) findViewById(R.id.iv_grid_view);
-        mIv_back = (ImageView) findViewById(R.id.iv_back);
-        mIv_forward = (ImageView) findViewById(R.id.iv_forward);
-        mIv_up = (ImageView) findViewById(R.id.iv_up);
-        mIv_setting = (ImageView) findViewById(R.id.iv_setting);
-        mEt_nivagation = (EditText) findViewById(R.id.et_nivagation);
-        mIv_search_view = (ImageView) findViewById(R.id.iv_search);
-        mEt_search_view = (EditText) findViewById(R.id.search_view);
-        ll_usb = (LinearLayout) findViewById(R.id.ll_usb);
+        mTvAdd = (TextView) findViewById(R.id.tv_add);
+        mTvComputer = (TextView) findViewById(R.id.tv_computer);
+        mTvCloudService = (TextView) findViewById(R.id.tv_cloud_service);
+        mTvNetService = (TextView) findViewById(R.id.tv_net_service);
+        mIvListView = (ImageView) findViewById(R.id.iv_list_view);
+        mIvGridView = (ImageView) findViewById(R.id.iv_grid_view);
+        mIvBack = (ImageView) findViewById(R.id.iv_back);
+        mIvForward = (ImageView) findViewById(R.id.iv_forward);
+        mIvUp = (ImageView) findViewById(R.id.iv_up);
+        mIvSetting = (ImageView) findViewById(R.id.iv_setting);
+        mEtNavigation = (EditText) findViewById(R.id.et_nivagation);
+        mIvSearchView = (ImageView) findViewById(R.id.iv_search);
+        mEtSearchView = (EditText) findViewById(R.id.search_view);
+        mLlUsb = (LinearLayout) findViewById(R.id.ll_usb);
         mAddressListView = (HorizontalListView) findViewById(R.id.lv_address);
-        mLeftTexts = new TextView[]{mTv_music, mTv_desk, mTv_video, mTv_computer, mTv_picture,
-                mTv_document, mTv_download, mTv_recycle, mTv_cloud_service, mTv_net_service};
         if (LocalCache.getViewTag() != null && "list".equals(LocalCache.getViewTag())) {
-            mIv_grid_view.setSelected(false);
-            mIv_list_view.setSelected(true);
+            mIvGridView.setSelected(false);
+            mIvListView.setSelected(true);
         } else {
-            mIv_grid_view.setSelected(true);
-            mIv_list_view.setSelected(false);
+            mIvGridView.setSelected(true);
+            mIvListView.setSelected(false);
         }
         File file = new File(Constants.DOCUMENT_PATH);
         if (!file.exists() && !file.isDirectory()) {
@@ -269,26 +274,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mSeafileServiceConnection = new SeafileServiceConnection();
         Intent intent = new Intent();
         intent.setComponent(new ComponentName("org.openthos.seafile",
-                    "org.openthos.seafile.SeafileService"));
+                "org.openthos.seafile.SeafileService"));
         bindService(intent, mSeafileServiceConnection, Context.BIND_AUTO_CREATE);
         mSeafileThread = new SeafileThread();
         mSeafileThread.start();
-        mHashMap = new HashMap<>();
-        mHashMap.put(Constants.DESKFRAGMENT_TAG, R.id.tv_desk);
-        mHashMap.put(Constants.MUSICFRAGMENT_TAG, R.id.tv_music);
-        mHashMap.put(Constants.VIDEOFRAGMENT_TAG, R.id.tv_video);
-        mHashMap.put(Constants.PICTRUEFRAGMENT_TAG, R.id.tv_picture);
-        mHashMap.put(Constants.DOCUMENTFRAGMENT_TAG, R.id.tv_document);
-        mHashMap.put(Constants.DOWNLOADFRRAGMENT_TAG, R.id.tv_download);
-        mHashMap.put(Constants.RECYCLEFRAGMENT_TAG, R.id.tv_recycle);
-        mHashMap.put(Constants.SDSTORAGEFRAGMENT_TAG, R.id.tv_computer);
-        mHashMap.put(Constants.SDSSYSTEMSPACE_TAG, R.id.tv_computer);
-        mHashMap.put(Constants.PERSONALSYSTEMSPACE_TAG, R.id.tv_computer);
-        mHashMap.put(Constants.SEAFILESYSTEMSPACE_TAG, R.id.tv_cloud_service);
-        mHashMap.put(Constants.USBFRAGMENT_TAG, R.id.tv_computer);
-        mHashMap.put(Constants.PERSONAL_TAG, R.id.tv_computer);
-        mHashMap.put(Constants.DETAILFRAGMENT_TAG, R.id.tv_picture);
-        mHashMap.put(Constants.SAMBA_TAG, R.id.tv_net_service);
+        mLeftViewTagAndIdMap.put(Constants.SDSTORAGEFRAGMENT_TAG, R.id.tv_computer);
+        mLeftViewTagAndIdMap.put(Constants.SDSSYSTEMSPACE_TAG, R.id.tv_computer);
+        mLeftViewTagAndIdMap.put(Constants.PERSONALSYSTEMSPACE_TAG, R.id.tv_computer);
+        mLeftViewTagAndIdMap.put(Constants.SEAFILESYSTEMSPACE_TAG, R.id.tv_cloud_service);
+        mLeftViewTagAndIdMap.put(Constants.USBFRAGMENT_TAG, R.id.tv_computer);
+        mLeftViewTagAndIdMap.put(Constants.PERSONAL_TAG, R.id.tv_computer);
+        mLeftViewTagAndIdMap.put(Constants.SAMBA_FRAGMENT_TAG, R.id.tv_net_service);
         mCopyInfoDialog = CopyInfoDialog.getInstance(MainActivity.this);
         mHandler = new Handler() {
             long mPreTime = 0L;
@@ -311,25 +307,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             initUsb(Constants.USB_UNMOUNT);
                             break;
                         case Constants.USB_READY:
-                            ll_usb.removeAllViews();
+                            mLlUsb.removeAllViews();
                             mUsbViews.clear();
                             for (int i = 0; i < mUsbLists.size(); i++) {
                                 View v = getUsbView(mUsbLists.get(i));
-                                ll_usb.addView(v);
+                                mLlUsb.addView(v);
                                 mUsbViews.add(v);
                             }
                             if (mProgressDialog != null) {
                                 mProgressDialog.dismiss();
                             }
                             if (TextUtils.isEmpty(getCurPath())) {
-                                mTv_computer.performClick();
+                                mTvComputer.performClick();
                             }
                             break;
                         case Constants.USB_HIDE:
                             String usbPath = (String) msg.obj;
                             for (View tempUsbView : mUsbViews) {
                                 if (tempUsbView.getTag().equals(usbPath)) {
-                                    ll_usb.removeView(tempUsbView);
+                                    mLlUsb.removeView(tempUsbView);
                                     mUsbViews.remove(tempUsbView);
                                     break;
                                 }
@@ -418,6 +414,150 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         };
     }
 
+    protected void initData() {
+        checkFolder();
+        getFoldersInfoFromXml();
+        getMountData();
+        initFragment();
+        mLeftTouchListener = new LeftTouchListener();
+        mLeftHoverListener = new LeftHoverListener();
+        initLeftCollectionView();
+        mContentResolver = getContentResolver();
+        mUri = Uri.parse("content://org.openthos.filemanager/recycle");
+        mAddressTouchListener = new AddressOnTouchListener();
+        mPathAdapter = new PathAdapter(this, mPathList, mAddressTouchListener);
+        mAddressListView.setAdapter(mPathAdapter);
+        clickComputer();
+        initUsb(Constants.USB_INIT);
+        initLeftViewList();
+        initFirstPage();
+    }
+
+    @Override
+    protected void initListener() {
+        mEditTextTouchListener = new EditTextTouchListener();
+        for (int i = 0; i < mLeftViewList.size(); i++) {
+            mLeftViewList.get(i).setOnTouchListener(mLeftTouchListener);
+            mLeftViewList.get(i).setOnHoverListener(mLeftHoverListener);
+        }
+        mTvAdd.setOnClickListener(this);
+        mIvListView.setOnClickListener(this);
+        mIvGridView.setOnClickListener(this);
+        mIvBack.setOnClickListener(this);
+        mIvUp.setOnClickListener(this);
+        mIvForward.setOnClickListener(this);
+        mIvSetting.setOnClickListener(this);
+        mSearchOnKeyListener = new SearchOnKeyListener(mManager, MainActivity.this);
+        mEtSearchView.setOnKeyListener(mSearchOnKeyListener);
+        mIvSearchView.setOnClickListener(this);
+        mEtSearchView.setOnTouchListener(mEditTextTouchListener);
+        NavigationOnKeyListener navigationOnKeyListener = new NavigationOnKeyListener();
+        mEtNavigation.setOnTouchListener(mEditTextTouchListener);
+        mEtNavigation.setOnKeyListener(navigationOnKeyListener);
+        TextChangeListener textChangeListener = new TextChangeListener();
+        mEtNavigation.addTextChangedListener(textChangeListener);
+        mEtNavigation.setOnFocusChangeListener(new AddressOnFocusChangeListener());
+        mAddressListView.setOnTouchListener(mAddressTouchListener);
+        mReceiver = new UsbConnectReceiver(this);
+    }
+
+    private void getFoldersInfoFromXml() {
+        XmlResourceParser parser = getResources().getXml(R.xml.personal_space_folders);
+        try {
+            FolderBean bean;
+            int event = parser.getEventType();
+            while (event != XmlPullParser.END_DOCUMENT) {
+                if (event == XmlPullParser.START_TAG && parser.getAttributeCount() > 0) {
+                    int pathRes = parser.getAttributeResourceValue(
+                            NAME_SPACE_RES_AUTO, "pathRes", -1);
+                    String path = Constants.SDCARD_PATH + getResources().getString(pathRes);
+                    if (new File(path).exists()) {
+                        bean = new FolderBean();
+                        bean.setPath(path);
+                        bean.setTitle(getResources().getString(parser.getAttributeResourceValue(
+                                NAME_SPACE_RES_AUTO, "titleRes", -1)));
+                        bean.setIsSystemFolder(parser.getAttributeBooleanValue(
+                                NAME_SPACE_RES_AUTO, "isSystemFolder", false));
+                        bean.setIconRes(parser.getAttributeResourceValue(
+                                NAME_SPACE_RES_AUTO, "iconRes", -1));
+                        bean.setSmallIconRes(parser.getAttributeResourceValue(
+                                NAME_SPACE_RES_AUTO, "smallIconRes", -1));
+                        bean.setIsCollected(
+                                mSharedPreferences.getBoolean(bean.getPath(), false));
+                        mFolderBeanList.add(bean);
+                    }
+                }
+                event = parser.next();
+            }
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Collections.sort(mFolderBeanList, new FolderBeanComparator());
+    }
+
+    private void initFragment() {
+        FragmentTransaction transaction = mManager.beginTransaction();
+        mSdStorageFragment = new SdStorageFragment(mManager, MainActivity.this);
+        transaction.add(R.id.fl_mian, mSdStorageFragment, Constants.SDSTORAGEFRAGMENT_TAG)
+                .hide(mSdStorageFragment);
+        mPersonalSpaceFragment = new PersonalSpaceFragment();
+        transaction.add(R.id.fl_mian, mPersonalSpaceFragment, Constants.PERSONAL_TAG)
+                .hide(mPersonalSpaceFragment);
+        mSeafileFragment = new SeafileFragment();
+        transaction.add(R.id.fl_mian, mSeafileFragment, Constants.SEAFILESYSTEMSPACE_TAG)
+                .hide(mSeafileFragment);
+        mSambaFragment = new SambaFragment();
+        transaction.add(R.id.fl_mian, mSambaFragment, Constants.SAMBA_FRAGMENT_TAG)
+                .hide(mSambaFragment);
+        for (int i = 0; i < mVolumes.size(); i++) {
+            Volume v = mVolumes.get(i);
+            View inflate = View.inflate(this, R.layout.mount_list, null);
+            TextView name = (TextView) inflate.findViewById(R.id.usb_list_usb_name);
+            name.setText(v.getBlock());
+            inflate.setOnHoverListener(mLeftHoverListener);
+            inflate.setOnTouchListener(mLeftTouchListener);
+            inflate.setTag(v);
+            SystemSpaceFragment mountFragment = new SystemSpaceFragment(
+                    v.getBlock(), "/storage/disk" + i, null, true);
+            mMountMap.put(v.getBlock(), mountFragment);
+            transaction.add(R.id.fl_mian, mMountMap.get(v.getBlock()),
+                    v.getBlock()).hide(mMountMap.get(v.getBlock())).commitAllowingStateLoss();
+            v.setPath("/storage/disk" + i);
+            mLlMount.addView(inflate);
+            mCurTabIndex = -1;
+            mDynamicFragments.add(mountFragment);
+        }
+        transaction.commitAllowingStateLoss();
+    }
+
+    private void initLeftCollectionView() {
+        FolderBean bean;
+        for (int i = 0; i < mFolderBeanList.size(); i++) {
+            bean = mFolderBeanList.get(i);
+            if (bean.isCollected()) {
+                View v = getLeftViewByFolderBean(bean);
+                mLlCollection.addView(
+                        v, mLlCollection.getChildCount() - 1, mTvAdd.getLayoutParams());
+                mCollectedFolderViewAndPathMap.put(v, bean.getPath());
+                mLeftViewTagAndIdMap.put(bean.getPath(), v.getId());
+            }
+        }
+    }
+
+    private void initLeftViewList() {
+        for (int i = 0; i < mLlCollection.getChildCount(); i++) {
+            mLeftViewList.add(mLlCollection.getChildAt(i));
+        }
+        mLeftViewList.add(mTvComputer);
+        for (int i = 0; i < mLlMount.getChildCount(); i++) {
+            mLeftViewList.add(mLlMount.getChildAt(i));
+        }
+        mLeftViewList.add(mTvCloudService);
+        mLeftViewList.add(mTvNetService);
+    }
+
     private void showSdSFragmentAfterInstallUSB() {
         mManager.beginTransaction().remove(mCurFragment).show(mSdStorageFragment)
                 .commitAllowingStateLoss();
@@ -469,9 +609,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     for (int i = 0; i < mUsbLists.size(); i++) {
                         if (mUsbPath.equals(mUsbLists.get(i))) {
                             position = getUsbPosition(mUsbPath);
-                            View v = ll_usb.getChildAt(getUsbPosition(mUsbPath));
+                            View v = mLlUsb.getChildAt(getUsbPosition(mUsbPath));
                             mUsbViews.remove(v);
-                            ll_usb.removeView(v);
+                            mLlUsb.removeView(v);
                             mSdStorageFragment.removeUsbView(position);
                             break;
                         }
@@ -481,7 +621,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         for (int i = mUsbLists.size() - 1; i >= 0; i--) {
                             if ((mUsbLists.get(i)).indexOf(mUsbPath + "_") != -1) {
                                 position = getUsbPosition(mUsbLists.get(i));
-                                ll_usb.removeViewAt(getUsbPosition(mUsbLists.get(i)));
+                                mLlUsb.removeViewAt(getUsbPosition(mUsbLists.get(i)));
                                 mSdStorageFragment.removeUsbView(position);
                             }
                         }
@@ -503,93 +643,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 initUsb(Constants.USB_EJECT);
                 break;
         }
-    }
-
-    private void initFragment() {
-        mUserOperationFragments = new ArrayList<Fragment>();
-        mDynamicFragments = new ArrayList<>();
-        mReceiver = new UsbConnectReceiver(this);
-        FragmentTransaction transaction = mManager.beginTransaction();
-        if (mSdStorageFragment == null) {
-            mSdStorageFragment = new SdStorageFragment(mManager, MainActivity.this);
-            transaction.add(R.id.fl_mian, mSdStorageFragment, Constants.SDSTORAGEFRAGMENT_TAG)
-                    .hide(mSdStorageFragment);
-        }
-        if (mDeskFragment == null) {
-            mDeskFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                    Constants.DESKTOP_PATH, null, true);
-            transaction.add(R.id.fl_mian, mDeskFragment, Constants.DESKFRAGMENT_TAG)
-                    .hide(mDeskFragment);
-        }
-        if (mMusicFragment == null) {
-            mMusicFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                    Constants.MUSIC_PATH, null, true);
-            transaction.add(R.id.fl_mian, mMusicFragment, Constants.MUSICFRAGMENT_TAG)
-                    .hide(mMusicFragment);
-        }
-        if (mVideoFragment == null) {
-            mVideoFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                    Constants.VIDEOS_PATH, null, true);
-            transaction.add(R.id.fl_mian, mVideoFragment, Constants.VIDEOFRAGMENT_TAG)
-                    .hide(mVideoFragment);
-        }
-        if (mPictrueFragment == null) {
-            mPictrueFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                    Constants.PICTURES_PATH, null, true);
-            transaction.add(R.id.fl_mian, mPictrueFragment, Constants.PICTRUEFRAGMENT_TAG)
-                    .hide(mPictrueFragment);
-        }
-        if (mDocumentFragment == null) {
-            mDocumentFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                    Constants.DOCUMENT_PATH, null, true);
-            transaction.add(R.id.fl_mian, mDocumentFragment, Constants.DOCUMENTFRAGMENT_TAG)
-                    .hide(mDocumentFragment);
-        }
-        if (mDownloadFragment == null) {
-            mDownloadFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                    Constants.DOWNLOAD_PATH, null, true);
-            transaction.add(R.id.fl_mian, mDownloadFragment, Constants.DOWNLOADFRRAGMENT_TAG)
-                    .hide(mDownloadFragment);
-        }
-        if (mRecycleFragment == null) {
-            mRecycleFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                    Constants.RECYCLE_PATH, null, true);
-            transaction.add(R.id.fl_mian, mRecycleFragment, Constants.RECYCLEFRAGMENT_TAG)
-                    .hide(mRecycleFragment);
-        }
-        if (mPersonalSpaceFragment == null) {
-            mPersonalSpaceFragment = new PersonalSpaceFragment();
-            transaction.add(R.id.fl_mian, mPersonalSpaceFragment, Constants.PERSONAL_TAG)
-                    .hide(mPersonalSpaceFragment);
-        }
-        if (mSeafileFragment == null) {
-            mSeafileFragment = new SeafileFragment();
-            transaction.add(R.id.fl_mian, mSeafileFragment, Constants.SEAFILESYSTEMSPACE_TAG)
-                    .hide(mSeafileFragment);
-        }
-        if (mSambaFragment == null) {
-            mSambaFragment = new SambaFragment();
-            transaction.add(R.id.fl_mian, mSambaFragment, Constants.SAMBA_FRAGMENT_TAG)
-                    .hide(mSambaFragment);
-        }
-
-        transaction.commitAllowingStateLoss();
-    }
-
-    protected void initData() {
-        initFragment();
-        checkFolder();
-        mContentResolver = getContentResolver();
-        mUri = Uri.parse("content://org.openthos.filemanager/recycle");
-        mPathList = new ArrayList<>();
-        mAddressTouchListener = new AddressOnTouchListener();
-        mPathAdapter = new PathAdapter(this, mPathList, mAddressTouchListener);
-        mAddressListView.setAdapter(mPathAdapter);
-        for (int index = 0; index < mLlCollection.getChildCount(); index++) {
-            mLeftViewList.add(mLlCollection.getChildAt(index));
-        }
-        mLeftViewList.add(mTv_computer);
-        getMountData();
     }
 
     private void getMountData() {
@@ -634,75 +687,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    @Override
-    protected void initListener() {
-        mLeftTouchListener = new LeftTouchListener();
-        mLeftHoverListener = new LeftHoverListener();
-        mEditTextTouchListener = new EditTextTouchListener();
-        for (int i = 0; i < mLeftTexts.length; i++) {
-            mLeftTexts[i].setOnTouchListener(mLeftTouchListener);
-            mLeftTexts[i].setOnHoverListener(mLeftHoverListener);
-        }
-        mIv_list_view.setOnClickListener(this);
-        mIv_grid_view.setOnClickListener(this);
-        mIv_back.setOnClickListener(this);
-        mIv_up.setOnClickListener(this);
-        mIv_forward.setOnClickListener(this);
-        mIv_setting.setOnClickListener(this);
-        clickComputer();
-        mSearchOnKeyListener = new SearchOnKeyListener(mManager, MainActivity.this);
-        mEt_search_view.setOnKeyListener(mSearchOnKeyListener);
-        mIv_search_view.setOnClickListener(this);
-        mEt_search_view.setOnTouchListener(mEditTextTouchListener);
-        NivagationOnKeyLinstener nivagationOnKeyLinstener = new NivagationOnKeyLinstener();
-        mEt_nivagation.setOnTouchListener(mEditTextTouchListener);
-        mEt_nivagation.setOnKeyListener(nivagationOnKeyLinstener);
-        TextChangeListener textChangeListener = new TextChangeListener();
-        mEt_nivagation.addTextChangedListener(textChangeListener);
-        mEt_nivagation.setOnFocusChangeListener(new AddressOnFocusChangeListener());
-        mAddressListView.setOnTouchListener(mAddressTouchListener);
-        initUsb(Constants.USB_INIT);
-        int i = 0;
-        for (Volume v : mVolumes) {
-            View inflate = View.inflate(this, R.layout.mount_list, null);
-            TextView name = (TextView) inflate.findViewById(R.id.usb_list_usb_name);
-            name.setText(v.getBlock());
-            inflate.setOnHoverListener(mLeftHoverListener);
-            inflate.setOnTouchListener(mLeftTouchListener);
-            inflate.setTag(v);
-            SystemSpaceFragment mountFragment = new SystemSpaceFragment(
-                    v.getBlock(), "/storage/disk" + i, null, true);
-            mMountMap.put(v.getBlock(), mountFragment);
-            mManager.beginTransaction().add(R.id.fl_mian, mMountMap.get(v.getBlock()),
-                    v.getBlock()).hide(mMountMap.get(v.getBlock())).commitAllowingStateLoss();
-            v.setPath("/storage/disk" + i);
-            i++;
-            mLlMount.addView(inflate);
-            mLeftViewList.add(inflate);
-            mCurTabIndext = -1;
-            mDynamicFragments.add(mountFragment);
-        }
-        mLeftViewList.add(mTv_cloud_service);
-        mLeftViewList.add(mTv_net_service);
-        initFirstPage();
-    }
-
     protected void initFirstPage() {
-        Intent intent = getIntent();
-        String path = intent.getStringExtra(Constants.PATH_TAG);
+        String path = getIntent().getStringExtra(Constants.PATH_TAG);
         if (path != null) {
             showSpaceFragment(path);
-            if (path.startsWith(Constants.DESKTOP_PATH)) {
-                setSelectedBackground(R.id.tv_desk);
-            } else if (path.startsWith(Constants.RECYCLE_PATH)) {
-                setSelectedBackground(R.id.tv_recycle);
-            }
         }
         setCurPath(path);
     }
 
-
-    class NivagationOnKeyLinstener implements View.OnKeyListener {
+    class NavigationOnKeyListener implements View.OnKeyListener {
         @Override
         public boolean onKey(View v, int keyCode, KeyEvent event) {
             switch (keyCode) {
@@ -753,19 +746,31 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (file.exists()) {
             FragmentTransaction transaction = mManager.beginTransaction();
             transaction.hide(mCurFragment);
-            mAddressFragment = new SystemSpaceFragment(
-                    Constants.LEFT_FAVORITES, path, null, false);
-            transaction.add(R.id.fl_mian, mAddressFragment, Constants.ADDRESSFRAGMENT_TAG);
-            transaction.show(mAddressFragment).commitAllowingStateLoss();
+            SystemSpaceFragment fragment = mPathAndFragmentMap.get(path);
+            if (fragment == null) {
+                fragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES, path,
+                        null, mLeftViewTagAndIdMap.containsKey(path));
+                transaction.add(R.id.fl_mian, fragment, path).commitAllowingStateLoss();
+                mPathAndFragmentMap.put(path, fragment);
+            } else {
+                transaction.show(fragment).commitAllowingStateLoss();
+            }
+            setFileInfo(getLeftViewIdByTag(path), path, fragment);
+            //transaction.show(fragment).addToBackStack(null).commitAllowingStateLoss();
             setNavigationPath(Util.getDisplayPath(this, path));
-            setFileInfo(R.id.et_nivagation, path, mAddressFragment);
-            mHashMap.put(Constants.ADDRESSFRAGMENT_TAG, R.id.tv_computer);
-            mCurTabIndext = 9;
-            mCurFragment = mAddressFragment;
+            mCurTabIndex = 9;
         } else {
             Toast.makeText(this, "" + getResources().getString(R.string.address_search_false),
                     Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public int getLeftViewIdByTag(String tag) {
+        Integer id = mLeftViewTagAndIdMap.get(tag);
+        if(id == null){
+            id = R.id.tv_computer;
+        }
+        return id;
     }
 
     public class UsbConnectReceiver extends BroadcastReceiver {
@@ -842,56 +847,56 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         v.setBackgroundColor(0x68ffffff);
         v.setFocusable(true);
         v.requestFocus();
-        mPreView = v;
+        mPreTabView = v;
     }
 
     public void disSelectPreView() {
-        if (mPreView != null) {
-            mPreView.setBackgroundColor(Color.TRANSPARENT);
+        if (mPreTabView != null) {
+            mPreTabView.setBackgroundColor(Color.TRANSPARENT);
         }
     }
 
     private void switchTab() {
-        switch (mCurTabIndext) {
+        switch (mCurTabIndex) {
             case 0:
-                processTab(mIv_back);
+                processTab(mIvBack);
                 break;
             case 1:
-                processTab(mIv_forward);
+                processTab(mIvForward);
                 break;
             case 2:
-                processTab(mIv_up);
+                processTab(mIvUp);
                 break;
             case 3:
-                processTab(mIv_setting);
+                processTab(mIvSetting);
                 break;
             case 4:
-                processTab(mIv_grid_view);
+                processTab(mIvGridView);
                 break;
             case 5:
-                processTab(mIv_list_view);
+                processTab(mIvListView);
                 break;
             case 6:
                 mAddressListView.setVisibility(View.GONE);
-                mEt_nivagation.setVisibility(View.VISIBLE);
-                processTab(mEt_nivagation);
-                mEt_nivagation.setSelection(mEt_nivagation.getText().length());
-                mPreView = null;
+                mEtNavigation.setVisibility(View.VISIBLE);
+                processTab(mEtNavigation);
+                mEtNavigation.setSelection(mEtNavigation.getText().length());
+                mPreTabView = null;
                 break;
             case 7:
-                processTab(mEt_search_view);
-                mPreView = null;
+                processTab(mEtSearchView);
+                mPreTabView = null;
                 break;
             case 8:
-                processTab(mTv_desk);
-                mCurLeftItem = mTv_desk;
+                mCurLeftItem = mLlCollection.getChildAt(0);
+                processTab(mCurLeftItem);
                 break;
             case 9:
                 if (mCurFragment instanceof SdStorageFragment) {
                     if (mSdStorageFragment.mCurView != null) {
                         mSdStorageFragment.mCurView.setSelected(false);
                     }
-                    mTv_desk.setBackgroundColor(Color.TRANSPARENT);
+                    mLlCollection.getChildAt(0).setBackgroundColor(Color.TRANSPARENT);
                     mSdStorageFragment.mPersonalSpace.requestFocus();
                     mSdStorageFragment.mPersonalSpace.setSelected(true);
                     mSdStorageFragment.mCurView = mSdStorageFragment.mPersonalSpace;
@@ -936,10 +941,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN
-                || keyCode == KeyEvent.KEYCODE_DPAD_LEFT
-                || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
-                && !(mEt_nivagation.isFocused() || mEt_search_view.isFocused())) {
-            if (mCurTabIndext == 8) {
+                || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
+                && !(mEtNavigation.isFocused() || mEtSearchView.isFocused())) {
+            if (mCurTabIndex == 8) {
                 if (mLeftIndex > mLlCollection.getChildCount() - 1) {
                     if (mUsbViews.size() != 0) {
                         mLeftViewList.addAll(
@@ -948,13 +952,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 }
                 processLeftDirectionKey(keyCode);
                 mLeftViewList.removeAll(mUsbViews);
-            } else if (mCurTabIndext == -1 || mCurTabIndext > 8) {
+            } else if (mCurTabIndex == -1 || mCurTabIndex > 8) {
                 ((BaseFragment) mCurFragment).processDirectionKey(keyCode);
             }
             return true;
         }
         if ((keyCode == KeyEvent.KEYCODE_ESCAPE || keyCode == KeyEvent.KEYCODE_DEL)
-                && !mEt_search_view.hasFocus() && !mEt_nivagation.isFocused()) {
+                && !mEtSearchView.hasFocus() && !mEtNavigation.isFocused()) {
             onBackPressed();
         }
         mIsCtrlPress = event.isCtrlPressed();
@@ -1034,14 +1038,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 return false;
             } else {
                 mHandler.sendMessage(Message.obtain(mHandler, Constants.ONLY_REFRESH,
-                        ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.getCurrentPath()));
+                        ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub
+                                .getCurrentPath()));
             }
         }
         if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
-            if (mEt_nivagation.isFocused() || mEt_search_view.isFocused()) {
+            if (mEtNavigation.isFocused() || mEtSearchView.isFocused()) {
                 return false;
             }
-            if (mCurTabIndext == 8) {
+            if (mCurTabIndex == 8) {
                 leftEnter(mCurLeftItem);
             } else {
                 if (isRecycle()) {
@@ -1058,34 +1063,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     public void leftEnter(View view) {
+        disSelectPreView();
         switch (view.getId()) {
-            case R.id.tv_desk:
-                setFileInfo(R.id.tv_desk, Constants.DESKTOP_PATH, mDeskFragment);
-                checkFolder();
-                break;
-            case R.id.tv_music:
-                setFileInfo(R.id.tv_music, Constants.MUSIC_PATH, mMusicFragment);
-                checkFolder();
-                break;
-            case R.id.tv_video:
-                setFileInfo(R.id.tv_video, Constants.VIDEOS_PATH, mVideoFragment);
-                checkFolder();
-                break;
-            case R.id.tv_picture:
-                setFileInfo(R.id.tv_picture, Constants.PICTURES_PATH, mPictrueFragment);
-                checkFolder();
-                break;
-            case R.id.tv_document:
-                setFileInfo(R.id.tv_document, Constants.DOCUMENT_PATH, mDocumentFragment);
-                checkFolder();
-                break;
-            case R.id.tv_download:
-                setFileInfo(R.id.tv_download, Constants.DOWNLOAD_PATH, mDownloadFragment);
-                checkFolder();
-                break;
-            case R.id.tv_recycle:
-                setFileInfo(R.id.tv_recycle, Constants.RECYCLE_PATH, mRecycleFragment);
-                checkFolder();
+            case R.id.tv_collected:
+                showSpaceFragment(view.getTag(R.id.left_view_path_tag).toString());
                 break;
             case R.id.tv_computer:
                 clickComputer();
@@ -1118,7 +1099,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 || getVisibleFragment() instanceof SdStorageFragment
                 || getVisibleFragment() instanceof SeafileFragment
                 || getVisibleFragment() instanceof SambaFragment
-                || mEt_nivagation.isFocused() || mEt_search_view.isFocused();
+                || mEtNavigation.isFocused() || mEtSearchView.isFocused();
     }
 
     public boolean isRecycle() {
@@ -1155,8 +1136,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         String destPath =
                 ((BaseFragment) getVisibleFragment()).mFileViewInteractionHub.getCurrentPath();
         try {
-            sourcePath =
-                    (String) ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE)).getText();
+            sourcePath = (String) ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE))
+                    .getText();
         } catch (ClassCastException e) {
             sourcePath = "";
         }
@@ -1255,7 +1236,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             setNavigationPath(currentPath);
             String tag = mCurFragment.getTag();
             if (tag != null) {
-                setSelectedBackground(mHashMap.get(tag));
+                setSelectedBackground(getLeftViewIdByTag(tag));
             }
         }
         if (mCurFragment == mSdStorageFragment) {
@@ -1268,13 +1249,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void onBackward() {
         if (mFragmentIndex < mUserOperationFragments.size()) {
             if (mCurFragment == mSdStorageFragment) {
-                mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_disable));
+                mIvUp.setImageDrawable(getResources().getDrawable(R.mipmap.up_disable));
                 if (mFragmentIndex > 0) {
-                    mIv_forward.setImageDrawable(getDrawable(R.mipmap.forward_enable));
+                    mIvForward.setImageDrawable(getDrawable(R.mipmap.forward_enable));
                 }
             } else {
-                mIv_forward.setImageDrawable(getDrawable(R.mipmap.forward_enable));
-                mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_enable));
+                mIvForward.setImageDrawable(getDrawable(R.mipmap.forward_enable));
+                mIvUp.setImageDrawable(getResources().getDrawable(R.mipmap.up_enable));
             }
 
             if (mFragmentIndex > 1) {
@@ -1283,7 +1264,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             } else {
                 returnToRootDir();
                 mFragmentIndex = 0;
-                mIv_back.setImageDrawable(getDrawable(R.mipmap.backward_disable));
+                mIvBack.setImageDrawable(getDrawable(R.mipmap.backward_disable));
             }
         }
     }
@@ -1293,18 +1274,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             mFragmentIndex++;
             processUserOperation();
         } else {
-            mIv_forward.setImageDrawable(getDrawable(R.mipmap.forward_disable));
+            mIvForward.setImageDrawable(getDrawable(R.mipmap.forward_disable));
         }
 
         if (mCurFragment == mSdStorageFragment) {
-            mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_disable));
+            mIvUp.setImageDrawable(getResources().getDrawable(R.mipmap.up_disable));
         } else {
-            mIv_back.setImageDrawable(getDrawable(R.mipmap.backward_enable));
-            mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_enable));
+            mIvBack.setImageDrawable(getDrawable(R.mipmap.backward_enable));
+            mIvUp.setImageDrawable(getResources().getDrawable(R.mipmap.up_enable));
         }
 
         if (mFragmentIndex == mUserOperationFragments.size() - 1) {
-            mIv_forward.setImageDrawable(getDrawable(R.mipmap.forward_disable));
+            mIvForward.setImageDrawable(getDrawable(R.mipmap.forward_disable));
         }
     }
 
@@ -1317,42 +1298,45 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         clearNivagateFocus();
         switch (view.getId()) {
             case R.id.iv_back:
-                mCurTabIndext = 0;
+                mCurTabIndex = 0;
                 onBackward();
                 break;
             case R.id.iv_up:
-                mCurTabIndext = 2;
+                mCurTabIndex = 2;
                 onUp();
                 break;
             case R.id.iv_forward:
-                mCurTabIndext = 1;
+                mCurTabIndex = 1;
                 onForward();
                 break;
             case R.id.iv_setting:
-                mCurTabIndext = 3;
+                mCurTabIndex = 3;
                 showPopWindow(SETTING_POPWINDOW_TAG);
                 break;
             case R.id.iv_grid_view:
-                mCurTabIndext = 4;
-                mIv_grid_view.setSelected(true);
-                mIv_list_view.setSelected(false);
+                mCurTabIndex = 4;
+                mIvGridView.setSelected(true);
+                mIvListView.setSelected(false);
                 LocalCache.setViewTag(VIEW_TAG_GRID);
                 sendBroadcastMessage(IV_SWITCH_VIEW, VIEW_TAG_GRID, false);
                 mEditor.putString(VIEW_TAG, VIEW_TAG_GRID);
                 mEditor.commit();
                 break;
             case R.id.iv_list_view:
-                mCurTabIndext = 5;
-                mIv_grid_view.setSelected(false);
-                mIv_list_view.setSelected(true);
+                mCurTabIndex = 5;
+                mIvGridView.setSelected(false);
+                mIvListView.setSelected(true);
                 LocalCache.setViewTag(VIEW_TAG_LIST);
                 sendBroadcastMessage(IV_SWITCH_VIEW, VIEW_TAG_LIST, false);
                 mEditor.putString(VIEW_TAG, VIEW_TAG_LIST);
                 mEditor.commit();
                 break;
             case R.id.iv_search:
-                mEt_search_view.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN,
+                mEtSearchView.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN,
                         KeyEvent.KEYCODE_ENTER));
+                break;
+            case R.id.tv_add:
+                showFolderCollectionDialog();
                 break;
         }
         disSelectPreView();
@@ -1400,7 +1384,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     umountIntent.setComponent(ExternalStorageMountter.COMPONENT_NAME);
                     StorageVolume[] vols = getMountService().getVolumeList(
                             MainActivity.this.getUserId(), ActivityThread.currentPackageName(), 0);
-                    StorageVolume vol= null;
+                    StorageVolume vol = null;
                     for (StorageVolume i : vols) {
                         if (i.getPath().equals(usbPath)) {
                             vol = i;
@@ -1432,8 +1416,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private void setFileInfo(int id, String path, Fragment fragment) {
         if (fragment != mSdStorageFragment) {
-            mIv_back.setImageDrawable(getDrawable(R.mipmap.backward_enable));
-            mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_enable));
+            mIvBack.setImageDrawable(getDrawable(R.mipmap.backward_enable));
+            mIvUp.setImageDrawable(getResources().getDrawable(R.mipmap.up_enable));
         }
         if (fragment instanceof SystemSpaceFragment) {
             SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) fragment;
@@ -1444,7 +1428,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 systemSpaceFragment.getFileViewInteractionHub().clearSelection();
             }
         }
-        setSelectedBackground(id);
         setCurPath(path);
         FragmentTransaction transaction = mManager.beginTransaction();
         if (mCurFragment != null) {
@@ -1453,26 +1436,31 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (fragment != null) {
             transaction.show(fragment);
         }
-        transaction.commitAllowingStateLoss();
         mCurFragment = fragment;
+        transaction.commitAllowingStateLoss();
+        setSelectedBackground(id);
         mUserOperationFragments.add(mCurFragment);
         mFragmentIndex++;
     }
 
-
     protected void setSelectedBackground(int id) {
         switch (id) {
+            case R.id.tv_collected:
+                for (int i = 0; i < mLlCollection.getChildCount(); i++) {
+                    if (mCurFragment.getTag().equals(
+                            mLlCollection.getChildAt(i).getTag(R.id.left_view_path_tag))) {
+                        setSelectView(mLlCollection.getChildAt(i));
+                    }
+                }
+                break;
             case R.id.tv_computer:
-            case R.id.tv_desk:
-            case R.id.tv_music:
-            case R.id.tv_video:
-            case R.id.tv_picture:
-            case R.id.tv_document:
-            case R.id.tv_download:
-            case R.id.tv_recycle:
-            case R.id.tv_net_service:
+                setSelectView(mTvComputer);
+                break;
             case R.id.tv_cloud_service:
-                setSelectView(findViewById(id));
+                setSelectView(mTvCloudService);
+                break;
+            case R.id.tv_net_service:
+                setSelectView(mTvNetService);
                 break;
             case R.id.mount:
                 for (int i = 0; i < mDynamicFragments.size(); i++) {
@@ -1483,13 +1471,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 }
                 break;
             case R.id.usb:
-                for (int i = 0; i < ll_usb.getChildCount(); i++) {
-                    if (mCurFragment.getTag().equals(ll_usb.getChildAt(i).getTag())) {
-                        setSelectView(ll_usb.getChildAt(i));
+                for (int i = 0; i < mLlUsb.getChildCount(); i++) {
+                    if (mCurFragment.getTag().equals(mLlUsb.getChildAt(i).getTag())) {
+                        setSelectView(mLlUsb.getChildAt(i));
                     }
                 }
-                break;
-            default:
                 break;
         }
     }
@@ -1518,33 +1504,29 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private void showPopWindow(String menu_tag) {
         mPopWinShare = null;
-        mParamOnClickListener = new PopOnClickLintener(menu_tag, MainActivity.this, mManager);
-        if (SETTING_POPWINDOW_TAG.equals(menu_tag)) {
-            mPopWinShare = new PopWinShare(MainActivity.this, mParamOnClickListener,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    menu_tag);
-            mPopWinShare.setFocusable(true);
-            mPopWinShare.showAsDropDown(mIv_setting, POPWINDOW_X, POPWINDOW_Y);
-        } else if (USB_POPWINDOW_TAG.equals(menu_tag)) {
-            mPopWinShare = new PopWinShare(MainActivity.this, new usbListener(),
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    menu_tag);
-            mPopWinShare.setFocusable(true);
-            //mPopWinShare.setWindowLayoutType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
-            mPopWinShare.showAsDropDown(ll_usb.getChildAt(getUsbPosition(mUsbPath)),
-                    USB_POPWINDOW_X, USB_POPWINDOW_Y);
+        View.OnClickListener onPopItemClickListener = null;
+        View anchorView = null;
+        switch (menu_tag) {
+            case SETTING_POPWINDOW_TAG:
+                onPopItemClickListener = new PopOnClickLintener(
+                        menu_tag, MainActivity.this, mManager);
+                anchorView = mIvSetting;
+                break;
+            case COLLECTION_ITEM_TAG:
+                onPopItemClickListener = new PopOnClickLintener(
+                        menu_tag, MainActivity.this, mManager);
+                anchorView = mCurEventView;
+                break;
+            case USB_POPWINDOW_TAG:
+                onPopItemClickListener = new usbListener();
+                anchorView = mLlUsb.getChildAt(getUsbPosition(mUsbPath));
+                break;
         }
-        mPopWinShare.update();
-        mPopWinShare.getContentView().setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    mPopWinShare.dismiss();
-                }
-            }
-        });
+        mPopWinShare = new PopWinShare(MainActivity.this, onPopItemClickListener,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                menu_tag);
+        mPopWinShare.showAsDropDown(anchorView);
     }
 
     private void showPopWindow(Volume volume, View view) {
@@ -1552,21 +1534,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 MOUNT_POPWINDOW_TAG);
-        mPopWinShare.setFocusable(true);
         //mPopWinShare.setWindowLayoutType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
-        mPopWinShare.showAsDropDown(view, USB_POPWINDOW_X, USB_POPWINDOW_Y);
-        mPopWinShare.update();
-        mPopWinShare.getContentView().setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    mPopWinShare.dismiss();
-                }
-            }
-        });
+        mPopWinShare.showAsDropDown(view);
     }
 
-    public void DismissPopwindow() {
+    public void dismissPopwindow() {
         mPopWinShare.dismiss();
     }
 
@@ -1575,12 +1547,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mManager.findFragmentById(R.id.fl_mian);
         if (mCurFragment != mSdStorageFragment) {
             if (mCurFragment instanceof SystemSpaceFragment) {
-                SystemSpaceFragment sdCurFrament = (SystemSpaceFragment) mCurFragment;
-                String currentPath = sdCurFrament.getCurrentPath();
+                SystemSpaceFragment sdCurFragment = (SystemSpaceFragment) mCurFragment;
+                String currentPath = sdCurFragment.getCurrentPath();
                 setCurPath(currentPath);
                 setNavigationPath(currentPath);
-                if (mCurFragment.getTag() != null &&
-                        mCurFragment.getTag().equals(Constants.PERSONALSYSTEMSPACE_TAG)) {
+                String tag = mCurFragment.getTag();
+                if (tag == null) {
+                    returnToRootDir();
+                }
+                if (tag.equals(Constants.PERSONALSYSTEMSPACE_TAG)) {
                     if (mPersonalSpaceFragment.canGoBack()) {
                         mPersonalSpaceFragment.goBack();
                     } else if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
@@ -1588,8 +1563,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     } else {
                         returnToPersonalDir();
                     }
-                } else if (mCurFragment.getTag() != null &&
-                        mCurFragment.getTag().equals(Constants.SEAFILESYSTEMSPACE_TAG)) {
+                } else if (tag.equals(Constants.SEAFILESYSTEMSPACE_TAG)) {
                     if (mSeafileFragment.canGoBack()) {
                         mSeafileFragment.goBack();
                     } else if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
@@ -1597,8 +1571,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     } else {
                         returnToSeafileDir();
                     }
-                } else if (mCurFragment.getTag() != null &&
-                        mCurFragment.getTag().equals(Constants.SDSSYSTEMSPACE_TAG)) {
+                } else if (tag.equals(Constants.SDSSYSTEMSPACE_TAG)) {
                     if (mSdStorageFragment.canGoBack()) {
                         mSdStorageFragment.goBack();
                     } else if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
@@ -1606,8 +1579,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     } else {
                         returnToRootDir();
                     }
-                } else if (mCurFragment.getTag() != null &&
-                        mCurFragment.getTag().equals(Constants.USBFRAGMENT_TAG)) {
+                } else if (tag.equals(Constants.USBFRAGMENT_TAG)) {
                     if (mUsbStorageFragment.canGoBack()) {
                         mUsbStorageFragment.goBack();
                     } else if (mManager.getBackStackEntryCount() >= ACTIVITY_MIN_COUNT_FOR_BACK) {
@@ -1615,85 +1587,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     } else {
                         returnToRootDir();
                     }
-                } else if (mCurFragment.getTag() != null
-                        && mCurFragment.getTag().equals(Constants.DESKFRAGMENT_TAG)) {
-                    if (mDeskFragment.canGoBack()) {
-                        mDeskFragment.goBack();
-                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
-                        mManager.popBackStack();
-                    } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
-                        returnToDeskDir();
-                    } else {
-                        returnToRootDir();
-                    }
-                } else if (mCurFragment.getTag() != null
-                        && mCurFragment.getTag().equals(Constants.MUSICFRAGMENT_TAG)) {
-                    if (mMusicFragment.canGoBack()) {
-                        mMusicFragment.goBack();
-                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
-                        mManager.popBackStack();
-                    } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
-                        returnToMusicDir();
-                    } else {
-                        returnToRootDir();
-                    }
-                } else if (mCurFragment.getTag() != null
-                        && mCurFragment.getTag().equals(Constants.VIDEOFRAGMENT_TAG)) {
-                    if (mVideoFragment.canGoBack()) {
-                        mVideoFragment.goBack();
-                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
-                        mManager.popBackStack();
-                    } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
-                        returnToVideoDir();
-                    } else {
-                        returnToRootDir();
-                    }
-                } else if (mCurFragment.getTag() != null
-                        && mCurFragment.getTag().equals(Constants.PICTRUEFRAGMENT_TAG)) {
-                    if (mPictrueFragment.canGoBack()) {
-                        mPictrueFragment.goBack();
-                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
-                        mManager.popBackStack();
-                    } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
-                        returnToPicDir();
-                    } else {
-                        returnToRootDir();
-                    }
-                } else if (mCurFragment.getTag() != null
-                        && mCurFragment.getTag().equals(Constants.DOCUMENTFRAGMENT_TAG)) {
-                    if (mDocumentFragment.canGoBack()) {
-                        mDocumentFragment.goBack();
-                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
-                        mManager.popBackStack();
-                    } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
-                        returnToDocDir();
-                    } else {
-                        returnToRootDir();
-                    }
-                } else if (mCurFragment.getTag() != null
-                        && mCurFragment.getTag().equals(Constants.DOWNLOADFRRAGMENT_TAG)) {
-                    if (mDownloadFragment.canGoBack()) {
-                        mDownloadFragment.goBack();
-                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
-                        mManager.popBackStack();
-                    } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
-                        returnToDownloadDir();
-                    } else {
-                        returnToRootDir();
-                    }
-                } else if (mCurFragment.getTag() != null
-                        && mCurFragment.getTag().equals(Constants.RECYCLEFRAGMENT_TAG)) {
-                    if (mRecycleFragment.canGoBack()) {
-                        mRecycleFragment.goBack();
-                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
-                        mManager.popBackStack();
-                    } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
-                        returnToRecycleDir();
-                    } else {
-                        returnToRootDir();
-                    }
-                } else if (mCurFragment.getTag() != null
-                        && mCurFragment.getTag().equals(Constants.SEARCHSYSTEMSPACE_TAG)) {
+                } else if (tag.equals(Constants.SEARCHSYSTEMSPACE_TAG)) {
                     SystemSpaceFragment searchSysFragment = (SystemSpaceFragment) mCurFragment;
                     if (searchSysFragment.canGoBack()) {
                         searchSysFragment.goBack();
@@ -1702,8 +1596,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     } else {
                         returnToSearchFragment();
                     }
-                } else if (mCurFragment.getTag() != null
-                        && mCurFragment.getTag().equals(Constants.ADDRESSFRAGMENT_TAG)) {
+                } else if (tag.equals(Constants.ADDRESSFRAGMENT_TAG)) {
                     SystemSpaceFragment addressFragment = (SystemSpaceFragment) mCurFragment;
                     if (addressFragment.canGoBack()) {
                         addressFragment.goBack();
@@ -1712,8 +1605,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     } else {
                         returnToRootDir();
                     }
-                } else if (mCurFragment.getTag() != null
-                        && mCurFragment.getTag().equals(Constants.SAMBA_TAG)) {
+                } else if (tag.equals(Constants.SAMBA_FRAGMENT_TAG)) {
                     SystemSpaceFragment sambaFragment = (SystemSpaceFragment) mCurFragment;
                     if (sambaFragment.canGoBack()) {
                         sambaFragment.goBack();
@@ -1722,12 +1614,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     } else {
                         returnToSambaDir();
                     }
-                } else if (mCurFragment.getTag() != null) {
+                } else if (mMountMap.containsKey(tag)) {
                     SystemSpaceFragment dynamicfragment = (SystemSpaceFragment) mCurFragment;
                     if (dynamicfragment.canGoBack()) {
                         dynamicfragment.goBack();
                     } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
                         mManager.popBackStack();
+                    } else {
+                        returnToRootDir();
+                    }
+                } else if (mPathAndFragmentMap.get(tag) != null) {
+                    SystemSpaceFragment fragment = (SystemSpaceFragment) mCurFragment;
+                    if (fragment.canGoBack()) {
+                        fragment.goBack();
+                    } else if (mManager.getBackStackEntryCount() > ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        mManager.popBackStack();
+                    } else if (mManager.getBackStackEntryCount() == ACTIVITY_MIN_COUNT_FOR_BACK) {
+                        showSpaceFragment(tag);
                     } else {
                         returnToRootDir();
                     }
@@ -1746,7 +1649,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
 
         if (mCurFragment == mSdStorageFragment) {
-            mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_disable));
+            mIvUp.setImageDrawable(getResources().getDrawable(R.mipmap.up_disable));
         }
     }
 
@@ -1758,7 +1661,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             }
         }
         android.util.Log.i("newbee", android.util.Log.getStackTraceString(new Throwable()));
-        String path = mEt_nivagation.getText().toString();
+        String path = mEtNavigation.getText().toString();
         if (TextUtils.isEmpty(path.trim())) {
             showSpaceFragment("~");
         } else {
@@ -1780,76 +1683,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         fragmentTransaction.show(mSearchFragment);
         fragmentTransaction.commitAllowingStateLoss();
         mCurFragment = mSearchFragment;
-    }
-
-    private void returnToDeskDir() {
-        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
-        fragmentTransaction.hide(getVisibleFragment());
-        fragmentTransaction.show(mDeskFragment);
-        fragmentTransaction.commitAllowingStateLoss();
-        setNavigationPath(Constants.DESKTOP_PATH);
-        setSelectedBackground(R.id.tv_desk);
-        mCurFragment = mDeskFragment;
-    }
-
-    private void returnToMusicDir() {
-        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
-        fragmentTransaction.hide(getVisibleFragment());
-        fragmentTransaction.show(mMusicFragment);
-        fragmentTransaction.commitAllowingStateLoss();
-        setNavigationPath(Constants.MUSIC_PATH);
-        setSelectedBackground(R.id.tv_music);
-        mCurFragment = mMusicFragment;
-    }
-
-    private void returnToVideoDir() {
-        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
-        fragmentTransaction.hide(getVisibleFragment());
-        fragmentTransaction.show(mVideoFragment);
-        fragmentTransaction.commitAllowingStateLoss();
-        setNavigationPath(Constants.VIDEOS_PATH);
-        setSelectedBackground(R.id.tv_video);
-        mCurFragment = mVideoFragment;
-    }
-
-    private void returnToPicDir() {
-        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
-        fragmentTransaction.hide(getVisibleFragment());
-        fragmentTransaction.show(mPictrueFragment);
-        fragmentTransaction.commitAllowingStateLoss();
-        setNavigationPath(Constants.PICTURES_PATH);
-        setSelectedBackground(R.id.tv_picture);
-        mCurFragment = mPictrueFragment;
-    }
-
-    private void returnToDocDir() {
-        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
-        fragmentTransaction.hide(getVisibleFragment());
-        fragmentTransaction.show(mDocumentFragment);
-        fragmentTransaction.commitAllowingStateLoss();
-        setNavigationPath(Constants.DOCUMENT_PATH);
-        setSelectedBackground(R.id.tv_document);
-        mCurFragment = mDocumentFragment;
-    }
-
-    private void returnToDownloadDir() {
-        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
-        fragmentTransaction.hide(getVisibleFragment());
-        fragmentTransaction.show(mDownloadFragment);
-        fragmentTransaction.commitAllowingStateLoss();
-        setNavigationPath(Constants.DOWNLOAD_PATH);
-        setSelectedBackground(R.id.tv_download);
-        mCurFragment = mDownloadFragment;
-    }
-
-    private void returnToRecycleDir() {
-        FragmentTransaction fragmentTransaction = mManager.beginTransaction();
-        fragmentTransaction.hide(getVisibleFragment());
-        fragmentTransaction.show(mRecycleFragment);
-        fragmentTransaction.commitAllowingStateLoss();
-        setNavigationPath(Constants.RECYCLE_PATH);
-        setSelectedBackground(R.id.tv_recycle);
-        mCurFragment = mRecycleFragment;
     }
 
     private void returnToCloudDir() {
@@ -1882,7 +1715,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         setSelectedBackground(R.id.tv_computer);
         mSdStorageFragment.setSelectedCardBg(Constants.RETURN_TO_WHITE);
         mCurFragment = mSdStorageFragment;
-        mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_disable));
+        mIvUp.setImageDrawable(getResources().getDrawable(R.mipmap.up_disable));
     }
 
     private void returnToSeafileDir() {
@@ -1916,6 +1749,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     boolean isRestart = false;
+
     @Override
     protected void onPause() {
         android.util.Log.i("wwwwww", getComponentName().getClassName() + " Pause");
@@ -1959,16 +1793,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     public void setNavigationPath(String displayPath) {
-        mEt_nivagation.setText(displayPath);
+        mEtNavigation.setText(displayPath);
         mPath = null;
         mPathList.clear();
         if (displayPath == null || displayPath.equals("")) {
             mAddressListView.setVisibility(View.GONE);
-            mEt_nivagation.setVisibility(View.VISIBLE);
+            mEtNavigation.setVisibility(View.VISIBLE);
         } else {
             updateAddressButton(displayPath);
             mAddressListView.setVisibility(View.VISIBLE);
-            mEt_nivagation.setVisibility(View.GONE);
+            mEtNavigation.setVisibility(View.GONE);
         }
         mPathAdapter.notifyDataSetChanged();
     }
@@ -2002,7 +1836,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         @Override
         public void onClick(View view) {
             clearNivagateFocus();
-            DismissPopwindow();
+            dismissPopwindow();
             switch (view.getId()) {
                 case R.id.pop_usb_view:
                     uninstallUSB(mUsbPath);
@@ -2041,7 +1875,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             formatIntent.setComponent(ExternalStorageFormatter.COMPONENT_NAME);
             StorageVolume[] vols = getMountService().getVolumeList(
                     MainActivity.this.getUserId(), ActivityThread.currentPackageName(), 0);
-            StorageVolume vol= null;
+            StorageVolume vol = null;
             for (StorageVolume i : vols) {
                 if (i.getPath().equals(usbPath)) {
                     vol = i;
@@ -2057,42 +1891,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void setSelectView(View view) {
-        for (int i = 0; i < mLeftTexts.length; i++) {
-            if (mLeftTexts[i].isSelected()) {
-                if (mLeftTexts[i] == view) {
-                    return;
-                } else {
-                    mLeftTexts[i].setSelected(false);
-                    mLeftTexts[i].setBackground(getResources().getDrawable(R.drawable.left_bg_shape));
-                }
-            }
+        if (view == mPreSelectedView) {
+            return;
         }
-        if (ll_usb != null) {
-            for (int i = 0; i < ll_usb.getChildCount(); i++) {
-                View childAt = ll_usb.getChildAt(i);
-                if (childAt.isSelected()) {
-                    if (childAt == view) {
-                        return;
-                    } else {
-                        childAt.setSelected(false);
-                        childAt.setBackground(getResources().getDrawable(R.drawable.left_bg_shape));
-                    }
-                }
-            }
-        }
-        for (int i = 0; i < mLlMount.getChildCount(); i++) {
-            View childAt = mLlMount.getChildAt(i);
-            if (childAt.isSelected()) {
-                if (childAt == view) {
-                    return;
-                } else {
-                    childAt.setSelected(false);
-                    childAt.setBackground(getResources().getDrawable(R.drawable.left_bg_shape));
-                }
-            }
+        if (mPreSelectedView != null) {
+            mPreSelectedView.setSelected(false);
+            mPreSelectedView.setBackground(getResources().getDrawable(R.drawable.left_bg_shape));
         }
         view.setSelected(true);
         view.setBackground(getResources().getDrawable(android.R.color.holo_purple));
+        mPreSelectedView = view;
     }
 
     private View getUsbView(String usbPath) {
@@ -2110,7 +1918,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private int getUsbPosition(String path) {
         for (int i = 0; i < mUsbLists.size(); i++) {
-            String viewPath = (String) ll_usb.getChildAt(i).getTag();
+            String viewPath = (String) mLlUsb.getChildAt(i).getTag();
             if (path.equals(viewPath)) {
                 return i;
             }
@@ -2173,8 +1981,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     public void clearNivagateFocus() {
-        mEt_search_view.clearFocus();
-        mEt_nivagation.clearFocus();
+        mEtSearchView.clearFocus();
+        mEtNavigation.clearFocus();
     }
 
     private class UsbUninstallListener implements View.OnClickListener {
@@ -2206,7 +2014,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void clickComputer() {
         mIsSdStorageFragment = true;
         setNavigationPath(null);
-        setSelectView(mTv_computer);
+        setSelectView(mTvComputer);
         setFileInfo(R.id.tv_computer, "", mSdStorageFragment);
     }
 
@@ -2216,14 +2024,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             clearNivagateFocus();
             switch (motionEvent.getButtonState()) {
                 case MotionEvent.BUTTON_PRIMARY:
-                    mCurTabIndext = 8;
                     mCurLeftItem = view;
-                    disSelectPreView();
-                    setSelectView(view);
                     leftEnter(view);
+                    mCurTabIndex = 8;
                     break;
                 case MotionEvent.BUTTON_SECONDARY:
                     switch (view.getId()) {
+                        case R.id.tv_collected:
+                            mCurEventView = view;
+                            showPopWindow(COLLECTION_ITEM_TAG);
+                            break;
                         case R.id.usb:
                             if (view.getTag() != null) {
                                 mUsbPath = (String) view.getTag();
@@ -2241,13 +2051,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     public class AddressOnTouchListener implements View.OnTouchListener {
-
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 if (getVisibleFragment() != null
                         && getVisibleFragment() instanceof SystemSpaceFragment
                         && view.getTag() instanceof PathAdapter.ViewHolder) {
+                    mCurTabIndex = 9;
                     int pos = (int) ((PathAdapter.ViewHolder) view.getTag()).path.getTag();
                     if (pos == 0 && !Build.TYPE.equals("eng")
                             && mPath[pos].equals(Constants.ROOT_PATH)) {
@@ -2272,12 +2082,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                 mFileViewInteractionHub.openSelectFolder(mClickPath);
                     }
                 } else {
-                    mCurTabIndext = 6;
+                    mCurTabIndex = 6;
                     disSelectPreView();
                     mAddressListView.setVisibility(View.GONE);
-                    mEt_nivagation.setVisibility(View.VISIBLE);
-                    mEt_nivagation.requestFocus();
-                    mEt_nivagation.setSelection(mEt_nivagation.getText().length());
+                    mEtNavigation.setVisibility(View.VISIBLE);
+                    mEtNavigation.requestFocus();
+                    mEtNavigation.setSelection(mEtNavigation.getText().length());
                 }
             }
             return true;
@@ -2285,14 +2095,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     public class AddressOnFocusChangeListener implements View.OnFocusChangeListener {
-
         @Override
         public void onFocusChange(View view, boolean b) {
             if (!view.hasFocus()) {
-                mEt_nivagation.setVisibility(View.GONE);
+                mEtNavigation.setVisibility(View.GONE);
                 mAddressListView.setVisibility(View.VISIBLE);
             }
-
         }
     }
 
@@ -2383,9 +2191,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mCurFragment = fragment;
         mUserOperationFragments.add(fragment);
         mFragmentIndex++;
-        mHashMap.put(v.getBlock(), R.id.mount);
-        mIv_back.setImageDrawable(getDrawable(R.mipmap.backward_enable));
-        mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_enable));
+        mLeftViewTagAndIdMap.put(v.getBlock(), R.id.mount);
+        mIvBack.setImageDrawable(getDrawable(R.mipmap.backward_enable));
+        mIvUp.setImageDrawable(getResources().getDrawable(R.mipmap.up_enable));
         setSelectedBackground(R.id.mount);
     }
 
@@ -2420,10 +2228,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mCurFragment = mUsbStorageFragment;
         mUserOperationFragments.add(mUsbStorageFragment);
         mFragmentIndex++;
-        mHashMap.put(usbPath, R.id.usb);
-        mIv_back.setImageDrawable(getDrawable(R.mipmap.backward_enable));
-        mIv_up.setImageDrawable(getResources().getDrawable(R.mipmap.up_enable));
-        setSelectedBackground(R.id.mount);
+        mLeftViewTagAndIdMap.put(usbPath, R.id.usb);
+        mIvBack.setImageDrawable(getDrawable(R.mipmap.backward_enable));
+        mIvUp.setImageDrawable(getResources().getDrawable(R.mipmap.up_enable));
+        setSelectedBackground(R.id.usb);
     }
 
     private class MountListener implements View.OnClickListener {
@@ -2436,7 +2244,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         @Override
         public void onClick(View view) {
             clearNivagateFocus();
-            DismissPopwindow();
+            dismissPopwindow();
             switch (view.getId()) {
                 case R.id.pop_mount:
                     mountVolume(mVolume);
@@ -2474,10 +2282,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         if (event.getKeyCode() == KeyEvent.KEYCODE_TAB
                 && event.getAction() == KeyEvent.ACTION_DOWN) {
-            if (mCurTabIndext < 9) {
-                mCurTabIndext++;
+            if (mCurTabIndex < 9) {
+                mCurTabIndex++;
             } else {
-                mCurTabIndext = 0;
+                mCurTabIndex = 0;
                 if (mCurFragment instanceof SdStorageFragment) {
                     mSdStorageFragment.mPersonalSpace.setSelected(false);
                 }
@@ -2494,10 +2302,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         public boolean onTouch(View v, MotionEvent event) {
             switch (v.getId()) {
                 case R.id.et_nivagation:
-                    mCurTabIndext = 6;
+                    mCurTabIndex = 6;
                     break;
                 case R.id.search_view:
-                    mCurTabIndext = 7;
+                    mCurTabIndex = 7;
                     break;
             }
             return false;
@@ -2523,6 +2331,84 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void showCloudInfoDialog() {
         mCloudInfoDialog = new CloudInfoDialog(this);
         mCloudInfoDialog.showDialog();
-        DismissPopwindow();
+        dismissPopwindow();
     }
+
+    private void showFolderCollectionDialog() {
+        if (mFolderCollectionDialog == null) {
+            mFolderCollectionDialog = new FolderCollectionDialog(this, mFolderBeanList);
+        }
+        mFolderCollectionDialog.show();
+    }
+
+    private View getLeftViewByFolderBean(FolderBean bean) {
+        TextView tv = (TextView) LayoutInflater.from(this)
+                .inflate(R.layout.left_textview_model, null);
+        tv.setTag(mFolderBeanList.indexOf(bean));
+        tv.setTag(R.id.left_view_path_tag, bean.getPath());
+        tv.setText(bean.getTitle());
+        tv.setCompoundDrawablesWithIntrinsicBounds(
+                getResources().getDrawable(bean.getSmallIconRes()), null, null, null);
+        tv.setOnHoverListener(mLeftHoverListener);
+        tv.setOnTouchListener(mLeftTouchListener);
+        return tv;
+    }
+
+    public void handleCollectedChange(int index) {
+        ArrayList<Integer> changedList = new ArrayList<>();
+        changedList.add(index);
+        handleCollectedChange(changedList);
+    }
+
+    public void handleCollectedChange(List<Integer> changedList) {
+        FolderBean bean;
+        for (int index : changedList) {
+            bean = mFolderBeanList.get(index);
+            bean.setIsCollected(!bean.isCollected());
+            mEditor.putBoolean(bean.getPath(), bean.isCollected()).apply();
+        }
+
+        for (int index = 0, insertPos = 0; index < mFolderBeanList.size(); index++) {
+            bean = mFolderBeanList.get(index);
+            if (changedList.contains(index)) {
+                if (bean.isCollected()) {
+                    View view = getLeftViewByFolderBean(bean);
+                    mLlCollection.addView(view, insertPos, mTvAdd.getLayoutParams());
+                    mCollectedFolderViewAndPathMap.put(view, bean.getPath());
+                    mLeftViewTagAndIdMap.put(bean.getPath(), view.getId());
+                    mLeftViewList.add(insertPos, view);
+                } else {
+                    View view = mLlCollection.findViewWithTag(index);
+                    mLlCollection.removeView(view);
+                    mCollectedFolderViewAndPathMap.remove(view);
+                    mLeftViewTagAndIdMap.remove(bean.getPath());
+                    mLeftViewList.remove(view);
+                }
+            }
+            if (bean.isCollected()) {
+                insertPos++;
+            }
+        }
+
+        if (isCollectedFolderPath(mCurPath)) {
+            setSelectedBackground(mLeftViewTagAndIdMap.get(mCurPath));
+        }
+    }
+
+    public boolean isCollectedFolderPath(String path) {
+        return mCollectedFolderViewAndPathMap.containsValue(path);
+    }
+
+    public View getCurEventView() {
+        return mCurEventView;
+    }
+
+    public Map<String, Integer> getLeftTagAndViewIdMap() {
+        return mLeftViewTagAndIdMap;
+    }
+
+    public List<FolderBean> getFolderBeanList() {
+        return mFolderBeanList;
+    }
+
 }

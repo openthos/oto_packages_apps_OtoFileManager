@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<folders xmlns:folders="http://schemas.android.com/apk/res-auto">
+    <Folder
+        folders:iconRes="@mipmap/ic_personal_desktop"
+        folders:isSystemFolder="true"
+        folders:pathRes="@string/desk_path"
+        folders:smallIconRes="@drawable/left_desk_selector"
+        folders:titleRes="@string/desk" />
+    <Folder
+        folders:iconRes="@mipmap/ic_personal_music"
+        folders:isSystemFolder="true"
+        folders:pathRes="@string/music_path"
+        folders:smallIconRes="@drawable/left_music_selector"
+        folders:titleRes="@string/music" />
+    <Folder
+        folders:iconRes="@mipmap/ic_personal_video"
+        folders:isSystemFolder="true"
+        folders:pathRes="@string/video_path"
+        folders:smallIconRes="@drawable/left_video_selector"
+        folders:titleRes="@string/video" />
+    <Folder
+        folders:iconRes="@mipmap/ic_personal_image"
+        folders:isSystemFolder="true"
+        folders:pathRes="@string/picture_path"
+        folders:smallIconRes="@drawable/left_picture_selector"
+        folders:titleRes="@string/picture" />
+    <Folder
+        folders:iconRes="@mipmap/ic_personal_document"
+        folders:isSystemFolder="true"
+        folders:pathRes="@string/document_path"
+        folders:smallIconRes="@drawable/left_document_selector"
+        folders:titleRes="@string/document" />
+    <Folder
+        folders:iconRes="@mipmap/ic_personal_download"
+        folders:isSystemFolder="true"
+        folders:pathRes="@string/download_path"
+        folders:smallIconRes="@drawable/left_download_selector"
+        folders:titleRes="@string/downloads" />
+    <Folder
+        folders:iconRes="@mipmap/ic_personal_recycle"
+        folders:isSystemFolder="true"
+        folders:pathRes="@string/recycle_path"
+        folders:smallIconRes="@drawable/left_recycle_selector"
+        folders:titleRes="@string/recycle" />
+    <Folder
+        folders:iconRes="@mipmap/ic_personal_qq_pic"
+        folders:isSystemFolder="false"
+        folders:pathRes="@string/qq_image_path"
+        folders:smallIconRes="@drawable/left_folder_selector"
+        folders:titleRes="@string/qq_image" />
+    <Folder
+        folders:iconRes="@mipmap/ic_personal_qq_pic"
+        folders:isSystemFolder="false"
+        folders:pathRes="@string/qq_file_path"
+        folders:smallIconRes="@drawable/left_folder_selector"
+        folders:titleRes="@string/qq_file" />
+    <Folder
+        folders:iconRes="@mipmap/ic_personal_weixin"
+        folders:isSystemFolder="false"
+        folders:pathRes="@string/winxin_image_path"
+        folders:smallIconRes="@drawable/left_folder_selector"
+        folders:titleRes="@string/winxin_image" />
+    <Folder
+        folders:iconRes="@mipmap/ic_personal_weixin"
+        folders:isSystemFolder="false"
+        folders:pathRes="@string/winxin_file_path"
+        folders:smallIconRes="@drawable/left_folder_selector"
+        folders:titleRes="@string/winxin_file" />
+    <Folder
+        folders:iconRes="@mipmap/ic_personal_baiduyun"
+        folders:isSystemFolder="false"
+        folders:pathRes="@string/baidu_disk_path"
+        folders:smallIconRes="@drawable/left_folder_selector"
+        folders:titleRes="@string/baidu_disk" />
+</folders>

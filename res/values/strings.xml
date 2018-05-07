@@ -134,7 +134,7 @@
     <string name="text_help_title">You can send feedback directly, or go to the forum feedback, or find the answer in help center.</string>
     <string name="text_to_public">Go to official website feedback</string>
     <string name="text_help_center">Go to official website help center</string>
-    <string name="tv_storage_page">Collect</string>
+    <string name="tv_storage_page">Collection</string>
     <string name="left_local_up">Local</string>
     <string name="left_net_up">Internet</string>
     <string name="text_local_storage">Local Storage</string>
@@ -195,7 +195,7 @@
     <string name="file_type_file">File</string>
     <string name="address_search_false">Please check the path.</string>
     <string name="downloads">Downloads</string>
-    <string name="docement">Documents</string>
+    <string name="document">Documents</string>
     <string name="recycle">Recycle</string>
     <string name="text_personal">My Space</string>
     <string name="dialog_property_title">Propertys</string>
@@ -224,10 +224,10 @@
     <string name="launcher_zip">zip</string>
     <string name="operation_compress">Compress</string>
     <string name="operation_decompress">Decompress</string>
-    <string name="qq_image">QQ_Images</string>
-    <string name="qq_file">QQfile_recv</string>
-    <string name="winxin_image">WeChat Image</string>
-    <string name="winxin_file">WeChat File</string>
+    <string name="qq_image">QQ Images</string>
+    <string name="qq_file">QQ Files</string>
+    <string name="winxin_image">WeChat Images</string>
+    <string name="winxin_file">WeChat Files</string>
     <string name="baidu_disk">BaiduNetdisk</string>
     <string name="USB_recognising">USB_recognising</string>
     <string name="copy_info">Do in progress...</string>
@@ -281,4 +281,19 @@
     <string name="network_down">No network connection</string>
     <string name="account_non">Unbound Openthos account</string>
     <string name="message_format_usb">Do you want to format this usb device?</string>
+    <string name="desk_path">/Desktop</string>
+    <string name="video_path">/Movies</string>
+    <string name="picture_path">/Pictures</string>
+    <string name="download_path">/Download</string>
+    <string name="document_path">/documents</string>
+    <string name="music_path">/Music</string>
+    <string name="recycle_path">/Recycle</string>
+    <string name="qq_image_path">/Tencent/QQ_Images</string>
+    <string name="qq_file_path">/Tencent/QQfile_recv</string>
+    <string name="winxin_image_path">/Tencent/MicroMsg/WeiXin</string>
+    <string name="winxin_file_path">/Tencent/MicroMsg/Download</string>
+    <string name="baidu_disk_path">/BaiduNetdisk</string>
+    <string name="add">Add</string>
+    <string name="cancel_collected">Remove From Collection</string>
+    <string name="collect">Add To Collection</string>
 </resources>

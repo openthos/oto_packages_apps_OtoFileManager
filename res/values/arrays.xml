@@ -67,6 +67,8 @@
     <string-array name="personal_folder_menu">
         <item>@string/operation_open</item>
         <item>@string/operation_copy_path</item>
+        <item>@string/collect</item>
+        <item>@string/cancel_collected</item>
     </string-array>
     <string-array name="recycle_blank">
         <item>@string/recycle_all_clean</item>
@@ -94,5 +96,8 @@
         <item>@string/dialog_type_audio</item>
         <item>@string/dialog_type_video</item>
         <item>@string/dialog_type_image</item>
+    </string-array>
+    <string-array name="left_collection_menu">
+        <item>@string/cancel_collected</item>
     </string-array>
 </resources>

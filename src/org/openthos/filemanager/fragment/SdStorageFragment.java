@@ -276,7 +276,7 @@ public class SdStorageFragment extends BaseFragment {
             mMainActivity.clearNivagateFocus();
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    mMainActivity.mCurTabIndext = 9;
+                    mMainActivity.mCurTabIndex = 9;
                     if (mCurView != view) {
                         mCurView = view;
                         mPreTime = 0;
@@ -424,9 +424,9 @@ public class SdStorageFragment extends BaseFragment {
         mCurView = null;
         mMainActivity.mUserOperationFragments.add(mMainActivity.mCurFragment);
         mMainActivity.mFragmentIndex++;
-        mMainActivity.mIv_back.setImageDrawable(
+        mMainActivity.mIvBack.setImageDrawable(
                 mMainActivity.getDrawable(R.mipmap.backward_enable));
-        mMainActivity.mIv_up.setImageDrawable(mMainActivity.getDrawable(R.mipmap.up_enable));
+        mMainActivity.mIvUp.setImageDrawable(mMainActivity.getDrawable(R.mipmap.up_enable));
     }
 
     public void setSelectedCardBg(int id) {

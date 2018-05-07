@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:focusable="true"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingEnd="@dimen/folder_collection_dialog_padding_2x"
+    android:paddingStart="@dimen/folder_collection_dialog_padding_2x">
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:src="@drawable/left_folder_selector"
+        android:layout_width="@dimen/folder_list_left_image_size"
+        android:layout_height="@dimen/folder_list_left_image_size"
+        android:layout_marginEnd="@dimen/folder_collection_dialog_margin_1x"/>
+
+    <TextView
+        android:id="@+id/text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:text="@string/desk"
+        android:textColor="#ff000000"
+        android:textSize="16sp" />
+
+    <CheckBox
+        android:id="@+id/check_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/folder_collection_dialog_margin_2x"
+        android:checked="true"
+        android:clickable="false"
+        android:focusable="false" />
+
+</LinearLayout>

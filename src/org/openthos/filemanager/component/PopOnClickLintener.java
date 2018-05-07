@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.widget.TextView;
+
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.io.File;
@@ -17,11 +18,9 @@ import org.openthos.filemanager.MainActivity;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.utils.T;
 import org.openthos.filemanager.utils.SambaUtils;
-import org.openthos.filemanager.system.Constants;
 
 public class PopOnClickLintener implements View.OnClickListener {
     private static final String VIEW_OR_DISMISS = "view_or_dismiss";
-    private static final String SETTING_POPWINDOW_TAG = "iv_setting";
     private String mMenu_tag;
     private MainActivity mMainActivity;
     private FragmentManager mManager;
@@ -34,24 +33,24 @@ public class PopOnClickLintener implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        if (SETTING_POPWINDOW_TAG.equals(mMenu_tag)) {
+        if (MainActivity.SETTING_POPWINDOW_TAG.equals(mMenu_tag)) {
             switch (view.getId()) {
                 case R.id.pop_setting_view:
                     if (mManager.getBackStackEntryCount() < 1) {
                         T.showShort(mMainActivity,
-                                    mMainActivity.getString(R.string.operation_not_support));
+                                mMainActivity.getString(R.string.operation_not_support));
                     }
                     sendBroadcastMessage("iv_menu", VIEW_OR_DISMISS);
-                    mMainActivity.DismissPopwindow();
+                    mMainActivity.dismissPopwindow();
                     break;
                 case R.id.pop_cloud_view:
                     mMainActivity.showCloudInfoDialog();
-                    mMainActivity.DismissPopwindow();
+                    mMainActivity.dismissPopwindow();
                     break;
                 case R.id.pop_share_toggle:
                     String chmod = "";
                     try {
-                        Process pro = Runtime.getRuntime().exec(new String[] {"su", "-c"});
+                        Process pro = Runtime.getRuntime().exec(new String[]{"su", "-c"});
                         File sambaDir = new File("/data/data/samba/");
                         if (!sambaDir.exists()) {
                             deCompressSamba();
@@ -69,14 +68,23 @@ public class PopOnClickLintener implements View.OnClickListener {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    mMainActivity.DismissPopwindow();
+                    mMainActivity.dismissPopwindow();
                     break;
                 case R.id.pop_add_users:
                     AddUsersDialog addUsersDialog = new AddUsersDialog(mMainActivity);
                     addUsersDialog.showDialog();
-                    mMainActivity.DismissPopwindow();
+                    mMainActivity.dismissPopwindow();
                     break;
                 default:
+                    break;
+            }
+        } else if (MainActivity.COLLECTION_ITEM_TAG.equals(mMenu_tag)) {
+            switch (view.getId()) {
+                case R.id.pop_cancel_collected:
+                    mMainActivity.dismissPopwindow();
+                    int changedIndex = Integer.parseInt(
+                            mMainActivity.getCurEventView().getTag().toString());
+                    mMainActivity.handleCollectedChange(changedIndex);
                     break;
             }
         }
@@ -88,7 +96,7 @@ public class PopOnClickLintener implements View.OnClickListener {
         try {
             String outputDirectory = "/data/data/";
             Process pro = Runtime.getRuntime().exec(
-                    new String[] {"su", "-c", "busybox mkdir -m 777 /data/data/samba"});
+                    new String[]{"su", "-c", "busybox mkdir -m 777 /data/data/samba"});
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {
