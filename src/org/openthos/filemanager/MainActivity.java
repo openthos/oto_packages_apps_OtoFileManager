@@ -523,7 +523,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     v.getBlock(), "/storage/disk" + i, null, true);
             mMountMap.put(v.getBlock(), mountFragment);
             transaction.add(R.id.fl_mian, mMountMap.get(v.getBlock()),
-                    v.getBlock()).hide(mMountMap.get(v.getBlock())).commitAllowingStateLoss();
+                    v.getBlock()).hide(mMountMap.get(v.getBlock()));
             v.setPath("/storage/disk" + i);
             mLlMount.addView(inflate);
             mCurTabIndex = -1;
