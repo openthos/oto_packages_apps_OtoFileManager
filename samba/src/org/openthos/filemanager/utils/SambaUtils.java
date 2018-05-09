@@ -20,6 +20,7 @@ import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -385,6 +386,7 @@ public class SambaUtils {
         try {
             Runtime.getRuntime().exec(new String[] {"su", "-c", "chmod 777 "
                     + "/data/data/samba /data/data/samba/samba.sh "
+                    + "/data/data/samba/smbpasswd.sh /data/data/samba/pdbedit.sh "
                     + "/data/data/samba/var /data/data/samba/var/run "});
         } catch (IOException e) {
             e.printStackTrace();
@@ -392,10 +394,72 @@ public class SambaUtils {
     }
 
     public static void addUserAndPasswd(String userName, String pwd) {
+        Process pro;
         try {
-            Runtime.getRuntime().exec(new String[] {
+            pro = Runtime.getRuntime().exec(new String[] {
                     "su", "-c", "/data/data/samba/smbpasswd.sh" + " " + userName + " " + pwd});
+            pro.waitFor();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<String> getAllUsers() {
+        List<String> allUserList = new ArrayList<>();
+        Process pro;
+        BufferedReader in = null;
+        try {
+            pro = Runtime.getRuntime().exec(new String[] {
+                    "su", "-c", "/data/data/samba/pdbedit.sh -L"});
+            in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+            String line;
+            while ((line = in.readLine()) != null) {
+                if (line.equals("/data/data/samba")) {
+                    continue;
+                }
+                allUserList.add(line.split(":")[0]);
+            }
+            pro.waitFor();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return allUserList;
+    }
+
+    public static void removeUser(String userName) {
+        Process pro;
+        try {
+            pro = Runtime.getRuntime().exec(new String[] {
+                    "su", "-c", "/data/data/samba/pdbedit.sh" + " -x " + userName});
+            pro.waitFor();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void modifyPasswd(String userName, String pwd) {
+        Process pro;
+        try {
+            pro = Runtime.getRuntime().exec(new String[] {
+                    "su", "-c", "/data/data/samba/smbpasswd.sh" + " " + userName + " " + pwd});
+            pro.waitFor();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }

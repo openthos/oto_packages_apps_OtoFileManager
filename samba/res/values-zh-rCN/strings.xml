@@ -18,5 +18,9 @@
     <string name="dialog_share_allow_anonymous_access">允许匿名访问</string>
     <string name="dialog_add_users_account">帐号</string>
     <string name="dialog_add_users_passward">密码</string>
+    <string name="dialog_user_list">用户列表</string>
+    <string name="dialog_user_management">用户管理</string>
+    <string name="dialog_confirm_delete_user">是否确认删除用户 %s ?</string>
+    <string name="dialog_modify_password">修改密码</string>
     <string name="toast_open_share">请先开启共享</string>
 </resources>

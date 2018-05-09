@@ -18,5 +18,9 @@
     <string name="dialog_share_allow_anonymous_access">Allow anonymous access</string>
     <string name="dialog_add_users_account">Account</string>
     <string name="dialog_add_users_passward">Passward</string>
+    <string name="dialog_user_list">User list</string>
+    <string name="dialog_user_management">User management</string>
+    <string name="dialog_confirm_delete_user">Do you confirm to delete the user %s ?</string>
+    <string name="dialog_modify_password">Modify password</string>
     <string name="toast_open_share">Please open share first</string>
 </resources>

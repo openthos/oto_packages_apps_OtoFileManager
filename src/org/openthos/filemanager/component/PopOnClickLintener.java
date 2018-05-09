@@ -70,9 +70,10 @@ public class PopOnClickLintener implements View.OnClickListener {
                     }
                     mMainActivity.dismissPopwindow();
                     break;
-                case R.id.pop_add_users:
-                    AddUsersDialog addUsersDialog = new AddUsersDialog(mMainActivity);
-                    addUsersDialog.showDialog();
+                case R.id.pop_user_management:
+                    UserManagementDialog userManagementDialog
+                            = new UserManagementDialog(mMainActivity);
+                    userManagementDialog.show();
                     mMainActivity.dismissPopwindow();
                     break;
                 default:

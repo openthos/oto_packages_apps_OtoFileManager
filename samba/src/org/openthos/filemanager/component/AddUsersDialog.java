@@ -25,11 +25,13 @@ import java.io.InputStreamReader;
 
 public class AddUsersDialog extends BaseDialog{
     private Context mContext;
+    private UserManagementDialog mUserManagementDialog;
     private EditText mEtAccount, mEtPassward;
 
-    public AddUsersDialog(Context context) {
+    public AddUsersDialog(Context context, UserManagementDialog userManagementDialog) {
         super(context);
         mContext = context;
+        mUserManagementDialog = userManagementDialog;
     }
 
     @Override
@@ -73,6 +75,7 @@ public class AddUsersDialog extends BaseDialog{
                     case R.id.confirm:
                         SambaUtils.addUserAndPasswd(mEtAccount.getText().toString(),
                                 mEtPassward.getText().toString());
+                        mUserManagementDialog.notifyUserInfoChanged();
                         break;
                     case R.id.cancel:
                         break;

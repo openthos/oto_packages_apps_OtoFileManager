@@ -25,9 +25,9 @@
             android:id="@+id/pop_share_toggle"
             style="@style/textDialog"/>
         <TextView
-            android:id="@+id/pop_add_users"
+            android:id="@+id/pop_user_management"
             style="@style/textDialog"
-            android:text="@string/operation_add_share_user" />
+            android:text="@string/dialog_user_management" />
     </LinearLayout>
 
     <LinearLayout

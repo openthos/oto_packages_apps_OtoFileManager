@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/dialog_property_width"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#e0e0e0">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dialog_property_title_height"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/title_image"
+            android:layout_width="@dimen/dialog_property_title_icon_size"
+            android:layout_height="@dimen/dialog_property_title_icon_size"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dialog_property_padding2x"
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/title_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/dialog_property_title"
+            android:textColor="@color/black"
+            android:maxEms="20"
+            android:singleLine="true"
+            android:textSize="@dimen/dialog_property_font_size" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3" />
+
+        <ImageView
+            android:id="@+id/title_close"
+            android:layout_width="@dimen/dialog_property_title_close_size"
+            android:layout_height="@dimen/dialog_property_title_close_size"
+            android:layout_gravity="center_vertical" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/dialog_property_padding3x">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/dialog_property_padding1x"
+            android:paddingTop="@dimen/dialog_property_padding1x">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#b1b1b1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/dialog_property_padding1x"
+            android:paddingTop="@dimen/dialog_property_padding1x">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="3"
+                android:text="@string/samba_account"
+                android:textColor="@color/black"
+                android:textSize="@dimen/dialog_property_font_size" />
+
+            <TextView
+                android:id="@+id/tv_account"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="7"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:textColor="@color/black"
+                android:textSize="@dimen/dialog_property_font_size" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/dialog_property_padding1x"
+            android:paddingTop="@dimen/dialog_property_padding1x">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="3"
+                android:text="@string/samba_password"
+                android:textColor="@color/black"
+                android:textSize="@dimen/dialog_property_font_size" />
+
+            <EditText
+                android:id="@+id/et_passward"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="7"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:textColor="@color/black"
+                android:textSize="@dimen/dialog_property_font_size" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dialog_property_padding1x"
+            android:layout_marginTop="@dimen/dialog_property_padding1x">
+
+
+            <TextView
+                android:id="@+id/cancel"
+                android:layout_width="@dimen/dialog_property_button_width"
+                android:layout_height="@dimen/dialog_property_button_height"
+                android:layout_marginRight="@dimen/dialog_property_padding1x"
+                android:gravity="center"
+                android:text="@string/dialog_property_cancel"
+                android:textColor="@color/black"
+                android:textSize="@dimen/dialog_property_font_size" />
+
+            <TextView
+                android:id="@+id/confirm"
+                android:layout_width="@dimen/dialog_property_button_width"
+                android:layout_height="@dimen/dialog_property_button_height"
+                android:layout_marginRight="@dimen/dialog_property_padding1x"
+                android:layout_toRightOf="@id/cancel"
+                android:gravity="center"
+                android:text="@string/dialog_property_confirm"
+                android:textColor="@color/black"
+                android:textSize="@dimen/dialog_property_font_size" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>
