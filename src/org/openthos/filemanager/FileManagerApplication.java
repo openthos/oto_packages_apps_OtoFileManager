@@ -4,8 +4,7 @@ import android.app.Application;
 import android.os.Handler;
 import android.os.Message;
 
-import org.openthos.filemanager.system.Constants;
-import org.openthos.filemanager.utils.SambaUtils;
+import org.openthos.filemanager.utils.Constants;
 
 import java.util.ArrayList;
 

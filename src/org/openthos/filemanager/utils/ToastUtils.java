@@ -3,11 +3,7 @@ package org.openthos.filemanager.utils;
 import android.content.Context;
 import android.widget.Toast;
 
-public class T {
-    private T() {
-        /* cannot be instantiated */
-        throw new UnsupportedOperationException("cannot be instantiated");
-    }
+public class ToastUtils {
 
     public static boolean mIsShow = true;
 

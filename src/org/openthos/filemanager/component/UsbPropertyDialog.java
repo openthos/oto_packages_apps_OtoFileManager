@@ -1,28 +1,15 @@
 package org.openthos.filemanager.component;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.openthos.filemanager.R;
-import org.openthos.filemanager.BaseDialog;
-import org.openthos.filemanager.system.Constants;
-import org.openthos.filemanager.system.Util;
+import org.openthos.filemanager.BaseMenuDialog;
+import org.openthos.filemanager.utils.Util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
-public class UsbPropertyDialog extends BaseDialog {
+public class UsbPropertyDialog extends BaseMenuDialog {
     private Context mContext;
     private String mUsbs;
 

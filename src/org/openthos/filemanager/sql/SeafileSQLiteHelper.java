@@ -1,4 +1,4 @@
-package org.openthos.filemanager.system;
+package org.openthos.filemanager.sql;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

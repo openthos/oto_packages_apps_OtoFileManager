@@ -8,6 +8,8 @@ import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 
 import org.openthos.filemanager.R;
+import org.openthos.filemanager.bean.FileInfo;
+import org.openthos.filemanager.utils.Util;
 
 import java.util.HashMap;
 public class FileIconHelper implements FileIconLoader.IconLoadFinishListener {

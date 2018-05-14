@@ -6,11 +6,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import org.openthos.filemanager.BaseDialog;
+import org.openthos.filemanager.BaseMenuDialog;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.utils.SambaUtils;
 
-public class ModifyPasswdDialog extends BaseDialog{
+public class ModifyPasswdDialog extends BaseMenuDialog{
     private Context mContext;
     private EditText mEtPassward;
     private String mAccount;

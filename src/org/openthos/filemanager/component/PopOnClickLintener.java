@@ -16,7 +16,8 @@ import java.io.InputStreamReader;
 
 import org.openthos.filemanager.MainActivity;
 import org.openthos.filemanager.R;
-import org.openthos.filemanager.utils.T;
+import org.openthos.filemanager.bean.PersonalBean;
+import org.openthos.filemanager.utils.ToastUtils;
 import org.openthos.filemanager.utils.SambaUtils;
 
 public class PopOnClickLintener implements View.OnClickListener {
@@ -37,7 +38,7 @@ public class PopOnClickLintener implements View.OnClickListener {
             switch (view.getId()) {
                 case R.id.pop_setting_view:
                     if (mManager.getBackStackEntryCount() < 1) {
-                        T.showShort(mMainActivity,
+                        ToastUtils.showShort(mMainActivity,
                                 mMainActivity.getString(R.string.operation_not_support));
                     }
                     sendBroadcastMessage("iv_menu", VIEW_OR_DISMISS);
@@ -76,16 +77,13 @@ public class PopOnClickLintener implements View.OnClickListener {
                     userManagementDialog.show();
                     mMainActivity.dismissPopwindow();
                     break;
-                default:
-                    break;
             }
         } else if (MainActivity.COLLECTION_ITEM_TAG.equals(mMenu_tag)) {
             switch (view.getId()) {
                 case R.id.pop_cancel_collected:
                     mMainActivity.dismissPopwindow();
-                    int changedIndex = Integer.parseInt(
-                            mMainActivity.getCurEventView().getTag().toString());
-                    mMainActivity.handleCollectedChange(changedIndex);
+                    mMainActivity.handleCollectedChange(
+                            (PersonalBean) mMainActivity.getCurEventView().getTag());
                     break;
             }
         }

@@ -4,7 +4,7 @@ package org.openthos.filemanager.bean;
  * Created by wm on 18-3-15.
  */
 
-public class FolderBean {
+public class PersonalBean {
     private boolean isCollected;
     private boolean isSystemFolder;
     private String title;
@@ -12,7 +12,7 @@ public class FolderBean {
     private String path;
     private int smallIconRes;
 
-    public FolderBean() {
+    public PersonalBean() {
     }
 
     public boolean isCollected() {
@@ -65,7 +65,7 @@ public class FolderBean {
 
     @Override
     public String toString() {
-        return "FolderBean{" +
+        return "PersonalBean{" +
                 "isCollected=" + isCollected +
                 ", isSystemFolder=" + isSystemFolder +
                 ", title='" + title + '\'' +

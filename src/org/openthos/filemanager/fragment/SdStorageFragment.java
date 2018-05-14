@@ -1,33 +1,25 @@
 package org.openthos.filemanager.fragment;
 
-import android.annotation.SuppressLint;
-import android.os.StatFs;
 import android.os.Message;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.os.StatFs;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.view.MotionEvent;
-import android.widget.LinearLayout;
 
 import org.openthos.filemanager.BaseFragment;
-import org.openthos.filemanager.MainActivity;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.bean.Volume;
-import org.openthos.filemanager.component.DiskDialog;
-import org.openthos.filemanager.drag.HomeGridView;
-import org.openthos.filemanager.system.FileInfo;
-import org.openthos.filemanager.system.FileViewInteractionHub;
-import org.openthos.filemanager.system.Util;
-import org.openthos.filemanager.utils.LocalCache;
-import org.openthos.filemanager.utils.T;
-import org.openthos.filemanager.system.Constants;
+import org.openthos.filemanager.component.DiskMenuDialog;
+import org.openthos.filemanager.component.HomeGridView;
+import org.openthos.filemanager.utils.Constants;
+import org.openthos.filemanager.bean.FileInfo;
+import org.openthos.filemanager.utils.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +28,6 @@ public class SdStorageFragment extends BaseFragment {
     private ArrayList<FileInfo> mFileInfoArrayList = null;
     private LinearLayout mAndroidSystem;
     private LinearLayout mSdSpace;
-    private LinearLayout mAndroidService;
     public LinearLayout mPersonalSpace;
     private TextView mSystemTotal;
     private TextView mSystemAvail;
@@ -62,13 +53,7 @@ public class SdStorageFragment extends BaseFragment {
     private List<View> mFastAccessViews, mLocatStorageViews, mMountViews, mUsbViews;
     private String mPervousUserDataAvail = "";
 
-    @SuppressLint({"NewApi", "ValidFragment"})
-    public SdStorageFragment(FragmentManager manager, MainActivity context) {
-        mManager = manager;
-        super.context = context;
-    }
 
-    @SuppressLint({"NewApi", "ValidFragment"})
     public SdStorageFragment() {
         super();
     }
@@ -113,7 +98,6 @@ public class SdStorageFragment extends BaseFragment {
         mAndroidSystem = (LinearLayout) inflate.findViewById(R.id.rl_android_system);
         mSdSpace = (LinearLayout) inflate.findViewById(R.id.rl_sd_space);
         mPersonalSpace = (LinearLayout) inflate.findViewById(R.id.rl_personal_space);
-        mAndroidService = (LinearLayout) inflate.findViewById(R.id.rl_android_service);
         mSystemTotal = (TextView) inflate.findViewById(R.id.tv_system_total);
         mSystemAvail = (TextView) inflate.findViewById(R.id.tv_system_avail);
         mPbSystem = (ProgressBar) inflate.findViewById(R.id.pb_system);
@@ -162,10 +146,10 @@ public class SdStorageFragment extends BaseFragment {
         initUsbData();
         initMountData();
         mLinearlayouts = new LinearLayout[]{
-                mAndroidService, mSdSpace, mAndroidSystem, mPersonalSpace};
+                mSdSpace, mAndroidSystem, mPersonalSpace};
     }
 
-    private void initUsbData() {
+    public void initUsbData() {
         mUsbViews = new ArrayList<>();
         mUsbLists = mMainActivity.getUsbLists();
         mUsbLists.clear();
@@ -310,7 +294,6 @@ public class SdStorageFragment extends BaseFragment {
         switch (view.getId()) {
             case R.id.rl_android_system:
             case R.id.rl_sd_space:
-            case R.id.rl_android_service:
             case R.id.rl_personal_space:
                 setSelectedCardBg(view.getId());
                 break;
@@ -346,7 +329,7 @@ public class SdStorageFragment extends BaseFragment {
     }
 
     private void showDiskDialog(MotionEvent event, String tag) {
-        DiskDialog diskDialog = new DiskDialog(context, tag);
+        DiskMenuDialog diskDialog = new DiskMenuDialog(mMainActivity, tag);
         diskDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         diskDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
     }
@@ -359,16 +342,13 @@ public class SdStorageFragment extends BaseFragment {
         if (mCurView != null) {
             switch (mCurView.getId()) {
                 case R.id.rl_android_system:
-                    enter(Constants.SYSTEM_SPACE_FRAGMENT, Constants.SDCARD_PATH);
+                    mMainActivity.showFileSpaceFragment(Constants.SDCARD_PATH);
                     break;
                 case R.id.rl_sd_space:
-                    enter(Constants.SD_SPACE_FRAGMENT, Constants.ROOT_PATH + "storage");
-                    break;
-                case R.id.rl_android_service:
-                    enter(Constants.YUN_SPACE_FRAGMENT, null);
+                    mMainActivity.showFileSpaceFragment(Constants.DEVICE_PATH);
                     break;
                 case R.id.rl_personal_space:
-                    enter(Constants.PERSONAL_TAG, null);
+                    mMainActivity.showFragment(mMainActivity.mPersonalSpaceFragment);
                     break;
                 case R.id.mount_grid_ll:
                     for (int i = 0; i < mMountDevices.getChildCount(); i++) {
@@ -380,7 +360,7 @@ public class SdStorageFragment extends BaseFragment {
                     }
                     break;
                 case R.id.usb_grid_ll:
-                    mMainActivity.enter(mCurrentPath);
+                    mMainActivity.showFileSpaceFragment(mCurrentPath);
                     mCurrentPath = null;
                     break;
             }
@@ -389,44 +369,6 @@ public class SdStorageFragment extends BaseFragment {
 
     public void uninstallUSB() {
         mMainActivity.uninstallUSB(mCurrentPath);
-    }
-
-    @Override
-    public void enter(String tag, String path) {
-        if (mCurFragment != null) {
-            if (mCurFragment instanceof SystemSpaceFragment) {
-                mFileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
-            }
-        }
-        if (mFileInfoArrayList != null) {
-            T.showShort(context,
-                    context.getString(R.string.operation_failed_permission_refuse));
-        }
-        FragmentTransaction transaction = mManager.beginTransaction();
-        transaction.hide(mMainActivity.mCurFragment);
-        if (Constants.PERSONAL_TAG.equals(tag)) {
-            mMainActivity.setNavigationPath(null);
-            transaction.show(mMainActivity.mPersonalSpaceFragment).commitAllowingStateLoss();
-            mCurFragment = mMainActivity.mPersonalSpaceFragment;
-        } else if (Constants.YUN_SPACE_FRAGMENT.equals(tag)) {
-            mMainActivity.setNavigationPath(null);
-            transaction.show(mMainActivity.mSeafileFragment).commitAllowingStateLoss();
-            mCurFragment = mMainActivity.mSeafileFragment;
-        } else {
-            mCurFragment = new SystemSpaceFragment(tag, path,
-                    mFileInfoArrayList,  false);
-            transaction.add(R.id.fl_mian, mCurFragment,
-                    Constants.SDSSYSTEMSPACE_TAG).commitAllowingStateLoss();
-            ((SystemSpaceFragment) mCurFragment).mPos = 0;
-            mMainActivity.setNavigationPath(Util.getDisplayPath(mMainActivity, path));
-        }
-        mMainActivity.mCurFragment = mCurFragment;
-        mCurView = null;
-        mMainActivity.mUserOperationFragments.add(mMainActivity.mCurFragment);
-        mMainActivity.mFragmentIndex++;
-        mMainActivity.mIvBack.setImageDrawable(
-                mMainActivity.getDrawable(R.mipmap.backward_enable));
-        mMainActivity.mIvUp.setImageDrawable(mMainActivity.getDrawable(R.mipmap.up_enable));
     }
 
     public void setSelectedCardBg(int id) {
@@ -438,9 +380,6 @@ public class SdStorageFragment extends BaseFragment {
             case R.id.rl_sd_space:
                 mSdSpace.setSelected(true);
                 break;
-            case R.id.rl_android_service:
-                mAndroidService.setSelected(true);
-                break;
             case R.id.rl_personal_space:
                 mPersonalSpace.setSelected(true);
                 break;
@@ -450,25 +389,14 @@ public class SdStorageFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        LocalCache.setSearchText(null);
+//        LocalCache.setSearchText(null);
     }
 
     public boolean canGoBack() {
-        boolean canGoBack = false;
-        Fragment baseFragment = mCurFragment;
-        if (baseFragment instanceof SystemSpaceFragment) {
-            SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) baseFragment;
-            canGoBack = systemSpaceFragment.canGoBack();
-        }
-        return canGoBack;
+        return true;
     }
 
     public void goBack() {
-        Fragment baseFragment = mCurFragment;
-        if (baseFragment instanceof SystemSpaceFragment) {
-            SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) baseFragment;
-            systemSpaceFragment.goBack();
-        }
     }
 
     public void setUnselectAll() {

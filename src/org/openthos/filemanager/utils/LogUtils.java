@@ -2,15 +2,10 @@ package org.openthos.filemanager.utils;
 
 import android.util.Log;
 
-public class L {
-
-    private L() {
-        /* cannot be instantiated */
-        throw new UnsupportedOperationException("cannot be instantiated");
-    }
+public class LogUtils {
 
     public static boolean isDebug = true;
-    private static final String TAG = "way";
+    private static final String TAG = "FileManager";
 
     public static void i(String msg) {
         if (isDebug)

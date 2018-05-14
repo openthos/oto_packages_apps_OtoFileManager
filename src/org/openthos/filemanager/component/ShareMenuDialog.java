@@ -2,9 +2,7 @@ package org.openthos.filemanager.component;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -12,42 +10,36 @@ import android.widget.TextView;
 import org.openthos.filemanager.BaseMenuDialog;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.utils.Constants;
-import org.openthos.filemanager.utils.OperateUtils;
 import org.openthos.filemanager.utils.SambaUtils;
-import org.openthos.filemanager.utils.Util;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 
-public class ShareDialog extends BaseMenuDialog {
+public class ShareMenuDialog extends BaseMenuDialog {
     private Context mContext;
     private String mPath;
     private CheckBox mAllowCheckBox;
 
-    public ShareDialog(Context context) {
+    public ShareMenuDialog(Context context) {
         super(context);
         mContext = context;
     }
 
-    public ShareDialog(Context context, String path) {
+    public ShareMenuDialog(Context context, String path) {
         super(context);
         mContext = context;
         mPath = path;
     }
 
-    public ShareDialog(Context context, int themeResId) {
+    public ShareMenuDialog(Context context, int themeResId) {
         super(context, themeResId);
         mContext = context;
     }
 
-    protected ShareDialog(Context context, boolean cancelable, OnCancelListener cancelListener) {
+    protected ShareMenuDialog(Context context, boolean cancelable, OnCancelListener cancelListener) {
         super(context, cancelable, cancelListener);
         mContext = context;
     }

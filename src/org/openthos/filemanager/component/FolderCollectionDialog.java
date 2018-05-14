@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -17,7 +16,7 @@ import android.widget.TextView;
 
 import org.openthos.filemanager.MainActivity;
 import org.openthos.filemanager.R;
-import org.openthos.filemanager.bean.FolderBean;
+import org.openthos.filemanager.bean.PersonalBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +24,14 @@ import java.util.List;
 public class FolderCollectionDialog extends Dialog {
     private Context mContext;
     private ListView mListView;
-    private List<FolderBean> mFolderBeanList;
-    private List<Integer> mChangedIndexList = new ArrayList<>();
+    private List<PersonalBean> mPersonalBeanList;
+    private List<PersonalBean> mChangedIndexList = new ArrayList<>();
     private final int MAX_VISIBLE_ITEM_COUNT = 8;
 
-    public FolderCollectionDialog(@NonNull Context context, List<FolderBean> folderBeanList) {
+    public FolderCollectionDialog(@NonNull Context context, List<PersonalBean> personalBeanList) {
         super(context, R.style.menu_dialog);
         mContext = context;
-        mFolderBeanList = folderBeanList;
+        mPersonalBeanList = personalBeanList;
     }
 
     @Override
@@ -74,23 +73,23 @@ public class FolderCollectionDialog extends Dialog {
             public void onClick(View v) {
                 ViewHolder holder = (ViewHolder) v.getTag();
                 holder.cb.setChecked(!holder.cb.isChecked());
-                int index = Integer.parseInt(holder.tv.getTag().toString());
-                if (mChangedIndexList.contains(index)) {
-                    mChangedIndexList.remove((Integer) index);
+                PersonalBean bean = (PersonalBean) holder.tv.getTag();
+                if (mChangedIndexList.contains(bean)) {
+                    mChangedIndexList.remove(bean);
                 } else {
-                    mChangedIndexList.add(index);
+                    mChangedIndexList.add(bean);
                 }
             }
         };
 
         @Override
         public int getCount() {
-            return mFolderBeanList.size();
+            return mPersonalBeanList.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return mFolderBeanList.get(position);
+            return mPersonalBeanList.get(position);
         }
 
         @Override
@@ -110,10 +109,10 @@ public class FolderCollectionDialog extends Dialog {
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            FolderBean bean = mFolderBeanList.get(position);
+            PersonalBean bean = mPersonalBeanList.get(position);
             holder.iv.setImageResource(bean.getSmallIconRes());
             holder.tv.setText(bean.getTitle());
-            holder.tv.setTag(position);
+            holder.tv.setTag(mPersonalBeanList.get(position));
             holder.cb.setChecked(bean.isCollected());
             return convertView;
         }
@@ -135,17 +134,17 @@ public class FolderCollectionDialog extends Dialog {
         ViewGroup.LayoutParams lp = mListView.getLayoutParams();
         View view = View.inflate(mContext, R.layout.collect_folders_dialog_item, null);
         TextView tv = (TextView) view.findViewById(R.id.text_view);
-        for (FolderBean bean : mFolderBeanList) {
+        for (PersonalBean bean : mPersonalBeanList) {
             tv.setText(bean.getTitle());
             view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
             if (lp.width < view.getMeasuredWidth()) {
                 lp.width = view.getMeasuredWidth();
             }
         }
-        if (mFolderBeanList.size() > MAX_VISIBLE_ITEM_COUNT) {
+        if (mPersonalBeanList.size() > MAX_VISIBLE_ITEM_COUNT) {
             lp.height = view.getMeasuredHeight() * MAX_VISIBLE_ITEM_COUNT;
         } else {
-            lp.height = view.getMeasuredHeight() * mFolderBeanList.size();
+            lp.height = view.getMeasuredHeight() * mPersonalBeanList.size();
         }
     }
 }

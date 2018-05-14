@@ -2,14 +2,10 @@ package org.openthos.filemanager.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,26 +18,21 @@ import org.openthos.filemanager.BaseFragment;
 import org.openthos.filemanager.MainActivity;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.component.SearchOnKeyListener;
+import org.openthos.filemanager.utils.Constants;
 import org.openthos.filemanager.system.FileIconHelper;
-import org.openthos.filemanager.system.FileInfo;
-import org.openthos.filemanager.system.FileListItem;
+import org.openthos.filemanager.bean.FileInfo;
 import org.openthos.filemanager.system.FileSortHelper;
-import org.openthos.filemanager.system.FileViewInteractionHub;
+import org.openthos.filemanager.system.FileViewInteractionHu2;
 import org.openthos.filemanager.system.IFileInteractionListener;
 import org.openthos.filemanager.system.IntentBuilder;
-import org.openthos.filemanager.system.Util;
-import org.openthos.filemanager.utils.IconHolder;
-import org.openthos.filemanager.utils.LocalCache;
-import org.openthos.filemanager.system.Constants;
+import org.openthos.filemanager.utils.Util;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class SearchFragment extends BaseFragment implements IFileInteractionListener {
-    private static final String TAG = Constants.LEFT_FAVORITES;
-    private Fragment mCurFragment;
+    private BaseFragment mCurFragment;
     private ListView mListView;
     private SearchAdapter mSearchAdapter;
     private MainActivity mActivity;
@@ -50,17 +41,17 @@ public class SearchFragment extends BaseFragment implements IFileInteractionList
     private int mPosition;
     private List<Integer> mSelectedList;
     private SearchOnKeyListener mSearchOnKeyListener;
-    private MotionEvent mMotionEvent;
     private int mLastClickPos = -1;
     private long mLastClickTime;
     private int mShiftPos;
     private boolean mIsRightButton;
     private boolean mIsItem;
     private ArrayList<FileInfo> mSearchList = new ArrayList<>();
+    public FileViewInteractionHu2 mFileViewInteractionHub;
 
     @SuppressLint({"NewApi", "ValidFragment"})
     public SearchFragment(SearchOnKeyListener listener, FragmentManager manager) {
-        super(manager);
+        super();
         mActivity = (MainActivity) getActivity();
         mSearchOnKeyListener = listener;
     }
@@ -89,7 +80,7 @@ public class SearchFragment extends BaseFragment implements IFileInteractionList
     }
 
     protected void initData() {
-        mFileViewInteractionHub = new FileViewInteractionHub(this);
+        mFileViewInteractionHub = new FileViewInteractionHu2(this);
         mSelectedList = new ArrayList<>();
         mSearchAdapter = new SearchAdapter();
         mListView.setAdapter(mSearchAdapter);
@@ -136,8 +127,8 @@ public class SearchFragment extends BaseFragment implements IFileInteractionList
                 viewHolder.path.setText(fileAbsolutePath.substring(0,
                         fileAbsolutePath.lastIndexOf(Constants.ROOT_PATH)));
                 mActivity = (MainActivity) getActivity();
-                FileListItem.setupFileListItemInfo(mActivity, view, mSearchList.get(i),
-                        IconHolder.getIconHolder(mActivity), mFileViewInteractionHub);
+//                FileListItem.setupFileListItemInfo(mActivity, view, mSearchList.get(i),
+//                        IconHolder.getIconHolder(mActivity), mFileViewInteractionHub);
                 RelativeLayout background = (RelativeLayout) view;
                 background.setBackgroundResource(mSelectedList.contains(i) ?
                         R.drawable.list_item_bg_shape : R.color.white);
@@ -177,7 +168,6 @@ public class SearchFragment extends BaseFragment implements IFileInteractionList
         public boolean onTouch(View view, MotionEvent motionEvent) {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    mMotionEvent = motionEvent;
                     if (view.getTag() instanceof SearchAdapter.ViewHolder) {
                         if (motionEvent.getButtonState() == MotionEvent.BUTTON_SECONDARY) {
                             mIsRightButton = true;
@@ -229,7 +219,7 @@ public class SearchFragment extends BaseFragment implements IFileInteractionList
                                 mFileViewInteractionHub.addDialogSelectedItem(fileInfo);
                                 if (mShiftPos != mPosition) {
                                     for (int i = Math.min(mShiftPos, mPosition);
-                                            i <= Math.max(mShiftPos, mPosition); i++) {
+                                         i <= Math.max(mShiftPos, mPosition); i++) {
                                         fileInfo = mSearchList.get(i);
                                         fileInfo.Selected = true;
                                         if (i != mPosition) {
@@ -267,7 +257,6 @@ public class SearchFragment extends BaseFragment implements IFileInteractionList
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        LocalCache.setSearchText(null);
     }
 
     @Override
@@ -283,12 +272,11 @@ public class SearchFragment extends BaseFragment implements IFileInteractionList
     public void enter() {
         if (mSelectedList.size() != 0) {
             String fileRealPath = mSearchList.get(mPosition).filePath;
-            enter(null, fileRealPath);
+            enter(fileRealPath);
         }
     }
 
-    @Override
-    public void enter(String tag, String path) {
+    public void enter(String path) {
         if (!new File(path).isDirectory()) {
             Context context = getActivity();
             try {
@@ -304,7 +292,7 @@ public class SearchFragment extends BaseFragment implements IFileInteractionList
             }
             mActivity = (MainActivity) getActivity();
             mManager.beginTransaction().hide(mActivity.getVisibleFragment()).commitAllowingStateLoss();
-            mCurFragment = new SystemSpaceFragment(TAG, path, null, false);
+            mCurFragment = new SystemSpaceFragment();
             mManager.beginTransaction().add(R.id.fl_mian, mCurFragment,
                     Constants.SEARCHSYSTEMSPACE_TAG).commitAllowingStateLoss();
             mActivity.mCurFragment = mCurFragment;
@@ -358,7 +346,7 @@ public class SearchFragment extends BaseFragment implements IFileInteractionList
             }
         }
         mFileViewInteractionHub.setCompressFileState(compressFileState);
-        mFileViewInteractionHub.showContextDialog(mFileViewInteractionHub, mMotionEvent);
+//        mFileViewInteractionHub.showContextDialog(mFileViewInteractionHub, mMotionEvent);
         mIsRightButton = false;
         onDataChanged();
     }

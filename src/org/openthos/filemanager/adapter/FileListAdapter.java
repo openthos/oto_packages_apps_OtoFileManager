@@ -1,8 +1,7 @@
-package org.openthos.filemanager.system;
+package org.openthos.filemanager.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -11,10 +10,11 @@ import android.widget.TextView;
 import android.widget.ImageView;
 
 import org.openthos.filemanager.R;
-import org.openthos.filemanager.drag.DragGridView;
-import org.openthos.filemanager.drag.DragListView;
-import org.openthos.filemanager.fragment.SearchFragment;
-import org.openthos.filemanager.fragment.SystemSpaceFragment;
+import org.openthos.filemanager.system.FileIconHelper;
+import org.openthos.filemanager.bean.FileInfo;
+import org.openthos.filemanager.system.FileListItem;
+import org.openthos.filemanager.system.FileViewInteractionHub;
+import org.openthos.filemanager.utils.Constants;
 import org.openthos.filemanager.utils.LocalCache;
 import org.openthos.filemanager.utils.IconHolder;
 
@@ -77,9 +77,9 @@ public class FileListAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
         if (convertView == null)  {
-            if ("list".equals(LocalCache.getViewTag())) {
+            if (Constants.VIEW_TAG_LIST.equals(LocalCache.getViewTag())) {
                 convertView = mInflater.inflate(R.layout.file_browser_item_list, parent, false);
-            } else if ("grid".equals(LocalCache.getViewTag())) {
+            } else if (Constants.VIEW_TAG_GRID.equals(LocalCache.getViewTag())) {
                 convertView = mInflater.inflate(R.layout.file_browser_item_grid, parent, false);
             }
             viewHolder = new ViewHolder(convertView);

@@ -1,15 +1,10 @@
-package org.openthos.filemanager.system;
+package org.openthos.filemanager.utils;
 
-import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.os.Environment;
-
-import org.openthos.filemanager.utils.L;
 
 import java.io.File;
 
 public abstract class Constants {
-    public static final String OPENTHOS_URI = "content://com.otosoft.tools.myprovider/openthosID";
     public static final String DESKFRAGMENT_TAG = "deskfragment";
     public static final String MUSICFRAGMENT_TAG = "musicfragment";
     public static final String VIDEOFRAGMENT_TAG = "videofragment";
@@ -29,7 +24,7 @@ public abstract class Constants {
     public static final String SEARCHSYSTEMSPACE_TAG = "searchsystemspace_tag";
     public static final String PERSONAL_TAG = "MY_SPACE";
     public static final String SEAFILESYSTEMSPACE_TAG = "seafilesystemspace_tag";
-    public static final String SAMBA_FRAGMENT_TAG= "samba_fragment_tag";
+    public static final String SAMBA_FRAGMENT_TAG = "samba_fragment_tag";
 
     public static final String LEFT_FAVORITES = "left_favorites";
     public static final String SYSTEM_SPACE_FRAGMENT = "system_space_fragment";
@@ -40,23 +35,25 @@ public abstract class Constants {
 
 
     private static String TAG = "Constants";
-//    public static final String SDCARD_PATH = "/storage/emulated/0";
     public static final String SDCARD_PATH = Environment.getExternalStorageDirectory().getPath();
+    public static final String DEVICE_PATH = "/storage";
     public static final String ROOT_PATH = "/";
+    public static final String SAMBA_PATH = "/storage/samba/";
+    public static final String SEAFILE_PATH = SDCARD_PATH + "/seafile";
     public static final String DESKTOP_PATH = SDCARD_PATH + "/Desktop";
     public static final String MUSIC_PATH = SDCARD_PATH + "/Music";
     public static final String VIDEOS_PATH = SDCARD_PATH + "/Movies";
     public static final String PICTURES_PATH = SDCARD_PATH + "/Pictures";
-    public static final String DOCUMENT_PATH = SDCARD_PATH + "/documents";
+    public static final String DOCUMENT_PATH = SDCARD_PATH + "/Documents";
     public static final String DOWNLOAD_PATH = SDCARD_PATH + "/Download";
     public static final String RECYCLE_PATH = SDCARD_PATH + "/Recycle";
-    public static final String QQ_IMAGE_PATH = SDCARD_PATH + "/Tencent/QQ_Images";
-    public static final String QQ_FILE_PATH = SDCARD_PATH + "/Tencent/QQfile_recv";
-    public static final String WEIXIN_IMG_PATH = SDCARD_PATH + "/Tencent/MicroMsg/WeiXin";
-    public static final String WEIXIN_FILE_PATH = SDCARD_PATH + "/Tencent/MicroMsg/Download";
-    public static final String BAIDU_PAN_PATH = SDCARD_PATH + "/BaiduNetdisk";
-//    public static final String USER_PERMISSION_PATH = "/storage";
-    public static final String USER_PERMISSION_PATH = "/" + SDCARD_PATH.split("\\/")[1];
+
+    public static final String MAIN_SP = "MAIN_SP";
+    public static final String SP_AUTOMOUNT = "SP_AUTOMOUNT";
+
+    public static final String VIEW_TAG = "VIEW_TAG";
+    public static final String VIEW_TAG_GRID = "VIEW_TAG_GRID";
+    public static final String VIEW_TAG_LIST = "VIEW_TAG_LIST";
 
     public static final String COMPRESS_FILES = "org.openthos.compress.compress";
     public static final String DECOMPRESS_FILE = "org.openthos.compress.decompress";
@@ -79,9 +76,9 @@ public abstract class Constants {
     public static final int LIMIT_OTHER_EXECUTE = 9;
 
     public static final long SIZE_KB = 1024L;
-    public static final long SIZE_MB = 1024L*1024L;
-    public static final long SIZE_GB = 1024L*1024L*1024L;
-    public static final long SIZE_TB = 1024L*1024L*1024L*1024L;
+    public static final long SIZE_MB = 1024L * 1024L;
+    public static final long SIZE_GB = 1024L * 1024L * 1024L;
+    public static final long SIZE_TB = 1024L * 1024L * 1024L * 1024L;
 
     public static final int INDEX_LIMIT_BEGIN = 14;
     public static final int INDEX_LIMIT_END = 24;
@@ -110,28 +107,26 @@ public abstract class Constants {
     public static final int LIMIT_FILES_NUM = 5;
     public static final int LIMIT_FILES_HEIGHT = 280;
 
-     /**
-     *
+    /**
      * getMIMEType: Get the MIME Types from the file name.
      *
-     * @param      file  The name of the file.
-     * @return     mimetype the MIME Type of the file.
+     * @param file The name of the file.
+     * @return mimetype the MIME Type of the file.
      * @throws
      */
     public static String getMIMEType(File file) {
-        L.i(TAG,"getMIMEType");
-        String type= "*/*";
+        String type = "*/*";
 
-        String name=file.getName();
+        String name = file.getName();
         int dotIndex = name.lastIndexOf(".");
-        if(dotIndex < 0){
+        if (dotIndex < 0) {
             return type;
         }
 
         String end = name.substring(name.lastIndexOf(".") + 1, name.length()).toLowerCase();
-        if(end.equals(""))return type;
-        for(int i=0;i<MIME_MapTable.length;i++){
-            if(end.equals(MIME_MapTable[i][0]))
+        if (end.equals("")) return type;
+        for (int i = 0; i < MIME_MapTable.length; i++) {
+            if (end.equals(MIME_MapTable[i][0]))
                 type = MIME_MapTable[i][1];
         }
         return type;
@@ -140,7 +135,7 @@ public abstract class Constants {
     /**
      * The Table of MIME Types
      */
-    public static final String[] [] MIME_MapTable = {
+    public static final String[][] MIME_MapTable = {
             {"3gp", "video/3gpp"},
             {"aab", "application/x-authoware-bin"},
             {"aam", "application/x-authoware-map"},

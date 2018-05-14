@@ -1,19 +1,13 @@
 package org.openthos.filemanager.component;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.TextView;
 
 import org.openthos.filemanager.MainActivity;
 import org.openthos.filemanager.R;
-import org.openthos.filemanager.BaseDialog;
+import org.openthos.filemanager.BaseMenuDialog;
 import org.openthos.filemanager.adapter.BaseDialogAdapter;
 import org.openthos.filemanager.system.FileSortHelper;
 import org.openthos.filemanager.system.FileViewInteractionHub;
@@ -21,9 +15,9 @@ import org.openthos.filemanager.fragment.SystemSpaceFragment;
 
 import java.util.ArrayList;
 
-public class SortDialog extends BaseDialog implements AdapterView.OnItemClickListener {
+public class SortMenuDialog extends BaseMenuDialog implements AdapterView.OnItemClickListener {
 
-    public SortDialog(Context context, FileViewInteractionHub fileViewInteractionHub) {
+    public SortMenuDialog(Context context, FileViewInteractionHub fileViewInteractionHub) {
         super(context);
         mActivity = (MainActivity) context;
         mFileViewInteractionHub = fileViewInteractionHub;

@@ -1,4 +1,4 @@
-package org.openthos.filemanager.system;
+package org.openthos.filemanager.bean;
 
 public class FileInfo {
     public String fileName;

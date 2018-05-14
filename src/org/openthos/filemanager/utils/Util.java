@@ -1,23 +1,20 @@
-package org.openthos.filemanager.system;
+package org.openthos.filemanager.utils;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbManager;
 import android.os.Environment;
 import android.os.StatFs;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.graphics.Color;
 
 import org.openthos.filemanager.R;
-import org.openthos.filemanager.utils.L;
-import org.openthos.filemanager.system.Constants;
+import org.openthos.filemanager.bean.FileInfo;
+import org.openthos.filemanager.system.Settings;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,9 +28,7 @@ import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class Util {
@@ -72,7 +67,6 @@ public class Util {
 
                 if (line.startsWith("/storage/disk")) {
                     strs = line.split("\\s+");
-                    L.d(LOG_TAG, Arrays.toString(strs) + "");
                 }
             }
             buff.close();
@@ -503,7 +497,7 @@ public class Util {
         } else if (fileSize < Constants.SIZE_TB) {
             fileSizeString = df.format((double) fileSize / Constants.SIZE_GB) + "G";
         } else {
-            fileSizeString = df.format((double) fileSize / Constants.SIZE_TB) + "T";
+            fileSizeString = df.format((double) fileSize / Constants.SIZE_TB) + "ToastUtils";
         }
         if (fileSizeString.equals(".00B")) {
             fileSizeString = "0.00B";

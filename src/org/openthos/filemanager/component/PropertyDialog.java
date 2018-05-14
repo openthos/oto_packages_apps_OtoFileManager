@@ -1,41 +1,31 @@
 package org.openthos.filemanager.component;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 
 import org.openthos.filemanager.R;
-import org.openthos.filemanager.BaseDialog;
-import org.openthos.filemanager.system.Constants;
-import org.openthos.filemanager.system.Util;
+import org.openthos.filemanager.BaseMenuDialog;
+import org.openthos.filemanager.utils.Constants;
+import org.openthos.filemanager.utils.Util;
 import org.openthos.filemanager.utils.OperateUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * Created by xu on 2016/8/11.
  */
-public class PropertyDialog extends BaseDialog implements View.OnClickListener,
+public class PropertyDialog extends BaseMenuDialog implements View.OnClickListener,
                                                CompoundButton.OnCheckedChangeListener {
     private Context mContext;
     private String mPath;
@@ -143,18 +133,14 @@ public class PropertyDialog extends BaseDialog implements View.OnClickListener,
                 }else if (line.contains("Access")) {
                     String accessTime = line.substring(Constants.INDEX_TIME_BEGIN,
                                                        Constants.INDEX_TIME_END);
-                    //android.util.Log.i("wwwww","!"+accessTime+"!");
-                    //Date dateTmp = dateFormat.parse(accessTime);
                     accessed.setText(accessTime);
                 }else if (line.contains("Modify")) {
                     String modifyTime = line.substring(Constants.INDEX_TIME_BEGIN,
                                                        Constants.INDEX_TIME_END);
-                    //Date dateTmp = dateFormat.parse(modifyTime);
                     modified.setText(modifyTime);
                 }else if (line.contains("Change")) {
                     String changeTime = line.substring(Constants.INDEX_TIME_BEGIN,
                                                        Constants.INDEX_TIME_END);
-                    //Date dateTmp = dateFormat.parse(changeTime);
                     created.setText(changeTime);
                 }
             }

@@ -27,7 +27,7 @@
         android:layout_width="fill_parent"
         android:layout_height="0dip"
         android:layout_weight="1">
-        <org.openthos.filemanager.drag.DragListView
+        <org.openthos.filemanager.component.DragListView
             android:id="@+id/file_path_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -41,7 +41,7 @@
             android:listSelector="@android:color/transparent"
             android:visibility="gone"/>
 
-        <org.openthos.filemanager.drag.DragGridView
+        <org.openthos.filemanager.component.DragGridView
             android:id="@+id/file_path_grid"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

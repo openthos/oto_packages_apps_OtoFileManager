@@ -19,13 +19,8 @@ public abstract class BaseActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mInflate = (ViewGroup) View.inflate(this, getLayoutId(), null);
-        setContentView(mInflate);
-        mFileSortHelper = new FileSortHelper();
         setMode();
-        initView();
-        initData();
-        initListener();
+        mFileSortHelper = new FileSortHelper();
     }
 
     public FileSortHelper getFileSortHelper() {
@@ -33,8 +28,4 @@ public abstract class BaseActivity extends FragmentActivity {
     }
 
     protected abstract void setMode();
-    protected abstract void initListener();
-    protected abstract void initData();
-    protected abstract void initView();
-    protected abstract int getLayoutId();
 }

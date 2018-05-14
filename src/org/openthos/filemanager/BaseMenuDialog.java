@@ -1,56 +1,44 @@
 package org.openthos.filemanager;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 
-import org.openthos.filemanager.component.MenuDialog;
-import org.openthos.filemanager.system.Constants;
 import org.openthos.filemanager.system.FileViewInteractionHub;
 
 import java.util.ArrayList;
-
-import static android.R.color.holo_purple;
-import static android.R.color.transparent;
 
 /**
  * Created by wang on 17-3-9.
  */
 
-public abstract class BaseDialog extends Dialog{
+public abstract class BaseMenuDialog extends Dialog {
     protected MainActivity mActivity;
     protected ListView mListView;
     protected ArrayList mDatas;
     protected FileViewInteractionHub mFileViewInteractionHub;
 
-    public BaseDialog(@NonNull Context context) {
+    public BaseMenuDialog(@NonNull Context context) {
         super(context);
     }
 
-    public BaseDialog(@NonNull Context context, @StyleRes int theme) {
+    public BaseMenuDialog(@NonNull Context context, @StyleRes int theme) {
         super(context, theme);
     }
 
-    public BaseDialog(@NonNull Context context, boolean cancelable,
-                      @Nullable OnCancelListener cancelListener) {
+    public BaseMenuDialog(@NonNull Context context, boolean cancelable,
+                          @Nullable OnCancelListener cancelListener) {
         super(context, cancelable, cancelListener);
     }
 
@@ -84,8 +72,9 @@ public abstract class BaseDialog extends Dialog{
         listView.setLayoutParams(params);
     }
 
-    protected abstract  void initData();
-    protected abstract  void initListener();
+    protected abstract void initData();
+
+    protected abstract void initListener();
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

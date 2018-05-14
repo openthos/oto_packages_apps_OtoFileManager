@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content">
+
     <LinearLayout
         android:id="@+id/rl_personal_space"
         style="@style/homeItemLinear">
+
         <ImageView
             android:id="@+id/iv_personal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:src="@mipmap/storage"/>
+            android:src="@mipmap/storage" />
+
         <TextView
             android:id="@+id/tv_personal_title"
             android:layout_width="wrap_content"
@@ -19,42 +22,26 @@
             android:layout_marginLeft="20dp"
             android:text="@string/text_personal"
             android:textColor="@android:color/black"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
     </LinearLayout>
-    <LinearLayout
-        android:id="@+id/rl_android_service"
-        android:visibility="invisible"
-        style="@style/homeItemLinear">
-        <ImageView
-            android:id="@+id/iv_service"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@mipmap/cloud_service"/>
-        <TextView
-            android:id="@+id/tv_service_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="20dp"
-            android:text="@string/text_cloud_services"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"/>
-    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/rl_android_system"
         style="@style/homeItemLinear">
+
         <ImageView
             android:id="@+id/iv_android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:src="@mipmap/storage"/>
+            android:src="@mipmap/storage" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:orientation="vertical">
+
             <TextView
                 android:id="@+id/tv_system_title"
                 android:layout_width="wrap_content"
@@ -62,7 +49,8 @@
                 android:layout_marginTop="10dp"
                 android:text="@string/text_android"
                 android:textColor="@android:color/black"
-                android:textSize="16sp"/>
+                android:textSize="16sp" />
+
             <ProgressBar
                 android:id="@+id/pb_system"
                 style="@android:style/Widget.ProgressBar.Horizontal"
@@ -74,24 +62,28 @@
                 android:layout_marginTop="5dp"
                 android:max="100"
                 android:progress="50"
-                android:progressDrawable="@drawable/my_progressbar"/>
+                android:progressDrawable="@drawable/my_progressbar" />
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/tv_system_total_size"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/text_size"
-                    android:textSize="13sp"/>
+                    android:textSize="13sp" />
+
                 <TextView
                     android:id="@+id/tv_system_total"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:singleLine="true"
-                    android:textSize="13sp"/>
+                    android:textSize="13sp" />
+
                 <TextView
                     android:id="@+id/tv_system_avail_size"
                     android:layout_width="wrap_content"
@@ -100,38 +92,43 @@
                     android:ellipsize="end"
                     android:singleLine="true"
                     android:text="@string/text_available"
-                    android:textSize="13sp"/>
+                    android:textSize="13sp" />
+
                 <TextView
                     android:id="@+id/tv_system_avail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:singleLine="true"
-                    android:textSize="13sp"/>
+                    android:textSize="13sp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
+
     <LinearLayout
         android:id="@+id/rl_sd_space"
         style="@style/homeItemLinear">
+
         <ImageView
             android:id="@+id/iv_person"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:src="@mipmap/storage"/>
+            android:src="@mipmap/storage" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:orientation="vertical">
+
             <TextView
                 android:id="@+id/tv_sd_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/text_disk_storage"
                 android:textColor="@android:color/black"
-                android:textSize="16sp"/>
+                android:textSize="16sp" />
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

@@ -1,35 +1,28 @@
 package org.openthos.filemanager.component;
 
-import android.app.Dialog;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.TextView;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.pm.ApplicationInfo;
 
-import org.openthos.filemanager.BaseDialog;
+import org.openthos.filemanager.BaseMenuDialog;
 import org.openthos.filemanager.MainActivity;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.adapter.BaseDialogAdapter;
-import org.openthos.filemanager.system.Constants;
+import org.openthos.filemanager.utils.Constants;
 
 import java.io.File;
 import java.util.List;
 import java.util.ArrayList;
 
-public class TextSelectDialog extends BaseDialog implements AdapterView.OnItemClickListener {
+public class TextSelectMenuDialog extends BaseMenuDialog implements AdapterView.OnItemClickListener {
     private String filePath;
 
-    public TextSelectDialog(Context context, String filePath) {
+    public TextSelectMenuDialog(Context context, String filePath) {
         super(context);
         mActivity = (MainActivity) context;
         this.filePath = filePath;

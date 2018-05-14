@@ -4,15 +4,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
-import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.File;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import org.openthos.filemanager.bean.Disk;
 import org.openthos.filemanager.bean.Volume;
+import org.openthos.filemanager.utils.Constants;
 import org.openthos.filemanager.utils.SambaUtils;
 /**
  * Created by Wang Zhixu on 4/18/17.
@@ -29,8 +29,8 @@ public class BootCompleteReceiver extends BroadcastReceiver {
     private void autoMount(Context context) {
         String result = refreshAutoMountData(context);
         if (!result.equals("[]")) {
-            context.getSharedPreferences("automount", Context.MODE_PRIVATE)
-                    .edit().putString("automount", result).commit();
+            context.getSharedPreferences(Constants.MAIN_SP, Context.MODE_PRIVATE)
+                    .edit().putString(Constants.SP_AUTOMOUNT, result).commit();
         }
     }
 

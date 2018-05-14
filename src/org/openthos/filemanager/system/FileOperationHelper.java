@@ -1,14 +1,8 @@
 package org.openthos.filemanager.system;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.Message;
-import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.IOException;
@@ -22,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openthos.filemanager.MainActivity;
+import org.openthos.filemanager.bean.FileInfo;
+import org.openthos.filemanager.utils.Constants;
+import org.openthos.filemanager.utils.Util;
 
 public class FileOperationHelper {
     private static final String LOG_TAG = "FileOperation";

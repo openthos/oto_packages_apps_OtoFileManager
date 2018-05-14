@@ -1,4 +1,4 @@
-package org.openthos.filemanager.drag;
+package org.openthos.filemanager.component;
 
 import android.app.Activity;
 import android.content.Context;

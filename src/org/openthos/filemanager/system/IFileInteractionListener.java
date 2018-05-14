@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 
+import org.openthos.filemanager.bean.FileInfo;
+
 import java.util.Collection;
 
 public interface IFileInteractionListener {

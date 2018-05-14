@@ -1,35 +1,26 @@
 package org.openthos.filemanager.component;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.os.RemoteException;
 
 import org.openthos.filemanager.MainActivity;
-import org.openthos.filemanager.BaseDialog;
+import org.openthos.filemanager.BaseMenuDialog;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.bean.SeafileLibrary;
-import org.openthos.filemanager.system.Constants;
+import org.openthos.filemanager.utils.Constants;
 import org.openthos.filemanager.system.TextInputDialog;
 import org.openthos.filemanager.utils.SeafileUtils;
 import org.openthos.filemanager.utils.OperateUtils;
 
-import java.io.File;
-import java.util.HashMap;
 import java.util.regex.Pattern;
 
-public class SeafileDialog extends BaseDialog implements View.OnClickListener {
+public class SeafileMenuDialog extends BaseMenuDialog implements View.OnClickListener {
     private MainActivity mMainActivity;
     private TextView mTvCreate;
     private TextView mTvSync;
@@ -41,7 +32,7 @@ public class SeafileDialog extends BaseDialog implements View.OnClickListener {
     private SeafileLibrary mLibrary;
     private int mPos;
 
-    public SeafileDialog(Context context, boolean isItem, SeafileLibrary library, int pos) {
+    public SeafileMenuDialog(Context context, boolean isItem, SeafileLibrary library, int pos) {
         super(context);
         mMainActivity = (MainActivity) context;
         mIsItem = isItem;

@@ -7,12 +7,9 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -23,12 +20,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.openthos.filemanager.BaseDialog;
+import org.openthos.filemanager.BaseMenuDialog;
 import org.openthos.filemanager.BaseFragment;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.adapter.BaseDialogAdapter;
 import org.openthos.filemanager.adapter.SambaAdapter;
-import org.openthos.filemanager.system.Constants;
+import org.openthos.filemanager.utils.Constants;
 import org.openthos.filemanager.system.IntentBuilder;
 import org.openthos.filemanager.utils.SambaUtils;
 
@@ -112,9 +109,9 @@ public class SambaFragment extends BaseFragment {
     @Override
     public boolean canGoBack() {
         if (mPaths.size() > 0) {
-            return false;
-        } else {
             return true;
+        } else {
+            return false;
         }
     }
 
@@ -383,20 +380,16 @@ public class SambaFragment extends BaseFragment {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                SystemSpaceFragment fragment
-                        = new SystemSpaceFragment(path, path, null, false);
-                FragmentTransaction transaction = mManager.beginTransaction();
-                transaction.hide(mMainActivity.mCurFragment);
-                transaction.add(R.id.fl_mian, fragment, Constants.SAMBA_TAG)
-                        .commitAllowingStateLoss();
-                mMainActivity.mCurFragment = fragment;
+                mMainActivity.showFileSpaceFragment(path);
+//                SystemSpaceFragment fragment
+//                        = new SystemSpaceFragment(path, path, null);
+//                FragmentTransaction transaction = mManager.beginTransaction();
+//                transaction.hide(mMainActivity.mCurFragment);
+//                transaction.add(R.id.fl_mian, fragment, Constants.SAMBA_TAG)
+//                        .commitAllowingStateLoss();
+//                mMainActivity.mCurFragment = fragment;
             }
         });
-    }
-
-    @Override
-    public void enter(String tag, String path) {
-        enter();
     }
 
     @Override
@@ -502,7 +495,7 @@ public class SambaFragment extends BaseFragment {
         }
     }
 
-    private class MenuDialog extends BaseDialog implements ListView.OnItemClickListener {
+    private class MenuDialog extends BaseMenuDialog implements ListView.OnItemClickListener {
         private Context mContext;
 
 

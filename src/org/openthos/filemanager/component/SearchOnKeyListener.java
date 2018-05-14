@@ -2,7 +2,6 @@ package org.openthos.filemanager.component;
 
 import android.app.ProgressDialog;
 import android.support.v4.app.FragmentManager;
-import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -11,12 +10,11 @@ import org.openthos.filemanager.R;
 import org.openthos.filemanager.fragment.PersonalSpaceFragment;
 import org.openthos.filemanager.fragment.SdStorageFragment;
 import org.openthos.filemanager.fragment.SearchFragment;
-import org.openthos.filemanager.BaseFragment;
 import org.openthos.filemanager.system.FileCategoryHelper;
-import org.openthos.filemanager.system.FileInfo;
+import org.openthos.filemanager.bean.FileInfo;
 import org.openthos.filemanager.system.Settings;
-import org.openthos.filemanager.system.Util;
-import org.openthos.filemanager.system.Constants;
+import org.openthos.filemanager.utils.Util;
+import org.openthos.filemanager.utils.Constants;
 import java.io.File;
 import java.util.ArrayList;
 import android.widget.Toast;
@@ -43,18 +41,18 @@ public class SearchOnKeyListener implements TextView.OnKeyListener {
             case KeyEvent.KEYCODE_ENTER:
             case KeyEvent.KEYCODE_NUMPAD_ENTER:
                 v.clearFocus();
-                if (mMainActivity.mCurFragment instanceof SdStorageFragment) {
-                    mCurPath = Constants.ROOT_PATH;
-                } else if (mMainActivity.mCurFragment instanceof PersonalSpaceFragment) {
-                    mCurPath = Constants.SDCARD_PATH;
-                } else {
-                    mCurPath = mMainActivity.getCurPath();
-                }
-                if (Constants.ROOT_PATH.equals(mCurPath)) {
-                    mMainActivity.mHandler.sendEmptyMessage(Constants.MENU_SHOWHIDE);
-                } else {
-                    excuSearch((TextView) v);
-                }
+                //if (mMainActivity.mCurFragment instanceof SdStorageFragment) {
+                //    mCurPath = Constants.ROOT_PATH;
+                //} else if (mMainActivity.mCurFragment instanceof PersonalSpaceFragment) {
+                //    mCurPath = Constants.SDCARD_PATH;
+                //} else {
+                //    mCurPath = mMainActivity.getCurPath();
+                //}
+                //if (Constants.ROOT_PATH.equals(mCurPath)) {
+                //    mMainActivity.mHandler.sendEmptyMessage(Constants.MENU_SHOWHIDE);
+                //} else {
+                //    excuSearch((TextView) v);
+                //}
                 return true;
             case KeyEvent.KEYCODE_ESCAPE:
                 v.clearFocus();
@@ -129,7 +127,7 @@ public class SearchOnKeyListener implements TextView.OnKeyListener {
     }
 
     private void startSearchFragment() {
-        mMainActivity.mStartSearchFragment = (BaseFragment) mMainActivity.getVisibleFragment();
+        mMainActivity.mStartSearchFragment = (SearchFragment) mMainActivity.getVisibleFragment();
         mManager.beginTransaction().
             hide(mMainActivity.getVisibleFragment()).commitAllowingStateLoss();
         if (mManager.findFragmentByTag(Constants.SEARCHFRAGMENT_TAG) != null) {
@@ -150,7 +148,7 @@ public class SearchOnKeyListener implements TextView.OnKeyListener {
         Toast.makeText(mMainActivity, mMainActivity.getString(R.string.found_no_file),
                        Toast.LENGTH_SHORT).show();
         if (!(mMainActivity.getVisibleFragment() instanceof SearchFragment)) {
-            mMainActivity.mStartSearchFragment = (BaseFragment) mMainActivity.getVisibleFragment();
+            mMainActivity.mStartSearchFragment = (SearchFragment) mMainActivity.getVisibleFragment();
         }
         mManager.beginTransaction().
             hide(mMainActivity.getVisibleFragment()).commitAllowingStateLoss();

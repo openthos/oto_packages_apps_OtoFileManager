@@ -1,34 +1,22 @@
 package org.openthos.filemanager.component;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
-import android.os.Bundle;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
+
 import org.openthos.filemanager.MainActivity;
-import org.openthos.filemanager.BaseDialog;
+import org.openthos.filemanager.BaseMenuDialog;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.adapter.BaseDialogAdapter;
-import org.openthos.filemanager.system.Constants;
+import org.openthos.filemanager.utils.Constants;
 import org.openthos.filemanager.fragment.SdStorageFragment;
 import java.util.ArrayList;
-import static android.R.color.holo_purple;
-import static android.R.color.transparent;
 
-public class DiskDialog extends BaseDialog implements ListView.OnItemClickListener{
+public class DiskMenuDialog extends BaseMenuDialog implements ListView.OnItemClickListener{
     private String mDiskTag;
 
-    public DiskDialog(Context context, String tag) {
+    public DiskMenuDialog(Context context, String tag) {
         super(context);
         mActivity = (MainActivity) context;
         mDiskTag = tag;

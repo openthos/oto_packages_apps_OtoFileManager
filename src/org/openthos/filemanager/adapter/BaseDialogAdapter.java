@@ -8,9 +8,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import org.openthos.filemanager.BaseDialog;
 import org.openthos.filemanager.R;
-import org.openthos.filemanager.system.Constants;
+import org.openthos.filemanager.utils.Constants;
 import org.openthos.filemanager.system.FileViewInteractionHub;
 
 import java.util.ArrayList;

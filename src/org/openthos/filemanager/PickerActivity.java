@@ -13,8 +13,8 @@ public class PickerActivity extends MainActivity {
     @Override
     public void onBackPressed() {
         if (mCurFragment == mSdStorageFragment) {
-             setResult(Activity.RESULT_OK);
-             finish();
+            setResult(Activity.RESULT_OK);
+            finish();
         } else {
             super.onBackPressed();
         }

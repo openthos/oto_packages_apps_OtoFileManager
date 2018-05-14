@@ -15,6 +15,8 @@ import android.provider.MediaStore.Video;
 import android.util.Log;
 import android.widget.ImageView;
 
+import org.openthos.filemanager.utils.Util;
+
 import java.lang.ref.SoftReference;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;

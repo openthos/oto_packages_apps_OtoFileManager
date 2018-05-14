@@ -13,7 +13,7 @@ import android.widget.RadioButton;
 
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.MainActivity;
-import org.openthos.filemanager.system.Constants;
+import org.openthos.filemanager.utils.Constants;
 import org.openthos.filemanager.utils.SeafileUtils;
 
 public class CloudInfoDialog extends Dialog {

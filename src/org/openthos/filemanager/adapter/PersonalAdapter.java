@@ -10,19 +10,19 @@ import android.widget.TextView;
 import android.widget.ImageView;
 
 import org.openthos.filemanager.R;
-import org.openthos.filemanager.bean.FolderBean;
+import org.openthos.filemanager.bean.PersonalBean;
 import org.openthos.filemanager.fragment.PersonalSpaceFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PersonalAdapter extends BaseAdapter {
-    private List<FolderBean> mPersonalList;
+    private List<PersonalBean> mPersonalList;
     private LayoutInflater mInflater;
     private PersonalSpaceFragment.GridViewOnGenericMotionListener mMotionListener;
     private List<Integer> selectFileInfoListIndex = new ArrayList<>();
 
-    public PersonalAdapter(Context context, List<FolderBean> list,
+    public PersonalAdapter(Context context, List<PersonalBean> list,
                            PersonalSpaceFragment.GridViewOnGenericMotionListener motionListener) {
         mPersonalList = list;
         mMotionListener = motionListener;

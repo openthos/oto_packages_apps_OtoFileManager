@@ -1,66 +1,44 @@
 package org.openthos.filemanager.fragment;
 
+import android.content.ClipboardManager;
 import android.content.Context;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.content.ClipboardManager;
 
 import org.openthos.filemanager.BaseFragment;
-import org.openthos.filemanager.MainActivity;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.adapter.PersonalAdapter;
-import org.openthos.filemanager.bean.FolderBean;
-import org.openthos.filemanager.drag.DragGridView;
-import org.openthos.filemanager.system.Constants;
-import org.openthos.filemanager.system.FileInfo;
-import org.openthos.filemanager.system.FileViewInteractionHub;
-import org.openthos.filemanager.utils.T;
+import org.openthos.filemanager.bean.PersonalBean;
 import org.openthos.filemanager.component.PersonalMenuDialog;
+import org.openthos.filemanager.component.DragGridView;
+import org.openthos.filemanager.utils.Constants;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class PersonalSpaceFragment extends BaseFragment {
     private DragGridView mPersonalGrid;
     private PersonalAdapter mPersonalAdapter;
-    private List<FolderBean> mFolderBeanList;
-    private Map<Integer, SystemSpaceFragment> mPosAndFragmentMap = new HashMap<>();
+    private List<PersonalBean> mPersonalBeanList;
     private double mLastBackTime;
-    public Fragment mCurFragment;
     private GridViewOnGenericMotionListener mMotionListener;
-    ArrayList<FileInfo> mFileInfoArrayList = null;
     private int mPos;
-    private PersonalMenuDialog mPersonalDialog;
+    private PersonalMenuDialog mPersonalMenuDialog;
 
-    @Override
-    protected void initData() {
-        mFolderBeanList = mMainActivity.getFolderBeanList();
-        mMotionListener = new GridViewOnGenericMotionListener();
-        mPersonalAdapter = new PersonalAdapter(mMainActivity, mFolderBeanList, mMotionListener);
-        mPersonalGrid.setAdapter(mPersonalAdapter);
-    }
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (!hidden) {
-            refresh();
-        }
-    }
-
-    public void refresh() {
-
-    }
 
     @Override
     protected void initListener() {
         mPersonalGrid.setOnGenericMotionListener(mMotionListener);
     }
+
+    @Override
+    protected void initData() {
+        mPersonalBeanList = mMainActivity.getPersonalBeanList();
+        mMotionListener = new GridViewOnGenericMotionListener();
+        mPersonalAdapter = new PersonalAdapter(mMainActivity, mPersonalBeanList, mMotionListener);
+        mPersonalGrid.setAdapter(mPersonalAdapter);
+    }
+
 
     @Override
     protected void initView() {
@@ -75,22 +53,11 @@ public class PersonalSpaceFragment extends BaseFragment {
 
     @Override
     public boolean canGoBack() {
-        boolean canGoBack = false;
-        Fragment baseFragment = mCurFragment;
-        if (baseFragment instanceof SystemSpaceFragment) {
-            SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) baseFragment;
-            canGoBack = systemSpaceFragment.canGoBack();
-        }
-        return canGoBack;
+        return false;
     }
 
     @Override
     public void goBack() {
-        Fragment baseFragment = mCurFragment;
-        if (baseFragment instanceof SystemSpaceFragment) {
-            SystemSpaceFragment systemSpaceFragment = (SystemSpaceFragment) baseFragment;
-            systemSpaceFragment.goBack();
-        }
     }
 
     public class GridViewOnGenericMotionListener implements View.OnGenericMotionListener {
@@ -131,14 +98,14 @@ public class PersonalSpaceFragment extends BaseFragment {
                             integerList.clear();
                             integerList.add(mPos);
                         }
-                        mPersonalDialog = new PersonalMenuDialog
-                                (mMainActivity, mPos, mFolderBeanList.get(mPos).isCollected());
-                        mPersonalDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
+                        mPersonalMenuDialog = new PersonalMenuDialog
+                                (mMainActivity, mPersonalBeanList.get(mPos));
+                        mPersonalMenuDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
                     } else {
-//                        mPersonalDialog = new PersonalMenuDialog(mMainActivity);
+//                        mPersonalMenuDialog = new PersonalMenuDialog(mMainActivity);
                         integerList.clear();
                     }
-//                    mPersonalDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
+//                    mPersonalMenuDialog.showDialog((int) event.getRawX(), (int) event.getRawY());
                     mPersonalAdapter.notifyDataSetChanged();
                     break;
                 case MotionEvent.BUTTON_TERTIARY:
@@ -148,13 +115,11 @@ public class PersonalSpaceFragment extends BaseFragment {
                     break;
                 case MotionEvent.ACTION_HOVER_ENTER:
                     break;
+                default:
+
             }
             return true;
         }
-    }
-
-    @Override
-    public void enter(String tag, String title) {
     }
 
     @Override
@@ -163,29 +128,13 @@ public class PersonalSpaceFragment extends BaseFragment {
     }
 
     private void enter(int position) {
-        if (mCurFragment != null) {
-            mFileInfoArrayList = ((SystemSpaceFragment) mCurFragment).getFileInfoList();
-        }
-        if (mFileInfoArrayList != null) {
-            T.showShort(mMainActivity,
-                    mMainActivity.getString(R.string.operation_failed_permission_refuse));
-        }
-        FragmentTransaction transaction = mManager.beginTransaction();
-        transaction.hide(mMainActivity.mCurFragment);
-        mCurFragment = mPosAndFragmentMap.get(position);
-        if (mCurFragment == null) {
-            mCurFragment = new SystemSpaceFragment(Constants.LEFT_FAVORITES,
-                    mFolderBeanList.get(position).getPath(), null, false);
-            transaction.add(R.id.fl_mian, mCurFragment, Constants.PERSONALSYSTEMSPACE_TAG);
-            mPosAndFragmentMap.put(position, (SystemSpaceFragment) mCurFragment);
-        }
-        transaction.show(mCurFragment).commitAllowingStateLoss();
-        mMainActivity.mCurFragment = mCurFragment;
+        mMainActivity.showFileSpaceFragment(mPersonalBeanList.get(position).getPath());
+        mMainActivity.setSelectedBackground(R.id.tv_collected);
     }
 
     public void copyPath() {
         ((ClipboardManager) mMainActivity.getSystemService(Context.CLIPBOARD_SERVICE))
-                .setText(mFolderBeanList.get(mPos).getPath());
+                .setText(mPersonalBeanList.get(mPos).getPath());
     }
 
     @Override
@@ -199,10 +148,10 @@ public class PersonalSpaceFragment extends BaseFragment {
                 mPos = mPos > numColumns - 1 ? mPos - numColumns : mPos;
                 break;
             case KeyEvent.KEYCODE_DPAD_RIGHT:
-                mPos = mPos < mFolderBeanList.size() - 1 ? mPos + 1 : mPos;
+                mPos = mPos < mPersonalBeanList.size() - 1 ? mPos + 1 : mPos;
                 break;
             case KeyEvent.KEYCODE_DPAD_DOWN:
-                mPos = mPos < mFolderBeanList.size() - numColumns ?
+                mPos = mPos < mPersonalBeanList.size() - numColumns ?
                         mPos + numColumns : mPos;
                 break;
         }

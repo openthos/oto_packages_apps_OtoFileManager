@@ -1,7 +1,5 @@
 package org.openthos.filemanager.component;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -9,13 +7,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -24,17 +18,15 @@ import android.widget.TextView;
 import android.text.TextUtils;
 
 import org.openthos.filemanager.R;
-import org.openthos.filemanager.BaseDialog;
+import org.openthos.filemanager.BaseMenuDialog;
 import org.openthos.filemanager.MainActivity;
-import org.openthos.filemanager.system.Constants;
-import org.openthos.filemanager.system.FileInfo;
-import org.openthos.filemanager.system.FileViewInteractionHub;
+import org.openthos.filemanager.utils.Constants;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OpenWithDialog extends BaseDialog implements AdapterView.OnItemClickListener {
+public class OpenWithDialog extends BaseMenuDialog implements AdapterView.OnItemClickListener {
 
     private TextView mTextView;
     private List<ResolveInfo> mResolveList;

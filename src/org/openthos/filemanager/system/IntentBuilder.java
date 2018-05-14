@@ -5,14 +5,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.view.MotionEvent;
-import android.view.Window;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.pm.ApplicationInfo;
 
-import org.openthos.filemanager.R;
-import org.openthos.filemanager.component.TextSelectDialog;
+import org.openthos.filemanager.bean.FileInfo;
+import org.openthos.filemanager.component.TextSelectMenuDialog;
 import org.openthos.filemanager.component.OpenWithDialog;
+import org.openthos.filemanager.utils.Constants;
 
 import java.io.File;
 import java.util.List;
@@ -39,7 +38,7 @@ public class IntentBuilder {
                 openWithDialog.showDialog();
             }
         } else {
-            TextSelectDialog dialog = new TextSelectDialog(context, filePath);
+            TextSelectMenuDialog dialog = new TextSelectMenuDialog(context, filePath);
             if (event != null) {
                 dialog.showDialog((int) event.getRawX(), (int) event.getRawY());
             } else {

@@ -16,7 +16,7 @@ import android.widget.ImageView;
 
 import org.openthos.filemanager.system.FileCategoryHelper;
 import org.openthos.filemanager.system.FileIconHelper;
-import org.openthos.filemanager.system.Util;
+import org.openthos.filemanager.utils.Util;
 import org.openthos.filemanager.R;
 
 import java.lang.ref.WeakReference;

@@ -1,12 +1,12 @@
-package org.openthos.filemanager.component;
+package org.openthos.filemanager.utils;
 
-import org.openthos.filemanager.bean.FolderBean;
+import org.openthos.filemanager.bean.PersonalBean;
 
 import java.util.Comparator;
 
-public class FolderBeanComparator implements Comparator<FolderBean> {
+public class PersonalBeanComparator implements Comparator<PersonalBean> {
     @Override
-    public int compare(FolderBean leftBean, FolderBean rightBean) {
+    public int compare(PersonalBean leftBean, PersonalBean rightBean) {
         if (leftBean.isSystemFolder() == rightBean.isSystemFolder()) {
             return leftBean.getPath().compareToIgnoreCase(rightBean.getPath());
         } else if (leftBean.isSystemFolder()) {
@@ -14,10 +14,5 @@ public class FolderBeanComparator implements Comparator<FolderBean> {
         } else {
             return 1;
         }
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        return false;
     }
 }

@@ -1,48 +1,32 @@
 package org.openthos.filemanager.component;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.openthos.filemanager.R;
-import org.openthos.filemanager.BaseDialog;
-import org.openthos.filemanager.system.Constants;
-import org.openthos.filemanager.system.Util;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import org.openthos.filemanager.BaseMenuDialog;
 
 /**
  * Created by xu on 2016/12/06.
  */
-public class CopyInfoDialog extends BaseDialog {
+public class InfoDialog extends BaseMenuDialog {
     private Activity mContext;
     private TextView mTextMessage;
     private TextView mTextTitle;
-    private static CopyInfoDialog dialog = null;
+    private static InfoDialog dialog = null;
     private GifView mGif;
     private int mRawId;
 
-    public CopyInfoDialog(Activity context) {
+    public InfoDialog(Activity context) {
         super(context);
         mContext = context;
     }
 
-    public static CopyInfoDialog getInstance(Activity activity) {
+    public static InfoDialog getInstance(Activity activity) {
         if (dialog == null) {
-            return new CopyInfoDialog(activity);
+            return new InfoDialog(activity);
         } else {
             return dialog;
         }

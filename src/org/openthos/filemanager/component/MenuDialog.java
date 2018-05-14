@@ -5,26 +5,25 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.openthos.filemanager.MainActivity;
-import org.openthos.filemanager.BaseDialog;
+import org.openthos.filemanager.BaseMenuDialog;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.adapter.BaseDialogAdapter;
-import org.openthos.filemanager.system.Constants;
-import org.openthos.filemanager.system.FileInfo;
+import org.openthos.filemanager.utils.Constants;
+import org.openthos.filemanager.bean.FileInfo;
 import org.openthos.filemanager.system.FileViewInteractionHub;
 
 import java.util.ArrayList;
 
-public class MenuDialog extends BaseDialog implements ListView.OnItemClickListener {
+public class MenuDialog extends BaseMenuDialog implements ListView.OnItemClickListener {
     private int mX;
     private int mY;
     private MotionEvent mMotionEvent;
     private boolean mCanCopy;
-    private SortDialog mSortDialog;
+    private SortMenuDialog mSortDialog;
 
     public MenuDialog(Context context, FileViewInteractionHub fileViewInteractionHub,
                       MotionEvent motionEvent) {
@@ -133,7 +132,7 @@ public class MenuDialog extends BaseDialog implements ListView.OnItemClickListen
         } else if (mActivity.getString(R.string.operation_send).equals(content)) {
             mFileViewInteractionHub.onOperationSend();
         } else if (mActivity.getString(R.string.menu_item_sort).equals(content)) {
-            mSortDialog = new SortDialog(mActivity, mFileViewInteractionHub);
+            mSortDialog = new SortMenuDialog(mActivity, mFileViewInteractionHub);
             mSortDialog.showDialog(
                     mX + 1 + 1 + getWindow().getDecorView().getWidth()
                             - getWindow().getDecorView().getPaddingLeft()

@@ -24,26 +24,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/folder_collection_dialog_margin_1x"
-            android:paddingEnd="@dimen/folder_collection_dialog_padding_2x"
-            android:paddingStart="@dimen/folder_collection_dialog_padding_2x">
+            android:padding="@dimen/folder_collection_dialog_margin_1x">
 
             <Button
                 android:id="@+id/bt_confirm"
-                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/folder_collection_dialog_margin_1x"
                 android:layout_weight="1"
+                android:singleLine="true"
                 android:text="@string/confirm"
                 android:textSize="16sp" />
 
             <Button
                 android:id="@+id/bt_cancel"
-                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/folder_collection_dialog_margin_1x"
                 android:layout_weight="1"
+                android:singleLine="true"
                 android:text="@string/cancel"
                 android:textSize="16sp" />
         </LinearLayout>

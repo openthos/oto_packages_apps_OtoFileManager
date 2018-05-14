@@ -1,6 +1,5 @@
 package org.openthos.filemanager.fragment;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
@@ -9,50 +8,45 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.media.MediaScannerConnection;
 
 import org.openthos.filemanager.BaseFragment;
 import org.openthos.filemanager.MainActivity;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.component.FrameSelectView;
-import org.openthos.filemanager.drag.DragGridView;
-import org.openthos.filemanager.drag.DragListView;
-import org.openthos.filemanager.system.Constants;
+import org.openthos.filemanager.component.DragGridView;
+import org.openthos.filemanager.component.DragListView;
+import org.openthos.filemanager.utils.Constants;
 import org.openthos.filemanager.system.FileCategoryHelper;
 import org.openthos.filemanager.system.FileIconHelper;
-import org.openthos.filemanager.system.FileInfo;
-import org.openthos.filemanager.system.FileListAdapter;
+import org.openthos.filemanager.bean.FileInfo;
+import org.openthos.filemanager.adapter.FileListAdapter;
+import org.openthos.filemanager.system.FileOperationHelper;
 import org.openthos.filemanager.system.FileSortHelper;
 import org.openthos.filemanager.system.FileViewInteractionHub;
-import org.openthos.filemanager.system.FileOperationHelper;
 import org.openthos.filemanager.system.IFileInteractionListener;
 import org.openthos.filemanager.system.Settings;
-import org.openthos.filemanager.system.Util;
-import org.openthos.filemanager.utils.L;
+import org.openthos.filemanager.utils.Util;
 import org.openthos.filemanager.utils.LocalCache;
-import org.openthos.filemanager.utils.T;
 
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 
 public class SystemSpaceFragment extends BaseFragment implements
         IFileInteractionListener, MainActivity.IBackPressedListener {
@@ -67,8 +61,6 @@ public class SystemSpaceFragment extends BaseFragment implements
     private DragListView file_path_list;
     private DragGridView file_path_grid;
     private FrameLayout mFragmentSysFl;
-    private String curRootDir = "";
-    private boolean mIsLeftItem;
 
     private boolean mIsShowDialog = false;
     private boolean mIsItem = false;
@@ -98,12 +90,6 @@ public class SystemSpaceFragment extends BaseFragment implements
                         selectorMenuId(switch_view);
                     }
                     break;
-                case "com.switchmenu":
-                    if (null != intent.getExtras().getString("pop_menu")) {
-                        String pop_menu = intent.getExtras().getString("pop_menu");
-                        //selectorMenuId(pop_menu);
-                    }
-                    break;
                 case Intent.ACTION_MEDIA_MOUNTED:
                 case Intent.ACTION_MEDIA_UNMOUNTED:
                     runOnUiThread(new Runnable() {
@@ -116,6 +102,7 @@ public class SystemSpaceFragment extends BaseFragment implements
             }
         }
     };
+
     private ViewOnGenericMotionListener mViewMotionListener;
     private FrameSelectView mFrameSelectView;
 
@@ -134,62 +121,19 @@ public class SystemSpaceFragment extends BaseFragment implements
     private TextView mInfo;
     private String mInfoText = "";
 
-    private void selectorMenuId(String tag) {
-        if (mFileViewInteractionHub.getSelectedFileList() != null) {
+    public FileViewInteractionHub mFileViewInteractionHub;
 
-        }
+    private void selectorMenuId(String tag) {
         switch (tag) {
-            case "pop_refresh":
-                mFileViewInteractionHub.onOperationReferesh();
-                break;
-            case "pop_cancel_all":
-                mFileViewInteractionHub.onOperationSelectAllOrCancel();
-                break;
-            case "pop_copy":
-                if (mFileViewInteractionHub.getSelectedFileList() != null) {
-                    mFileViewInteractionHub.doOnOperationCopy();
-                }
-                T.showShort(mActivity, getString(R.string.select_file_to_copy));
-                break;
-            case "pop_send":
-                if (mFileViewInteractionHub.getSelectedFileList() != null) {
-                    mFileViewInteractionHub.onOperationSend();
-                }
-                T.showShort(mActivity, getString(R.string.select_file_to_send));
-                break;
-            case "pop_create":
-                mFileViewInteractionHub.onOperationCreateFolder();
-                break;
             case "view_or_dismiss":
                 mFileViewInteractionHub.onOperationShowSysFiles();
                 break;
-            case "pop_cut":
-                mFileViewInteractionHub.onOperationMove();
-                break;
-            case "grid":
-            case "list":
+            case Constants.VIEW_TAG_GRID:
+            case Constants.VIEW_TAG_LIST:
                 switchMode();
                 mFileViewInteractionHub.clearSelection();
                 break;
         }
-    }
-
-    @SuppressLint({"NewApi", "ValidFragment"})
-    public SystemSpaceFragment(String sdSpaceFragment, String directPath,
-                               ArrayList<FileInfo> fileInfoList, boolean isLeftItem) {
-        super(sdSpaceFragment, directPath, fileInfoList);
-        mIsLeftItem = isLeftItem;
-    }
-
-    @SuppressLint({"NewApi", "ValidFragment"})
-    public SystemSpaceFragment() {
-        super();
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
     }
 
     public int getLayoutId() {
@@ -219,42 +163,30 @@ public class SystemSpaceFragment extends BaseFragment implements
     }
 
     protected void initData() {
-        mFileCagetoryHelper = new FileCategoryHelper(mActivity);
         mFileViewInteractionHub = new FileViewInteractionHub(this);
-        Intent intent = getActivity().getIntent();
+        mFileCagetoryHelper = new FileCategoryHelper(mActivity);
         mFileIconHelper = new FileIconHelper(mActivity);
         mViewMotionListener = new ViewOnGenericMotionListener();
-        if ("list".equals(LocalCache.getViewTag())) {
+        if (Constants.VIEW_TAG_LIST.equals(LocalCache.getViewTag())) {
             addHeadView(mActivity);
             mAdapter = new FileListAdapter(mActivity, R.layout.file_browser_item_list,
                     mFileNameList, mFileViewInteractionHub, mFileIconHelper, mViewMotionListener);
-        } else if ("grid".equals(LocalCache.getViewTag())) {
+        } else if (Constants.VIEW_TAG_GRID.equals(LocalCache.getViewTag())) {
             mAdapter = new FileListAdapter(mActivity, R.layout.file_browser_item_grid,
                     mFileNameList, mFileViewInteractionHub, mFileIconHelper, mViewMotionListener);
         }
-        mFileViewInteractionHub.setRootPath(directorPath);
-        if (!mIsLeftItem) {
-            mMainActivity.setCurPath(directorPath);
-        }
-        curRootDir = directorPath;
-
-        if (mFileInfoList != null && mFileInfoList.size() > 0) {
-            mFileViewInteractionHub.setCheckedFileList(mFileInfoList);
-        }
         initReciever();
-//        updateUI();
         mFileViewInteractionHub.initFileList();
         operatorData();
-        setHasOptionsMenu(true);
         mFileListInfo = mAdapter.getFileInfoList();
     }
 
     private void switchMode() {
-        if ("list".equals(LocalCache.getViewTag())) {
+        if (Constants.VIEW_TAG_LIST.equals(LocalCache.getViewTag())) {
             addHeadView(mActivity);
             mAdapter = new FileListAdapter(mActivity, R.layout.file_browser_item_list,
                     mFileNameList, mFileViewInteractionHub, mFileIconHelper, mViewMotionListener);
-        } else if ("grid".equals(LocalCache.getViewTag())) {
+        } else if (Constants.VIEW_TAG_GRID.equals(LocalCache.getViewTag())) {
             mAdapter = new FileListAdapter(mActivity, R.layout.file_browser_item_grid,
                     mFileNameList, mFileViewInteractionHub, mFileIconHelper, mViewMotionListener);
         }
@@ -290,7 +222,7 @@ public class SystemSpaceFragment extends BaseFragment implements
     }
 
     public View getFirstVisibleView() {
-        if ("grid".equals(LocalCache.getViewTag())) {
+        if (Constants.VIEW_TAG_GRID.equals(LocalCache.getViewTag())) {
             return file_path_grid.getChildAt(0);
         } else {
             return file_path_list.getChildAt(0);
@@ -307,7 +239,7 @@ public class SystemSpaceFragment extends BaseFragment implements
             if (mPos == -1) {
                 mPos = 0;
             } else {
-                boolean isGrid = "grid".equals(LocalCache.getViewTag());
+                boolean isGrid = Constants.VIEW_TAG_GRID.equals(LocalCache.getViewTag());
                 int numColumns = file_path_grid.getNumColumns();
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_DPAD_LEFT:
@@ -450,7 +382,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                     } else {
                         lastTime = System.currentTimeMillis();
                     }
-                    if ("grid".equals(LocalCache.getViewTag())) {
+                    if (Constants.VIEW_TAG_GRID.equals(LocalCache.getViewTag())) {
                         calculateFileGridLocation(file_path_grid.getVerticalScrollDistance());
                     } else {
                         calculateFileListLocation(file_path_list.getVerticalScrollDistance());
@@ -601,7 +533,7 @@ public class SystemSpaceFragment extends BaseFragment implements
                                     mIntegerList.add(i);
                                     mFileViewInteractionHub.addDialogSelectedItem(info);
                                 } else {
-                                    mIntegerList.remove(new Integer(i));
+                                    mIntegerList.remove(Integer.valueOf(i));
                                     mFileViewInteractionHub.removeDialogSelectedItem(info);
                                 }
                             }
@@ -630,11 +562,11 @@ public class SystemSpaceFragment extends BaseFragment implements
     }
 
     private void operatorData() {
-        if ("list".equals(LocalCache.getViewTag())) {
+        if (Constants.VIEW_TAG_LIST.equals(LocalCache.getViewTag())) {
             file_path_grid.setVisibility(View.GONE);
             file_path_list.setVisibility(View.VISIBLE);
             file_path_list.setAdapter(mAdapter);
-        } else if ("grid".equals(LocalCache.getViewTag())) {
+        } else if (Constants.VIEW_TAG_GRID.equals(LocalCache.getViewTag())) {
             file_path_list.setVisibility(View.GONE);
             file_path_grid.setVisibility(View.VISIBLE);
             file_path_grid.setAdapter(mAdapter);
@@ -681,9 +613,9 @@ public class SystemSpaceFragment extends BaseFragment implements
         if (mPreviousPath != null) {
             if (path.startsWith(mPreviousPath)) {
                 int firstVisiblePosition = 0;
-                if ("list".equals(LocalCache.getViewTag())) {
+                if (Constants.VIEW_TAG_LIST.equals(LocalCache.getViewTag())) {
                     firstVisiblePosition = file_path_list.getFirstVisiblePosition();
-                } else if ("grid".equals(LocalCache.getViewTag())) {
+                } else if (Constants.VIEW_TAG_GRID.equals(LocalCache.getViewTag())) {
                     firstVisiblePosition = file_path_grid.getFirstVisiblePosition();
                 }
                 if (mScrollPositionList.size() != 0
@@ -725,6 +657,9 @@ public class SystemSpaceFragment extends BaseFragment implements
     }
 
     public boolean onRefreshFileList(String path, FileSortHelper sort) {
+        if (TextUtils.isEmpty(path)) {
+            return false;
+        }
         File file = new File(path);
         if (!file.exists() || !file.isDirectory()) {
             return false;
@@ -766,8 +701,8 @@ public class SystemSpaceFragment extends BaseFragment implements
             mInfoText += getString(R.string.folder_count, directoryCount);
         }
         if (fileCount != 0) {
-            mInfoText += getString(R.string.file_count, fileCount);
-            mInfoText += getString(R.string.file_count_zise, Util.convertStorage(fileSize));
+            mInfoText += " " + getString(R.string.file_count, fileCount);
+            mInfoText += " " + getString(R.string.file_count_zise, Util.convertStorage(fileSize));
         }
         if (TextUtils.isEmpty(mInfoText)) {
             mInfoText = getString(R.string.empty_folder);
@@ -775,14 +710,14 @@ public class SystemSpaceFragment extends BaseFragment implements
 
         sortCurrentList(sort);
         showEmptyView(fileList.size() == 0);
-        if ("list".equals(LocalCache.getViewTag())) {
+        if (Constants.VIEW_TAG_LIST.equals(LocalCache.getViewTag())) {
             file_path_list.post(new Runnable() {
                 @Override
                 public void run() {
                     file_path_list.setSelection(pos);
                 }
             });
-        } else if ("grid".equals(LocalCache.getViewTag())) {
+        } else if (Constants.VIEW_TAG_GRID.equals(LocalCache.getViewTag())) {
             file_path_grid.post(new Runnable() {
                 @Override
                 public void run() {
@@ -798,9 +733,9 @@ public class SystemSpaceFragment extends BaseFragment implements
 
     private void updateUI() {
         mNoSdView.setVisibility(mSdCardReady ? View.GONE : View.VISIBLE);
-        if ("list".equals(LocalCache.getViewTag())) {
+        if (Constants.VIEW_TAG_LIST.equals(LocalCache.getViewTag())) {
             file_path_list.setVisibility(mSdCardReady ? View.VISIBLE : View.GONE);
-        } else if ("grid".equals(LocalCache.getViewTag())) {
+        } else if (Constants.VIEW_TAG_GRID.equals(LocalCache.getViewTag())) {
             file_path_grid.setVisibility(mSdCardReady ? View.VISIBLE : View.GONE);
         }
         if (mSdCardReady) {
@@ -835,10 +770,10 @@ public class SystemSpaceFragment extends BaseFragment implements
                 } else if (mFileViewInteractionHub.getSelectedFileList().size() == 1) {
                     mInfo.setText(mFileViewInteractionHub.getSelectedFileList().get(0).fileName);
                     if (mFileViewInteractionHub.getSelectedFileList().get(0).IsDir) {
-                        mInfo.append("\t" + mFileViewInteractionHub.getSelectedFileList()
+                        mInfo.append("  " + mFileViewInteractionHub.getSelectedFileList()
                                 .get(0).Count + " " + getString(R.string.items));
                     } else {
-                        mInfo.append("\t" + Util.convertStorage(mFileViewInteractionHub
+                        mInfo.append("  " + Util.convertStorage(mFileViewInteractionHub
                                 .getSelectedFileList().get(0).fileSize));
                     }
                 } else {
@@ -950,15 +885,10 @@ public class SystemSpaceFragment extends BaseFragment implements
         return mFileIconHelper;
     }
 
-    public boolean setPath(String location) {
-        if (mFileViewInteractionHub != null) {
-            if (!location.startsWith(mFileViewInteractionHub.getRootPath())) {
-                return false;
-            }
-            mFileViewInteractionHub.setCurrentPath(location);
-            mFileViewInteractionHub.refreshFileList();
-        }
-        return true;
+    public void setPath(String parent, String location) {
+        mFileViewInteractionHub.setRootPath(parent);
+        mFileViewInteractionHub.setCurrentPath(location);
+        mFileViewInteractionHub.refreshFileList();
     }
 
     @Override
@@ -968,7 +898,7 @@ public class SystemSpaceFragment extends BaseFragment implements
         return mFileNameList.get(pos);
     }
 
-    @SuppressWarnings("unchecked")
+
     @Override
     public void sortCurrentList(FileSortHelper sort) {
         if (mSortMap.get(sort.getSortMethod())) {
@@ -1001,8 +931,7 @@ public class SystemSpaceFragment extends BaseFragment implements
     }
 
     public boolean canGoBack() {
-        String currentPath = mFileViewInteractionHub.getCurrentPath();
-        return !currentPath.trim().equals(curRootDir.trim());
+        return mFileViewInteractionHub.canGoBack();
     }
 
     public void goBack() {
@@ -1031,10 +960,6 @@ public class SystemSpaceFragment extends BaseFragment implements
     public void enter(MotionEvent event) {
         mMainActivity.mHandler.removeCallbacks(mMainActivity.mLongPressRunnable);
         mFileViewInteractionHub.onOperationOpen(event);
-    }
-
-    @Override
-    public void enter(String tag, String path) {
     }
 
     public FileListAdapter getAdapter() {

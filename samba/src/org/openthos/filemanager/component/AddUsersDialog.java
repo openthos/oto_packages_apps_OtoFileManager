@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import org.openthos.filemanager.R;
-import org.openthos.filemanager.BaseDialog;
+import org.openthos.filemanager.BaseMenuDialog;
 import org.openthos.filemanager.utils.SambaUtils;
 
 import java.io.BufferedReader;
@@ -23,7 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class AddUsersDialog extends BaseDialog{
+public class AddUsersDialog extends BaseMenuDialog{
     private Context mContext;
     private UserManagementDialog mUserManagementDialog;
     private EditText mEtAccount, mEtPassward;

@@ -1,4 +1,4 @@
-package org.openthos.filemanager.drag;
+package org.openthos.filemanager.component;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

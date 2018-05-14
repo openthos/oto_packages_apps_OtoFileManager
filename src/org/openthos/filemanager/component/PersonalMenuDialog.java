@@ -7,29 +7,28 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.openthos.filemanager.MainActivity;
-import org.openthos.filemanager.BaseDialog;
+import org.openthos.filemanager.BaseMenuDialog;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.adapter.BaseDialogAdapter;
+import org.openthos.filemanager.bean.PersonalBean;
 import org.openthos.filemanager.fragment.PersonalSpaceFragment;
 
 import java.util.ArrayList;
 
-public class PersonalMenuDialog extends BaseDialog implements ListView.OnItemClickListener {
+public class PersonalMenuDialog extends BaseMenuDialog implements ListView.OnItemClickListener {
 
-    private int mEventPosition;
-    private boolean mIsViewCollected;
     private boolean mIsBlank = true;
+    private PersonalBean mBean;
 
     public PersonalMenuDialog(Context context) {
         super(context);
         mActivity = (MainActivity) context;
     }
 
-    public PersonalMenuDialog(Context context, int eventPosition, boolean isViewCollected) {
+    public PersonalMenuDialog(Context context, PersonalBean bean) {
         super(context);
         mActivity = (MainActivity) context;
-        mEventPosition = eventPosition;
-        mIsViewCollected = isViewCollected;
+        mBean = bean;
         mIsBlank = false;
     }
 
@@ -43,10 +42,10 @@ public class PersonalMenuDialog extends BaseDialog implements ListView.OnItemCli
             String strCancelCollected =
                     getContext().getResources().getString(R.string.cancel_collected);
             for (int i = 0; i < menu.length; i++) {
-                if (menu[i].equals(strCollect) && mIsViewCollected) {
+                if (menu[i].equals(strCollect) && mBean.isCollected()) {
                     continue;
                 }
-                if (menu[i].equals(strCancelCollected) && !mIsViewCollected) {
+                if (menu[i].equals(strCancelCollected) && !mBean.isCollected()) {
                     continue;
                 }
                 mDatas.add(menu[i]);
@@ -70,10 +69,9 @@ public class PersonalMenuDialog extends BaseDialog implements ListView.OnItemCli
         } else if (mActivity.getString(R.string.operation_copy_path).equals(content)) {
             personalSpaceFragment.copyPath();
         } else if (mActivity.getString(R.string.operation_refresh).equals(content)) {
-            personalSpaceFragment.refresh();
         } else if (mActivity.getString(R.string.collect).equals(content)
                 || mActivity.getString(R.string.cancel_collected).equals(content)) {
-            mActivity.handleCollectedChange(mEventPosition);
+            mActivity.handleCollectedChange(mBean);
         }
         if (!TextUtils.isEmpty(content)) {
             dismiss();
