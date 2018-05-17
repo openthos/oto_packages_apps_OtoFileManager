@@ -73,8 +73,7 @@ public class SeafileAdapter extends BaseAdapter {
         viewHolder = (ViewHolder) convertView.getTag();
         viewHolder.name.setText(mList.get(position).libraryName);
         viewHolder.name.setTag(position);
-        int isSync = mList.get(position).isSync;
-        if (isSync == SeafileUtils.SYNC) {
+        if (mList.get(position).isSync) {
             viewHolder.state.setImageResource(R.drawable.sync);
         } else {
             viewHolder.state.setImageResource(R.drawable.desync);

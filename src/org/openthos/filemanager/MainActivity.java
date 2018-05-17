@@ -134,7 +134,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public PersonalSpaceFragment mPersonalSpaceFragment;
     public SearchFragment mStartSearchFragment;
     public String mCurPath;
-    public ArrayList<SeafileLibrary> mLibrarys = new ArrayList<>();
     private CustomFileObserver mCustomFileObserver;
     private String mUsbPath;
     private static ContentResolver mContentResolver;
@@ -177,52 +176,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         initListener();
     }
 
-    private class SeafileThread extends Thread {
-
-        @Override
-        public void run() {
-            super.run();
-            synchronized (SeafileUtils.TAG) {
-                try {
-                    SeafileUtils.TAG.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    SeafileUtils.mUserId = mISeafileService.getUserName();
-                    if (TextUtils.isEmpty(SeafileUtils.mUserId)) {
-                        return;
-                    }
-                    String librarys = mISeafileService.getLibrary();
-                    try {
-                        JSONArray jsonArray = new JSONArray(librarys);
-                        JSONObject jsonObject = null;
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            SeafileLibrary seafileLibrary = new SeafileLibrary();
-                            jsonObject = jsonArray.getJSONObject(i);
-                            seafileLibrary.libraryName = jsonObject.getString("name");
-                            seafileLibrary.libraryId = jsonObject.getString("id");
-                            seafileLibrary.isSync = mISeafileService.isSync(
-                                    seafileLibrary.libraryId, seafileLibrary.libraryName);
-                            if (seafileLibrary.libraryName.
-                                    equals(SeafileUtils.FILEMANAGER_SEAFILE_NAME)) {
-                                mLibrarys.add(seafileLibrary);
-                            }
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                if (mCloudInfoDialog != null && mCloudInfoDialog.isShowing()) {
-                    mCloudInfoDialog.refreshView();
-                }
-            }
-        }
-    }
-
     private void initEnvironment() {
         ((FileManagerApplication) getApplication()).addActivity(this);
         mSharedPreferences = getSharedPreferences(Constants.MAIN_SP, Context.MODE_PRIVATE);
@@ -232,7 +185,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         intent.setComponent(new ComponentName("org.openthos.seafile",
                 "org.openthos.seafile.SeafileService"));
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-        new SeafileThread().start();
     }
 
     protected void initView() {
@@ -361,8 +313,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                     Toast.LENGTH_SHORT).show();
                             break;
                         case Constants.SEAFILE_DATA_OK:
-                            mSeafileFragment.setData(mLibrarys);
-                            mSeafileFragment.getAdapter().notifyDataSetChanged();
+                            try {
+                                mSeafileFragment.setData(mISeafileService.isSync());
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
                             break;
                         case Constants.REFRESH_BY_OBSERVER:
                             if (System.currentTimeMillis() - mPreTime >= 1000) {
@@ -1858,8 +1813,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public class SeafileServiceConnection implements ServiceConnection {
         public void onServiceConnected(ComponentName name, IBinder service) {
             mISeafileService = ISeafileService.Stub.asInterface(service);
-            synchronized (SeafileUtils.TAG) {
-                SeafileUtils.TAG.notify();
+            try {
+                SeafileUtils.mUserId = mISeafileService.getUserName();
+                if (TextUtils.isEmpty(SeafileUtils.mUserId)) {
+                    return;
+                }
+                mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            if (mCloudInfoDialog != null && mCloudInfoDialog.isShowing()) {
+                mCloudInfoDialog.refreshView();
             }
         }
 

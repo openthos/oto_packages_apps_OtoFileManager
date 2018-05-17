@@ -22,7 +22,7 @@ public class SeafileFragment extends BaseFragment {
 
     private GridView mGvCloud;
     private SeafileAdapter mAdapter;
-    private ArrayList<SeafileLibrary> mList;
+    private ArrayList<SeafileLibrary> mList = new ArrayList();
     private GridViewOnGenericMotionListener mMotionListener;
     private long mCurrentTime = 0L;
     private int mPos = -1;
@@ -43,7 +43,6 @@ public class SeafileFragment extends BaseFragment {
     protected void initView() {
         mGvCloud = (GridView) rootView.findViewById(R.id.gv_cloud_service);
         mGvCloud.setSelector(new ColorDrawable(Color.TRANSPARENT));
-        mList = new ArrayList<>();
         mMotionListener = new GridViewOnGenericMotionListener();
         mAdapter = new SeafileAdapter(mMainActivity, mList, mMotionListener);
         mGvCloud.setAdapter(mAdapter);
@@ -65,9 +64,10 @@ public class SeafileFragment extends BaseFragment {
         return mAdapter;
     }
 
-    public void setData(ArrayList<SeafileLibrary> librarys) {
-        mList = librarys;
-        mAdapter.setData(librarys);
+    public void setData(boolean isSync) {
+        mList.clear();
+        mList.add(new SeafileLibrary("DATA", isSync));
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override

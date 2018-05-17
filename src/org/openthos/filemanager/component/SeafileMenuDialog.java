@@ -91,87 +91,23 @@ public class SeafileMenuDialog extends BaseMenuDialog implements View.OnClickLis
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.cloud_create:
-                TextInputDialog dialog = new TextInputDialog(mMainActivity,
-                        mMainActivity.getString(R.string.operation_create_folder),
-                        mMainActivity.getString(R.string.operation_create_folder_message),
-                        "My Library",
-                        new TextInputDialog.OnFinishListener() {
-                            @Override
-                            public boolean onFinish(final String text) {
-                                for (int i = 0;
-                                              i < mMainActivity.mLibrarys.size(); i++) {
-                                    if (mMainActivity.mLibrarys.get(i)
-                                                                       .libraryName.equals(text)) {
-                                        OperateUtils.showConfirmAlertDialog(mMainActivity,
-                                                                         R.string.fail_seafile_name);
-                                        return false;
-                                    }
-                                }
-                                if (!Pattern.compile("[0-9a-zA-Z ]+").matcher(text).matches()) {
-                                    OperateUtils.showConfirmAlertDialog(mMainActivity,
-                                                                R.string.fail_seafile_name_by_error);
-                                    return false;
-                                }
-                                new Thread() {
-                                    @Override
-                                    public void run() {
-                                        super.run();
-                                        //create(text);
-                                    }
-                                }.start();
-                                return true;
-                            }
-                        }
-                );
-                dialog.show();
                 break;
             case R.id.cloud_sync:
-                mLibrary.isSync = SeafileUtils.SYNC;
-                new Thread() {
-                    @Override
-                    public void run() {
-                        super.run();
-                        sync();
-                    }
-                }.start();
+                mLibrary.isSync = true;
+                sync();
                 break;
             case R.id.cloud_desync:
-                mLibrary.isSync = SeafileUtils.UNSYNC;
-                new Thread() {
-                    @Override
-                    public void run() {
-                        super.run();
-                        desync();
-                    }
-                }.start();
+                mLibrary.isSync = false;
+                desync();
                 break;
         }
         dismiss();
     }
 
-//    private void create(String text) {
-//        try {
-//            String id = mMainActivity.mISeafileService.create(text);
-//            int isSync = mMainActivity.mISeafileService.insertLibrary(mMainActivity.mUserId, id, text);
-//            SeafileLibrary seafileLibrary = new SeafileLibrary();
-//            seafileLibrary.libraryId = id;
-//            seafileLibrary.libraryName = text;
-//            seafileLibrary.isSync = isSync;
-//            mMainActivity.mLibrarys.add(seafileLibrary);
-//            mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
-//            if (isSync == SeafileUtils.SYNC) {
-//                mMainActivity.mISeafileService.sync(id, new File(mMainActivity.mFile, text)
-//                        .getAbsolutePath());
-//            }
-//        } catch (RemoteException e) {
-//        }
-//    }
-
     private void sync() {
         try {
-            mMainActivity.mISeafileService.sync((String) mLibrary.libraryId, mLibrary.libraryName,
-                    "/sdcard/seafile/" + SeafileUtils.mUserId + "/" +  mLibrary.libraryName);
-            mMainActivity.mLibrarys.set(mPos, mLibrary);
+            mMainActivity.mISeafileService.syncData();
+            mMainActivity.mSeafileFragment.getList().set(mPos, mLibrary);
             mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
         } catch (RemoteException e) {
         }
@@ -179,10 +115,8 @@ public class SeafileMenuDialog extends BaseMenuDialog implements View.OnClickLis
 
     private void desync() {
         try {
-            mMainActivity.mISeafileService.desync((String) mLibrary.libraryId, mLibrary.libraryName,
-                    SeafileUtils.SEAFILE_DATA_PATH + "/" + SeafileUtils.mUserId
-                    + "/" + mLibrary.libraryName);
-            mMainActivity.mLibrarys.set(mPos, mLibrary);
+            mMainActivity.mISeafileService.desyncData();
+            mMainActivity.mSeafileFragment.getList().set(mPos, mLibrary);
             mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
         } catch (RemoteException e) {
         }

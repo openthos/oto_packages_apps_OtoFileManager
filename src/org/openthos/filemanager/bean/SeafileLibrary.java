@@ -5,10 +5,11 @@ package org.openthos.filemanager.bean;
  */
 
 public class SeafileLibrary {
-    public String libraryId;
     public String libraryName;
-    public int isSync;
+    public boolean isSync;
 
-    public SeafileLibrary(){
+    public SeafileLibrary(String name, boolean isSync) {
+        libraryName = name;
+        this.isSync = isSync;
     }
 }

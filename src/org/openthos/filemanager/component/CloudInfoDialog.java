@@ -54,11 +54,10 @@ public class CloudInfoDialog extends Dialog {
             mRbSync.setEnabled(true);
             mRbDesync.setEnabled(true);
             mTvAccount.setText(SeafileUtils.mUserId);
-            int isSync = ((MainActivity) mContext).mLibrarys.get(0).isSync;
-            if (isSync == SeafileUtils.SYNC) {
+            if (((MainActivity) mContext).mSeafileFragment.getList().get(0).isSync) {
                 mRbSync.setChecked(true);
                 mRbDesync.setChecked(false);
-            } else if (isSync == SeafileUtils.UNSYNC) {
+            } else {
                 mRbSync.setChecked(false);
                 mRbDesync.setChecked(true);
             }
@@ -76,26 +75,16 @@ public class CloudInfoDialog extends Dialog {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.rb_sync:
-                    ((MainActivity) mContext).mLibrarys.get(0).isSync = SeafileUtils.SYNC;
                     try {
-                        ((MainActivity) mContext).mISeafileService.sync(
-                                (String) (((MainActivity) mContext).mLibrarys.get(0).libraryId),
-                                ((MainActivity) mContext).mLibrarys.get(0).libraryName,
-                                "/" + SeafileUtils.mUserId + "/"
-                                + ((MainActivity) mContext).mLibrarys.get(0).libraryName);
+                        ((MainActivity) mContext).mISeafileService.syncData();
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
                     ((MainActivity) mContext).mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
                     break;
                 case R.id.rb_desync:
-                    ((MainActivity) mContext).mLibrarys.get(0).isSync = SeafileUtils.UNSYNC;
                     try {
-                        ((MainActivity) mContext).mISeafileService.desync(
-                                (String) (((MainActivity) mContext).mLibrarys.get(0).libraryId),
-                                ((MainActivity) mContext).mLibrarys.get(0).libraryName,
-                                "/" + SeafileUtils.mUserId + "/"
-                                + ((MainActivity) mContext).mLibrarys.get(0).libraryName);
+                        ((MainActivity) mContext).mISeafileService.desyncData();
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
