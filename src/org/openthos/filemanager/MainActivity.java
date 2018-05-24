@@ -1321,7 +1321,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onResume() {
         Log.i("FileManager", getComponentName().getClassName() + " Resume");
         super.onResume();
-        initFirstPage();
+        if (mCurFragment == null) {
+            initFirstPage();
+        }
     }
 
     @Override
