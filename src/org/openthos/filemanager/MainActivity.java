@@ -1631,10 +1631,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             }
                         }
                         mClickPath = mClickPath.replaceAll(
-                                getResources().getString(R.string.path_sd_eng),
-                                Util.getSdDirectory());
-//                        ((SystemSpaceFragment) getVisibleFragment()).
-//                                mFileViewInteractionHub.openSelectFolder(mClickPath);
+                                getString(R.string.path_sd_eng), Constants.SDCARD_PATH);
                         showFileSpaceFragment(mClickPath);
                     }
                 } else {
@@ -1950,6 +1947,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 transaction.show(mCurFragment).commitAllowingStateLoss();
             }
             mSystemSpaceFragment.setPath(parent, path);
+            mCurPath = path;
             mCurTabIndex = 9;
             if (isSetHistory) {
                 setHistory(new PathBean(path));

@@ -549,7 +549,7 @@ public class Util {
     public static String getRealPath(Context context, String displayPath) {
         final String perfixName = context.getString(R.string.path_sd_eng);
         if (displayPath.startsWith(perfixName)) {
-            return Util.getSdDirectory() + displayPath.substring(perfixName.length());
+            return Constants.SDCARD_PATH + displayPath.substring(perfixName.length());
         } else {
             return displayPath;
         }

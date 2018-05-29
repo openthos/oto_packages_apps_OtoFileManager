@@ -141,6 +141,7 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         if (!mRoot.equals(mCurrentPath)) {
             mCurrentPath = new File(mCurrentPath).getParent();
             mMainActivity.setHistory(new PathBean(mRoot, mCurrentPath));
+            mMainActivity.setCurPath(mCurrentPath);
             refreshFileList();
             return true;
         }
