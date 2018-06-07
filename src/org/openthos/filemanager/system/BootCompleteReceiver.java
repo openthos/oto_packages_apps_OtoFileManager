@@ -71,18 +71,22 @@ public class BootCompleteReceiver extends BroadcastReceiver {
                         d.setBlock(line);
                         mDisks.add(d);
                     }
+                } else if (line.contains("nvme0n")) {
+                    if (line.length() > 7) {
+                        Volume v = new Volume();
+                        v.setBlock(line);
+                        mVolumes.add(v);
+                    } else {
+                        Disk d = new Disk();
+                        d.setBlock(line);
+                        mDisks.add(d);
+                    }
                 }
             }
             commands = new String[]{"su", "-c", "mount"};
             pro = Runtime.getRuntime().exec(commands);
-            int i = 0;
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             while ((line = in.readLine()) != null) {
-                if (i == 5) {
-                    break;
-                } else {
-                    i++;
-                }
                 for (Volume v : mVolumes) {
                     if (line.contains(v.getBlock())) {
                         mVolumes.remove(v);
@@ -94,17 +98,21 @@ public class BootCompleteReceiver extends BroadcastReceiver {
                 commands = new String[]{"su", "-c", "fdisk -l /dev/block/" + d.getBlock()};
                 pro = Runtime.getRuntime().exec(commands);
                 in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+                String result = d.getBlock();
+                if (d.getBlock().startsWith("nvme")) {
+                    result = result + "p";
+                }
                 boolean isPrint = false;
                 while ((line = in.readLine()) != null) {
                     if (line.contains("Number")) {
                         isPrint = true;
                     } else if (isPrint) {
                         if (!(line.contains("swap") || line.contains("EFI")
-                                                    || line.contains("reserved"))) {
-                            String result = d.getBlock() + line.trim();
+                                || line.contains("reserved"))) {
+                            String temp = result + line.trim().substring(0,4).trim();
                             for (Volume v : mVolumes) {
-                                if (v.getBlock().equals(result.substring(0, 4).trim())) {
-                                    v.setLength(result.substring(38, 50).trim());
+                                if (v.getBlock().equals(temp)) {
+                                    v.setLength(line.substring(38, 50).trim());
                                 }
                             }
                         }
@@ -115,7 +123,7 @@ public class BootCompleteReceiver extends BroadcastReceiver {
             pro = Runtime.getRuntime().exec(commands);
             in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             while ((line = in.readLine()) != null) {
-                if (!(line.contains("swap") || line.contains("EFI"))) {
+                if (!(line.contains("swap") || line.contains("EFI") || line.contains("Recovery"))) {
                     String[] values = line.substring(11).split(" ");
                     for (Volume v : mVolumes) {
                         if (values[0].contains(v.getBlock())) {
