@@ -106,18 +106,28 @@ public class SeafileMenuDialog extends BaseMenuDialog implements View.OnClickLis
 
     private void sync() {
         try {
-            mMainActivity.mISeafileService.syncData();
-            mMainActivity.mSeafileFragment.getList().set(mPos, mLibrary);
-            mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
+            if (mMainActivity.mISeafileService.initFinished()) {
+                mMainActivity.mISeafileService.syncData();
+                mMainActivity.mSeafileFragment.getList().set(mPos, mLibrary);
+                mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
+            } else {
+                Toast.makeText(mMainActivity,
+                        mMainActivity.getString(R.string.toast_data_init), 0).show();
+            }
         } catch (RemoteException e) {
         }
     }
 
     private void desync() {
         try {
-            mMainActivity.mISeafileService.desyncData();
-            mMainActivity.mSeafileFragment.getList().set(mPos, mLibrary);
-            mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
+            if (mMainActivity.mISeafileService.initFinished()) {
+                mMainActivity.mISeafileService.desyncData();
+                mMainActivity.mSeafileFragment.getList().set(mPos, mLibrary);
+                mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
+            } else {
+                Toast.makeText(mMainActivity,
+                        mMainActivity.getString(R.string.toast_data_init), 0).show();
+            }
         } catch (RemoteException e) {
         }
     }
@@ -125,8 +135,8 @@ public class SeafileMenuDialog extends BaseMenuDialog implements View.OnClickLis
     public void showDialog(int x, int y) {
         super.showDialog(x, y);
         if (!SeafileUtils.isExistsAccount()) {
-           Toast.makeText(mMainActivity,
-                   mMainActivity.getString(R.string.bind_openthosid), 0).show();
+            Toast.makeText(mMainActivity,
+                    mMainActivity.getString(R.string.bind_openthosid), 0).show();
         }
     }
 }

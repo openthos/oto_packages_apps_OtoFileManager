@@ -284,4 +284,5 @@
     <string name="add">添加</string>
     <string name="cancel_collected">取消收藏</string>
     <string name="collect">添加到收藏</string>
+    <string name="toast_data_init">正在初始化数据...</string>
 </resources>
