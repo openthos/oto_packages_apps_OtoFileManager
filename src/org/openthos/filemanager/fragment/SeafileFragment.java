@@ -1,10 +1,15 @@
 package org.openthos.filemanager.fragment;
 
+import android.app.LocalActivityManager;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 
 import org.openthos.filemanager.BaseFragment;
@@ -21,6 +26,7 @@ import java.util.ArrayList;
 public class SeafileFragment extends BaseFragment {
 
     private GridView mGvCloud;
+    private FrameLayout mFlOther;
     private SeafileAdapter mAdapter;
     private ArrayList<SeafileLibrary> mList = new ArrayList();
     private GridViewOnGenericMotionListener mMotionListener;
@@ -46,6 +52,7 @@ public class SeafileFragment extends BaseFragment {
         mMotionListener = new GridViewOnGenericMotionListener();
         mAdapter = new SeafileAdapter(mMainActivity, mList, mMotionListener);
         mGvCloud.setAdapter(mAdapter);
+        mFlOther = (FrameLayout) rootView.findViewById(R.id.fl_other);
     }
 
     protected void initData() {
@@ -67,6 +74,7 @@ public class SeafileFragment extends BaseFragment {
     public void setData(boolean isSync) {
         mList.clear();
         mList.add(new SeafileLibrary("DATA", isSync));
+        mList.add(new SeafileLibrary("Other", isSync));
         mAdapter.notifyDataSetChanged();
     }
 
@@ -146,12 +154,24 @@ public class SeafileFragment extends BaseFragment {
     @Override
     public void enter() {
         super.enter();
-        enter(SeafileUtils.SEAFILE_DATA_PATH + "/" + SeafileUtils.mUserId
-                + "/" + mList.get(mPos).libraryName);
-    }
-
-    public void enter(String path) {
-        mMainActivity.showFileSpaceFragment(path);
+        if (mPos == 0) {
+            mMainActivity.showFileSpaceFragment(SeafileUtils.SEAFILE_DATA_PATH + "/"
+                    + SeafileUtils.mUserId + "/" + mList.get(mPos).libraryName);
+        } else {
+            mGvCloud.setVisibility(View.GONE);
+            Intent intent = new Intent();
+            intent.setClassName("org.openthos.seafile", "org.openthos.seafile.seaapp.SeafileActivity");
+            LocalActivityManager mLocalActivityManager = new LocalActivityManager(getActivity(), true);
+            mLocalActivityManager.dispatchCreate(null);
+            final Window w = mLocalActivityManager.startActivity("TagName", intent);
+            final View wd = w != null ? w.getDecorView() : null;
+            if (wd != null) {
+                wd.setVisibility(View.VISIBLE);
+                wd.setFocusableInTouchMode(true);
+                ((ViewGroup) wd).setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+            }
+            mFlOther.addView(wd);
+        }
     }
 
     @Override
