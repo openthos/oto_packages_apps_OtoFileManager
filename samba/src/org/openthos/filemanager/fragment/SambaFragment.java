@@ -281,10 +281,20 @@ public class SambaFragment extends BaseFragment {
                                 }
                             }
                         }
-                        if (!isMounted || localFile.isFile()) {
+                        if (!isMounted || localFile.length() == 0) {
                             try {
                                 String line;
                                 if (localFile.exists()) {
+                                    if (isMounted){
+                                        pro = Runtime.getRuntime().exec(
+                                                new String[]{"su", "-c", "umount "
+                                                        + localFile.getAbsolutePath()
+                                                        .replace(" ", "\\ ")});
+                                        in = new BufferedReader(
+                                                new InputStreamReader(pro.getErrorStream()));
+                                        while ((line = in.readLine()) != null) {
+                                        }
+                                    }
                                     pro = Runtime.getRuntime().exec(
                                             new String[]{"rm", "-r", localFile.getAbsolutePath()});
                                     in = new BufferedReader(
