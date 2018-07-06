@@ -201,6 +201,7 @@ public class SambaFragment extends BaseFragment {
     public void enter() {
         super.enter();
         mCurrentPath = "";
+        mCurrentTime = 0;
         for (String path : mPaths)
             mCurrentPath += path;
         String point;
