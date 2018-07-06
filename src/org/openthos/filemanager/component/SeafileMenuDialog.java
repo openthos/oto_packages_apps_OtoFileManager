@@ -106,28 +106,18 @@ public class SeafileMenuDialog extends BaseMenuDialog implements View.OnClickLis
 
     private void sync() {
         try {
-            if (mMainActivity.mISeafileService.initFinished()) {
-                mMainActivity.mISeafileService.syncData();
-                mMainActivity.mSeafileFragment.getList().set(mPos, mLibrary);
-                mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
-            } else {
-                Toast.makeText(mMainActivity,
-                        mMainActivity.getString(R.string.toast_data_init), 0).show();
-            }
+            mMainActivity.mISeafileService.syncData();
+            mMainActivity.mSeafileFragment.getList().set(mPos, mLibrary);
+            mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
         } catch (RemoteException e) {
         }
     }
 
     private void desync() {
         try {
-            if (mMainActivity.mISeafileService.initFinished()) {
-                mMainActivity.mISeafileService.desyncData();
-                mMainActivity.mSeafileFragment.getList().set(mPos, mLibrary);
-                mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
-            } else {
-                Toast.makeText(mMainActivity,
-                        mMainActivity.getString(R.string.toast_data_init), 0).show();
-            }
+            mMainActivity.mISeafileService.desyncData();
+            mMainActivity.mSeafileFragment.getList().set(mPos, mLibrary);
+            mMainActivity.mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
         } catch (RemoteException e) {
         }
     }

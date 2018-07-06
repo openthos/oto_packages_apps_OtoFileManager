@@ -296,5 +296,4 @@
     <string name="add">Add</string>
     <string name="cancel_collected">Remove From Collection</string>
     <string name="collect">Add To Collection</string>
-    <string name="toast_data_init">The data is initializing...</string>
 </resources>
