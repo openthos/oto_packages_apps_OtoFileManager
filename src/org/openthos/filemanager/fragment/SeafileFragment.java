@@ -78,13 +78,25 @@ public class SeafileFragment extends BaseFragment {
         mAdapter.notifyDataSetChanged();
     }
 
+    View backView;
     @Override
     public boolean canGoBack() {
-        return false;
+        backView = wd.findViewWithTag("back");
+        if (backView.getVisibility() == View.VISIBLE || mGvCloud.getVisibility() != View.VISIBLE) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public void goBack() {
+        if (backView.getVisibility() == View.VISIBLE) {
+            backView.performClick();
+        } else {
+            mFlOther.removeAllViews();
+            mGvCloud.setVisibility(View.VISIBLE);
+        }
     }
 
     public class GridViewOnGenericMotionListener implements View.OnTouchListener {
@@ -151,6 +163,7 @@ public class SeafileFragment extends BaseFragment {
         seafileDialog.showDialog((int) motionEvent.getRawX(), (int) motionEvent.getRawY());
     }
 
+    View wd;
     @Override
     public void enter() {
         super.enter();
@@ -159,16 +172,19 @@ public class SeafileFragment extends BaseFragment {
                     + SeafileUtils.mUserId + "/" + mList.get(mPos).libraryName);
         } else {
             mGvCloud.setVisibility(View.GONE);
-            Intent intent = new Intent();
-            intent.setClassName("org.openthos.seafile", "org.openthos.seafile.seaapp.SeafileActivity");
-            LocalActivityManager mLocalActivityManager = new LocalActivityManager(getActivity(), true);
-            mLocalActivityManager.dispatchCreate(null);
-            final Window w = mLocalActivityManager.startActivity("TagName", intent);
-            final View wd = w != null ? w.getDecorView() : null;
-            if (wd != null) {
-                wd.setVisibility(View.VISIBLE);
-                wd.setFocusableInTouchMode(true);
-                ((ViewGroup) wd).setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+            if (wd == null) {
+                Intent intent = new Intent();
+                intent.setClassName("org.openthos.seafile", "org.openthos.seafile.seaapp.SeafileActivity");
+                LocalActivityManager mLocalActivityManager = new LocalActivityManager(getActivity(), true);
+                mLocalActivityManager.dispatchCreate(null);
+                mLocalActivityManager.dispatchResume();
+                final Window w = mLocalActivityManager.startActivity("TagName", intent);
+                wd = w != null ? w.getDecorView() : null;
+                if (wd != null) {
+                    wd.setVisibility(View.VISIBLE);
+                    wd.setFocusableInTouchMode(true);
+                    ((ViewGroup) wd).setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+                }
             }
             mFlOther.addView(wd);
         }
