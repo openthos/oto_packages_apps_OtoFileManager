@@ -113,7 +113,7 @@ public class FolderCollectionDialog extends Dialog {
             holder.iv.setImageResource(bean.getSmallIconRes());
             holder.tv.setText(bean.getTitle());
             holder.tv.setTag(mPersonalBeanList.get(position));
-            holder.cb.setChecked(bean.isCollected());
+            holder.cb.setChecked(bean.isCollected() ^ mChangedIndexList.contains(bean));
             return convertView;
         }
     }
