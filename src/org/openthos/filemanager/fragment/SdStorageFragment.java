@@ -210,7 +210,7 @@ public class SdStorageFragment extends BaseFragment {
         TextView availSize = (TextView) inflate.findViewById(R.id.mount_grid_available_size);
         totalSize.setText(Util.convertStorage(totalBlocks * blockSize));
         availSize.setText(Util.convertStorage(blockSize * availableBlocks));
-        usbName.setText(v.getBlock());
+        usbName.setText(v.getName());
         int maxOne = 1000;
         int progressOne = (int) ((totalBlocks * blockSize - blockSize * availableBlocks) * 1000
                 / (totalBlocks * blockSize));

@@ -130,6 +130,8 @@ public class BootCompleteReceiver extends BroadcastReceiver {
                             for (String value : values) {
                                 if (value.contains("TYPE=\"")) {
                                     v.setType(value.replace("TYPE=\"", "").replace("\"", ""));
+                                } else if (value.contains("LABEL=\"")) {
+                                    v.setName(value.replace("LABEL=\"", "").replace("\"", ""));
                                 }
                             }
                         }
@@ -151,6 +153,9 @@ public class BootCompleteReceiver extends BroadcastReceiver {
         for (Volume v : mVolumes) {
             if (!TextUtils.isEmpty(v.getLength()) && !TextUtils.isEmpty(v.getType())) {
                 tmpmVolumes.add(v);
+                if (TextUtils.isEmpty(v.getName())) {
+                    v.setName(v.getType().toUpperCase() + "/" + v.getBlock());
+                }
             }
         }
         mVolumes.clear();
@@ -158,7 +163,7 @@ public class BootCompleteReceiver extends BroadcastReceiver {
         String result = "[";
         for (Volume v : mVolumes) {
             result = result + "{\"block\":\"" + v.getBlock() + "\",\"ismount\":"
-                            + "false" + ",\"type\":\"" + v.getType() + "\"},";
+                    + "false" + ",\"type\":\"" + v.getType() + "\",\"name\":\"" + v.getName() + "\"},";
         }
         if (result.substring(result.length() - 1).equals(",")) {
             result = result.substring(0, result.length() - 1);

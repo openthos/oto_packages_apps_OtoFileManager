@@ -445,7 +445,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             Volume v = mVolumes.get(i);
             View inflate = View.inflate(this, R.layout.mount_list, null);
             TextView name = (TextView) inflate.findViewById(R.id.usb_list_usb_name);
-            name.setText(v.getBlock());
+            name.setText(v.getName());
             inflate.setOnHoverListener(mLeftHoverListener);
             inflate.setOnTouchListener(mLeftTouchListener);
             inflate.setTag(v);
@@ -557,6 +557,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 v.setBlock(object.getString("block"));
                 v.setIsMount(object.getBoolean("ismount"));
                 v.setType(object.getString("type"));
+                v.setName(object.getString("name"));
                 mVolumes.add(v);
             }
         } catch (JSONException e) {
