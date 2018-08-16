@@ -284,5 +284,5 @@
     <string name="add">添加</string>
     <string name="cancel_collected">取消收藏</string>
     <string name="collect">添加到收藏</string>
-    <string name="bind_acount">还未绑定openthos ID!点击这里去绑定</string>
+    <string name="bind_account">还未绑定openthos ID!点击这里去绑定</string>
 </resources>

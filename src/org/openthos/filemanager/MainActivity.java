@@ -87,10 +87,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.app.ActivityThread;
-import android.os.ServiceManager;
-import android.os.storage.StorageVolume;
-
 public class MainActivity extends BaseActivity implements View.OnClickListener {
     private static final String IV_SWITCH_VIEW = "iv_switch_view";
     public static final String SETTING_POPWINDOW_TAG = "iv_setting";
@@ -1106,6 +1102,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 if (usbPath.indexOf("/storage/usb") != -1 && usbPath.indexOf("_") != -1) {
                     usbPath = usbPath.substring(0, 13);
                 }
+		UsbUtils.umount(MainActivity.this, usbPath);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1394,6 +1391,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (usbPath.indexOf("/storage/usb") != -1 && usbPath.indexOf("_") != -1) {
             usbPath = usbPath.substring(0, 13);
         }
+	UsbUtils.format(MainActivity.this, usbPath);
     }
 
     private void setSelectView(View view) {
