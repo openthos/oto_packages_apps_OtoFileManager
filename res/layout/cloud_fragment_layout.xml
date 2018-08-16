@@ -4,6 +4,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/cloud_fl">
+    <FrameLayout
+        android:id="@+id/no_account"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:id="@+id/bind_account"
+            android:text="@string/bind_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+    </FrameLayout>
 
     <GridView
         android:id="@+id/gv_cloud_service"
@@ -17,7 +28,8 @@
         android:columnWidth="150dp"
         android:padding="15dp"
         android:stretchMode="columnWidth"
-        android:scrollbars="none"/>
+        android:scrollbars="none"
+        android:visibility="gone"/>
 
     <FrameLayout
         android:id="@+id/fl_other"
