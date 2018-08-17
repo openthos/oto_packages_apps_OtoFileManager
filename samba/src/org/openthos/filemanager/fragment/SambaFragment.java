@@ -41,7 +41,7 @@ import java.util.Stack;
 public class SambaFragment extends BaseFragment {
     private GridView mGv;
     private SambaAdapter mAdapter;
-    private TextView mTextSacan;
+    private TextView mTextSacan, mTextNoHost;
     private ArrayList<String> mList = new ArrayList<>();
     private GridViewOnGenericMotionListener mMotionListener;
     public Fragment mCurFragment;
@@ -83,7 +83,7 @@ public class SambaFragment extends BaseFragment {
         mAdapter = new SambaAdapter(mMainActivity, mList, mMotionListener);
         mGv.setAdapter(mAdapter);
         mTextSacan = (TextView) rootView.findViewById(R.id.text_scan);
-//        scanNet();
+        mTextNoHost = (TextView) rootView.findViewById(R.id.text_no_host);
     }
 
     protected void initData() {
@@ -392,13 +392,6 @@ public class SambaFragment extends BaseFragment {
             @Override
             public void run() {
                 mMainActivity.showFileSpaceFragment(path);
-//                SystemSpaceFragment fragment
-//                        = new SystemSpaceFragment(path, path, null);
-//                FragmentTransaction transaction = mManager.beginTransaction();
-//                transaction.hide(mMainActivity.mCurFragment);
-//                transaction.add(R.id.fl_mian, fragment, Constants.SAMBA_TAG)
-//                        .commitAllowingStateLoss();
-//                mMainActivity.mCurFragment = fragment;
             }
         });
     }
@@ -422,12 +415,14 @@ public class SambaFragment extends BaseFragment {
             return;
         }
         mTextSacan.setVisibility(View.VISIBLE);
+        mTextNoHost.setVisibility(View.GONE);
         mGv.setVisibility(View.GONE);
         final boolean isVisible = isVisible();
         final ProgressDialog dialog = new ProgressDialog(getActivity());
         dialog.setMessage(getString(R.string.text_scanning));
-        if (isVisible)
+        if (isVisible) {
             dialog.show();
+        }
         mAdapter.setIsPointPage(true);
         mList.clear();
         mPaths.clear();
@@ -441,17 +436,19 @@ public class SambaFragment extends BaseFragment {
                     @Override
                     public void run() {
                         mTextSacan.setVisibility(View.GONE);
-                        mGv.setVisibility(View.VISIBLE);
-                        if (mPoints != null) {
+                        if (mPoints != null && mPoints.size() > 0) {
+                            mGv.setVisibility(View.VISIBLE);
                             mList.clear();
                             mList.addAll(mPoints);
                             mAdapter.notifyDataSetChanged();
                         } else {
                             Toast.makeText(mMainActivity, mMainActivity.getString(
                                     R.string.no_samba_server), Toast.LENGTH_SHORT).show();
+                            mTextNoHost.setVisibility(View.VISIBLE);
                         }
-                        if (isVisible)
+                        if (isVisible) {
                             dialog.cancel();
+                        }
                     }
                 });
             }
@@ -503,6 +500,13 @@ public class SambaFragment extends BaseFragment {
         @Override
         public void show() {
             super.show();
+        }
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (!hidden && (mPoints == null || mPoints.size() == 0)) {
+            scanNet();
         }
     }
 

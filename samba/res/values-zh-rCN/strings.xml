@@ -7,6 +7,7 @@
     <string name="no_samba_server">未能连接到SMB服务器!</string>
     <string name="dialog_scan">扫描</string>
     <string name="text_scanning">正在扫描中...</string>
+    <string name="text_no_host">暂未发现在其他主机</string>
     <string name="operation_share">共享</string>
     <string name="operation_open_share">开启共享</string>
     <string name="operation_stop_share">关闭共享</string>

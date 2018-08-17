@@ -7,6 +7,7 @@
     <string name="no_samba_server">Can not connect to samba server!</string>
     <string name="dialog_scan">Scan Network</string>
     <string name="text_scanning">Scanning in progress ...</string>
+    <string name="text_no_host">No host found!</string>
     <string name="operation_share">Share</string>
     <string name="operation_open_share">Open share</string>
     <string name="operation_stop_share">Stop share</string>
