@@ -220,4 +220,13 @@ public class SeafileFragment extends BaseFragment {
     @Override
     public void clearSelectList() {
     }
+
+    public void goToHome() {
+        if (wd != null) {
+            mFlOther.removeAllViews();
+            mGvCloud.setVisibility(View.VISIBLE);
+            wd = null;
+            backView = null;
+        }
+    }
 }

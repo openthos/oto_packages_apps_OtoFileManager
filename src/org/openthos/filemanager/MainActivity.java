@@ -859,6 +859,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 if (!SeafileUtils.isNetworkOn(this)) {
                     ToastUtils.showShort(this, getResources().getString(R.string.network_down));
                 }
+                mSeafileFragment.goToHome();
                 showFragment(mSeafileFragment);
                 break;
             case R.id.tv_samba:
