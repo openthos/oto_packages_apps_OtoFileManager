@@ -92,7 +92,9 @@ public class SeafileFragment extends BaseFragment {
         mGvCloud.setVisibility(View.VISIBLE);
         mList.clear();
         mList.add(new SeafileLibrary("DATA", isSync));
-        mList.add(new SeafileLibrary("Other", isSync));
+        if (android.os.Build.TYPE.equals("eng")) {
+            mList.add(new SeafileLibrary("Other", isSync));
+        }
         mAdapter.notifyDataSetChanged();
     }
 
@@ -120,8 +122,8 @@ public class SeafileFragment extends BaseFragment {
     }
 
     public class GridViewOnGenericMotionListener implements View.OnTouchListener {
-        private boolean mIsShowDialog = false;
-        private boolean mIsItem = false;
+        //private boolean mIsShowDialog = false;
+        //private boolean mIsItem = false;
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -131,10 +133,10 @@ public class SeafileFragment extends BaseFragment {
                     if (view.getTag() instanceof SeafileAdapter.ViewHolder) {
                         mAdapter.clearSelected();
                         mAdapter.setSelected(view);
-                        if (motionEvent.getButtonState() == MotionEvent.BUTTON_SECONDARY) {
-                            mIsShowDialog = true;
-                            mIsItem = true;
-                        }
+                        //if (motionEvent.getButtonState() == MotionEvent.BUTTON_SECONDARY) {
+                        //    mIsShowDialog = true;
+                        //    mIsItem = true;
+                        //}
                         int pos = (int) ((SeafileAdapter.ViewHolder) view.getTag()).name.getTag();
                         if (System.currentTimeMillis() - mCurrentTime
                                 < Constants.DOUBLE_CLICK_INTERVAL_TIME
@@ -154,34 +156,34 @@ public class SeafileFragment extends BaseFragment {
                         mAdapter.clearSelected();
                         if (motionEvent.getButtonState() == MotionEvent.BUTTON_SECONDARY) {
                             mPos = -1;
-                            mIsShowDialog = true;
-                            mIsItem = false;
+                            //mIsShowDialog = true;
+                            //mIsItem = false;
                         }
                     }
                     break;
                 case MotionEvent.ACTION_UP:
-                    if (mIsShowDialog == true) {
-                        if (mIsItem) {
-                            showItemDialog(motionEvent, mList.get(mPos), mPos);
-                        } else {
-                            showDialog(motionEvent);
-                        }
-                        mIsShowDialog = false;
-                    }
+                    //if (mIsShowDialog == true) {
+                    //    if (mIsItem) {
+                    //        showItemDialog(motionEvent, mList.get(mPos), mPos);
+                    //    } else {
+                    //        showDialog(motionEvent);
+                    //    }
+                    //    mIsShowDialog = false;
+                    //}
             }
             return false;
         }
     }
 
-    private void showItemDialog(MotionEvent motionEvent, SeafileLibrary library, int pos) {
-        SeafileMenuDialog seafileDialog = new SeafileMenuDialog(mMainActivity, true, library, pos);
-        seafileDialog.showDialog((int) motionEvent.getRawX(), (int) motionEvent.getRawY());
-    }
+    //private void showItemDialog(MotionEvent motionEvent, SeafileLibrary library, int pos) {
+    //    SeafileMenuDialog seafileDialog = new SeafileMenuDialog(mMainActivity, true, library, pos);
+    //    seafileDialog.showDialog((int) motionEvent.getRawX(), (int) motionEvent.getRawY());
+    //}
 
-    void showDialog(MotionEvent motionEvent) {
-        SeafileMenuDialog seafileDialog = new SeafileMenuDialog(mMainActivity, false, null, -1);
-        seafileDialog.showDialog((int) motionEvent.getRawX(), (int) motionEvent.getRawY());
-    }
+    //void showDialog(MotionEvent motionEvent) {
+    //    SeafileMenuDialog seafileDialog = new SeafileMenuDialog(mMainActivity, false, null, -1);
+    //    seafileDialog.showDialog((int) motionEvent.getRawX(), (int) motionEvent.getRawY());
+    //}
 
     @Override
     public void enter() {

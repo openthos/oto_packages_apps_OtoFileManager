@@ -77,7 +77,8 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingBottom="@dimen/dialog_property_padding1x"
-            android:paddingTop="@dimen/dialog_property_padding1x">
+            android:paddingTop="@dimen/dialog_property_padding1x"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="0dp"
