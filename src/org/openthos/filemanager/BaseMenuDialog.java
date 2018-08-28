@@ -23,7 +23,7 @@ import java.util.ArrayList;
  * Created by wang on 17-3-9.
  */
 
-public abstract class BaseMenuDialog extends Dialog {
+public abstract class BaseMenuDialog extends BaseDialog {
     protected MainActivity mActivity;
     protected ListView mListView;
     protected ArrayList mDatas;
@@ -86,27 +86,5 @@ public abstract class BaseMenuDialog extends Dialog {
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         MainActivity.setState(event.isCtrlPressed(), event.isShiftPressed());
         return super.onKeyUp(keyCode, event);
-    }
-
-    public void showDialog(int x, int y) {
-        Window dialogWindow = getWindow();
-        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-        lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-        lp.dimAmount = 0.0f;
-        show();
-        dialogWindow.setGravity(Gravity.LEFT | Gravity.TOP);
-        lp.x = x;
-        lp.y = y;
-        dialogWindow.setAttributes(lp);
-    }
-
-    public void showDialog() {
-        Window dialogWindow = getWindow();
-        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-        lp.dimAmount = 0.0f;
-        lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-        show();
-        dialogWindow.setGravity(Gravity.CENTER);
-        dialogWindow.setAttributes(lp);
     }
 }

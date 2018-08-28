@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.openthos.filemanager.BaseDialog;
 import org.openthos.filemanager.MainActivity;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.bean.PersonalBean;
@@ -21,7 +22,7 @@ import org.openthos.filemanager.bean.PersonalBean;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FolderCollectionDialog extends Dialog {
+public class FolderCollectionDialog extends BaseDialog {
     private Context mContext;
     private ListView mListView;
     private List<PersonalBean> mPersonalBeanList;
@@ -63,7 +64,6 @@ public class FolderCollectionDialog extends Dialog {
             }
         });
         setListViewWidthAndHeight();
-        getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
     }
 
     private class FolderListAdapter extends BaseAdapter {

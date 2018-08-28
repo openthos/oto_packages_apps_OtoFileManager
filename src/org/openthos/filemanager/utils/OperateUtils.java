@@ -20,7 +20,7 @@ public class OperateUtils {
              .setPositiveButton(context.getResources().getString(R.string.dialog_delete_yes), ok)
              .setNegativeButton(context.getResources().getString(R.string.dialog_delete_no), cancel)
              .create();
-        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        //dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         dialog.setOnKeyListener(new BaseKeyEvent());
         dialog.show();
     }
@@ -30,7 +30,7 @@ public class OperateUtils {
              .setMessage(context.getResources().getString(messageId))
              .setPositiveButton(context.getResources().getString(R.string.dialog_delete_yes), null)
              .create();
-        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        //dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         dialog.setOnKeyListener(new BaseKeyEvent());
         dialog.show();
     }

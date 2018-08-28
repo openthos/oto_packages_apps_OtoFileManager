@@ -13,10 +13,11 @@ import android.widget.RadioButton;
 
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.MainActivity;
+import org.openthos.filemanager.BaseDialog;
 import org.openthos.filemanager.utils.Constants;
 import org.openthos.filemanager.utils.SeafileUtils;
 
-public class CloudInfoDialog extends Dialog {
+public class CloudInfoDialog extends BaseDialog {
     private Context mContext;
     private TextView mTvAccount, mTvConfirm;
     private RadioButton mRbSync, mRbDesync;
@@ -95,15 +96,5 @@ public class CloudInfoDialog extends Dialog {
                     break;
             }
         }
-    }
-
-    public void showDialog() {
-        Window dialogWindow = getWindow();
-        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-        lp.dimAmount = 0.0f;
-        lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-        show();
-        dialogWindow.setGravity(Gravity.CENTER);
-        dialogWindow.setAttributes(lp);
     }
 }
