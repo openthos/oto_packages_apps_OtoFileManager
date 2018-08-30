@@ -98,6 +98,13 @@ public class SeafileFragment extends BaseFragment {
         mAdapter.notifyDataSetChanged();
     }
 
+    public void clearData() {
+        mList.clear();
+        mAdapter.notifyDataSetChanged();
+        mNoAccount.setVisibility(View.VISIBLE);
+        mGvCloud.setVisibility(View.GONE);
+    }
+
     @Override
     public boolean canGoBack() {
         if (wd == null) {

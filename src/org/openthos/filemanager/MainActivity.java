@@ -15,11 +15,13 @@ import android.content.res.XmlResourceParser;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.FileObserver;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.Parcel;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -158,6 +160,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private List<Object> mHistory = new ArrayList<>();
     private int mHistoryIndex = 0;
     private int mCurLeftSelectedIndex = 0;
+    private IBinder mSeafileBinder = new SeafileBinder();
+    private SeafileServiceConnection mServiceConnection;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -173,11 +177,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         ((FileManagerApplication) getApplication()).addActivity(this);
         mSharedPreferences = getSharedPreferences(Constants.MAIN_SP, Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
-        SeafileServiceConnection serviceConnection = new SeafileServiceConnection();
         Intent intent = new Intent();
+        mServiceConnection = new SeafileServiceConnection();
         intent.setComponent(new ComponentName("org.openthos.seafile",
                 "org.openthos.seafile.SeafileService"));
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     protected void initView() {
@@ -1264,6 +1268,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onDestroy() {
         Log.i("FileManager", getComponentName().getClassName() + " Destory");
         ((FileManagerApplication) getApplication()).removeActivity(this);
+        try {
+            mISeafileService.unsetBinder(mSeafileBinder);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        unbindService(mServiceConnection);
         super.onDestroy();
     }
 
@@ -1762,6 +1772,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             mISeafileService = ISeafileService.Stub.asInterface(service);
             try {
                 SeafileUtils.mUserId = mISeafileService.getUserName();
+                mISeafileService.setBinder(mSeafileBinder);
                 if (TextUtils.isEmpty(SeafileUtils.mUserId)) {
                     return;
                 }
@@ -1971,6 +1982,34 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             showFragment((BaseFragment) o, false);
         } else if (o instanceof PathBean) {
             showFileSpaceFragment(((PathBean) o).root, ((PathBean) o).path, false);
+        }
+    }
+
+    private class SeafileBinder extends Binder {
+
+        @Override
+        protected boolean onTransact(
+                int code, Parcel data, Parcel reply, int flags) throws RemoteException {
+            if (code == mISeafileService.getCodeLoginSuccess()
+                    || code == mISeafileService.getCodeUnbindAccount()) {
+                try {
+                    SeafileUtils.mUserId = mISeafileService.getUserName();
+                    if (TextUtils.isEmpty(SeafileUtils.mUserId)) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mSeafileFragment.clearData();
+                            }
+                        });
+                        return true;
+                    }
+                    mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+            return super.onTransact(code, data, reply, flags);
         }
     }
 }
