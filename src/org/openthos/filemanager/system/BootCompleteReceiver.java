@@ -95,7 +95,7 @@ public class BootCompleteReceiver extends BroadcastReceiver {
                 }
             }
             for (Disk d : mDisks) {
-                commands = new String[]{"su", "-c", "fdisk -l /dev/block/" + d.getBlock()};
+                commands = new String[]{"su", "-c", "sgdisk --print /dev/block/" + d.getBlock()};
                 pro = Runtime.getRuntime().exec(commands);
                 in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
                 String result = d.getBlock();
@@ -107,8 +107,11 @@ public class BootCompleteReceiver extends BroadcastReceiver {
                     if (line.contains("Number")) {
                         isPrint = true;
                     } else if (isPrint) {
-                        if (!(line.contains("swap") || line.contains("EFI")
-                                || line.contains("reserved"))) {
+                        String lower = line.toLowerCase();
+                        if (!(lower.contains("swap")
+                                || lower.contains("efi")
+                                || lower.contains("microsoft reserved")
+                                || line.substring(50, 56).equals("EF00"))) {
                             String temp = result + line.trim().substring(0,4).trim();
                             for (Volume v : mVolumes) {
                                 if (v.getBlock().equals(temp)) {
