@@ -108,10 +108,12 @@ public class BootCompleteReceiver extends BroadcastReceiver {
                         isPrint = true;
                     } else if (isPrint) {
                         String lower = line.toLowerCase();
+                        String code = line.substring(50, 56);
                         if (!(lower.contains("swap")
                                 || lower.contains("efi")
-                                || lower.contains("microsoft reserved")
-                                || line.substring(50, 56).equals("EF00"))) {
+                                || lower.contains("reserved")
+                                || code.contains("EF00")
+                                || code.contains("2700"))) {
                             String temp = result + line.trim().substring(0,4).trim();
                             for (Volume v : mVolumes) {
                                 if (v.getBlock().equals(temp)) {
