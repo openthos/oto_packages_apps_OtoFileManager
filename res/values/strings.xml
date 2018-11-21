@@ -296,5 +296,6 @@
     <string name="add">Add</string>
     <string name="cancel_collected">Remove From Collection</string>
     <string name="collect">Add To Collection</string>
-    <string name="bind_account">Has not bind Openthos ID! Click here to bind Openthos ID</string>
+    <string name="bind_account">Has not bind Openthos ID! Did you want to bind Openthos ID? </string>
+    <string name="seafile_not_ok">Seafile is not Ready, Please wait for a moment</string>
 </resources>

@@ -45,8 +45,6 @@ public class PopOnClickLintener implements View.OnClickListener {
                     mMainActivity.dismissPopwindow();
                     break;
                 case R.id.pop_cloud_view:
-                    mMainActivity.showCloudInfoDialog();
-                    mMainActivity.dismissPopwindow();
                     break;
                 case R.id.pop_share_toggle:
                     String chmod = "";

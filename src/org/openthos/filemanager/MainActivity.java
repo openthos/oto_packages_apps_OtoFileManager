@@ -49,7 +49,6 @@ import org.openthos.filemanager.bean.PathBean;
 import org.openthos.filemanager.bean.PersonalBean;
 import org.openthos.filemanager.bean.SeafileLibrary;
 import org.openthos.filemanager.bean.Volume;
-import org.openthos.filemanager.component.CloudInfoDialog;
 import org.openthos.filemanager.component.FolderCollectionDialog;
 import org.openthos.filemanager.component.HorizontalListView;
 import org.openthos.filemanager.component.InfoDialog;
@@ -60,7 +59,6 @@ import org.openthos.filemanager.component.UsbPropertyDialog;
 import org.openthos.filemanager.fragment.PersonalSpaceFragment;
 import org.openthos.filemanager.fragment.SambaFragment;
 import org.openthos.filemanager.fragment.SdStorageFragment;
-import org.openthos.filemanager.fragment.SeafileFragment;
 import org.openthos.filemanager.fragment.SearchFragment;
 import org.openthos.filemanager.fragment.SystemSpaceFragment;
 import org.openthos.filemanager.system.BootCompleteReceiver;
@@ -111,7 +109,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private PopWinShare mPopWinShare;
     public BaseFragment mCurFragment;
     public SdStorageFragment mSdStorageFragment;
-    public SeafileFragment mSeafileFragment;
     private SambaFragment mSambaFragment;
     private UsbConnectionReceiver mReceiver;
     private boolean mIsMutiSelect;
@@ -152,7 +149,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private List<View> mUsbViews = new ArrayList<>();
     public int mCurTabIndex = 0;
     private View mCurLeftItem, mPreTabView, mPreSelectedView;
-    private CloudInfoDialog mCloudInfoDialog;
     private FolderCollectionDialog mFolderCollectionDialog;
 
     public ISeafileService mISeafileService;
@@ -160,8 +156,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private List<Object> mHistory = new ArrayList<>();
     private int mHistoryIndex = 0;
     private int mCurLeftSelectedIndex = 0;
-    private IBinder mSeafileBinder = new SeafileBinder();
     private SeafileServiceConnection mServiceConnection;
+    private boolean isSeafileOK = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -310,11 +306,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                     Toast.LENGTH_SHORT).show();
                             break;
                         case Constants.SEAFILE_DATA_OK:
-                            try {
-                                mSeafileFragment.setData(mISeafileService.isSync());
-                            } catch (RemoteException e) {
-                                e.printStackTrace();
-                            }
                             break;
                         case Constants.REFRESH_BY_OBSERVER:
                             if (System.currentTimeMillis() - mPreTime >= 1000) {
@@ -432,8 +423,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         transaction.add(R.id.fl_mian, mSdStorageFragment).hide(mSdStorageFragment);
         mPersonalSpaceFragment = new PersonalSpaceFragment();
         transaction.add(R.id.fl_mian, mPersonalSpaceFragment).hide(mPersonalSpaceFragment);
-        mSeafileFragment = new SeafileFragment();
-        transaction.add(R.id.fl_mian, mSeafileFragment).hide(mSeafileFragment);
         mSambaFragment = new SambaFragment();
         transaction.add(R.id.fl_mian, mSambaFragment).hide(mSambaFragment);
         mSystemSpaceFragment = new SystemSpaceFragment();
@@ -860,11 +849,34 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 setSelectedBackground(R.id.tv_computer);
                 break;
             case R.id.tv_seafile:
-                if (!SeafileUtils.isNetworkOn(this)) {
-                    ToastUtils.showShort(this, getResources().getString(R.string.network_down));
+                try {
+                    if (isSeafileOK) {
+                        if (!TextUtils.isEmpty(mISeafileService.getUserName())) {
+                            showFileSpaceFragment(SeafileUtils.SEAFILE_DATA_PATH + "/"
+                                + mISeafileService.getUserName() + "/DATA");
+                        } else {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                            builder.setMessage(R.string.bind_account);
+                            builder.setNegativeButton(R.string.no, null);
+                            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent intent = new Intent();
+                                    intent.setComponent(new ComponentName("org.openthos.seafile",
+                                            "org.openthos.seafile.OpenthosIDActivity"));
+                                    startActivity(intent);
+                                    dialog.dismiss();
+                                }
+                            });
+                            builder.create().show();
+                        }
+                    } else {
+                        Toast.makeText(this, getString(R.string.seafile_not_ok),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
                 }
-                mSeafileFragment.goToHome();
-                showFragment(mSeafileFragment);
                 break;
             case R.id.tv_samba:
                 showFragment(mSambaFragment);
@@ -887,7 +899,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private boolean isCopyByHot() {
         return getVisibleFragment() instanceof PersonalSpaceFragment
                 || getVisibleFragment() instanceof SdStorageFragment
-                || getVisibleFragment() instanceof SeafileFragment
                 || getVisibleFragment() instanceof SambaFragment
                 || mEtNavigation.isFocused() || mEtSearchView.isFocused();
     }
@@ -1223,7 +1234,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 Object o = mHistory.get(i);
                 if (o instanceof PersonalSpaceFragment
                         || o instanceof SambaFragment
-                        || o instanceof SeafileFragment
                         || o instanceof SdStorageFragment) {
                     if (o != mCurFragment) {
                         showFragment((BaseFragment) o, true);
@@ -1268,11 +1278,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onDestroy() {
         Log.i("FileManager", getComponentName().getClassName() + " Destory");
         ((FileManagerApplication) getApplication()).removeActivity(this);
-        try {
-            mISeafileService.unsetBinder(mSeafileBinder);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
         unbindService(mServiceConnection);
         super.onDestroy();
     }
@@ -1770,30 +1775,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public class SeafileServiceConnection implements ServiceConnection {
         public void onServiceConnected(ComponentName name, IBinder service) {
             mISeafileService = ISeafileService.Stub.asInterface(service);
-            try {
-                SeafileUtils.mUserId = mISeafileService.getUserName();
-                mISeafileService.setBinder(mSeafileBinder);
-                if (TextUtils.isEmpty(SeafileUtils.mUserId)) {
-                    return;
-                }
-                mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            if (mCloudInfoDialog != null && mCloudInfoDialog.isShowing()) {
-                mCloudInfoDialog.refreshView();
-            }
+            isSeafileOK = true;
         }
 
         public void onServiceDisconnected(ComponentName name) {
         }
 
-    }
-
-    public void showCloudInfoDialog() {
-        mCloudInfoDialog = new CloudInfoDialog(this);
-        mCloudInfoDialog.showDialog();
-        dismissPopwindow();
     }
 
     private void showFolderCollectionDialog() {
@@ -1943,8 +1930,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             if (mCurFragment instanceof SdStorageFragment
                     || mCurFragment instanceof PersonalSpaceFragment) {
                 setSelectedBackground(R.id.tv_computer);
-            } else if (mCurFragment instanceof SeafileFragment) {
-                setSelectedBackground(R.id.tv_seafile);
             } else if (mCurFragment instanceof SambaFragment) {
                 setSelectedBackground(R.id.tv_samba);
             }
@@ -1977,39 +1962,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         Object o = mHistory.get(mHistoryIndex);
         if (o instanceof PersonalSpaceFragment
                 || o instanceof SambaFragment
-                || o instanceof SeafileFragment
                 || o instanceof SdStorageFragment) {
             showFragment((BaseFragment) o, false);
         } else if (o instanceof PathBean) {
             showFileSpaceFragment(((PathBean) o).root, ((PathBean) o).path, false);
-        }
-    }
-
-    private class SeafileBinder extends Binder {
-
-        @Override
-        protected boolean onTransact(
-                int code, Parcel data, Parcel reply, int flags) throws RemoteException {
-            if (code == mISeafileService.getCodeLoginSuccess()
-                    || code == mISeafileService.getCodeUnbindAccount()) {
-                try {
-                    SeafileUtils.mUserId = mISeafileService.getUserName();
-                    if (TextUtils.isEmpty(SeafileUtils.mUserId)) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mSeafileFragment.clearData();
-                            }
-                        });
-                        return true;
-                    }
-                    mHandler.sendEmptyMessage(Constants.SEAFILE_DATA_OK);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                return true;
-            }
-            return super.onTransact(code, data, reply, flags);
         }
     }
 }

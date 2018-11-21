@@ -18,7 +18,6 @@ import org.openthos.filemanager.BaseFragment;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.adapter.SeafileAdapter;
 import org.openthos.filemanager.bean.SeafileLibrary;
-import org.openthos.filemanager.component.SeafileMenuDialog;
 import org.openthos.filemanager.utils.Constants;
 import org.openthos.filemanager.utils.SeafileUtils;
 
