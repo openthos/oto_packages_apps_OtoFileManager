@@ -854,6 +854,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         if (!TextUtils.isEmpty(mISeafileService.getUserName())) {
                             showFileSpaceFragment(SeafileUtils.SEAFILE_DATA_PATH + "/"
                                 + mISeafileService.getUserName() + "/DATA");
+                            setSelectedBackground(R.id.tv_seafile);
                         } else {
                             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                             builder.setMessage(R.string.bind_account);
