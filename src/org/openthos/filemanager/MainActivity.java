@@ -1882,10 +1882,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (!Build.TYPE.equals("eng") && !(path.startsWith(Constants.DEVICE_PATH))) {
-            ToastUtils.showShort(this, getResources().getString(R.string.have_no_permission));
-            return;
-        }
+        //if (!Build.TYPE.equals("eng") && !(path.startsWith(Constants.DEVICE_PATH))) {
+        //    ToastUtils.showShort(this, getResources().getString(R.string.have_no_permission));
+        //    return;
+        //}
         if (file.exists()) {
             if (!(mCurFragment instanceof SystemSpaceFragment)) {
                 FragmentTransaction transaction = mManager.beginTransaction();
