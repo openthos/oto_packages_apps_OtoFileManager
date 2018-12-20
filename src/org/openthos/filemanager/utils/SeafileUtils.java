@@ -17,7 +17,8 @@ import java.io.File;
 
 public class SeafileUtils {
     public static final String TAG = "SeafileUtils";
-    public static final String SEAFILE_DATA_PATH = "/system/linux/sea/data/seafile/";
+    public static final String SEAFILE_DATA_PATH
+            = new File(Environment.getExternalStorageDirectory(), "seafile").getAbsolutePath();
 
     public static String mUserId = "";
 
