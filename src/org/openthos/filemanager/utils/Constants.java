@@ -584,6 +584,8 @@ public abstract class Constants {
     public static final int DECOMPRESS_INFO_SHOW = 0x1014;
     public static final int SET_CLIPBOARD_TEXT = 0x1015;
     public static final int REFRESH_BY_OBSERVER = 0x1016;
+    public static final int RESET_CTRL = 0x1017;
+    public static final int RESET_SHIFT = 0x1018;
 
     public static final String SUFFIX_TAR = ".tar";
     public static final String SUFFIX_ZIP = ".zip";

@@ -330,6 +330,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                 mSdStorageFragment.refreshHomeUI();
                             }
                             break;
+                        case Constants.RESET_CTRL:
+                            mIsCtrlPress = false;
+                            break;
+                        case Constants.RESET_SHIFT:
+                            mIsShiftPress = false;
+                            break;
                     }
                 }
                 super.handleMessage(msg);
@@ -605,18 +611,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        mIsCtrlPress = event.isCtrlPressed();
-        mIsShiftPress = event.isShiftPressed();
-        mIsMutiSelect = false;
-        if (!mIsMutiSelect && !mIsFirst) {
-            sendBroadcastMessage("is_ctrl_press", null, mIsMutiSelect);
-            mIsFirst = true;
-        }
-        return false;
-    }
-
     public void processTab(View v) {
         disSelectPreView();
         v.setBackgroundColor(0x68ffffff);
@@ -735,15 +729,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if ((keyCode == KeyEvent.KEYCODE_ESCAPE || keyCode == KeyEvent.KEYCODE_DEL)
                 && !mEtSearchView.hasFocus() && !mEtNavigation.isFocused()) {
             onBackPressed();
-        }
-        mIsCtrlPress = event.isCtrlPressed();
-        mIsShiftPress = event.isShiftPressed();
-        if (event.isCtrlPressed()) {
-            mIsMutiSelect = true;
-        }
-        if (mIsMutiSelect && mIsFirst) {
-            sendBroadcastMessage("is_ctrl_press", null, mIsMutiSelect);
-            mIsFirst = false;
         }
         if (event.isCtrlPressed() && keyCode == KeyEvent.KEYCODE_X) {
             sendBroadcastMessage("iv_menu", "pop_cut", false);
@@ -1730,11 +1715,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL) {
-            if (event.isCtrlPressed() && event.isAltPressed()) {
-                mIsCtrlPress = false;
-                return true;
-            }
+
+        mIsCtrlPress = event.isCtrlPressed();
+        mIsShiftPress = event.isShiftPressed();
+        if (mIsCtrlPress) {
+            mHandler.removeMessages(Constants.RESET_CTRL);
+            mHandler.sendEmptyMessageDelayed(Constants.RESET_CTRL, 1000);
+        }
+        if (mIsShiftPress) {
+            mHandler.removeMessages(Constants.RESET_SHIFT);
+            mHandler.sendEmptyMessageDelayed(Constants.RESET_SHIFT, 1000);
         }
 
         if (event.getKeyCode() == KeyEvent.KEYCODE_TAB
