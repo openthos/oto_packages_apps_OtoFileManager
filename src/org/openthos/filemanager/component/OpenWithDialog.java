@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.text.TextUtils;
+import android.support.v4.content.FileProvider;
 
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.BaseMenuDialog;
@@ -102,11 +103,17 @@ public class OpenWithDialog extends BaseMenuDialog implements AdapterView.OnItem
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         String packageName = mResolveList.get(i).activityInfo.packageName;
         String className = mResolveList.get(i).activityInfo.name;
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_VIEW);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (android.os.Build.VERSION.SDK_INT >= 24) {
+            intent.setDataAndType(FileProvider.getUriForFile(mActivity,
+                    "org.openthos.support.fileprovider", new File(mFilePath)),
+                    mFileType);
+        } else {
+            intent.setDataAndType(Uri.fromFile(new File(mFilePath)), mFileType);
+        }
         ComponentName cn = new ComponentName(packageName, className);
-        intent.setDataAndType(Uri.fromFile(new File(mFilePath)), mFileType);
         intent.setComponent(cn);
         mActivity.startActivity(intent);
         dismiss();

@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.support.v4.content.FileProvider;
 
 import org.openthos.filemanager.bean.FileInfo;
 import org.openthos.filemanager.component.TextSelectMenuDialog;
@@ -24,10 +25,14 @@ public class IntentBuilder {
         if (!TextUtils.isEmpty(type) && !TextUtils.equals(type, "*/*")) {
             List<ResolveInfo> resolveInfoList = new ArrayList<>();
             PackageManager manager = context.getPackageManager();
-            Intent intent = new Intent();
+            Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setAction(Intent.ACTION_VIEW);
-            intent.setDataAndType(Uri.fromFile(new File(filePath)), type);
+            if (android.os.Build.VERSION.SDK_INT >= 24) {
+                intent.setDataAndType(FileProvider.getUriForFile(context,
+                        "org.openthos.support.fileprovider", new File(filePath)), type);
+            } else {
+                intent.setDataAndType(Uri.fromFile(new File(filePath)), type);
+            }
             resolveInfoList = manager.queryIntentActivities(intent,
                                                PackageManager.MATCH_DEFAULT_ONLY);
             if (resolveInfoList.size() > 0) {

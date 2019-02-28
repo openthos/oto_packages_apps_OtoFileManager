@@ -8,6 +8,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.support.v4.content.FileProvider;
 
 import org.openthos.filemanager.BaseMenuDialog;
 import org.openthos.filemanager.MainActivity;
@@ -59,10 +60,15 @@ public class TextSelectMenuDialog extends BaseMenuDialog implements AdapterView.
         }
         List<ResolveInfo> resolveInfoList = new ArrayList<>();
         PackageManager manager = mActivity.getPackageManager();
-        Intent intent = new Intent();
+        Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.fromFile(new File(filePath)), selectType);
+        if (android.os.Build.VERSION.SDK_INT >= 24) {
+            intent.setDataAndType(FileProvider.getUriForFile(mActivity,
+                    "org.openthos.support.fileprovider", new File(filePath)),
+                    selectType);
+        } else {
+            intent.setDataAndType(Uri.fromFile(new File(filePath)), selectType);
+        }
         resolveInfoList = manager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         dismiss();
         if (resolveInfoList.size() > 0) {
