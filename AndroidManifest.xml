@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:sharedUserId="org.openthos.launcher"
     package="org.openthos.filemanager">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -40,6 +39,12 @@
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
+    <uses-permission android:name="android.permission.GET_APP_GRANTED_URI_PERMISSIONS" />
+    <uses-permission android:name="android.permission.REMOVE_TASKS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.CACHE_CONTENT" />
+    <uses-permission android:name="android.permission.SET_PREFERRED_APPLICATIONS" />
 
     <application
         android:name=".FileManagerApplication"
@@ -108,7 +113,7 @@
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="org.openthos.support.fileprovider"
+            android:authorities="org.openthos.support.filemanager.fileprovider"
             android:grantUriPermissions="true"
             android:exported="false">
             <meta-data

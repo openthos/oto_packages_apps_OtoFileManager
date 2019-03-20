@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class IntentBuilder {
-    private static final int TEXT_TYPE = 2;
+
     public static void viewFile(final Context context, final String filePath, MotionEvent event) {
         String type = Constants.getMIMEType(new File(filePath));
         if (!TextUtils.isEmpty(type) && !TextUtils.equals(type, "*/*")) {
@@ -27,15 +27,21 @@ public class IntentBuilder {
             PackageManager manager = context.getPackageManager();
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            Uri uri = null;
             if (android.os.Build.VERSION.SDK_INT >= 24) {
-                intent.setDataAndType(FileProvider.getUriForFile(context,
-                        "org.openthos.support.fileprovider", new File(filePath)), type);
+                uri = FileProvider.getUriForFile(context,
+                        "org.openthos.support.filemanager.fileprovider", new File(filePath));
             } else {
-                intent.setDataAndType(Uri.fromFile(new File(filePath)), type);
+                uri = Uri.fromFile(new File(filePath));
             }
+            intent.setDataAndType(uri, type);
             resolveInfoList = manager.queryIntentActivities(intent,
-                                               PackageManager.MATCH_DEFAULT_ONLY);
+                    PackageManager.MATCH_DEFAULT_ONLY);
             if (resolveInfoList.size() > 0) {
+                if (android.os.Build.VERSION.SDK_INT >= 24) {
+		    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                }
                 intent.putExtra(Constants.PACKAGENAME_TAG, Constants.APPNAME_OTO_LAUNCHER);
                 context.startActivity(intent);
             } else {
