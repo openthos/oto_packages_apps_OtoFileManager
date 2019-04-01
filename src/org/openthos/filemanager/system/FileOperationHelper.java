@@ -356,6 +356,10 @@ public class FileOperationHelper {
         if (new File(sourcefile).getParent().equals(dest)) {
             return false;
         }
+        File f = new File(dest);
+        if (!f.exists()) {
+            f.mkdirs();
+        }
         String command = "/system/bin/mv";
         String arg = "-v";
         copyOrMoveFile(activity, command, arg, sourcefile, dest, isRefreah, isRecycle);
