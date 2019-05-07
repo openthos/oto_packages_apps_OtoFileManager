@@ -25,6 +25,9 @@ public class UsbUtils {
     }
 
     public static void umount(Activity activity, String usbPath) {
+        if (usbPath.indexOf("/storage/usb") != -1 && usbPath.indexOf("_") != -1) {
+            usbPath = usbPath.substring(0, 13);
+        }
         try {
             Intent umountIntent = new Intent(ExternalStorageMountter.UMOUNT_ONLY);
             umountIntent.setComponent(ExternalStorageMountter.COMPONENT_NAME);
@@ -47,6 +50,9 @@ public class UsbUtils {
     }
 
     public static void format(Activity activity, String usbPath) {
+        if (usbPath.indexOf("/storage/usb") != -1 && usbPath.indexOf("_") != -1) {
+            usbPath = usbPath.substring(0, 13);
+        }
         try {
             Intent formatIntent = new Intent(ExternalStorageFormatter.FORMAT_ONLY);
             formatIntent.setComponent(ExternalStorageFormatter.COMPONENT_NAME);

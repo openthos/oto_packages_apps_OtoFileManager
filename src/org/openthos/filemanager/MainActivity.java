@@ -1068,10 +1068,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     public void uninstallUSB(String usbPath) {
-        if (usbPath.indexOf("/storage/usb") != -1 && usbPath.indexOf("_") != -1) {
-            usbPath = usbPath.substring(0, 13);
-        }
-
         if (mPopUpProgressDialog == null) {
             mPopUpProgressDialog = new ProgressDialog(this);
         }
@@ -1101,9 +1097,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 while ((line = in.readLine()) != null) {
                 }
                 mPopUpProgressDialog.dismiss();
-                if (usbPath.indexOf("/storage/usb") != -1 && usbPath.indexOf("_") != -1) {
-                    usbPath = usbPath.substring(0, 13);
-                }
 		UsbUtils.umount(MainActivity.this, usbPath);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1389,11 +1382,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     public void formatVolume() {
-        String usbPath = mUsbPath;
-        if (usbPath.indexOf("/storage/usb") != -1 && usbPath.indexOf("_") != -1) {
-            usbPath = usbPath.substring(0, 13);
-        }
-	UsbUtils.format(MainActivity.this, usbPath);
+        UsbUtils.format(MainActivity.this, mUsbPath);
     }
 
     private void setSelectView(View view) {
