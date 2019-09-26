@@ -74,7 +74,7 @@ public class IconHolder {
         /**
          * Method that returns the main icon of the app
          *
-         * @param String The FilePath
+         * @param filePath The FilePath
          * @return Drawable The drawable or null if cannot be extracted
          */
         private Drawable getAppDrawable(String filePath) {
@@ -99,6 +99,7 @@ public class IconHolder {
         private Drawable getImageDrawable(String file) {
             Bitmap thumb = ThumbnailUtils.createImageThumbnail(file,
                     ThumbnailUtils.TARGET_SIZE_MICRO_THUMBNAIL);
+            //Bitmap thumb = null;
             if (thumb == null) {
                 return null;
             }
@@ -114,6 +115,7 @@ public class IconHolder {
         private Drawable getVideoDrawable(String file) {
             Bitmap thumb = ThumbnailUtils.createVideoThumbnail(file,
                     ThumbnailUtils.TARGET_SIZE_MICRO_THUMBNAIL);
+            //Bitmap thumb = null;
             if (thumb == null) {
                 return null;
             }
@@ -153,7 +155,6 @@ public class IconHolder {
     /**
      * Constructor of <code>IconHolder</code>.
      *
-     * @param useThumbs If thumbs of images, videos, apps, ... should be returned
      * instead of the default icon.
      */
     private IconHolder(Context context) {
@@ -195,7 +196,6 @@ public class IconHolder {
      *
      * @param iconView View to load the drawable into
      * @param filePath The file path
-     * @param defaultIcon Drawable to be used in case no specific one could be found
      * @return Drawable The drawable reference
      */
     public void loadDrawable(ImageView iconView, String filePath) {

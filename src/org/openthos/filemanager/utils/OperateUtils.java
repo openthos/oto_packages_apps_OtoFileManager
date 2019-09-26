@@ -14,7 +14,7 @@ import org.openthos.filemanager.MainActivity;
 
 public class OperateUtils {
     public static void showChooseAlertDialog(Context context, int messageId,
-                       DialogInterface.OnClickListener ok, DialogInterface.OnClickListener cancel) {
+                       OnClickListener ok, OnClickListener cancel) {
         AlertDialog dialog = new AlertDialog.Builder(context)
              .setMessage(context.getResources().getString(messageId))
              .setPositiveButton(context.getResources().getString(R.string.dialog_delete_yes), ok)

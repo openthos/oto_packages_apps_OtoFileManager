@@ -691,9 +691,13 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         for (FileInfo info : getSelectedFileList()) {
             path += Constants.EXTRA_DELETE_FILE_HEADER + info.filePath;
         }
-        Intent intent = new Intent(Constants.COMPRESS_FILES);
+        Intent intent = new Intent();
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         intent.putExtra(Constants.COMPRESS_PATH_TAG, path);
+        ComponentName cn = new ComponentName(
+                "org.openthos.filemanager", "org.openthos.compress.CompressActivity");
+        intent.setComponent(cn);
         mContext.startActivity(intent);
     }
 
@@ -705,12 +709,13 @@ public class FileViewInteractionHub implements FileOperationHelper.IOperationPro
         if (file == null) {
             return;
         }
-        Intent intent = new Intent(Constants.DECOMPRESS_FILE);
+        Intent intent = new Intent();
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         intent.setDataAndType(Uri.fromFile(new File(file.filePath)),
                 Constants.getMIMEType(new File(file.filePath)));
         ComponentName cn = new ComponentName(
-                "org.openthos.compress", "org.openthos.compress.DecompressActivity");
+                "org.openthos.filemanager", "org.openthos.compress.DecompressActivity");
         intent.setComponent(cn);
         mContext.startActivity(intent);
     }

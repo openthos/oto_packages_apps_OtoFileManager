@@ -1,6 +1,5 @@
 <resources xmlns:xliff="http://schemas.android.com/tools">
     <string name="app_name">File Manager</string>
-    <string name="confirm">OK</string>
     <string name="menu_item_search">Search</string>
     <string name="operation_create_folder">New Folder</string>
     <string name="operation_create_file">New File</string>
@@ -30,6 +29,7 @@
     <string name="operation_hide_sys">Hidden point file and Hidden file</string>
     <string name="operation_delete_permanent">Delete permanent</string>
     <string name="cancel">Cancel</string>
+    <string name="confirm">OK</string>
     <string name="no_file">No File</string>
     <string name="tab_system_category">User Data</string>
     <string name="tab_sd_category">Disk Save</string>
@@ -231,7 +231,7 @@
     <string name="baidu_disk">BaiduNetdisk</string>
     <string name="USB_recognising">USB_recognising</string>
     <string name="copy_info">Do in progress...</string>
-    <string name="file_type_default">.doc</string>
+    <string name="file_type_default" translatable="false">.doc</string>
     <string name="delete_dialog_move">Are you sure you want to move it/them to the Recycle?</string>
     <string name="delete_dialog_delete">Are you sure you want to delete it/them permanently?</string>
     <string name="delete_dialog_clean">Are you sure you want to clean the Recycle?</string>
@@ -244,20 +244,17 @@
     <string name="can_not_search">You can\'t search in the current path.</string>
     <string name="remove_usb_device">Umount usb devices</string>
     <string name="format_usb_device">Format usb devices</string>
-    <string name="file_name_illegal">File name has illegal character /</string>
     <string name="dialog_delete_yes">Yes</string>
     <string name="dialog_delete_no">No</string>
     <string name="umount">Umount</string>
     <string name="bind_openthosid">OpenthosID is not exists, please bind OpenthosID</string>
     <string name="init_seafile">System is initializing seafile services</string>
     <string name="init_seafile_data">System is initializing seafile\'s data from Internet</string>
-    <string name="dialog_decompress_text">"%1$s" is already exists at Desktop, whether to decompress (which will cover the duplicate file)?</string>
     <string name="fail_seafile_name">Create directory failed, because this is contains the same name directory.</string>
     <string name="fail_seafile_name_by_error">File name only be composed of numbers, letters or spaces.</string>
     <string name="file_name_not_null">File name must not be null.</string>
-    <string name="file_name_warning">Warning:\nAvoid containing these chractors: @ # $ ^ &amp; * ( ) [ ].\nDo you determine use this file name?</string>
     <string name="hint_no_permission">You have no operating authority!</string>
-    <string name="path_sd_eng">~</string>
+    <string name="path_sd_eng" translatable="false">~</string>
     <string name="recycle_all_clean">All Clean</string>
     <string name="recycle_all_restore">All Restore</string>
     <string name="recycle_restore">Restore</string>
@@ -281,21 +278,107 @@
     <string name="network_down">No network connection</string>
     <string name="account_non">Unbound Openthos account</string>
     <string name="message_format_usb">Do you want to format this usb device?</string>
-    <string name="desk_path">/Desktop</string>
-    <string name="video_path">/Movies</string>
-    <string name="picture_path">/Pictures</string>
-    <string name="download_path">/Download</string>
-    <string name="document_path">/documents</string>
-    <string name="music_path">/Music</string>
-    <string name="recycle_path">/Recycle</string>
-    <string name="qq_image_path">/Tencent/QQ_Images</string>
-    <string name="qq_file_path">/Tencent/QQfile_recv</string>
-    <string name="winxin_image_path">/Tencent/MicroMsg/WeiXin</string>
-    <string name="winxin_file_path">/Tencent/MicroMsg/Download</string>
-    <string name="baidu_disk_path">/BaiduNetdisk</string>
+    <string name="desk_path" translatable="false">/Desktop</string>
+    <string name="video_path" translatable="false">/Movies</string>
+    <string name="picture_path" translatable="false">/Pictures</string>
+    <string name="download_path" translatable="false">/Download</string>
+    <string name="document_path" translatable="false">/documents</string>
+    <string name="music_path" translatable="false">/Music</string>
+    <string name="recycle_path" translatable="false">/Recycle</string>
+    <string name="qq_image_path" translatable="false">/Tencent/QQ_Images</string>
+    <string name="qq_file_path" translatable="false">/Tencent/QQfile_recv</string>
+    <string name="winxin_image_path" translatable="false">/Tencent/MicroMsg/WeiXin</string>
+    <string name="winxin_file_path" translatable="false">/Tencent/MicroMsg/Download</string>
+    <string name="baidu_disk_path" translatable="false">/BaiduNetdisk</string>
     <string name="add">Add</string>
     <string name="cancel_collected">Remove From Collection</string>
     <string name="collect">Add To Collection</string>
     <string name="bind_account">Has not bind Openthos ID! Did you want to bind Openthos ID? </string>
     <string name="seafile_not_ok">Seafile is not Ready, Please wait for a moment</string>
+    <string name="input_samba_account">Please enter your username and password!</string>
+    <string name="samba_account">User Name:</string>
+    <string name="samba_password">Password:</string>
+    <string name="samba_downloading">Downloading...</string>
+    <string name="download_falut">Download failed!</string>
+    <string name="no_samba_server">Can not connect to samba server!</string>
+    <string name="dialog_scan">Scan Network</string>
+    <string name="text_scanning">Scanning in progress ...</string>
+    <string name="text_no_host">No host found!</string>
+    <string name="operation_share">Share</string>
+    <string name="operation_open_share">Open share</string>
+    <string name="operation_stop_share">Stop share</string>
+    <string name="operation_add_share_user">Add share user</string>
+    <string name="dialog_share_directory">Share the directory</string>
+    <string name="dialog_workgroup">Workgroup</string>
+    <string name="dialog_share_name">Share name</string>
+    <string name="dialog_share_comment">Comment</string>
+    <string name="dialog_share_allow_anonymous_access">Allow anonymous access</string>
+    <string name="dialog_add_users_account">Account</string>
+    <string name="dialog_add_users_passward">Passward</string>
+    <string name="dialog_user_list">User list</string>
+    <string name="dialog_user_management">User management</string>
+    <string name="dialog_confirm_delete_user">Do you confirm to delete the user %s ?</string>
+    <string name="dialog_modify_password">Modify password</string>
+    <string name="toast_open_share">Please open share first</string>
+
+    <!--compress-->
+    <string name="compress">Compress</string>
+    <string name="decompress">Decompress</string>
+    <string name="msg_ret_success">Success</string>
+    <string name="msg_ret_warning">Warning (Non fatal error(s))</string>
+    <string name="msg_ret_fault">Fatal error</string>
+    <string name="msg_ret_command">Command line error</string>
+    <string name="msg_ret_memmory">Not enough memory for operation</string>
+    <string name="msg_ret_user_stop">User stopped the process</string>
+    <string name="achieve_output_path">Achieve output path</string>
+    <string name="choose_more">More</string>
+    <string name="achieve_name">Achieve name</string>
+    <string name="password">Password</string>
+    <string name="show_password">Show Password</string>
+    <string name="input_password">Input password</string>
+    <string name="decompress_output_path">Decompress output path</string>
+    <string name="decompress_file_name">Decompress file name</string>
+    <string name="parent_folder">Parent folder</string>
+    <string name="source_file">Source file</string>
+    <string name="path_not_exist">Path is not exist.</string>
+    <string name="path_not_directory">Path is not directory.</string>
+    <string name="path_not_permission">Path has no write permission.</string>
+    <string name="file_name_illegal">File name has illegal character /</string>
+    <string name="file_name_warning">Warning:\nAvoid containing these chractors: @ # $ ^ &amp; * ( ) [ ].\nDo you determine use this file name?</string>
+    <string name="compress_info">Do in progress...</string>
+    <string name="filename_aready_exists">This file name is aready exists, please re-input.</string>
+    <string name="hint_input_password">Encrypted file.\nPlease enter password.</string>
+    <string name="hint_wrong_password">Password is incorrect.\nPlease re-enter password.</string>
+    <string name="dialog_decompress_text">"%1$s" is already exists, whether to decompress (which will cover the duplicate file)?</string>
+    <string name="exit_promt">Are you sure you want to exit?</string>
+    <string name="browse">Browse</string>
+    <string name="extract">Extract</string>
+    <string name="extract_all">Extract All</string>
+    <string name="current_path">Current Path:</string>
+    <string name="name">Name</string>
+    <string name="size">Size</string>
+    <string name="compressed_size">Compressed Size</string>
+    <string name="type">Type</string>
+    <string name="modified_time">Modified Time</string>
+    <string name="count">Total:</string>
+    <string name="file">File</string>
+    <string name="files">Files</string>
+    <string name="folder">Folder</string>
+    <string name="folders">Folders</string>
+    <string name="str_byte">B</string>
+    <string name="empty_str"></string>
+    <string name="one_space" translatable="false"> </string>
+    <string name="char_zero" translatable="false">0</string>
+
+    <string-array name="simple_compress_type">
+        <item>.zip</item>
+        <item>.7z</item>
+        <item>.tar</item>
+    </string-array>
+
+    <string-array name="complex_compress_type">
+        <item>.tar.gz</item>
+        <item>.tar.bz2</item>
+    </string-array>
+
 </resources>

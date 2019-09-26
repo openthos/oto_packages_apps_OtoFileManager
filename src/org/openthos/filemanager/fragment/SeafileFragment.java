@@ -70,8 +70,8 @@ public class SeafileFragment extends BaseFragment {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent();
-                        intent.setComponent(new ComponentName("org.openthos.seafile",
-                                "org.openthos.seafile.OpenthosIDActivity"));
+                        intent.setComponent(new ComponentName("org.openthos.org.openthos.seafile",
+                                "org.openthos.org.openthos.seafile.OpenthosIDActivity"));
                         mMainActivity.startActivity(intent);
                     }
                 });
@@ -201,7 +201,7 @@ public class SeafileFragment extends BaseFragment {
             mGvCloud.setVisibility(View.GONE);
             if (wd == null) {
                 Intent intent = new Intent();
-                intent.setClassName("org.openthos.seafile", "org.openthos.seafile.seaapp.SeafileActivity");
+                intent.setClassName("org.openthos.org.openthos.seafile", "org.openthos.org.openthos.seafile.seaapp.SeafileActivity");
                 LocalActivityManager mLocalActivityManager = new LocalActivityManager(getActivity(), true);
                 mLocalActivityManager.dispatchCreate(null);
                 mLocalActivityManager.dispatchResume();

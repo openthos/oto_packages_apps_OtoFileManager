@@ -120,5 +120,38 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <activity android:name="org.openthos.compress.CompressActivity">
+            <intent-filter>
+                <action android:name="org.openthos.compress.compress" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name="org.openthos.compress.DecompressActivity">
+            <intent-filter>
+                <action android:name="org.openthos.compress.decompress" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name="org.openthos.compress.FileChooseActivity"/>
+        <activity android:name="org.openthos.compress.ArchiveBrowserActivity">
+            <intent-filter>
+                <action android:name="org.openthos.compress.archivebrowser"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:mimeType="application/zip" />
+                <data android:mimeType="application/x-7z-compressed" />
+                <data android:mimeType="application/x-rar-compressed" />
+                <data android:mimeType="application/ocelet-stream" />
+                <data android:mimeType="application/x-tar" />
+                <data android:mimeType="application/x-gzip" />
+                <data android:mimeType="application/x-bzip2" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>

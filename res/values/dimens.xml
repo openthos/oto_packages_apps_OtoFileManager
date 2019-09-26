@@ -42,4 +42,8 @@
     <dimen name="home_item_height">120dp</dimen>
     <dimen name="home_item_padding">80dp</dimen>
     <dimen name="home_pic_text">10dp</dimen>
+
+
+    <dimen name="activity_padding">16dp</dimen>
+    <dimen name="item_height">55dp</dimen>
 </resources>

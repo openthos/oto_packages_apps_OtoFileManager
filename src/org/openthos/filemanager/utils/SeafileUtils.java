@@ -7,8 +7,6 @@ import android.net.NetworkInfo;
 import android.os.Environment;
 import android.text.TextUtils;
 
-import static android.R.attr.id;
-
 import java.io.File;
 
 /**
@@ -18,7 +16,7 @@ import java.io.File;
 public class SeafileUtils {
     public static final String TAG = "SeafileUtils";
     public static final String SEAFILE_DATA_PATH
-            = new File(Environment.getExternalStorageDirectory(), "seafile").getAbsolutePath();
+            = new File(Environment.getExternalStorageDirectory(), "org/openthos/seafile").getAbsolutePath();
 
     public static String mUserId = "";
 

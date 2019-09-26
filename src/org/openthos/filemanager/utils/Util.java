@@ -402,7 +402,7 @@ public class Util {
 //        if (sDcString.equals(Environment.MEDIA_MOUNTED)) {
         File pathFile = Environment.getExternalStorageDirectory();
         try {
-            android.os.StatFs statfs = new android.os.StatFs(pathFile.getPath());
+            StatFs statfs = new StatFs(pathFile.getPath());
             long nTotalBlocks = statfs.getBlockCount();
             long nBlocSize = statfs.getBlockSize();
             long nAvailaBlock = statfs.getAvailableBlocks();
@@ -448,7 +448,7 @@ public class Util {
 
     public static UsbMemoryInfo getUsbMemoryInfo(String usbPath) {
         try {
-            android.os.StatFs statfs = new android.os.StatFs(usbPath);
+            StatFs statfs = new StatFs(usbPath);
             long nTotalBlocks = statfs.getBlockCount();
             long nBlocSize = statfs.getBlockSize();
             long nAvailaBlock = statfs.getAvailableBlocks();

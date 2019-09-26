@@ -175,8 +175,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mEditor = mSharedPreferences.edit();
         Intent intent = new Intent();
         mServiceConnection = new SeafileServiceConnection();
-        intent.setComponent(new ComponentName("org.openthos.seafile",
-                "org.openthos.seafile.SeafileService"));
+        intent.setComponent(new ComponentName("org.openthos.org.openthos.seafile",
+                "org.openthos.org.openthos.seafile.SeafileService"));
         bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -848,8 +848,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     Intent intent = new Intent();
-                                    intent.setComponent(new ComponentName("org.openthos.seafile",
-                                            "org.openthos.seafile.OpenthosIDActivity"));
+                                    intent.setComponent(new ComponentName("org.openthos.org.openthos.seafile",
+                                            "org.openthos.org.openthos.seafile.OpenthosIDActivity"));
                                     startActivity(intent);
                                     dialog.dismiss();
                                 }
@@ -1231,7 +1231,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 return fragment;
             }
         }
-        Log.i("FileManager", android.util.Log.getStackTraceString(new Throwable()));
+        Log.i("FileManager", Log.getStackTraceString(new Throwable()));
         String path = mEtNavigation.getText().toString();
         if (TextUtils.isEmpty(path.trim())) {
             showFileSpaceFragment("~");

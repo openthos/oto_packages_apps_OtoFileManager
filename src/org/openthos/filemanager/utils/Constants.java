@@ -39,7 +39,7 @@ public abstract class Constants {
     public static final String DEVICE_PATH = "/storage";
     public static final String ROOT_PATH = "/";
     public static final String SAMBA_PATH = "/storage/samba/";
-    public static final String SEAFILE_PATH = SDCARD_PATH + "/seafile";
+    public static final String SEAFILE_PATH = SDCARD_PATH + "/org/openthos/seafile";
     public static final String DESKTOP_PATH = SDCARD_PATH + "/Desktop";
     public static final String MUSIC_PATH = SDCARD_PATH + "/Music";
     public static final String VIDEOS_PATH = SDCARD_PATH + "/Movies";

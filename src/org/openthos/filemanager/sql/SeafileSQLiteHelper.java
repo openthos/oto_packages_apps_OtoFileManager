@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class SeafileSQLiteHelper extends SQLiteOpenHelper {
     public static final int VERSION =1;
-    public static final String NAME="seafile";
+    public static final String NAME= "org/openthos/seafile";
 
     public SeafileSQLiteHelper(Context context, String name,
                                SQLiteDatabase.CursorFactory factory, int version) {
