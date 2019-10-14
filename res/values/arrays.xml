@@ -100,4 +100,73 @@
     <string-array name="left_collection_menu">
         <item>@string/cancel_collected</item>
     </string-array>
+    <array name="default_icon_name">
+        <item>@string/my_computer</item>
+        <item>@string/recycle</item>
+    </array>
+    <array name="default_icon">
+        <item>@drawable/ic_app_computer</item>
+        <item>@drawable/ic_app_recycle</item>
+    </array>
+    <array name="default_is_file">
+        <item>false</item>
+        <item>false</item>
+    </array>
+    <array name="default_is_app">
+        <item>false</item>
+        <item>false</item>
+    </array>
+    <array name="menu_computer">
+        <item>@string/open</item>
+        <item>@string/about_computer</item>
+    </array>
+    <array name="menu_blank">
+        <item>@string/paste</item>
+        <item>@string/sort</item>
+        <item>@string/new_folder</item>
+        <item>@string/new_file</item>
+        <item>@string/display_settings</item>
+        <item>@string/change_wallpaper</item>
+    </array>
+    <array name="menu_file">
+        <item>@string/open</item>
+        <item>@string/open_with</item>
+        <item>@string/compress</item>
+        <item>@string/decompression</item>
+        <item>@string/crop</item>
+        <item>@string/copy</item>
+        <item>@string/delete</item>
+        <item>@string/rename</item>
+        <item>@string/property</item>
+    </array>
+    <array name="menu_recycle">
+        <item>@string/open</item>
+        <item>@string/clean_recycle</item>
+    </array>
+
+    <array name="menu_more">
+        <item>@string/copy</item>
+        <item>@string/crop</item>
+        <item>@string/delete</item>
+        <item>@string/compress</item>
+    </array>
+    <array name="all_menu">
+        <item>@string/open</item>
+        <item>@string/about_computer</item>
+        <item>@string/compress</item>
+        <item>@string/decompression</item>
+        <item>@string/crop</item>
+        <item>@string/copy</item>
+        <item>@string/paste</item>
+        <item>@string/sort</item>
+        <item>@string/new_folder</item>
+        <item>@string/display_settings</item>
+        <item>@string/change_wallpaper</item>
+        <item>@string/delete</item>
+        <item>@string/rename</item>
+        <item>@string/clean_recycle</item>
+        <item>@string/property</item>
+        <item>@string/new_file</item>
+        <item>@string/open_with</item>
+    </array>
 </resources>

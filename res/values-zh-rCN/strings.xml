@@ -356,4 +356,41 @@
     <string name="str_byte">字节</string>
     <string name="empty_str"></string>
     <string name="extract_all">全部解压</string>
+    <string name="my_computer">我的电脑</string>
+    <!-- 右键菜单 -->
+    <string name="paste">粘贴</string>
+    <string name="sort">排序</string>
+    <string name="new_folder">新建文件夹</string>
+    <string name="display_settings">显示设置</string>
+    <string name="change_wallpaper">更改壁纸</string>
+    <string name="open">打开</string>
+    <string name="about_computer">关于本机</string>
+    <string name="open_way">打开方式</string>
+    <string name="decompression">解压</string>
+    <string name="crop">剪切</string>
+    <string name="copy">复制</string>
+    <string name="delete">删除</string>
+    <string name="rename">重命名</string>
+    <string name="property">属性</string>
+    <string name="clean_recycle">清空回收站</string>
+    <!-- 删除到回收站 -->
+    <string name="dialog_delete_text">您确定将该文件移动到回收站吗</string>
+    <string name="dialog_direct_delete_text">您确定要永久删除吗？</string>
+    <string name="new_file">新建文件</string>
+    <string name="launcher_txt">.txt</string>
+    <string name="launcher_doc">.doc</string>
+    <string name="launcher_xls">.xls</string>
+    <string name="launcher_ppt">.ppt</string>
+    <string name="launcher_txt_info">TXT文本文档</string>
+    <string name="launcher_doc_info">Word文本文档</string>
+    <string name="launcher_xls_info">Excel表格文档</string>
+    <string name="launcher_ppt_info">PowerPoint幻灯片文档</string>
+    <string name="dialog_new_file_title">请选择要创建的文件的格式</string>
+    <string name="open_with">打开方式</string>
+    <string name="can_not_open">找不到相应的打开应用程序</string>
+    <string name="rename_fail">重命名失败</string>
+    <string name="dialog_ok">确定</string>
+    <string name="rename_fail_by_same">重命名失败，因为该目录包含相同的名称文件。</string>
+    <string name="dialog_clean_recycle">确认清空回收站?</string>
+    <string name="progress_dialog_setting_wallpaper" msgid="2031391201442335889">"正在设置壁纸..."</string>
 </resources>

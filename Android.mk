@@ -25,6 +25,7 @@ LOCAL_MODULE_TAGS := optional
 
 LOCAL_STATIC_JAVA_LIBRARIES := android-support-v4
 LOCAL_STATIC_JAVA_LIBRARIES += android-support-v7-appcompat
+LOCAL_STATIC_JAVA_LIBRARIES += android-support-v7-recyclerview
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src) \
     $(call all-renderscript-files-under, src) \

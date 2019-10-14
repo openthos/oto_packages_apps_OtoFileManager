@@ -46,4 +46,18 @@
 
     <dimen name="activity_padding">16dp</dimen>
     <dimen name="item_height">55dp</dimen>
+
+    <!-- icon size -->
+    <dimen name="icon_image_size">64dp</dimen>
+    <dimen name="icon_font_size">12sp</dimen>
+    <dimen name="icon_diver_size">8dp</dimen>
+    <dimen name="icon_size">120dp</dimen>
+    <dimen name="icon_shadow_size">80dp</dimen>
+
+    <!-- dialog menu right button -->
+    <dimen name="dialog_menu_padding">16dp</dimen>
+    <dimen name="dialog_menu_width">144dp</dimen>
+    <dimen name="dialog_menu_height">32dp</dimen>
+    <dimen name="dialog_menu_font_size">14sp</dimen>
+
 </resources>

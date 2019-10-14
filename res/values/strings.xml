@@ -381,4 +381,40 @@
         <item>.tar.bz2</item>
     </string-array>
 
+    <string name="my_computer">My Computer</string>
+    <string name="paste">Paste</string>
+    <string name="sort">Sort</string>
+    <string name="new_folder">New Folder</string>
+    <string name="new_file">New File</string>
+    <string name="display_settings">Display Settings</string>
+    <string name="change_wallpaper">Change Wallpaper</string>
+    <string name="open">Open</string>
+    <string name="about_computer">About Computer</string>
+    <string name="open_way">Open Way</string>
+    <string name="decompression">Decompress</string>
+    <string name="crop">Crop</string>
+    <string name="copy">Copy</string>
+    <string name="delete">Delete</string>
+    <string name="rename">Rename</string>
+    <string name="property">Property</string>
+    <string name="clean_recycle">Clean Recycle</string>
+    <!-- About Delete file -->
+    <string name="dialog_delete_text">Are you sure you want to move this file to the Recycle?</string>
+    <string name="dialog_direct_delete_text">Are you sure you want to permanently delete?</string>
+    <string name="launcher_txt">.txt</string>
+    <string name="launcher_doc">.doc</string>
+    <string name="launcher_xls">.xls</string>
+    <string name="launcher_ppt">.ppt</string>
+    <string name="launcher_txt_info">TXT text document</string>
+    <string name="launcher_doc_info">Word document</string>
+    <string name="launcher_xls_info">Excel document</string>
+    <string name="launcher_ppt_info">PowerPoint document</string>
+    <string name="dialog_new_file_title">Please select the format you want to create</string>
+    <string name="open_with">Open with</string>
+    <string name="can_not_open">Could not find the appropriate application to open the file!</string>
+    <string name="rename_fail">Rename failed</string>
+    <string name="rename_fail_by_same">Rename failed, because the directory is contains the same name file.</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_clean_recycle">Are you sure you want to clean the Recycle?</string>
+    <string name="progress_dialog_setting_wallpaper">Setting wallpaper\u2026</string>
 </resources>

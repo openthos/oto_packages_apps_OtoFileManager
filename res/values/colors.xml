@@ -18,4 +18,8 @@
     <color name="gray_light">#f4f4f4</color>
     <color name="gray_medium">#cccccc</color>
     <color name="gray_heavy">#8f8f8f</color>
+
+    <color name="icon_background">#7f251a4b</color>
+    <color name="menu_background">#33000000</color>
+    <color name="item_hover_background">#5b41a2</color>
 </resources>
