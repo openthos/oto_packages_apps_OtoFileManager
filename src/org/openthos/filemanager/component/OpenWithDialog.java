@@ -104,23 +104,19 @@ public class OpenWithDialog extends BaseMenuDialog implements AdapterView.OnItem
         String packageName = mResolveList.get(i).activityInfo.packageName;
         String className = mResolveList.get(i).activityInfo.name;
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Uri uri = null;
         if (android.os.Build.VERSION.SDK_INT >= 24) {
             uri = FileProvider.getUriForFile(mActivity,
                     "org.openthos.support.filemanager.fileprovider", new File(mFilePath));
-            intent.setDataAndType(uri, mFileType);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         } else {
             uri = Uri.fromFile(new File(mFilePath));
-            intent.setDataAndType(uri, mFileType);
         }
+            intent.setDataAndType(uri, mFileType);
         ComponentName cn = new ComponentName(packageName, className);
-        if (android.os.Build.VERSION.SDK_INT >= 24) {
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             //mActivity.grantUriPermission(packageName, uri,
             //    Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        }
         intent.setComponent(cn);
         mActivity.startActivity(intent);
         dismiss();

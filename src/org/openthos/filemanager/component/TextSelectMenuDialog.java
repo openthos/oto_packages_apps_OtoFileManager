@@ -61,29 +61,26 @@ public class TextSelectMenuDialog extends BaseMenuDialog implements AdapterView.
         List<ResolveInfo> resolveInfoList = new ArrayList<>();
         PackageManager manager = mActivity.getPackageManager();
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Uri uri = null;
         if (android.os.Build.VERSION.SDK_INT >= 24) {
             uri = FileProvider.getUriForFile(mActivity,
                     "org.openthos.support.filemanager.fileprovider", new File(filePath));
-            intent.setDataAndType(uri, selectType);
+		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                          | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         } else {
             uri = Uri.fromFile(new File(filePath));
-            intent.setDataAndType(uri, selectType);
         }
+            intent.setDataAndType(uri, selectType);
         resolveInfoList = manager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         dismiss();
         if (resolveInfoList.size() > 0) {
-            if (android.os.Build.VERSION.SDK_INT >= 24) {
-		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 //for (ResolveInfo resolveInfo : resolveInfoList) {
                 //    String packageName = resolveInfo.activityInfo.packageName;
                 //    mActivity.grantUriPermission(packageName, uri,
                 //            Intent.FLAG_GRANT_READ_URI_PERMISSION
                 //            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 //}
-            }
             intent.putExtra(Constants.PACKAGENAME_TAG, Constants.APPNAME_OTO_LAUNCHER);
             mActivity.startActivity(intent);
         } else {

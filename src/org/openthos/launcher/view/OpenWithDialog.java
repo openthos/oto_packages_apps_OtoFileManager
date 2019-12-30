@@ -110,11 +110,11 @@ public class OpenWithDialog extends BaseDialog implements AdapterView.OnItemClic
         String packageName = mResolveList.get(i).activityInfo.packageName;
         String className = mResolveList.get(i).activityInfo.name;
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Uri uri = null;
         if (android.os.Build.VERSION.SDK_INT >= 24) {
             uri = FileProvider.getUriForFile(mContext,
-                    "org.openthos.support.launcher.fileprovider", new File(mFilePath));
+                    "org.openthos.support.filemanager.fileprovider", new File(mFilePath));
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                     | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         } else {

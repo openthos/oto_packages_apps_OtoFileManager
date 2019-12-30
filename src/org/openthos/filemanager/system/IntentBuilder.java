@@ -26,11 +26,12 @@ public class IntentBuilder {
             List<ResolveInfo> resolveInfoList = new ArrayList<>();
             PackageManager manager = context.getPackageManager();
             Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             Uri uri = null;
             if (android.os.Build.VERSION.SDK_INT >= 24) {
                 uri = FileProvider.getUriForFile(context,
                         "org.openthos.support.filemanager.fileprovider", new File(filePath));
+		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             } else {
                 uri = Uri.fromFile(new File(filePath));
             }
@@ -38,10 +39,6 @@ public class IntentBuilder {
             resolveInfoList = manager.queryIntentActivities(intent,
                     PackageManager.MATCH_DEFAULT_ONLY);
             if (resolveInfoList.size() > 0) {
-                if (android.os.Build.VERSION.SDK_INT >= 24) {
-		    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
-                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                }
                 intent.putExtra(Constants.PACKAGENAME_TAG, Constants.APPNAME_OTO_LAUNCHER);
                 context.startActivity(intent);
             } else {
