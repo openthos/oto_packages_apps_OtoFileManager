@@ -112,7 +112,7 @@
             android:enabled="true"/>
 
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="org.openthos.filemanager.system.FileProvider"
             android:authorities="org.openthos.support.filemanager.fileprovider"
             android:grantUriPermissions="true"
             android:exported="false">

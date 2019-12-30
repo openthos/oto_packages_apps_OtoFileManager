@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
-import android.support.v4.content.FileProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openthos.filemanager.R;
+import org.openthos.filemanager.system.FileProvider;
 import org.openthos.launcher.activity.MainActivity;
 import org.openthos.launcher.entity.Type;
 import org.openthos.launcher.utils.FileUtils;

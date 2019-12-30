@@ -7,11 +7,11 @@ import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.support.v4.content.FileProvider;
 
 import org.openthos.filemanager.bean.FileInfo;
 import org.openthos.filemanager.component.TextSelectMenuDialog;
 import org.openthos.filemanager.component.OpenWithDialog;
+import org.openthos.filemanager.system.FileProvider;
 import org.openthos.filemanager.utils.Constants;
 
 import java.io.File;

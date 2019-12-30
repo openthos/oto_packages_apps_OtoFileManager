@@ -8,13 +8,13 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.support.v4.content.FileProvider;
 
 import org.openthos.filemanager.BaseMenuDialog;
 import org.openthos.filemanager.MainActivity;
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.adapter.BaseDialogAdapter;
 import org.openthos.filemanager.utils.Constants;
+import org.openthos.filemanager.system.FileProvider;
 
 import java.io.File;
 import java.util.List;

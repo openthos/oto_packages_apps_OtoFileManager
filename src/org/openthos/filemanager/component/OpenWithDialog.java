@@ -16,11 +16,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.text.TextUtils;
-import android.support.v4.content.FileProvider;
 
 import org.openthos.filemanager.R;
 import org.openthos.filemanager.BaseMenuDialog;
 import org.openthos.filemanager.MainActivity;
+import org.openthos.filemanager.system.FileProvider;
 import org.openthos.filemanager.utils.Constants;
 
 import java.io.File;

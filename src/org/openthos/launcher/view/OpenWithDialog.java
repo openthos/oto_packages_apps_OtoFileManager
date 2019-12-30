@@ -21,7 +21,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.support.v4.content.FileProvider;
+import org.openthos.filemanager.system.FileProvider;
 
 import org.openthos.filemanager.R;
 import org.openthos.launcher.utils.FileUtils;
